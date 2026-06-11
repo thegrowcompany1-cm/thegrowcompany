@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-brand: #009519;
+  --color-brand-dark: #007a14;
+  --color-brand-light: #00b81f;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-noto-sans-kr), 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.marquee-track-left {
+  animation: marquee-left 45s linear infinite;
+}
+
+.marquee-track-right {
+  animation: marquee-right 45s linear infinite;
+}
+
+.marquee-container:hover .marquee-track-left,
+.marquee-container:hover .marquee-track-right {
+  animation-play-state: paused;
+}
+
+@keyframes hero-pan {
+  0%   { transform: scale(1.15) translateX(-4%); }
+  100% { transform: scale(1.15) translateX(4%); }
+}
+
+@keyframes slogan-enter {
+  from { transform: translateY(28px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes slogan-exit {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(-28px); opacity: 0; }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #111111;
+  color: #EEEEEE;
 }
