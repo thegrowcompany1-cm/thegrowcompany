@@ -31,8 +31,8 @@ const row3 = partners.slice(14, 21);
 
 function LogoItem({ partner }: { partner: (typeof partners)[0] }) {
   return (
-    <div className="flex-shrink-0 flex items-center justify-center mx-4 sm:mx-6 h-14 sm:h-16">
-      <div className="relative h-10 sm:h-12 w-24 sm:w-32">
+    <div className="flex-shrink-0 flex items-center justify-center mx-2 sm:mx-5 h-10 sm:h-14">
+      <div className="relative h-7 sm:h-10 w-16 sm:w-28">
         <Image
           src={partner.logo}
           alt={partner.name}

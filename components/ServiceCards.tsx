@@ -78,6 +78,217 @@ const services = [
   },
 ];
 
+// ── Mobile 3D Cylinder Carousel ──────────────────────────────────────────────
+function MobileCarousel({ services: items, visible }: { services: typeof services; visible: boolean }) {
+  const TOTAL  = items.length; // 6
+  const STEP   = 360 / TOTAL;     // 60°
+  const RADIUS = 180;
+  const CARD_W = 220;
+  const CARD_H = 260;
+
+  const [current,    setCurrent]    = useState(0);
+  const [rotation,   setRotation]   = useState(0);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const resumeRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-rotation — restarts whenever autoRotate flips to true
+  useEffect(() => {
+    if (!autoRotate) return;
+    const id = setInterval(() => {
+      setRotation(r => r - STEP);
+      setCurrent(p => (p + 1) % TOTAL);
+    }, 3000);
+    return () => clearInterval(id);
+  }, [autoRotate, STEP, TOTAL]);
+
+  // Touch swipe via non-passive listener so we can call preventDefault
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    let startX = 0, startY = 0;
+
+    const onStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      setAutoRotate(false);
+      if (resumeRef.current) clearTimeout(resumeRef.current);
+    };
+    const onMove = (e: TouchEvent) => {
+      const dx = Math.abs(e.touches[0].clientX - startX);
+      const dy = Math.abs(e.touches[0].clientY - startY);
+      if (dx > dy && dx > 8) e.preventDefault(); // horizontal swipe → block scroll
+    };
+    const onEnd = (e: TouchEvent) => {
+      const delta = startX - e.changedTouches[0].clientX;
+      if (Math.abs(delta) > 40) {
+        if (delta > 0) {
+          setRotation(r => r - STEP);
+          setCurrent(p => (p + 1) % TOTAL);
+        } else {
+          setRotation(r => r + STEP);
+          setCurrent(p => (p - 1 + TOTAL) % TOTAL);
+        }
+      }
+      resumeRef.current = setTimeout(() => setAutoRotate(true), 4000);
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove",  onMove,  { passive: false });
+    el.addEventListener("touchend",   onEnd,   { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove",  onMove);
+      el.removeEventListener("touchend",   onEnd);
+    };
+  }, [STEP, TOTAL]);
+
+  const goTo = (targetIndex: number) => {
+    const diff  = targetIndex - current;
+    const short = diff > TOTAL / 2 ? diff - TOTAL : diff < -TOTAL / 2 ? diff + TOTAL : diff;
+    setRotation(r => r - short * STEP);
+    setCurrent(targetIndex);
+    setAutoRotate(false);
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+    resumeRef.current = setTimeout(() => setAutoRotate(true), 4000);
+  };
+
+  return (
+    <div style={{ animation: visible ? "service-enter 0.7s ease-out both" : "none" }}>
+      {/* 3D carousel viewport */}
+      <div
+        ref={containerRef}
+        className="relative overflow-hidden"
+        style={{ height: "360px", perspective: "800px" }}
+      >
+        {/* Zero-size stage centered in viewport — 3D origin */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: 0,
+            height: 0,
+            transformStyle: "preserve-3d",
+            transform: `rotateY(${rotation}deg)`,
+            transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        >
+          {items.map((s, i) => {
+            const cardAngle = i * STEP;
+            const distRaw   = (i - current + TOTAL) % TOTAL;
+            const dist      = Math.min(distRaw, TOTAL - distRaw);
+            const opacity   = dist === 0 ? 1 : dist === 1 ? 0.6 : 0.18;
+            const isActive  = i === current;
+
+            const cardBg: React.CSSProperties = {
+              background: isActive
+                ? "linear-gradient(160deg, #0c1f0c 0%, #071207 100%)"
+                : "linear-gradient(160deg, #1c1c1c 0%, #111111 100%)",
+              boxShadow: isActive
+                ? "inset 0 0 0 1.5px #009519, 0 12px 40px rgba(0,0,0,0.7)"
+                : "0 4px 20px rgba(0,0,0,0.4)",
+              transition: "background 0.4s, box-shadow 0.4s",
+            };
+
+            const interior = (
+              <div className="absolute inset-0 flex flex-col justify-end p-5" style={cardBg}>
+                {/* watermark number */}
+                <div
+                  className="absolute font-black pointer-events-none select-none"
+                  style={{ fontSize: "96px", opacity: 0.05, right: "-4px", bottom: "-10px", color: "white", lineHeight: 1 }}
+                >
+                  {s.num}
+                </div>
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: "#00951922", color: "#009519" }}
+                >
+                  {s.icon}
+                </div>
+                <p className="text-[#009519] text-[10px] font-black tracking-[0.2em] uppercase mb-1">{s.num}</p>
+                <h3 className="text-base font-black text-white leading-snug mb-1.5">{s.title}</h3>
+                <p className="text-[11px] text-[#888888] leading-relaxed">{s.desc}</p>
+                {isActive && (
+                  <div className="mt-3 flex items-center gap-1.5 text-[#009519] font-bold text-xs">
+                    자세히 보기
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            );
+
+            const posStyle: React.CSSProperties = {
+              position: "absolute",
+              width: `${CARD_W}px`,
+              height: `${CARD_H}px`,
+              left: `-${CARD_W / 2}px`,
+              top:  `-${CARD_H / 2}px`,
+              transform: `rotateY(${cardAngle}deg) translateZ(${RADIUS}px)`,
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              opacity,
+              transition: "opacity 0.4s ease",
+              borderRadius: "16px",
+              overflow: "hidden",
+            };
+
+            if (isActive) {
+              return s.external ? (
+                <a
+                  key={s.num}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ ...posStyle, display: "block" }}
+                >
+                  {interior}
+                </a>
+              ) : (
+                <Link
+                  key={s.num}
+                  href={s.href}
+                  style={{ ...posStyle, display: "block" }}
+                >
+                  {interior}
+                </Link>
+              );
+            }
+            return (
+              <div
+                key={s.num}
+                style={{ ...posStyle, cursor: "pointer" }}
+                onClick={() => goTo(i)}
+              >
+                {interior}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Dot navigation */}
+      <div className="flex justify-center gap-2 mt-5">
+        {items.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            aria-label={`서비스 ${i + 1}`}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: i === current ? "20px" : "6px",
+              height: "6px",
+              background: i === current ? "#009519" : "rgba(255,255,255,0.25)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ServiceCards() {
   const [hovered, setHovered] = useState<number | null>(null);
   const [visible, setVisible] = useState(false);
@@ -246,54 +457,9 @@ export default function ServiceCards() {
           })}
         </div>
 
-        {/* ── Mobile: 2×3 grid ── */}
-        <div className="md:hidden grid grid-cols-2 gap-3">
-          {services.map((s, i) => {
-            const cardStyle: React.CSSProperties = {
-              animation: visible ? `service-enter 0.55s ease-out ${i * 0.08}s both` : "none",
-            };
-
-            const inner = (
-              <>
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
-                  style={{ background: "#009519" + "20", color: "#009519" }}
-                >
-                  {s.icon}
-                </div>
-                <p className="text-[10px] font-black text-[#009519] tracking-widest mb-1">{s.num}</p>
-                <h3 className="text-base font-black text-white leading-snug mb-1.5">{s.title}</h3>
-                <p className="text-xs text-[#777777] leading-relaxed">{s.desc}</p>
-              </>
-            );
-
-            const cls = "relative overflow-hidden rounded-2xl p-5 flex flex-col border border-white/[0.06] hover:border-[#009519] transition-all duration-300 active:scale-[0.97] hover:shadow-[0_0_0_1px_#009519]";
-
-            if (s.external) {
-              return (
-                <a
-                  key={s.num}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cls}
-                  style={{ ...cardStyle, background: "linear-gradient(135deg,#1a1a1a,#111)" }}
-                >
-                  {inner}
-                </a>
-              );
-            }
-            return (
-              <Link
-                key={s.num}
-                href={s.href}
-                className={cls}
-                style={{ ...cardStyle, background: "linear-gradient(135deg,#1a1a1a,#111)" }}
-              >
-                {inner}
-              </Link>
-            );
-          })}
+        {/* ── Mobile: 3D cylinder carousel ── */}
+        <div className="md:hidden">
+          <MobileCarousel services={services} visible={visible} />
         </div>
 
       </div>

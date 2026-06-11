@@ -71,9 +71,9 @@ export default function Header() {
             <Image
               src="/logos/thegrow-logo.png"
               alt="더그로우컴퍼니"
-              width={140}
-              height={40}
-              className="h-9 sm:h-10 w-auto object-contain"
+              width={210}
+              height={60}
+              className="h-14 w-auto object-contain"
               priority
             />
           </Link>

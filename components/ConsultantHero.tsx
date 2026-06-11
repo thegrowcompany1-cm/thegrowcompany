@@ -16,7 +16,7 @@ const consultants = [
 const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[] = [
   {
     content: "대표님들의 성장을 돕습니다.",
-    sizeClass: "text-3xl sm:text-4xl lg:text-5xl xl:text-6xl",
+    sizeClass: "text-2xl sm:text-4xl lg:text-5xl xl:text-6xl",
     weight: 900,
   },
   {
@@ -29,7 +29,7 @@ const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[]
         수행하는 피트니스 비즈니스 전문 그룹
       </>
     ),
-    sizeClass: "text-3xl sm:text-4xl lg:text-5xl",
+    sizeClass: "text-lg sm:text-3xl lg:text-5xl",
     weight: 400,
   },
 ];
@@ -38,17 +38,24 @@ const ENTER_DURATION = 600;
 const HOLD_DURATION  = 2000;
 const EXIT_DURATION  = 600;
 
-function ConsultantCard({ consultant }: { consultant: (typeof consultants)[0] }) {
+function ConsultantCard({
+  consultant,
+  mobileGrid = false,
+}: {
+  consultant: (typeof consultants)[0];
+  mobileGrid?: boolean;
+}) {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="group flex-shrink-0 flex flex-col items-center cursor-default select-none"
-      style={{ width: "clamp(128px, 16vw, 210px)" }}
+    <div
+      className={`group flex flex-col items-center cursor-default select-none ${mobileGrid ? "w-full" : "flex-shrink-0"}`}
+      style={mobileGrid ? undefined : { width: "clamp(128px, 16vw, 210px)" }}
     >
-      {/* Photo — bottom-aligned: fixed-height container, image sits at bottom */}
+      {/* Photo */}
       <div
         className="relative w-full overflow-hidden rounded-t-xl transition-transform duration-300 ease-out group-hover:-translate-y-2"
-        style={{ height: "clamp(176px, 22vw, 304px)" }}
+        style={{ height: mobileGrid ? "190px" : "clamp(176px, 22vw, 304px)" }}
       >
         {!imgError ? (
           <Image
@@ -56,7 +63,7 @@ function ConsultantCard({ consultant }: { consultant: (typeof consultants)[0] })
             alt={consultant.name}
             fill
             className="object-cover object-top"
-            sizes="130px"
+            sizes={mobileGrid ? "50vw" : "210px"}
             onError={() => setImgError(true)}
           />
         ) : (
@@ -66,18 +73,21 @@ function ConsultantCard({ consultant }: { consultant: (typeof consultants)[0] })
             </svg>
           </div>
         )}
-        {/* Bottom gradient for name area */}
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
 
       {/* Name + role */}
-      <div className="w-full bg-black/40 backdrop-blur-sm px-1 py-1.5 text-center transition-transform duration-300 ease-out group-hover:-translate-y-2">
-        <p className="text-white font-bold leading-tight truncate"
-          style={{ fontSize: "clamp(10px, 1.1vw, 13px)" }}>
+      <div className="w-full bg-black/40 backdrop-blur-sm px-2 py-2 text-center transition-transform duration-300 ease-out group-hover:-translate-y-2">
+        <p
+          className="text-white font-bold leading-tight truncate"
+          style={{ fontSize: mobileGrid ? "12px" : "clamp(10px, 1.1vw, 13px)" }}
+        >
           {consultant.name}
         </p>
-        <p className="text-[#009519] leading-tight truncate mt-0.5"
-          style={{ fontSize: "clamp(8px, 0.9vw, 11px)" }}>
+        <p
+          className="text-[#009519] leading-tight truncate mt-0.5"
+          style={{ fontSize: mobileGrid ? "10px" : "clamp(8px, 0.9vw, 11px)" }}
+        >
           {consultant.role}
         </p>
       </div>
@@ -106,9 +116,11 @@ export default function ConsultantHero() {
   }, [activeIndex]);
 
   return (
-    <section className="relative bg-[#111111] overflow-hidden flex flex-col" style={{ minHeight: "100vh" }}>
-
-      {/* ── Background image with slow pan ── */}
+    <section
+      className="relative bg-[#111111] overflow-hidden flex flex-col"
+      style={{ minHeight: "100vh" }}
+    >
+      {/* Background image */}
       <div className="absolute inset-0 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -119,15 +131,19 @@ export default function ConsultantHero() {
           style={{ animation: "hero-pan 10s ease-in-out infinite alternate" }}
         />
         <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.55)" }} />
-        {/* Bottom fade into consultant strip */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#111111] to-transparent" />
       </div>
 
-      {/* ── Slogan area ── */}
-      <div className="relative z-20 flex-1 flex items-center justify-center py-16 sm:py-24 px-4"
-        style={{ minHeight: "clamp(220px, 40vh, 420px)" }}>
-        <div className="relative w-full max-w-4xl mx-auto text-center"
-          style={{ height: "clamp(120px, 16vw, 200px)" }}>
+      {/* Slogan area */}
+      <div
+        className="relative z-20 flex-1 flex items-center justify-center py-10 sm:py-24 px-6 sm:px-4"
+        style={{ minHeight: "clamp(240px, 42vh, 420px)" }}
+      >
+        {/* Fixed-height container: tall enough for 3 lines at mobile font size */}
+        <div
+          className="relative w-full max-w-4xl mx-auto text-center"
+          style={{ height: "clamp(160px, 25vw, 220px)" }}
+        >
           {slogans.map((slogan, i) => {
             const isActive = i === activeIndex;
             let animationValue = "none";
@@ -148,6 +164,8 @@ export default function ConsultantHero() {
                     fontWeight: slogan.weight,
                     animation: animationValue,
                     textShadow: "0 2px 20px rgba(0,0,0,0.5)",
+                    overflowWrap: "break-word",
+                    wordBreak: "keep-all",
                   }}
                 >
                   {slogan.content}
@@ -158,26 +176,22 @@ export default function ConsultantHero() {
         </div>
       </div>
 
-      {/* ── Consultant strip ── */}
+      {/* Consultant strip */}
       <div className="relative z-10 w-full">
-        {/* Desktop: flex row filling width */}
+        {/* Desktop: flex row */}
         <div className="hidden sm:flex items-end justify-center gap-0">
           {consultants.map((c) => (
             <ConsultantCard key={c.name} consultant={c} />
           ))}
         </div>
 
-        {/* Mobile: horizontal scroll */}
-        <div className="sm:hidden flex items-end overflow-x-auto scrollbar-none gap-0 px-4 pb-0"
-          style={{ scrollSnapType: "x mandatory" }}>
+        {/* Mobile: 2-col grid */}
+        <div className="sm:hidden grid grid-cols-2 gap-2 px-4 pb-4">
           {consultants.map((c) => (
-            <div key={c.name} style={{ scrollSnapAlign: "start", flexShrink: 0 }}>
-              <ConsultantCard consultant={c} />
-            </div>
+            <ConsultantCard key={c.name} consultant={c} mobileGrid />
           ))}
         </div>
       </div>
-
     </section>
   );
 }

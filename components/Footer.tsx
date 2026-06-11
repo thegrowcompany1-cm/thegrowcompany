@@ -108,14 +108,15 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-white/10 pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="text-xs text-gray-500 space-y-1">
-              <p>
+            <div className="text-xs text-gray-500 space-y-1 min-w-0" style={{ wordBreak: "keep-all", overflowWrap: "break-word" }}>
+              <p className="flex flex-wrap gap-x-1">
                 <span className="text-gray-400 font-medium">주식회사 더그로우컴퍼니</span>
-                {" "}|{" "}대표이사: 김재강{" "}|{" "}사업자등록번호: 341-86-02941
+                <span>|</span>
+                <span>대표이사: 김재강</span>
+                <span>|</span>
+                <span>사업자등록번호: 341-86-02941</span>
               </p>
-              <p>
-                인천 서구 봉수대로 806 (연희동, 인천아시아드주경기장) 1층
-              </p>
+              <p>인천 서구 봉수대로 806 (연희동, 인천아시아드주경기장) 1층</p>
             </div>
             <div className="flex items-center gap-4 text-xs text-gray-500">
               <Link href="/terms" className="hover:text-gray-300 transition-colors">이용약관</Link>
