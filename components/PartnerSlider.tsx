@@ -32,7 +32,7 @@ const row3 = partners.slice(14, 21);
 function LogoItem({ partner }: { partner: (typeof partners)[0] }) {
   return (
     <div className="flex-shrink-0 flex items-center justify-center mx-4 sm:mx-6 h-14 sm:h-16">
-      <div className="relative h-10 sm:h-12 w-24 sm:w-32 bg-white rounded-lg border border-gray-100 px-2 py-1.5">
+      <div className="relative h-10 sm:h-12 w-24 sm:w-32">
         <Image
           src={partner.logo}
           alt={partner.name}
@@ -91,13 +91,6 @@ export default function PartnerSlider() {
         </div>
       </div>
 
-      {/* Partner count */}
-      <div className="text-center mt-10 sm:mt-14">
-        <span className="inline-flex items-center gap-2 text-sm text-[#666666]">
-          <span className="font-bold text-[#009519] text-base">21+</span>
-          개의 파트너사와 함께합니다
-        </span>
-      </div>
     </section>
   );
 }

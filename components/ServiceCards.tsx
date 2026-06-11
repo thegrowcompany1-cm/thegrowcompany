@@ -1,187 +1,301 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 
-type CourseItem = { duration: string; title: string };
-type ServiceItem = string | CourseItem;
-
-const services: {
-  icon: React.ReactNode;
-  tag: string;
-  title: string;
-  description: string;
-  items: ServiceItem[];
-  href: string;
-  external: boolean;
-}[] = [
+const services = [
   {
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-    tag: "CONSULTING",
-    title: "컨설팅",
-    description:
-      "창업부터 위탁, 진단까지 피트니스 비즈니스의 모든 단계를 지원합니다. 현장 경험을 바탕으로 한 실질적인 컨설팅을 제공합니다.",
-    items: ["창업컨설팅", "위탁컨설팅", "커뮤니티 위탁", "진단컨설팅", "컨설팅사례"],
+    num: "01",
+    title: "창업컨설팅",
+    desc: "헬스장, 필라테스 등 창업을 준비 중이신 분들",
     href: "/consulting/startup",
     external: false,
-  },
-  {
     icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.82m5.84-2.56a14.953 14.953 0 00-5.84-2.56m0 0a14.947 14.947 0 01-5.84 2.56M9.75 19.75v-4.82m0-7.56a6 6 0 015.84 7.38m-5.84-7.38V3.13m0 4.44a14.952 14.952 0 015.84 2.56M9.75 7.57a14.952 14.952 0 00-5.84 2.56m0 0a6 6 0 005.84 7.38" />
       </svg>
     ),
-    tag: "EDUCATION",
+  },
+  {
+    num: "02",
+    title: "매장 위탁운영",
+    desc: "헬스·PT·바레·필라테스·골프 등 운영 중이신데 어려우신 분",
+    href: "/consulting/outsourcing",
+    external: false,
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
+      </svg>
+    ),
+  },
+  {
+    num: "03",
+    title: "시설 위탁운영",
+    desc: "아파트/기업/대학/공공기관 장기 위탁 도움이 필요하신 분",
+    href: "/consulting/community",
+    external: false,
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+      </svg>
+    ),
+  },
+  {
+    num: "04",
+    title: "진단컨설팅",
+    desc: "전문가의 1:1 컨설팅이 필요하신 분",
+    href: "/consulting/diagnosis",
+    external: false,
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125V18.75m-7.5 0h6.375" />
+      </svg>
+    ),
+  },
+  {
+    num: "05",
     title: "그로우 에듀",
-    description:
-      "현장 중심의 실무 교육으로 피트니스 전문가를 양성합니다. 마케팅, 운영, CS, 창업까지 실전 교육 프로그램을 제공합니다.",
-    items: [
-      { duration: "하루", title: "필수 콘텐츠 AI 5종" },
-      { duration: "하루", title: "트레이너 과정" },
-      { duration: "4주", title: "FC 심화과정" },
-      { duration: "4주", title: "관리자 심화과정" },
-      { duration: "12주", title: "1:1 관리자 PT" },
-    ],
+    desc: "피트니스 1등 컨설팅 기업의 맞춤별 교육이 필요하신 분",
     href: "/edu/fc-class",
     external: false,
-  },
-  {
     icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
       </svg>
     ),
-    tag: "INTERIOR",
-    title: "(주)그로우인테리어",
-    description:
-      "피트니스 공간에 최적화된 인테리어 설계 및 시공. 필라테스, 헬스, PT 센터에 특화된 전문 인테리어 서비스를 제공합니다.",
-    items: ["피트니스 공간 설계", "인테리어 시공", "장비 배치 컨설팅"],
+  },
+  {
+    num: "06",
+    title: "그로우 인테리어",
+    desc: "리모델링, 신규 입점 등 인테리어 도움이 필요하신 분",
     href: "https://www.growinterior.co.kr",
     external: true,
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+      </svg>
+    ),
   },
 ];
 
-function isCourse(item: ServiceItem): item is CourseItem {
-  return typeof item === "object";
-}
-
 export default function ServiceCards() {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="py-14 sm:py-20 bg-[#0A0A0A]">
+    <section ref={ref} className="py-14 sm:py-20 bg-[#0A0A0A]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         {/* Header */}
-        <div className="text-center mb-10 sm:mb-14">
+        <div
+          className="text-center mb-10 sm:mb-16"
+          style={{
+            animation: visible ? "service-enter 0.7s ease-out both" : "none",
+          }}
+        >
           <p className="text-[#009519] text-xs sm:text-sm font-bold tracking-widest uppercase mb-3">
             SERVICES
           </p>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#EEEEEE]">
-            전문 서비스
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#EEEEEE] leading-tight">
+            현재 상황에 맞는 서비스를 선택하세요.
           </h2>
-          <p className="text-[#999999] mt-3 text-sm sm:text-base max-w-xl mx-auto">
-            피트니스 비즈니스 성공을 위한 전방위 지원
-          </p>
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {services.map((service) => {
-            const hasCourses = service.items.some(isCourse);
+        {/* ── Desktop: expanding panel strip ── */}
+        <div
+          className="hidden md:flex rounded-2xl overflow-hidden"
+          style={{ height: "520px" }}
+          onMouseLeave={() => setHovered(null)}
+        >
+          {services.map((s, i) => {
+            const isHovered = hovered === i;
+            const anyHovered = hovered !== null;
 
-            return (
-              <div
-                key={service.title}
-                className="group bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-sm shadow-black/30 hover:shadow-xl hover:shadow-black/50 transition-all duration-300 hover:-translate-y-1 flex flex-col"
-              >
-                {/* Top accent line */}
-                <div className="h-1 bg-white/10 group-hover:bg-[#009519] transition-colors duration-300" />
+            const inner = (
+              <>
+                {/* Background */}
+                <div
+                  className="absolute inset-0 transition-all duration-500"
+                  style={{
+                    background: isHovered
+                      ? "linear-gradient(160deg, #0c1f0c 0%, #071207 100%)"
+                      : i % 2 === 0
+                        ? "linear-gradient(160deg, #1c1c1c 0%, #111111 100%)"
+                        : "linear-gradient(160deg, #171717 0%, #0e0e0e 100%)",
+                  }}
+                />
 
-                <div className="p-6 sm:p-8 flex flex-col flex-1">
-                  {/* Icon */}
-                  <div className="w-14 h-14 rounded-2xl bg-[#009519]/10 text-[#009519] flex items-center justify-center mb-5 group-hover:bg-[#009519] group-hover:text-white transition-all duration-300">
-                    {service.icon}
-                  </div>
+                {/* Left accent bar */}
+                <div
+                  className="absolute left-0 top-0 bottom-0 transition-all duration-500"
+                  style={{ width: isHovered ? "3px" : "1px", background: isHovered ? "#009519" : "#2a2a2a" }}
+                />
 
-                  {/* Tag */}
-                  <span className="text-[10px] font-bold tracking-widest text-[#009519] uppercase mb-2">
-                    {service.tag}
-                  </span>
-
-                  {/* Title */}
-                  <h3 className="text-xl font-black text-[#EEEEEE] mb-3">{service.title}</h3>
-
-                  {/* Description */}
-                  <p className="text-sm text-[#999999] leading-relaxed mb-5">{service.description}</p>
-
-                  {/* Items — course badge style or bullet list */}
-                  {hasCourses ? (
-                    <ul className="space-y-2 mb-6 flex-1">
-                      {service.items.map((item) => {
-                        const course = item as CourseItem;
-                        return (
-                          <li key={course.title} className="flex items-center gap-2.5">
-                            <span className="inline-flex items-center justify-center min-w-[3rem] px-2 py-0.5 rounded-md bg-[#009519]/15 border border-[#009519]/25 text-[#009519] text-[10px] font-black tracking-wide flex-shrink-0">
-                              {course.duration}
-                            </span>
-                            <span className="text-sm text-[#CCCCCC]">{course.title}</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : (
-                    <ul className="space-y-2 mb-6 flex-1">
-                      {service.items.map((item) => (
-                        <li key={item as string} className="flex items-center gap-2 text-sm text-[#CCCCCC]">
-                          <span className="w-1.5 h-1.5 bg-[#009519] rounded-full flex-shrink-0" />
-                          {item as string}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {/* CTA */}
-                  {service.external ? (
-                    <a
-                      href={service.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm font-bold text-[#009519] hover:text-[#007a14] transition-colors group/link mt-auto"
-                    >
-                      자세히 보기
-                      <svg
-                        className="w-4 h-4 transition-transform group-hover/link:translate-x-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </a>
-                  ) : (
-                    <Link
-                      href={service.href}
-                      className="inline-flex items-center gap-2 text-sm font-bold text-[#009519] hover:text-[#007a14] transition-colors group/link mt-auto"
-                    >
-                      자세히 보기
-                      <svg
-                        className="w-4 h-4 transition-transform group-hover/link:translate-x-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                  )}
+                {/* Watermark number */}
+                <div
+                  className="absolute font-black text-white pointer-events-none select-none leading-none transition-all duration-500"
+                  style={{
+                    fontSize: isHovered ? "200px" : "90px",
+                    opacity: isHovered ? 0.05 : 0.06,
+                    right: "-8px",
+                    bottom: "-16px",
+                  }}
+                >
+                  {s.num}
                 </div>
-              </div>
+
+                {/* Collapsed state */}
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-3 transition-opacity duration-300"
+                  style={{ opacity: isHovered ? 0 : 1 }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
+                    style={{ background: "#009519" + "22", color: "#009519" }}
+                  >
+                    {s.icon}
+                  </div>
+                  <p
+                    className="text-white font-bold text-sm tracking-widest"
+                    style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
+                  >
+                    {s.title}
+                  </p>
+                </div>
+
+                {/* Expanded state */}
+                <div
+                  className="absolute inset-0 flex flex-col justify-end p-8 transition-opacity duration-300"
+                  style={{ opacity: isHovered ? 1 : 0, pointerEvents: isHovered ? "auto" : "none" }}
+                >
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+                    style={{ background: "#009519" + "25", color: "#009519" }}
+                  >
+                    {s.icon}
+                  </div>
+                  <p className="text-[#009519] text-[10px] font-black tracking-[0.2em] uppercase mb-2">
+                    {s.num}
+                  </p>
+                  <h3 className="text-2xl font-black text-white mb-3 leading-snug">
+                    {s.title}
+                  </h3>
+                  <p className="text-[#888888] text-sm leading-relaxed mb-7">
+                    {s.desc}
+                  </p>
+                  <div className="flex items-center gap-2 text-[#009519] font-bold text-sm">
+                    자세히 보기
+                    <svg
+                      className="w-4 h-4 transition-transform duration-200 translate-x-0 group-hover/panel:translate-x-1"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                </div>
+              </>
+            );
+
+            const sharedStyle: React.CSSProperties = {
+              flex: isHovered ? 3.8 : anyHovered ? 0.55 : 1,
+              boxShadow: isHovered ? "inset 0 0 0 1.5px #009519" : "inset 0 0 0 0px transparent",
+              transitionProperty: "flex, opacity, transform, box-shadow",
+              transitionDuration: "0.45s, 0.6s, 0.6s, 0.3s",
+              transitionTimingFunction: "cubic-bezier(0.4,0,0.2,1), ease-out, ease-out, ease",
+              transitionDelay: `0s, ${i * 0.07}s, ${i * 0.07}s, 0s`,
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0)" : "translateY(40px)",
+            };
+
+            if (s.external) {
+              return (
+                <a
+                  key={s.num}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/panel relative overflow-hidden cursor-pointer block"
+                  style={sharedStyle}
+                  onMouseEnter={() => setHovered(i)}
+                >
+                  {inner}
+                </a>
+              );
+            }
+            return (
+              <Link
+                key={s.num}
+                href={s.href}
+                className="group/panel relative overflow-hidden cursor-pointer block"
+                style={sharedStyle}
+                onMouseEnter={() => setHovered(i)}
+              >
+                {inner}
+              </Link>
             );
           })}
         </div>
+
+        {/* ── Mobile: 2×3 grid ── */}
+        <div className="md:hidden grid grid-cols-2 gap-3">
+          {services.map((s, i) => {
+            const cardStyle: React.CSSProperties = {
+              animation: visible ? `service-enter 0.55s ease-out ${i * 0.08}s both` : "none",
+            };
+
+            const inner = (
+              <>
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
+                  style={{ background: "#009519" + "20", color: "#009519" }}
+                >
+                  {s.icon}
+                </div>
+                <p className="text-[10px] font-black text-[#009519] tracking-widest mb-1">{s.num}</p>
+                <h3 className="text-base font-black text-white leading-snug mb-1.5">{s.title}</h3>
+                <p className="text-xs text-[#777777] leading-relaxed">{s.desc}</p>
+              </>
+            );
+
+            const cls = "relative overflow-hidden rounded-2xl p-5 flex flex-col border border-white/[0.06] hover:border-[#009519] transition-all duration-300 active:scale-[0.97] hover:shadow-[0_0_0_1px_#009519]";
+
+            if (s.external) {
+              return (
+                <a
+                  key={s.num}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cls}
+                  style={{ ...cardStyle, background: "linear-gradient(135deg,#1a1a1a,#111)" }}
+                >
+                  {inner}
+                </a>
+              );
+            }
+            return (
+              <Link
+                key={s.num}
+                href={s.href}
+                className={cls}
+                style={{ ...cardStyle, background: "linear-gradient(135deg,#1a1a1a,#111)" }}
+              >
+                {inner}
+              </Link>
+            );
+          })}
+        </div>
+
       </div>
     </section>
   );

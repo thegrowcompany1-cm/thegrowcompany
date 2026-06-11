@@ -48,6 +48,11 @@
   to   { transform: translateY(-28px); opacity: 0; }
 }
 
+@keyframes service-enter {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 html {
   scroll-behavior: smooth;
 }
