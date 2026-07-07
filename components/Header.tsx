@@ -64,7 +64,7 @@ export default function Header() {
       onMouseLeave={() => setHoveredLabel(null)}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-18">
+        <div className="flex items-center justify-between h-20 lg:h-24">
 
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center">
@@ -73,7 +73,7 @@ export default function Header() {
               alt="더그로우컴퍼니"
               width={210}
               height={60}
-              className="h-14 w-auto object-contain"
+              className="h-[72px] lg:h-20 w-auto object-contain"
               priority
             />
           </Link>

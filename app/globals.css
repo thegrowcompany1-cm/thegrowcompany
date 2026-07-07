@@ -53,8 +53,31 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-html {
-  scroll-behavior: smooth;
+/* 카테고리 설명 문구 — 회색 텍스트 위로 밝은 하이라이트가 흐르는 반짝임 효과 */
+@keyframes desc-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.desc-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    #8c8c8c 0%,
+    #8c8c8c 38%,
+    #ffffff 50%,
+    #8c8c8c 62%,
+    #8c8c8c 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: desc-shimmer 4.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desc-shimmer { animation: none; }
 }
 
 body {
