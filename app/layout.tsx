@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -21,6 +21,12 @@ const DEFAULT_TITLE =
   "더그로우컴퍼니 | 헬스장·필라테스 창업, 운영, 마케팅 전문 컨설팅";
 const DEFAULT_DESC =
   "헬스장마케팅·필라테스마케팅부터 헬스장운영·필라테스운영, 위탁운영, 창업까지. 더그로우컴퍼니가 피트니스 비즈니스의 모든 단계를 전문 컨설팅으로 지원합니다.";
+
+// 모바일 뷰포트: 폭을 기기 폭에 맞추고 축소/핀치줌으로 뭉개지지 않게 (가로 오버플로우 방지와 병행)
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -415,7 +415,7 @@ const DETAIL_HTML = `<style>
 .gw-ccard-unit{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:500;color:#94A3B8;margin-left:2px}
 .gw-ccard-label{font-size:13px;color:#94A3B8;font-weight:400;margin-top:6px}
 
-.gw-gallery{position:relative;padding:28px 0 0;-webkit-user-select:none;user-select:none}
+.gw-gallery{position:relative;padding:28px 0 0;-webkit-user-select:none;user-select:none;overflow:hidden;max-width:100%}
 .gw-gallery::before,.gw-gallery::after{content:'';position:absolute;left:0;right:0;height:70px;z-index:2;pointer-events:none}
 .gw-gallery::before{top:0;background:linear-gradient(to bottom,#fff,transparent)}
 .gw-gallery::after{bottom:0;background:linear-gradient(to top,#fff,transparent)}
@@ -4103,7 +4103,7 @@ export default function StartupConsultingPage() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white overflow-x-hidden">
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">

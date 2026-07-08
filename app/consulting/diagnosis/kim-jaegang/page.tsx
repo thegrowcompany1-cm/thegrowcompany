@@ -566,7 +566,7 @@ const DETAIL_HTML_1 = `<div class="kjk">
 .kjk-strip img{flex:0 0 360px;width:360px;height:auto;scroll-snap-align:start;border-radius:16px;background:#1a1a1a;display:block}
 @media(max-width:640px){.kjk-strip img{flex:0 0 320px;width:320px}}
 
-.kjk-mq{overflow:hidden;width:100%;margin-top:14px;-webkit-user-select:none;user-select:none}
+.kjk-mq{overflow:hidden;width:100%;max-width:100%;margin-top:14px;-webkit-user-select:none;user-select:none}
 .kjk-mq-track{display:flex;width:max-content;gap:14px;will-change:transform}
 .kjk-mq-track img{height:280px;width:auto;display:block;border-radius:16px;background:#1a1a1a;flex:0 0 auto}
 
@@ -861,7 +861,7 @@ const DETAIL_HTML_2 = `<div class="kjk">
 // 3행 무한 마퀴(rAF). 클래스/id 는 kjk-logo- / kjkLogoRow* 로 접두사 처리(충돌 방지).
 // rAF 는 행별 id 추적 → 전역 정지 훅(__kjkLogoStop) 로 언마운트 시 cancelAnimationFrame.
 const LOGO_HTML = `<style>
-  .kjk-logo-wrap{width:100%;background:#000;padding:24px 0}
+  .kjk-logo-wrap{width:100%;max-width:100%;background:#000;padding:24px 0;overflow:hidden}
   .kjk-logo-row{width:100%;overflow:hidden;margin-bottom:20px}
   .kjk-logo-row:last-child{margin-bottom:0}
   .kjk-logo-inner{display:flex;align-items:center;will-change:transform}
@@ -1206,7 +1206,7 @@ export default function KimJaegangDiagnosisPage() {
   }, [mounted]);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white overflow-x-hidden">
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">
