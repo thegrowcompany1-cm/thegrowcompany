@@ -67,7 +67,7 @@ function ConsultantCard({
       {!imgError ? (
         <Image
           src={consultant.image}
-          alt={consultant.name}
+          alt={`${consultant.name} 헬스장·필라테스 운영 진단 컨설턴트`}
           fill
           className="object-cover"
           style={{ objectPosition: "center top", filter: "brightness(0.85)" }}

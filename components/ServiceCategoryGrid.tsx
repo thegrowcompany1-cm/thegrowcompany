@@ -102,7 +102,7 @@ function ServiceCard({ card }: { card: Card }) {
         {card.photo ? (
           <Image
             src={card.img}
-            alt={card.title}
+            alt={`${card.title} - 더그로우컴퍼니 헬스장·필라테스 피트니스 컨설팅`}
             fill
             className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
             style={{ objectPosition: card.objectPosition ?? "center top", filter: "brightness(0.9)" }}

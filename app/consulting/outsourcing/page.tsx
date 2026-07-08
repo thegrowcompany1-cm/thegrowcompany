@@ -2287,7 +2287,7 @@ export default function OutsourcingConsultingPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="매장 위탁운영"
+                alt="헬스장·필라테스 매장 위탁운영 컨설팅"
                 fill
                 priority
                 className="object-cover object-center"

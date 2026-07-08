@@ -35,7 +35,7 @@ function LogoItem({ partner }: { partner: (typeof partners)[0] }) {
       <div className="relative h-7 sm:h-10 w-16 sm:w-28">
         <Image
           src={partner.logo}
-          alt={partner.name}
+          alt={`파트너사 ${partner.name} 로고`}
           fill
           className="object-contain p-1"
           sizes="128px"

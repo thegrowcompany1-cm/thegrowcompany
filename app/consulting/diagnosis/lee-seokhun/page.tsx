@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 진단 컨설턴트 상세페이지 — 김재강
+// 진단 컨설턴트 상세페이지 — 이석훈
 //
 // 구성
 //  1) 상단 메인 영역 (2단): 좌측 정사각형 이미지 / 우측 진단 상담 폼(FORM_HTML)
@@ -18,7 +18,7 @@ import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
 
 // 좌측 메인 이미지 (public 기준). 없으면 회색 placeholder 로 대체.
-const MAIN_IMAGE = "/consultants/kim-seungho.jpg";
+const MAIN_IMAGE = "/consultants/lee-seokhun.png";
 
 // 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 컨설팅은 제외)
 const RELATED_SERVICES = [
@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>`;
 
-export default function KimSeunghoDiagnosisPage() {
+export default function LeeSeokhunDiagnosisPage() {
   const [imgError, setImgError] = useState(false);
 
   // 우측 진단 폼(FORM_HTML)은 클라이언트에서만 렌더링하여 서버/클라이언트 HTML 불일치를
@@ -636,7 +636,7 @@ export default function KimSeunghoDiagnosisPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="김승호 헬스장·필라테스 운영 진단 컨설턴트"
+                alt="이석훈 헬스장·필라테스 운영 진단 컨설턴트"
                 fill
                 priority
                 className="object-cover object-center"
@@ -681,7 +681,7 @@ export default function KimSeunghoDiagnosisPage() {
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}
       {/* 다른 컨설턴트 확인 */}
-      <ConsultantCarousel currentSlug="kim-seungho" />
+      <ConsultantCarousel currentSlug="lee-seokhun" />
 
       <section className="w-full bg-[#f8f9fa]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">

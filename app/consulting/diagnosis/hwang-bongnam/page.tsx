@@ -636,7 +636,7 @@ export default function HwangBongnamDiagnosisPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="황봉남 컨설턴트"
+                alt="황봉남 헬스장·필라테스 운영 진단 컨설턴트"
                 fill
                 priority
                 className="object-cover object-center"

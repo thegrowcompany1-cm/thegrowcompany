@@ -1,0 +1,31 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "허준영 컨설턴트 | 헬스장·필라테스 운영 진단 컨설팅",
+  description:
+    "허준영 컨설턴트의 1:1 현장 진단으로 헬스장운영·필라테스운영을 개선합니다. FC운영·마케팅 중심의 더그로우컴퍼니 진단 컨설팅.",
+  keywords: [
+    "헬스장운영",
+    "필라테스운영",
+    "진단 컨설팅",
+    "허준영 컨설턴트",
+    "피트니스 운영 컨설팅",
+  ],
+  alternates: { canonical: "/consulting/diagnosis/heo-junyoung" },
+  openGraph: {
+    title: "허준영 컨설턴트 | 헬스장·필라테스 운영 진단 컨설팅 | 더그로우컴퍼니",
+    description:
+      "허준영 컨설턴트의 1:1 현장 진단으로 헬스장운영·필라테스운영을 개선합니다.",
+    url: "/consulting/diagnosis/heo-junyoung",
+    type: "profile",
+    images: ["/consultants/heo-junyoung.jpg"],
+  },
+};
+
+export default function DiagnosisConsultantLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
+}

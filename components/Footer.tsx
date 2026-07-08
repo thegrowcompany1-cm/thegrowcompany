@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="mb-4">
               <Image
                 src="/logos/thegrow-logo.png"
-                alt="더그로우컴퍼니"
+                alt="더그로우컴퍼니 - 헬스장·필라테스 창업·운영·마케팅 컨설팅 로고"
                 width={140}
                 height={40}
                 className="h-9 w-auto object-contain brightness-0 invert"

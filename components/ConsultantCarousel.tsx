@@ -36,7 +36,7 @@ function ConsultantCard({ c }: { c: Consultant }) {
         {!imgError ? (
           <Image
             src={c.img}
-            alt={`${c.name} 컨설턴트`}
+            alt={`${c.name} 헬스장·필라테스 운영 진단 컨설턴트`}
             fill
             className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
             sizes="(min-width: 1024px) 16vw, 46vw"

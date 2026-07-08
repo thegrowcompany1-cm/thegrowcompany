@@ -4111,7 +4111,7 @@ export default function StartupConsultingPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="창업 컨설팅"
+                alt="헬스장·필라테스 창업 컨설팅"
                 fill
                 priority
                 className="object-cover object-center"
