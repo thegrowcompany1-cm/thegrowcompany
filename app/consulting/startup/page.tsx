@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import StickyCtaBar from "@/components/StickyCtaBar";
 
 // 하단 "다른 서비스 둘러보기" 추천 카드
 const RELATED_SERVICES = [
@@ -4138,8 +4139,11 @@ export default function StartupConsultingPage() {
             )}
           </div>
 
-          {/* 우: 상담 신청 폼 카드 */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+          {/* 우: 상담 신청 폼 카드 (하단 CTA 바 스크롤/관찰 타겟) */}
+          <div
+            id="startup-consult-form"
+            className="scroll-mt-24 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8"
+          >
             <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#009519]">
               FREE CONSULTING
             </p>
@@ -4324,6 +4328,9 @@ export default function StartupConsultingPage() {
           </div>
         </div>
       </section>
+
+      {/* 하단 고정 CTA 바 — 상단 상담폼(#startup-consult-form)으로 스크롤 */}
+      <StickyCtaBar targetSelector="#startup-consult-form" />
     </div>
   );
 }
