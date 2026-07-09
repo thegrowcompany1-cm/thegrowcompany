@@ -507,7 +507,7 @@ const FORM_HTML_BOTTOM = FORM_HTML.replace(/id="([\w-]+)"/g, 'id="$1-bottom"');
 
 // ─── 김승호 진단 랜딩 상세 HTML (ksh- 접두사, eyebrow 없음) ────────────────────
 // 강의사진 마퀴 <script> 포함. detailRef 주입 이펙트가 script 재실행 + rAF 정리.
-// IMG_LECTURE_1 ~ IMG_LECTURE_6 은 플레이스홀더(추후 URL 교체).
+// 강의사진 14장(이음매 없는 무한 루프를 위해 각 2회씩 = 28개 img).
 const DETAIL_HTML = `<div class="ksh">
 <style>
 .ksh{--g:#22B573;--bg:#0A0A0A;--bg2:#0d0d0d;--cream:#FBF8EC;--ink:#141414;--mark:#b6f2c9;background:var(--bg);color:#fff;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;line-height:1.8;letter-spacing:-0.01em;overflow:hidden}
@@ -646,18 +646,34 @@ const DETAIL_HTML = `<div class="ksh">
   </div>
   <div class="ksh-mq" id="kshLectureMarquee">
     <div class="ksh-mq-track">
-      <img src="IMG_LECTURE_1" alt="김승호 컨설턴트 강의 현장 1">
-      <img src="IMG_LECTURE_2" alt="김승호 컨설턴트 강의 현장 2">
-      <img src="IMG_LECTURE_3" alt="김승호 컨설턴트 강의 현장 3">
-      <img src="IMG_LECTURE_4" alt="김승호 컨설턴트 강의 현장 4">
-      <img src="IMG_LECTURE_5" alt="김승호 컨설턴트 강의 현장 5">
-      <img src="IMG_LECTURE_6" alt="김승호 컨설턴트 강의 현장 6">
-      <img src="IMG_LECTURE_1" alt="" aria-hidden="true">
-      <img src="IMG_LECTURE_2" alt="" aria-hidden="true">
-      <img src="IMG_LECTURE_3" alt="" aria-hidden="true">
-      <img src="IMG_LECTURE_4" alt="" aria-hidden="true">
-      <img src="IMG_LECTURE_5" alt="" aria-hidden="true">
-      <img src="IMG_LECTURE_6" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/3c63360d5f46a.jpg" alt="김승호 컨설턴트 강의 현장 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/54d5e7f52a0cc.jpg" alt="김승호 컨설턴트 강의 현장 2">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/41963b4f780fd.jpg" alt="김승호 컨설턴트 강의 현장 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/432c811868679.jpg" alt="김승호 컨설턴트 강의 현장 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/f23eaab2c50b9.jpg" alt="김승호 컨설턴트 강의 현장 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/f1035b4839f0b.jpg" alt="김승호 컨설턴트 강의 현장 6">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/8910d775f9399.jpg" alt="김승호 컨설턴트 강의 현장 7">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/dac556b3cf632.jpg" alt="김승호 컨설턴트 강의 현장 8">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/9bb6b7067e3cd.jpg" alt="김승호 컨설턴트 강의 현장 9">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/a369b5e42e0bd.jpg" alt="김승호 컨설턴트 강의 현장 10">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/666b676e8b498.jpg" alt="김승호 컨설턴트 강의 현장 11">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/8d28f598b0b35.jpg" alt="김승호 컨설턴트 강의 현장 12">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/f44e755fd4529.jpg" alt="김승호 컨설턴트 강의 현장 13">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/e1fd36de1bcb8.jpg" alt="김승호 컨설턴트 강의 현장 14">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/3c63360d5f46a.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/54d5e7f52a0cc.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/41963b4f780fd.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/432c811868679.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/f23eaab2c50b9.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/f1035b4839f0b.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/8910d775f9399.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/dac556b3cf632.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/9bb6b7067e3cd.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/a369b5e42e0bd.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/666b676e8b498.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/8d28f598b0b35.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/f44e755fd4529.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260209/e1fd36de1bcb8.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>
