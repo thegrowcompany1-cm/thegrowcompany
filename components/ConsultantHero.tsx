@@ -9,7 +9,6 @@ const consultants = [
   { name: "김승호", role: "컨설턴트",      image: "/consultants/kim-seungho.jpg" },
   { name: "구진완", role: "컨설턴트",      image: "/consultants/gu-jinwan.png" },
   { name: "황봉남", role: "컨설턴트",      image: "/consultants/hwang-bongnam.jpg" },
-  { name: "이석훈", role: "컨설턴트",      image: "/consultants/lee-seokhun.png" },
   { name: "허준영", role: "컨설턴트",      image: "/consultants/heo-junyoung.jpg" },
 ];
 

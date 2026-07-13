@@ -86,7 +86,6 @@ const navItems: NavItem[] = [
       { label: "황봉남 컨설턴트", href: "/consulting/diagnosis/hwang-bongnam" },
       { label: "박정민 컨설턴트", href: "/consulting/diagnosis/park-jungmin" },
       { label: "구진완 컨설턴트", href: "/consulting/diagnosis/gu-jinwan" },
-      { label: "이석훈 컨설턴트", href: "/consulting/diagnosis/lee-seokhun" },
       { label: "허준영 컨설턴트", href: "/consulting/diagnosis/heo-junyoung" },
     ],
   },

@@ -73,7 +73,6 @@ const groups: Group[] = [
       { title: "황봉남 컨설턴트", desc: "인적자원 · PT", img: "/consultants/hwang-bongnam.jpg", href: "/consulting/diagnosis/hwang-bongnam", photo: true },
       { title: "박정민 컨설턴트", desc: "FC운영 · PT", img: "/consultants/park-jungmin.png", href: "/consulting/diagnosis/park-jungmin", photo: true },
       { title: "구진완 컨설턴트", desc: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png", href: "/consulting/diagnosis/gu-jinwan", photo: true },
-      { title: "이석훈 컨설턴트", desc: "FC운영 · 시스템", img: "/consultants/lee-seokhun.png", href: "/consulting/diagnosis/lee-seokhun", photo: true },
       { title: "허준영 컨설턴트", desc: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
     ],
   },
