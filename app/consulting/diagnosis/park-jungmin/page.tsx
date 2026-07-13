@@ -507,7 +507,7 @@ const FORM_HTML_BOTTOM = FORM_HTML.replace(/id="([\w-]+)"/g, 'id="$1-bottom"');
 
 // ─── 황봉남 진단 랜딩 상세 HTML (pjm- 접두사, eyebrow 없음) ────────────────────
 // 현장사진 마퀴 <script> 포함. detailRef 주입 이펙트가 script 재실행 + rAF 정리.
-// 현장사진 플레이스홀더 6장(IMG_FIELD_1~6, 각 2회씩 = 12개 img).
+// 인증사진 마퀴 10장(각 2회씩 = 20개 img) + 카톡 후기 가로 스크롤 스트립 5장.
 const DETAIL_HTML = `<div class="pjm">
 <style>
 .pjm{--g:#22B573;--bg:#0A0A0A;--bg2:#0d0d0d;--cream:#FBF8EC;--ink:#141414;--mark:#b6f2c9;background:var(--bg);color:#fff;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;line-height:1.8;letter-spacing:-0.01em;overflow:hidden}
@@ -548,6 +548,10 @@ const DETAIL_HTML = `<div class="pjm">
 .pjm-mq{overflow:hidden;width:100%;max-width:100%;margin-top:14px;-webkit-user-select:none;user-select:none}
 .pjm-mq-track{display:flex;width:max-content;gap:14px;will-change:transform}
 .pjm-mq-track img{height:280px;width:auto;display:block;border-radius:16px;background:#1a1a1a;flex:0 0 auto}
+
+.pjm-strip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;align-items:flex-start;padding:10px 20px 20px;margin-top:14px;-webkit-overflow-scrolling:touch}
+.pjm-strip img{flex:0 0 360px;width:360px;height:auto;scroll-snap-align:start;border-radius:16px;background:#1a1a1a;display:block}
+@media(max-width:640px){.pjm-strip img{flex:0 0 320px;width:320px}}
 
 .pjm-who{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:680px;margin:40px auto 0}
 .pjm-who-item{background:#141414;border:1px solid #232323;border-radius:16px;padding:26px 22px}
@@ -638,25 +642,47 @@ const DETAIL_HTML = `<div class="pjm">
   </div>
 </section>
 
-<!-- 4-1. 현장사진 마퀴 -->
+<!-- 4-1. 카톡 후기 (손으로 넘기는 가로 스크롤 스트립) -->
 <section class="pjm-sec pjm-sec--alt">
   <div class="pjm-inner">
-    <h2 class="pjm-h2">15년의 모든 계절을<br><em>함께한 사람들</em>입니다.</h2>
+    <h2 class="pjm-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
+  </div>
+  <div class="pjm-strip">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/a35547dd7150f.jpg" alt="박정민 컨설턴트 카톡 후기 1">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/832ff981ca6a8.jpg" alt="박정민 컨설턴트 카톡 후기 2">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/c2b91999b556d.jpg" alt="박정민 컨설턴트 카톡 후기 3">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/5587dcdc52258.jpg" alt="박정민 컨설턴트 카톡 후기 4">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/fc8dfdf3c46e4.jpg" alt="박정민 컨설턴트 카톡 후기 5">
+  </div>
+</section>
+
+<!-- 4-2. 인증사진 마퀴 -->
+<section class="pjm-sec">
+  <div class="pjm-inner">
+    <h2 class="pjm-h2">함께한 대표님들이<br><em>증명</em>합니다.</h2>
   </div>
   <div class="pjm-mq" id="pjmLectureMarquee">
     <div class="pjm-mq-track">
-      <img src="IMG_FIELD_1" alt="박정민 컨설턴트 현장 기록 1">
-      <img src="IMG_FIELD_2" alt="박정민 컨설턴트 현장 기록 2">
-      <img src="IMG_FIELD_3" alt="박정민 컨설턴트 현장 기록 3">
-      <img src="IMG_FIELD_4" alt="박정민 컨설턴트 현장 기록 4">
-      <img src="IMG_FIELD_5" alt="박정민 컨설턴트 현장 기록 5">
-      <img src="IMG_FIELD_6" alt="박정민 컨설턴트 현장 기록 6">
-      <img src="IMG_FIELD_1" alt="" aria-hidden="true">
-      <img src="IMG_FIELD_2" alt="" aria-hidden="true">
-      <img src="IMG_FIELD_3" alt="" aria-hidden="true">
-      <img src="IMG_FIELD_4" alt="" aria-hidden="true">
-      <img src="IMG_FIELD_5" alt="" aria-hidden="true">
-      <img src="IMG_FIELD_6" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/651aebcb6e3d2.jpg" alt="박정민 컨설턴트 인증사진 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/1ff121508799f.jpg" alt="박정민 컨설턴트 인증사진 2">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/a5c120d0df47a.jpg" alt="박정민 컨설턴트 인증사진 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/01b4be01917af.jpg" alt="박정민 컨설턴트 인증사진 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/e197bb53093c6.jpg" alt="박정민 컨설턴트 인증사진 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/48324e8f3ccfb.jpg" alt="박정민 컨설턴트 인증사진 6">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/7c3d82ae44ab6.jpg" alt="박정민 컨설턴트 인증사진 7">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/29ff7811ade8b.jpg" alt="박정민 컨설턴트 인증사진 8">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/3c4c887afabd0.jpg" alt="박정민 컨설턴트 인증사진 9">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/12139033734c4.jpg" alt="박정민 컨설턴트 인증사진 10">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/651aebcb6e3d2.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/1ff121508799f.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/a5c120d0df47a.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/01b4be01917af.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/e197bb53093c6.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/48324e8f3ccfb.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/7c3d82ae44ab6.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/29ff7811ade8b.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/3c4c887afabd0.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260305/12139033734c4.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>
