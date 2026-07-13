@@ -3265,7 +3265,7 @@ function animateCount(element, target) {
             <span class="tgc-plan-accent"></span>
             <div>
               <div class="tgc-plan-name">더그로우 창업컨설팅</div>
-              <span class="tgc-plan-size">50평 이상</span>
+              <span class="tgc-plan-size">헬스장, 6:1 이상 필라테스 등</span>
             </div>
           </div>
           <ul class="tgc-plan-list">
@@ -3292,7 +3292,7 @@ function animateCount(element, target) {
             <span class="tgc-plan-accent"></span>
             <div>
               <div class="tgc-plan-name">소자본 창업컨설팅</div>
-              <span class="tgc-plan-size">50평 미만</span>
+              <span class="tgc-plan-size">1:1 피티샵, 개인·소그룹 필라테스 샵 등</span>
             </div>
           </div>
           <ul class="tgc-plan-list">
