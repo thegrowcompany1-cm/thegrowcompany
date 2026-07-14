@@ -519,7 +519,7 @@ const FORM_HTML_BOTTOM = FORM_HTML.replace(/id="([\w-]+)"/g, 'id="$1-bottom"');
 
 // ─── 황봉남 진단 랜딩 상세 HTML (hjy- 접두사, eyebrow 없음) ────────────────────
 // 현장사진 마퀴 <script> 포함. detailRef 주입 이펙트가 script 재실행 + rAF 정리.
-// 상위노출 마퀴 4장 + 카톡 마퀴 6장(역방향,320px) + 강의 마퀴 6장 (각 2회 배치).
+// 상위노출 마퀴 4장(140px) + 카톡 마퀴 6장(320px,역방향) + 강의 마퀴 6장(200px), 각 2회 배치.
 const DETAIL_HTML = `<div class="hjy">
 <style>
 .hjy{--g:#22B573;--bg:#0A0A0A;--bg2:#0d0d0d;--cream:#FBF8EC;--ink:#141414;--mark:#b6f2c9;background:var(--bg);color:#fff;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;line-height:1.8;letter-spacing:-0.01em;overflow:hidden}
@@ -592,52 +592,118 @@ const DETAIL_HTML = `<div class="hjy">
 </style>
 
 <style>
-.hjy-prelead{margin:0 auto 26px;max-width:600px}
+/* ── 이 페이지 전용: 밀도↓ / 타이포↑ / 좌측정렬 지그재그 ── */
+.hjy-sec{padding:60px 0}
+.hjy-inner{max-width:820px}
+.hjy-h2{font-size:28px;line-height:1.45}
+.hjy-lead{font-size:18px;line-height:1.75;color:#d2d2d2}
+.hjy-accent{font-size:21px;line-height:1.6}
+.hjy-note{font-size:17px;line-height:1.85}
+@media(max-width:640px){.hjy-sec{padding:48px 0}.hjy-h2{font-size:23px}.hjy-lead{font-size:16px}.hjy-accent{font-size:18px}}
 
-.hjy-stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;margin:26px auto 4px}
-.hjy-stat{text-align:center}
-.hjy-stat b{display:block;font-size:34px;font-weight:800;color:var(--g);line-height:1}
-.hjy-stat span{display:block;margin-top:8px;font-size:13px;color:#a8a8a8}
-@media(max-width:640px){.hjy-stats{gap:22px}.hjy-stat b{font-size:26px}}
+.hjy-sec.tl .hjy-h2,.hjy-sec.tl .hjy-lead,.hjy-sec.tl .hjy-accent,.hjy-sec.tl .hjy-note{text-align:left}
+.hjy-sec.tl .hjy-vline{margin:26px 0}
 
-.hjy-nums{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:680px;margin:32px auto 0}
-.hjy-num-card{background:#141414;border:1px solid #232323;border-radius:16px;padding:30px 24px;text-align:center}
-.hjy-num-card b{display:block;font-size:34px;font-weight:800;color:var(--g);line-height:1.15}
-.hjy-num-card span{display:block;margin-top:10px;font-size:14px;color:#bdbdbd;line-height:1.5}
-@media(max-width:640px){.hjy-nums{grid-template-columns:1fr}.hjy-num-card b{font-size:30px}}
+.hjy-sub{font-size:20px;font-weight:800;color:#fff;text-align:center;margin:52px 0 0}
+.hjy-punch{font-size:19px;font-weight:800;color:var(--g);margin:18px 0 0}
 
-.hjy-checks{max-width:640px;margin:36px auto 0;display:flex;flex-direction:column;gap:12px}
+.hjy-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#232323;border:1px solid #232323;border-radius:16px;overflow:hidden;margin:32px 0 0}
+.hjy-num-card{background:#111;padding:26px 16px;text-align:center}
+.hjy-num-card b{display:block;font-size:29px;font-weight:800;color:var(--g);line-height:1.1}
+.hjy-num-card span{display:block;margin-top:8px;font-size:13px;color:#b0b0b0;line-height:1.45}
+@media(max-width:640px){.hjy-nums{grid-template-columns:1fr 1fr}.hjy-num-card b{font-size:25px}}
+
+.hjy-stats{display:flex;gap:34px;flex-wrap:wrap;margin:18px 0 4px}
+.hjy-stat b{font-size:26px;font-weight:800;color:var(--g)}
+.hjy-stat span{margin-left:8px;font-size:14px;color:#a8a8a8}
+@media(max-width:640px){.hjy-stats{gap:18px}}
+
+.hjy-checks{margin:32px 0 0;display:flex;flex-direction:column;gap:12px}
 .hjy-check{position:relative;background:#141414;border:1px solid #262626;border-radius:14px;padding:18px 20px 18px 56px;cursor:pointer;transition:border-color .2s;user-select:none;-webkit-user-select:none}
 .hjy-check::before{content:'';position:absolute;left:18px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:2px solid #444;border-radius:7px;transition:.2s}
-.hjy-check span{font-size:15px;color:#dcdcdc;line-height:1.5}
+.hjy-check span{font-size:16px;color:#dcdcdc;line-height:1.55}
 .hjy-check.is-on{border-color:var(--g)}
 .hjy-check.is-on::before{background:var(--g);border-color:var(--g)}
 .hjy-check.is-on::after{content:'\\2713';position:absolute;left:24px;top:50%;transform:translateY(-50%);color:#04240f;font-weight:800;font-size:14px}
 
-.hjy-holes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:900px;margin:14px auto 0}
-.hjy-hole{background:#111;border:1px solid #232323;border-radius:18px;padding:28px 24px;text-align:left}
-.hjy-hole-num{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--g);color:#04240f;font-weight:800;font-size:18px;margin-bottom:16px}
-.hjy-hole h3{font-size:19px;font-weight:800;color:#fff;margin:0 0 10px}
-.hjy-hole p{font-size:14px;color:#bdbdbd;line-height:1.65;margin:0}
-@media(max-width:640px){.hjy-holes{grid-template-columns:1fr}}
+.hjy-holes4{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0 0}
+.hjy-hole4{background:#141414;border:1px solid #232323;border-left:3px solid var(--g);border-radius:14px;padding:22px}
+.hjy-hole4 h4{margin:0 0 6px;font-size:17px;font-weight:800;color:var(--g)}
+.hjy-hole4 p{margin:0;font-size:15px;color:#c2c2c2;line-height:1.6}
+@media(max-width:640px){.hjy-holes4{grid-template-columns:1fr}}
 
+.hjy-cmp2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:32px 0 0}
+.hjy-cmp2-card{border-radius:18px;padding:28px 24px}
+.hjy-cmp2-card--bad{background:#101010;border:1px solid #2a2a2a}
+.hjy-cmp2-card--good{background:linear-gradient(180deg,rgba(34,181,115,0.08),#111);border:2px solid var(--g)}
+.hjy-cmp2-tag{font-size:14px;font-weight:800;margin-bottom:16px}
+.hjy-cmp2-card--bad .hjy-cmp2-tag{color:#8a8a8a}
+.hjy-cmp2-card--good .hjy-cmp2-tag{color:var(--g)}
+.hjy-cmp2 ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.hjy-cmp2 li{position:relative;padding-left:22px;font-size:15px;line-height:1.6}
+.hjy-cmp2-card--bad li{color:#9a9a9a}
+.hjy-cmp2-card--good li{color:#e4e4e4}
+.hjy-cmp2-card--bad li::before{content:'—';position:absolute;left:0;color:#555}
+.hjy-cmp2-card--good li::before{content:'\\2713';position:absolute;left:0;color:var(--g);font-weight:800}
+@media(max-width:640px){.hjy-cmp2{grid-template-columns:1fr}}
+
+.hjy-prog{max-width:660px;margin:32px 0 0}
+.hjy-prog-body{font-size:16px}
+.hjy-prog-list li{font-size:15px}
+
+.hjy-mqcap{text-align:center;font-size:17px;color:#d2d2d2;margin:0 auto 4px}
+
+#hjyRankMarquee .hjy-mq-track img{height:140px}
 #hjyReviewMarquee .hjy-mq-track img{height:320px}
+#hjyLectureMarquee .hjy-mq-track img{height:200px}
 </style>
 
-<!-- 1. 오프닝 -->
-<section class="hjy-sec">
+<!-- 섹션 1 — 오프닝 (좌측 정렬) -->
+<section class="hjy-sec tl">
   <div class="hjy-inner">
-    <h2 class="hjy-h2">광고비 10억을<br>태워보고 알았습니다.</h2>
-    <span class="hjy-vline"></span>
-    <p class="hjy-accent"><em>매출은 광고가 아니라 '구조'에서<br>새고 있었습니다.</em></p>
+    <h2 class="hjy-h2">열심히는 하고 있습니다.<br>그런데 매출이 그걸 몰라줍니다.</h2>
+    <p class="hjy-lead">신규는 들쭉날쭉, 재등록은 애매하게,<br>인건비는 꼬박꼬박.</p>
+    <p class="hjy-lead">어디서 새는지 찾아 메꾸고,<br>한 달 뒤엔 대표님이 직접 굴리게 만들어 드립니다.</p>
   </div>
 </section>
 
-<!-- 2. 증거 선공 — 상위노출 사례 -->
+<!-- 섹션 2 — 문제 (체크리스트 + 구멍 4개) -->
 <section class="hjy-sec hjy-sec--alt">
   <div class="hjy-inner">
-    <h2 class="hjy-h2">말보다 결과가 빠릅니다.</h2>
-    <p class="hjy-lead">지역 키워드 검색 시 상위 노출된 실제 결과입니다.</p>
+    <h2 class="hjy-h2">몇 개가 해당되는지,<br>눌러서 세어보세요.</h2>
+    <div class="hjy-checks">
+      <div class="hjy-check"><span>지난달보다 바빴는데, 정산해보니 남은 건 비슷하거나 더 적음</span></div>
+      <div class="hjy-check"><span>문의 10건이 오면 등록은 3건. 나머지 7건은 행방불명</span></div>
+      <div class="hjy-check"><span>만기 일주일 전, 잘 나오던 회원이 갑자기 조용해짐</span></div>
+      <div class="hjy-check"><span>직원은 늘었는데 매출은 그대로 — 인건비만 확실하게 늘어남</span></div>
+      <div class="hjy-check"><span>매출이 빠진 달, 원인을 짚으라면 "글쎄요"가 먼저 나옴</span></div>
+    </div>
+    <p class="hjy-note">두 개 이상이라면, 문제는 대표님의 노력이 아닙니다.<br><em>어디서 새는지 보이지 않는다는 것.</em><br>그게 문제입니다.</p>
+    <h3 class="hjy-sub">매출은 네 곳에서만 샙니다.</h3>
+    <div class="hjy-holes4">
+      <div class="hjy-hole4"><h4>유입</h4><p>신규를 데려오는 광고·노출</p></div>
+      <div class="hjy-hole4"><h4>전환</h4><p>문의를 등록으로 바꾸는 상담·응대</p></div>
+      <div class="hjy-hole4"><h4>유지</h4><p>등록을 재등록으로 잇는 관리·관계</p></div>
+      <div class="hjy-hole4"><h4>비용</h4><p>번 돈을 지키는 인건비·지출 구조</p></div>
+    </div>
+    <p class="hjy-note" style="margin-top:28px">하나만 뚫려 있어도, 열심히는 통장에 남지 않습니다.</p>
+    <p class="hjy-punch" style="text-align:center">그래서 안 쌓이는 겁니다.</p>
+  </div>
+</section>
+
+<!-- 섹션 3 — 가이드 (공감 → 권위, 좌측 정렬) -->
+<section class="hjy-sec tl">
+  <div class="hjy-inner">
+    <h2 class="hjy-h2">저도 10억을 태워보고 알았습니다.</h2>
+    <p class="hjy-lead">메타 광고에 누적 10억을 집행하며 확인했습니다.<br>광고를 잘해서 매출이 오른 센터보다,<br>상담·재등록·비용 구조를 고쳐서 오른 센터가 더 많았습니다.</p>
+    <p class="hjy-accent"><em>매출은 광고가 아니라 구조가 만듭니다.</em></p>
+    <div class="hjy-nums">
+      <div class="hjy-num-card"><b>10억</b><span>메타광고 누적 집행액</span></div>
+      <div class="hjy-num-card"><b>110개+</b><span>그로우 마케팅 운영 센터</span></div>
+      <div class="hjy-num-card"><b>1급 3종</b><span>검색광고마케터 (네이버·구글·카카오)</span></div>
+      <div class="hjy-num-card"><b>800명</b><span>그로우 에듀 누적 수강생</span></div>
+    </div>
+    <p class="hjy-lead" style="margin-top:38px">말보다 결과가 빠릅니다.</p>
     <div class="hjy-stats">
       <div class="hjy-stat"><b>200+</b><span>진행 센터</span></div>
       <div class="hjy-stat"><b>92%</b><span>상위노출 달성</span></div>
@@ -658,11 +724,64 @@ const DETAIL_HTML = `<div class="hjy">
   </div>
 </section>
 
-<!-- 3. 증거 선공 — 카톡 후기 (역방향, 320px) -->
+<!-- 섹션 4 — 계획 (좌측 정렬) -->
+<section class="hjy-sec hjy-sec--alt tl">
+  <div class="hjy-inner">
+    <h2 class="hjy-h2">한 달이면 됩니다.<br>단, 순서가 있습니다.</h2>
+    <p class="hjy-lead">광고 대행사는 유입만 봅니다.<br>운영 컨설턴트는 내부만 봅니다.<br>매출은 그 사이에서 샙니다.</p>
+    <p class="hjy-lead"><em>저는 광고 계정과 상담 일지를<br>같은 날, 같은 테이블에서 봅니다.</em></p>
+    <div class="hjy-prog">
+      <div class="hjy-prog-item">
+        <div class="hjy-prog-label">프로그램</div>
+        <p class="hjy-prog-body">허준영 컨설턴트의 1:1 매출 구조 밀착 진단</p>
+      </div>
+      <div class="hjy-prog-item">
+        <div class="hjy-prog-label">진단 시간</div>
+        <p class="hjy-prog-body">주 1회, 한달 코스로 진행합니다.</p>
+      </div>
+      <div class="hjy-prog-item">
+        <div class="hjy-prog-label">커리큘럼</div>
+        <ul class="hjy-prog-list">
+          <li><b>[1주 · 유입 진단]</b> 광고·플레이스·채널 점검, 신규 문의가 새는 지점 특정</li>
+          <li><b>[2주 · 전환 교정]</b> 신규 상담 프로세스 재설계, 문의가 등록으로 이어지는 응대 구조</li>
+          <li><b>[3주 · 유지 설계]</b> 만기 회원이 조용히 사라지기 전에 잡는 재등록 관리 체계</li>
+          <li><b>[4주 · 손익 구조]</b> 인건비·지출 대비 매출 구조 점검, 남는 장사로 바꾸는 설계와 자립</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 섹션 5 — 실패 vs 성공 (좌우 2단, 실패 먼저) -->
 <section class="hjy-sec">
   <div class="hjy-inner">
-    <h2 class="hjy-h2">실제 대표님들의 후기</h2>
-    <p class="hjy-lead">함께한 센터들의 실제 카카오톡 대화입니다.</p>
+    <h2 class="hjy-h2" style="text-align:center">한 달 뒤,<br>두 가지 미래가 있습니다.</h2>
+    <div class="hjy-cmp2">
+      <div class="hjy-cmp2-card hjy-cmp2-card--bad">
+        <div class="hjy-cmp2-tag">이대로 가면</div>
+        <ul>
+          <li>바쁜 건 그대로, 남는 것도 그대로</li>
+          <li>매출이 빠져도 여전히 "글쎄요"</li>
+          <li>인건비는 오르고 마진은 줄고</li>
+        </ul>
+      </div>
+      <div class="hjy-cmp2-card hjy-cmp2-card--good">
+        <div class="hjy-cmp2-tag">한 달을 쓰면</div>
+        <ul>
+          <li>새는 곳을 스스로 짚어내는 대표</li>
+          <li>유입→등록→재등록→손익이 숫자로 보이는 센터</li>
+          <li>그리고, 제가 필요 없어진 센터</li>
+        </ul>
+      </div>
+    </div>
+    <p class="hjy-punch" style="text-align:center;font-size:21px">한 달 뒤, 제가 필요 없어지게 만드는 게 목표입니다.</p>
+  </div>
+</section>
+
+<!-- 섹션 6 — 증거 + 레터 -->
+<section class="hjy-sec hjy-sec--alt">
+  <div class="hjy-inner">
+    <p class="hjy-mqcap">실제 대표님들의 카톡입니다.</p>
   </div>
   <div class="hjy-mq" id="hjyReviewMarquee">
     <div class="hjy-mq-track">
@@ -680,92 +799,8 @@ const DETAIL_HTML = `<div class="hjy">
       <img src="https://cdn.imweb.me/thumbnail/20250728/07fd3d27b83d7.png" alt="" aria-hidden="true">
     </div>
   </div>
-</section>
-
-<!-- 4. 자기소개 — 숫자 4개 -->
-<section class="hjy-sec hjy-sec--alt">
-  <div class="hjy-inner">
-    <p class="hjy-lead hjy-prelead"><em>대행사가 아니라, 더그로우의 마케팅 총괄입니다.</em></p>
-    <div class="hjy-nums">
-      <div class="hjy-num-card"><b>10억</b><span>메타광고 누적 광고액</span></div>
-      <div class="hjy-num-card"><b>110개+</b><span>그로우 마케팅 운영</span></div>
-      <div class="hjy-num-card"><b>1급</b><span>검색광고마케터 (네이버·구글·카카오)</span></div>
-      <div class="hjy-num-card"><b>800명</b><span>그로우 에듀 누적 수강생</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- 5. 체크리스트 (인터랙티브) -->
-<section class="hjy-sec">
-  <div class="hjy-inner">
-    <h2 class="hjy-h2">이 중 몇 개가<br>해당되는지 체크해보세요.</h2>
-    <div class="hjy-checks">
-      <div class="hjy-check"><span>광고는 돌리는데 신규 문의가 일정하지 않다</span></div>
-      <div class="hjy-check"><span>문의는 오는데 상담에서 등록으로 이어지지 않는다</span></div>
-      <div class="hjy-check"><span>등록한 회원이 재등록 시점에 조용히 사라진다</span></div>
-      <div class="hjy-check"><span>상담을 누가 하느냐에 따라 등록률이 널뛴다</span></div>
-      <div class="hjy-check"><span>매출이 빠지면 어디서 새는지 짚어낼 수가 없다</span></div>
-    </div>
-    <p class="hjy-note"><em>두 개 이상이라면, 광고가 아니라 매출 구조 전체를 점검할 때입니다.</em></p>
-  </div>
-</section>
-
-<!-- 6. 핵심 논리 — 매출이 새는 3개의 구멍 -->
-<section class="hjy-sec hjy-sec--alt">
-  <div class="hjy-inner">
-    <h2 class="hjy-h2">매출이 새는<br><em>3개의 구멍</em></h2>
-  </div>
-  <div class="hjy-inner">
-    <div class="hjy-holes">
-      <div class="hjy-hole"><span class="hjy-hole-num">1</span><h3>유입</h3><p>신규 고객을 데려오는 광고·노출 구조</p></div>
-      <div class="hjy-hole"><span class="hjy-hole-num">2</span><h3>전환</h3><p>문의를 등록으로 바꾸는 상담·응대 구조</p></div>
-      <div class="hjy-hole"><span class="hjy-hole-num">3</span><h3>유지</h3><p>등록을 재등록으로 잇는 관리·관계 구조</p></div>
-    </div>
-    <p class="hjy-note"><em>세 구멍 중 하나만 뚫려 있어도 광고비는 밑 빠진 독입니다.</em><br>저는 세 개를 한 번에 봅니다.</p>
-  </div>
-</section>
-
-<!-- 7. 차별점 -->
-<section class="hjy-sec">
-  <div class="hjy-inner">
-    <h2 class="hjy-h2">반쪽 진단이<br><em>매출을 새게 둡니다.</em></h2>
-    <p class="hjy-lead">광고 대행사는 유입만 봅니다.<br>운영 컨설턴트는 내부만 봅니다.<br>매출은 그 사이에서 샙니다.</p>
-    <p class="hjy-lead">저는 광고 계정과 상담 일지를<br><strong>같은 날, 같은 테이블에서</strong> 봅니다.</p>
-    <span class="hjy-vline"></span>
-    <p class="hjy-accent"><em>한 달 뒤, 제가 필요 없어지게 만드는 게 목표입니다.</em></p>
-  </div>
-</section>
-
-<!-- 8. 프로그램 -->
-<section class="hjy-sec hjy-sec--alt">
-  <div class="hjy-inner">
-    <h2 class="hjy-h2">허준영 컨설턴트의 솔루션:<br><em>매출 구조 전체</em>를 뜯어고치는 밀착 진단</h2>
-    <div class="hjy-prog">
-      <div class="hjy-prog-item">
-        <div class="hjy-prog-label">프로그램</div>
-        <p class="hjy-prog-body">허준영 컨설턴트의 1:1 매출 구조 밀착 진단</p>
-      </div>
-      <div class="hjy-prog-item">
-        <div class="hjy-prog-label">진단 시간</div>
-        <p class="hjy-prog-body">주 1회, 한달 코스로 진행합니다.</p>
-      </div>
-      <div class="hjy-prog-item">
-        <div class="hjy-prog-label">커리큘럼</div>
-        <ul class="hjy-prog-list">
-          <li><b>[유입 진단]</b> 광고 계정·플레이스·채널 점검, 신규 문의가 새는 지점 특정</li>
-          <li><b>[전환 교정]</b> 신규 상담 프로세스 재설계, 문의가 등록으로 이어지는 응대 구조 구축</li>
-          <li><b>[유지 설계]</b> 재등록 시점 관리 체계와 이탈 방지 루틴 구축</li>
-          <li><b>[자립 완성]</b> 광고 운영부터 상담·재등록 관리까지, 대표와 직원이 직접 굴리는 체계 완성</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 9. 강의 사진 마퀴 -->
-<section class="hjy-sec">
-  <div class="hjy-inner">
-    <h2 class="hjy-h2">800명이 거쳐간<br><em>강의 현장</em>입니다.</h2>
+  <div class="hjy-inner" style="margin-top:52px">
+    <p class="hjy-mqcap">800명이 이 강의를 거쳐갔습니다.</p>
   </div>
   <div class="hjy-mq" id="hjyLectureMarquee">
     <div class="hjy-mq-track">
@@ -783,17 +818,12 @@ const DETAIL_HTML = `<div class="hjy">
       <img src="https://cdn.imweb.me/thumbnail/20260129/cadc3e3228271.jpg" alt="" aria-hidden="true">
     </div>
   </div>
-</section>
-
-<!-- 10. 철학 레터 -->
-<section class="hjy-sec hjy-sec--alt">
-  <div class="hjy-inner">
+  <div class="hjy-inner" style="margin-top:56px">
     <div class="hjy-letter-wrap">
       <div class="hjy-letter-txt">
         <h2>매출은 구조에서 새고,<br>구조에서 다시 삽니다.</h2>
-        <p>110개 센터의 마케팅을 운영하며 알게 됐습니다.<br>광고를 고쳐서 매출이 오른 센터보다,<br>상담과 재등록을 고쳐서 오른 센터가 더 많았습니다.</p>
-        <p>그래서 저는 광고만 봐드리지 않습니다.<br>문의가 등록이 되고,<br>등록이 재등록으로 이어지는<br>그 구조 전체를 함께 뜯어고칩니다.</p>
-        <p>한 달 뒤에는<br>제가 없어도 돌아가게 만들어 드리겠습니다.</p>
+        <p>110개 센터를 운영하며 알게 됐습니다.<br>광고를 고쳐 매출이 오른 센터보다,<br>상담과 재등록을 고쳐 오른 센터가 더 많았습니다.</p>
+        <p>그래서 저는 광고만 봐드리지 않습니다.<br>유입부터 등록, 재등록, 손익까지<br>구조 전체를 함께 뜯어고칩니다.</p>
         <p class="hjy-sign">허 준 영</p>
       </div>
       <img class="hjy-letter-img" src="/consultants/heo-junyoung.jpg" alt="더그로우컴퍼니 허준영 진단 컨설턴트">
