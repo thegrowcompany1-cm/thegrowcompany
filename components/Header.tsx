@@ -91,7 +91,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "그로우 에듀",
-    href: "/edu/fc-class",
+    href: "/edu",
     desc: "피트니스 실무 중심 맞춤별 교육 프로그램",
     external: false,
     children: [
