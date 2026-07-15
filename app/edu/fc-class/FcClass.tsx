@@ -103,6 +103,92 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-summary p{margin:0;font-size:19px;font-weight:800;line-height:1.7}
 .fc1-summary em{font-style:normal;color:var(--g)}
 .fc1-summary-500{margin-top:18px !important;font-size:14px !important;font-weight:600 !important;color:#aaa !important}
+
+/* 4 강사 프로필 */
+.fc1-inst{background:#111;color:#fff}
+.fc1-inst .fc1-wrap{text-align:center}
+.fc1-inst-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:40px auto 0;text-align:left}
+.fc1-inst-card{background:#171717;border:1px solid #262626;border-radius:20px;overflow:hidden}
+.fc1-inst-photo{position:relative;width:100%;aspect-ratio:4/5;background:#1c1c1c}
+.fc1-inst-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.fc1-inst-body{padding:24px 22px}
+.fc1-inst-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.fc1-inst-tag{font-size:12px;font-weight:700;color:var(--g);background:rgba(34,181,115,.12);border-radius:50px;padding:5px 12px}
+.fc1-inst-role{font-size:20px;font-weight:900;color:#fff;margin:0 0 6px}
+.fc1-inst-tagline{font-size:14px;color:#bdbdbd;margin:0 0 18px;line-height:1.6}
+.fc1-inst-career{list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:7px}
+.fc1-inst-career li{position:relative;padding-left:14px;font-size:13.5px;color:#cfcfcf;line-height:1.5}
+.fc1-inst-career li::before{content:'';position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--g)}
+.fc1-inst-cur{background:#0e0e0e;border:1px solid #242424;border-radius:14px;padding:18px}
+.fc1-inst-cur-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.fc1-inst-cur-title{font-size:13px;font-weight:800;color:#fff}
+.fc1-inst-cur-badge{font-size:11px;font-weight:800;color:var(--g);border:1px solid var(--g);border-radius:50px;padding:3px 10px;white-space:nowrap}
+.fc1-inst-cur ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.fc1-inst-cur li{position:relative;padding-left:16px;font-size:13px;color:#c8c8c8;line-height:1.5}
+.fc1-inst-cur li::before{content:'✓';position:absolute;left:0;top:0;color:var(--g);font-size:11px;font-weight:800}
+@media(max-width:760px){.fc1-inst-cards{grid-template-columns:1fr}}
+
+/* 5 커리큘럼 타임라인 */
+.fc1-curri{background:#22c55e;color:#fff}
+.fc1-curri .fc1-wrap{text-align:center}
+.fc1-curri .fc1-badge{background:rgba(255,255,255,.2);color:#fff}
+.fc1-curri .fc1-h2{color:#fff}
+.fc1-curri .fc1-sub{color:#fff;opacity:.92}
+.fc1-meta{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.fc1-meta-chip{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.18);border-radius:50px;padding:7px 16px}
+.fc1-timeline{max-width:680px;margin:40px auto 0;text-align:left}
+.fc1-tl-item{position:relative;padding-left:64px;padding-bottom:28px}
+.fc1-tl-item:last-child{padding-bottom:0}
+.fc1-tl-item::before{content:'';position:absolute;left:21px;top:46px;bottom:-2px;width:2px;background:rgba(255,255,255,.55)}
+.fc1-tl-item:last-child::before{display:none}
+.fc1-tl-node{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:50%;background:#fff;color:#16a34a;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.18);z-index:2}
+.fc1-tl-card{background:#fff;color:#141414;border-radius:16px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.fc1-tl-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.fc1-tl-time{font-size:12px;font-weight:800;color:#16a34a;border:1px solid #16a34a;border-radius:50px;padding:2px 10px}
+.fc1-tl-who{font-size:12px;font-weight:700;color:#888}
+.fc1-tl-title{font-size:18px;font-weight:900;color:#161616;margin:0 0 10px}
+.fc1-tl-quote{font-size:13.5px;color:#555;line-height:1.6;margin:0 0 16px;padding-left:12px;border-left:3px solid #22c55e}
+.fc1-tl-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.fc1-tl-list li{position:relative;padding-left:18px;font-size:14px;color:#333;line-height:1.55}
+.fc1-tl-list li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:#22c55e}
+.fc1-tl-item.is-qna .fc1-tl-node{background:#141414;color:#fff;font-size:20px}
+.fc1-tl-item.is-qna .fc1-tl-card{background:#141414;color:#fff}
+.fc1-tl-item.is-qna .fc1-tl-title{color:#fff}
+.fc1-tl-item.is-qna .fc1-tl-quote{color:#cfcfcf}
+.fc1-tl-item.is-qna .fc1-tl-list li{color:#dcdcdc}
+.fc1-tl-item.is-qna .fc1-tl-who{color:#aaa}
+
+/* 6 후기 슬라이더 */
+.fc1-rev{background:#f8f9fa;color:#141414}
+.fc1-rev .fc1-wrap{text-align:center}
+.fc1-rev-label{font-size:13px;font-weight:800;color:var(--g);letter-spacing:.04em;margin:0 0 10px}
+.fc1-red2{color:#e23b3b}
+.fc1-rev-track-wrap{position:relative;max-width:1000px;margin:36px auto 0}
+.fc1-rev-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 20px 20px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.fc1-rev-track::-webkit-scrollbar{display:none}
+.fc1-rev-card{flex:0 0 280px;width:280px;height:500px;scroll-snap-align:center;border-radius:16px;overflow:hidden;background:#e9ecef;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.fc1-rev-card img{width:100%;height:100%;object-fit:cover;display:block}
+.fc1-rev-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid #e2e2e2;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;color:#333;font-size:20px;line-height:1}
+.fc1-rev-prev{left:-4px}
+.fc1-rev-next{right:-4px}
+.fc1-rev-dots{display:flex;gap:8px;justify-content:center;margin-top:18px}
+.fc1-rev-dot{width:8px;height:8px;border-radius:50%;background:#ccc;border:none;padding:0;cursor:pointer;transition:.25s}
+.fc1-rev-dot.is-active{background:var(--g);width:22px;border-radius:5px}
+.fc1-rev-hint{font-size:12px;color:#999;margin-top:12px}
+@media(max-width:640px){.fc1-rev-card{flex:0 0 240px;width:240px;height:420px}.fc1-rev-arrow{display:none}}
+
+/* 7 성과 데이터 */
+.fc1-result{background:#fff;color:#141414}
+.fc1-result .fc1-wrap{text-align:center}
+.fc1-hl{background:linear-gradient(transparent 60%,rgba(34,197,94,.35) 60%)}
+.fc1-res-sub{font-size:16px;font-weight:800;color:#333;margin:40px 0 16px}
+.fc1-res-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;margin:0 auto}
+.fc1-res-grid img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid #eee}
+.fc1-res-big{display:block;width:100%;max-width:760px;margin:0 auto;border-radius:16px;border:1px solid #eee}
+@media(max-width:640px){.fc1-res-grid{grid-template-columns:1fr}}
+
+.fc1-reveal-scale{opacity:0;transform:scale(.94);transition:opacity .7s ease,transform .7s ease}
+.fc1-reveal-scale.fc1-in{opacity:1;transform:scale(1)}
 </style>
 
 <!-- 1. 히어로 -->
@@ -178,10 +264,169 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
 </section>
 
+<!-- 4. 강사 프로필 -->
+<section class="fc1-sec fc1-inst">
+  <div class="fc1-wrap">
+    <span class="fc1-badge fc1-reveal">강사진</span>
+    <h2 class="fc1-h2 fc1-reveal">그래서, 누가 가르치는지<br>보여드립니다.</h2>
+    <p class="fc1-sub fc1-reveal">지식만 있는 강사가 아닙니다. 직접 매장을 운영하고, 수백 개 센터를 성장시킨 사람들입니다.</p>
+    <div class="fc1-inst-cards">
+      <div class="fc1-inst-card fc1-reveal">
+        <div class="fc1-inst-photo"><img src="https://cdn.imweb.me/thumbnail/20260626/f7d9b54bd7ce2.jpg" alt="김재강 대표"></div>
+        <div class="fc1-inst-body">
+          <div class="fc1-inst-tags"><span class="fc1-inst-tag">창업</span><span class="fc1-inst-tag">운영</span><span class="fc1-inst-tag">컨설팅</span></div>
+          <p class="fc1-inst-role">(주)더그로우컴퍼니 대표</p>
+          <p class="fc1-inst-tagline">창업 217개 · 위탁 560개를 직접 만들어 온 현장 그 자체</p>
+          <ul class="fc1-inst-career">
+            <li>(주)더그로우컴퍼니 · 그로우아카데미 · 그로우마케팅 대표</li>
+            <li>(주)그로우인테리어 대표</li>
+            <li>IFBB PRO NPC 스포츠모델부문 심사위원</li>
+            <li>체형교정 전문강사 · METGIRLS(중국) 안면부교정 전문강사</li>
+            <li>한국대학보디빌딩협회 이사</li>
+            <li>현) 에이블짐 · 피스트X 등 21개 센터 자문</li>
+          </ul>
+          <div class="fc1-inst-cur">
+            <div class="fc1-inst-cur-head"><span class="fc1-inst-cur-title">담당 커리큘럼</span><span class="fc1-inst-cur-badge">2시간</span></div>
+            <ul>
+              <li>FC · 매니저의 역할 정의</li>
+              <li>유효회원 · 객단가 설계</li>
+              <li>고객 유형별 회원전략 4분류</li>
+              <li>운영관리 시스템 (콜수 · 방명록 · CEO보드)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="fc1-inst-card fc1-reveal">
+        <div class="fc1-inst-photo"><img src="https://cdn.imweb.me/thumbnail/20260626/35741b5450704.jpg" alt="허준영 본부장"></div>
+        <div class="fc1-inst-body">
+          <div class="fc1-inst-tags"><span class="fc1-inst-tag">마케팅</span><span class="fc1-inst-tag">광고</span><span class="fc1-inst-tag">SEO</span></div>
+          <p class="fc1-inst-role">더그로우컴퍼니 CMO</p>
+          <p class="fc1-inst-tagline">트레이너부터 점장까지, 현장을 직접 다 겪어 본 마케터</p>
+          <ul class="fc1-inst-career">
+            <li>그로우 에듀 본부장</li>
+            <li>그로우 마케팅 본부장</li>
+            <li>검색광고 마케터 자격증 1급 (네이버 · 구글 · 카카오 · 메타)</li>
+            <li>헬스장 · 필라테스 마케팅 대행 110여 개 진행</li>
+          </ul>
+          <div class="fc1-inst-cur">
+            <div class="fc1-inst-cur-head"><span class="fc1-inst-cur-title">담당 커리큘럼</span><span class="fc1-inst-cur-badge">1시간</span></div>
+            <ul>
+              <li>매출 퍼널 4단계</li>
+              <li>네이버 플레이스 · 블로그 · 키워드</li>
+              <li>메타 광고 세팅</li>
+              <li>피트니스 AI 활용</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 커리큘럼 타임라인 -->
+<section class="fc1-sec fc1-curri">
+  <div class="fc1-wrap">
+    <span class="fc1-badge fc1-reveal">정규 FC과정 커리큘럼</span>
+    <h2 class="fc1-h2 fc1-reveal">총 4시간, 이 순서로<br>쌓아 올립니다.</h2>
+    <p class="fc1-sub fc1-reveal">운영으로 기반을 잡고, 마케팅으로 고객을 부릅니다.</p>
+    <div class="fc1-meta fc1-reveal">
+      <span class="fc1-meta-chip">총 4시간</span>
+      <span class="fc1-meta-chip">세션 중 10분 휴식 포함</span>
+    </div>
+    <div class="fc1-timeline">
+      <div class="fc1-tl-item fc1-reveal">
+        <div class="fc1-tl-node">1</div>
+        <div class="fc1-tl-card">
+          <div class="fc1-tl-head"><span class="fc1-tl-time">2시간</span><span class="fc1-tl-who">김재강 대표</span></div>
+          <p class="fc1-tl-title">운영 · 관리 시스템</p>
+          <p class="fc1-tl-quote">수업을 잘하는 것과 센터를 잘 굴리는 것은 완전히 다릅니다. 매출이 돌아가는 운영의 뼈대를 세웁니다.</p>
+          <ul class="fc1-tl-list">
+            <li>트레이너 · 팀장 · 매니저, 역할은 완전히 다르다</li>
+            <li>내 센터 유효회원 수, 숫자로 답이 나온다</li>
+            <li>객단가를 올려야 하는 시점이 있다</li>
+            <li>고객은 4종류, 전략도 4가지로 나뉜다</li>
+            <li>감이 아닌 시스템으로 굴러가는 센터</li>
+            <li>콜수 · 홍보일지가 곧 매출이 된다</li>
+            <li>CEO보드로 한눈에 보는 회원 · 매출 통계</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fc1-tl-item fc1-reveal">
+        <div class="fc1-tl-node">2</div>
+        <div class="fc1-tl-card">
+          <div class="fc1-tl-head"><span class="fc1-tl-time">1시간</span><span class="fc1-tl-who">허준영 본부장</span></div>
+          <p class="fc1-tl-title">매출로 이어지는 마케팅</p>
+          <p class="fc1-tl-quote">대행사에 맡겨도 효과가 없었다면, 방법이 틀린 겁니다. 회사에서 실제로 돌리는 방법을 그대로 공개합니다.</p>
+          <ul class="fc1-tl-list">
+            <li>고객은 4단계로 움직인다 (퍼널)</li>
+            <li>네이버가 진짜 원하는 것</li>
+            <li>플레이스 상위노출은 운이 아니다</li>
+            <li>클릭을 부르는 제목의 공식</li>
+            <li>문의로 이어지는 블로그 글쓰기</li>
+            <li>이제 AI가 검색을 대신한다</li>
+            <li>광고비 아끼는 메타 광고 세팅</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fc1-tl-item is-qna fc1-reveal">
+        <div class="fc1-tl-node">💬</div>
+        <div class="fc1-tl-card">
+          <div class="fc1-tl-head"><span class="fc1-tl-time">1시간</span><span class="fc1-tl-who">전체 강사</span></div>
+          <p class="fc1-tl-title">개별 Q&amp;A</p>
+          <p class="fc1-tl-quote">당신의 센터 이야기를, 강사 2인에게 직접 풀어내는 시간입니다.</p>
+          <ul class="fc1-tl-list">
+            <li>우리 센터 상황에 맞춘 1:1 질의응답</li>
+            <li>운영 · 마케팅, 막힌 곳을 현장에서 바로</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. 수강생 카톡후기 슬라이더 -->
+<section class="fc1-sec fc1-rev">
+  <div class="fc1-wrap">
+    <p class="fc1-rev-label fc1-reveal">그로우 아카데미 수강생 후기</p>
+    <h2 class="fc1-h2 fc1-reveal">불과 얼마 전까지만 해도<br><span class="fc1-red2">적자가 나셔서</span> 힘들어하셨던 분들입니다.</h2>
+    <p class="fc1-sub fc1-sub-dark fc1-reveal">직접 해보셔야 매출도 확실히 오를 수 있습니다.</p>
+  </div>
+  <div class="fc1-rev-track-wrap fc1-reveal">
+    <button class="fc1-rev-arrow fc1-rev-prev" type="button" id="fc1RevPrev" aria-label="이전 후기">‹</button>
+    <div class="fc1-rev-track" id="fc1RevTrack">
+      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/7bdff84defd65.png" alt="그로우 아카데미 수강생 후기 1"></div>
+      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/7ddbfdb241ca0.png" alt="그로우 아카데미 수강생 후기 2"></div>
+      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/9faf7a0adff13.png" alt="그로우 아카데미 수강생 후기 3"></div>
+      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/773e59e57c3c0.png" alt="그로우 아카데미 수강생 후기 4"></div>
+      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/aa64c88162fac.png" alt="그로우 아카데미 수강생 후기 5"></div>
+      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/e386f601997ac.png" alt="그로우 아카데미 수강생 후기 6"></div>
+      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/2a8a2a6ccc4bb.png" alt="그로우 아카데미 수강생 후기 7"></div>
+    </div>
+    <button class="fc1-rev-arrow fc1-rev-next" type="button" id="fc1RevNext" aria-label="다음 후기">›</button>
+  </div>
+  <div class="fc1-rev-dots" id="fc1RevDots"></div>
+  <p class="fc1-rev-hint">← 좌우로 넘겨보세요 →</p>
+</section>
+
+<!-- 7. 성과 데이터 -->
+<section class="fc1-sec fc1-result">
+  <div class="fc1-wrap">
+    <p class="fc1-rev-label fc1-reveal">실제 수강생 성과</p>
+    <h2 class="fc1-h2 fc1-reveal">수강 후 네이버 플레이스<br><span class="fc1-hl">유입 증가 사례</span></h2>
+    <h3 class="fc1-res-sub fc1-reveal">실제 네이버 플레이스 통계 화면</h3>
+    <div class="fc1-res-grid fc1-reveal">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/a0b0c87b1eefc.png" alt="네이버 플레이스 유입 통계 화면 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/7000a625263a4.png" alt="네이버 플레이스 유입 통계 화면 2">
+    </div>
+    <h3 class="fc1-res-sub fc1-reveal">플레이스 상위노출 사례</h3>
+    <img class="fc1-res-big fc1-reveal-scale" src="https://cdn.imweb.me/thumbnail/20260131/7c7d9cddb406a.png" alt="네이버 플레이스 상위노출 사례">
+  </div>
+</section>
+
 <script>
 (function(){
   var stops = [];
-  var els = document.querySelectorAll('.fc1-reveal');
+  var els = document.querySelectorAll('.fc1-reveal, .fc1-reveal-scale');
   if (els.length && typeof IntersectionObserver !== 'undefined'){
     var io = new IntersectionObserver(function(entries){
       for (var k = 0; k < entries.length; k++){
@@ -192,6 +437,45 @@ const DETAIL_HTML = `<div class="fc1">
     stops.push(function(){ io.disconnect(); });
   } else {
     for (var j = 0; j < els.length; j++){ els[j].classList.add('fc1-in'); }
+  }
+
+  // 후기 슬라이더 (화살표 · 도트 · 스크롤 동기 — 리스너 전부 stops 로 정리)
+  var track = document.getElementById('fc1RevTrack');
+  if (track){
+    var cards = track.querySelectorAll('.fc1-rev-card');
+    var prevBtn = document.getElementById('fc1RevPrev');
+    var nextBtn = document.getElementById('fc1RevNext');
+    var dotsWrap = document.getElementById('fc1RevDots');
+    var dots = [];
+    function stepPx(){ var c = cards[0]; return c ? c.getBoundingClientRect().width + 16 : 296; }
+    function scrollToIdx(idx){ track.scrollTo({ left: idx * stepPx(), behavior: 'smooth' }); }
+    var onPrev = function(){ track.scrollBy({ left: -stepPx(), behavior: 'smooth' }); };
+    var onNext = function(){ track.scrollBy({ left: stepPx(), behavior: 'smooth' }); };
+    if (prevBtn){ prevBtn.addEventListener('click', onPrev); stops.push(function(){ prevBtn.removeEventListener('click', onPrev); }); }
+    if (nextBtn){ nextBtn.addEventListener('click', onNext); stops.push(function(){ nextBtn.removeEventListener('click', onNext); }); }
+    if (dotsWrap){
+      for (var d = 0; d < cards.length; d++){
+        (function(idx){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'fc1-rev-dot';
+          b.setAttribute('aria-label', (idx + 1) + '번째 후기로 이동');
+          var onDot = function(){ scrollToIdx(idx); };
+          b.addEventListener('click', onDot);
+          stops.push(function(){ b.removeEventListener('click', onDot); });
+          dotsWrap.appendChild(b);
+          dots.push(b);
+        })(d);
+      }
+    }
+    function updateDots(){
+      var idx = Math.round(track.scrollLeft / stepPx());
+      for (var u = 0; u < dots.length; u++){ dots[u].classList.toggle('is-active', u === idx); }
+    }
+    updateDots();
+    var onScroll = function(){ updateDots(); };
+    track.addEventListener('scroll', onScroll, { passive: true });
+    stops.push(function(){ track.removeEventListener('scroll', onScroll); });
   }
 
   // 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
