@@ -44,9 +44,10 @@ const DETAIL_HTML = `<div class="sm1">
 
 /* 1 최상단 (이미지 / 결제 카드) */
 .sm1-top{background:#f6f5f2}
-.sm1-top-title{font-size:29px;font-weight:900;text-align:center;line-height:1.4;margin:0 0 28px;color:#161616;word-break:keep-all}
+.sm1-top .sm1-wrap{max-width:1080px}
+.sm1-top-title{font-size:31px;font-weight:900;text-align:center;line-height:1.4;margin:0 0 30px;color:#161616;word-break:keep-all}
 .sm1-top-title em{font-style:normal;color:var(--g)}
-.sm1-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+.sm1-top-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:34px;align-items:center}
 .sm1-top-img img{width:100%;height:auto;display:block;border-radius:16px}
 .sm1-pays{display:flex;flex-direction:column;gap:16px}
 .sm1-pay-card{background:#fff;border:1px solid #e6e6e6;border-radius:18px;padding:26px 24px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
