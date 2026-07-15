@@ -651,6 +651,12 @@ const DETAIL_HTML = `<div class="hjy">
 .hjy-prog-body{font-size:16px}
 .hjy-prog-list li{font-size:15px}
 
+.hjy-cur{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.hjy-cur-item{background:#141414;border:1px solid #232323;border-radius:12px;padding:18px 18px}
+.hjy-cur-item b{display:block;color:var(--g);font-weight:800;font-size:15px;margin-bottom:6px}
+.hjy-cur-item p{margin:0;font-size:14px;color:#c4c4c4;line-height:1.6}
+@media(max-width:640px){.hjy-cur{grid-template-columns:1fr}}
+
 .hjy-mqcap{text-align:center;font-size:17px;color:#d2d2d2;margin:0 auto 4px}
 
 #hjyRankMarquee .hjy-mq-track img{height:140px}
@@ -698,16 +704,10 @@ const DETAIL_HTML = `<div class="hjy">
     <p class="hjy-lead">메타 광고에 누적 10억을 집행하며 확인했습니다.<br>광고를 잘해서 매출이 오른 센터보다,<br>상담·재등록·비용 구조를 고쳐서 오른 센터가 더 많았습니다.</p>
     <p class="hjy-accent"><em>매출은 광고가 아니라 구조가 만듭니다.</em></p>
     <div class="hjy-nums">
-      <div class="hjy-num-card"><b>10억</b><span>메타광고 누적 집행액</span></div>
-      <div class="hjy-num-card"><b>110개+</b><span>그로우 마케팅 운영 센터</span></div>
-      <div class="hjy-num-card"><b>1급 3종</b><span>검색광고마케터 (네이버·구글·카카오)</span></div>
-      <div class="hjy-num-card"><b>800명</b><span>그로우 에듀 누적 수강생</span></div>
-    </div>
-    <p class="hjy-lead" style="margin-top:38px">말보다 결과가 빠릅니다.</p>
-    <div class="hjy-stats">
-      <div class="hjy-stat"><b>200+</b><span>진행 센터</span></div>
-      <div class="hjy-stat"><b>92%</b><span>상위노출 달성</span></div>
-      <div class="hjy-stat"><b>1~3위</b><span>평균 순위</span></div>
+      <div class="hjy-num-card"><b class="hjy-count" data-to="10" data-suffix="억">0억</b><span>메타광고 누적 집행액</span></div>
+      <div class="hjy-num-card"><b class="hjy-count" data-to="110" data-suffix="개+">0개+</b><span>그로우 마케팅 운영 센터</span></div>
+      <div class="hjy-num-card"><b class="hjy-count" data-prefix="1급 " data-to="3" data-suffix="종">1급 0종</b><span>검색광고마케터 (네이버·구글·카카오)</span></div>
+      <div class="hjy-num-card"><b class="hjy-count" data-to="800" data-suffix="명">0명</b><span>그로우 에듀 누적 수강생</span></div>
     </div>
   </div>
   <div class="hjy-mq" id="hjyRankMarquee">
@@ -741,12 +741,12 @@ const DETAIL_HTML = `<div class="hjy">
       </div>
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">커리큘럼</div>
-        <ul class="hjy-prog-list">
-          <li><b>[1주 · 유입 진단]</b> 광고·플레이스·채널 점검, 신규 문의가 새는 지점 특정</li>
-          <li><b>[2주 · 전환 교정]</b> 신규 상담 프로세스 재설계, 문의가 등록으로 이어지는 응대 구조</li>
-          <li><b>[3주 · 유지 설계]</b> 만기 회원이 조용히 사라지기 전에 잡는 재등록 관리 체계</li>
-          <li><b>[4주 · 손익 구조]</b> 인건비·지출 대비 매출 구조 점검, 남는 장사로 바꾸는 설계와 자립</li>
-        </ul>
+        <div class="hjy-cur">
+          <div class="hjy-cur-item"><b>[지표 판별]</b><p>상담 성공률·유지율 분석 및 매출 병목 지점 추출</p></div>
+          <div class="hjy-cur-item"><b>[권한 분리]</b><p>관리자-트레이너 직무 구분 및 자율 판단 범위 확정</p></div>
+          <div class="hjy-cur-item"><b>[루틴 교정]</b><p>결과 보고 회의의 폐기 및 데이터 기반 주간 액션 설계</p></div>
+          <div class="hjy-cur-item"><b>[구조 안착]</b><p>대표 부재 시의 의사결정 체계 검증 및 자생 환경 완성</p></div>
+        </div>
       </div>
     </div>
   </div>
@@ -870,6 +870,36 @@ const DETAIL_HTML = `<div class="hjy">
       while (t && t !== checks && !(t.classList && t.classList.contains('hjy-check'))){ t = t.parentNode; }
       if (t && t.classList && t.classList.contains('hjy-check')){ t.classList.toggle('is-on'); }
     });
+  }
+
+  // 숫자 카운터 (뷰포트 진입 시 1회 카운트업, 전역 오염 없음)
+  function runCount(el){
+    var to = parseInt(el.getAttribute('data-to'), 10) || 0;
+    var pre = el.getAttribute('data-prefix') || '';
+    var suf = el.getAttribute('data-suffix') || '';
+    var dur = 1300, t0 = 0;
+    function step(ts){
+      if (!t0) t0 = ts;
+      var p = Math.min((ts - t0) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = pre + Math.round(to * eased) + suf;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counters = document.querySelectorAll('.hjy-count');
+  if (counters.length){
+    if (typeof IntersectionObserver !== 'undefined'){
+      var io = new IntersectionObserver(function(entries){
+        for (var k = 0; k < entries.length; k++){
+          if (entries[k].isIntersecting){ runCount(entries[k].target); io.unobserve(entries[k].target); }
+        }
+      }, { threshold: 0.4 });
+      for (var i = 0; i < counters.length; i++){ io.observe(counters[i]); }
+      stops.push(function(){ io.disconnect(); });
+    } else {
+      for (var j = 0; j < counters.length; j++){ runCount(counters[j]); }
+    }
   }
 
   // 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
