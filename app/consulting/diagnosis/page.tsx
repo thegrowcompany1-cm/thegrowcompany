@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import DiagnosisIntro from "./DiagnosisIntro";
 
 export const metadata: Metadata = {
   title: "진단컨설팅 | 더그로우컴퍼니",
@@ -35,37 +36,12 @@ const STEPS = [
   },
 ];
 
-const FADE_STYLE = `
-@keyframes dgFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.dg-fade{opacity:0;animation:dgFadeUp .6s ease forwards}
-.dg-fade-1{animation-delay:.1s}
-.dg-fade-2{animation-delay:.7s}
-`;
-
 export default function DiagnosisPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <style dangerouslySetInnerHTML={{ __html: FADE_STYLE }} />
-
-      {/* ── 1. 인트로 ── */}
-      <section className="mx-auto max-w-6xl px-4 pt-14 pb-12 sm:px-6 sm:pt-20 sm:pb-16 lg:px-8">
-        <div className="flex items-center gap-2 mb-8">
-          <Link href="/" className="text-sm text-gray-400 transition-colors hover:text-white">홈</Link>
-          <span className="text-gray-600">/</span>
-          <span className="text-sm font-semibold text-[#22B573]">진단컨설팅</span>
-        </div>
-
-        <p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#22B573]">DIAGNOSIS CONSULTING</p>
-        <h1 className="text-4xl font-black leading-tight sm:text-6xl">진단컨설팅</h1>
-
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-gray-300 sm:text-xl">
-          <span className="dg-fade dg-fade-1 block">
-            각 분야의 전문가가 대표님의 매장에 <span className="font-semibold text-[#22B573]">직접 방문</span>하여
-          </span>
-          <span className="dg-fade dg-fade-2 block">
-            <span className="font-semibold text-[#22B573]">1:1</span>로 문제를 진단하고 개선까지 함께하는 서비스입니다.
-          </span>
-        </p>
+      {/* ── 1. 인트로 (질문 → 답변 인터랙션) ── */}
+      <section className="mx-auto max-w-6xl px-4 pt-8 pb-10 sm:px-6 sm:pt-12 sm:pb-14 lg:px-8">
+        <DiagnosisIntro />
       </section>
 
       {/* ── 2. 작동 방식 3스텝 ── */}
