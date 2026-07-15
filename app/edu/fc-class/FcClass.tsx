@@ -212,12 +212,12 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-3dsec{background:#0d0d0d;color:#fff}
 .fc1-3dsec .fc1-wrap{text-align:center}
 .fc1-3d-label{color:var(--g);font-weight:800;font-size:13px;letter-spacing:.1em;margin:0 0 10px}
-.fc1-3d{position:relative;width:100%;height:520px;perspective:1400px;overflow:hidden;margin-top:36px;cursor:grab;-webkit-user-select:none;user-select:none}
+.fc1-3d{position:relative;width:100%;height:430px;perspective:1300px;overflow:hidden;margin-top:36px;cursor:grab;-webkit-user-select:none;user-select:none}
 .fc1-3d.is-drag{cursor:grabbing}
-.fc1-3d-stage{position:absolute;top:50%;left:50%;width:280px;height:440px;transform-style:preserve-3d;margin-left:-140px;margin-top:-220px}
-.fc1-3d-card{position:absolute;top:0;left:0;width:280px;height:440px;border-radius:18px;overflow:hidden;background:#1a1a1a;box-shadow:0 20px 50px rgba(0,0,0,.5);backface-visibility:hidden;transition:filter .3s,opacity .3s}
+.fc1-3d-stage{position:absolute;top:50%;left:50%;width:200px;height:310px;transform-style:preserve-3d;margin-left:-100px;margin-top:-155px}
+.fc1-3d-card{position:absolute;top:0;left:0;width:200px;height:310px;border-radius:16px;overflow:hidden;background:#1a1a1a;box-shadow:0 16px 40px rgba(0,0,0,.5);backface-visibility:hidden;transition:filter .3s,opacity .3s}
 .fc1-3d-card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-@media(max-width:640px){.fc1-3d{height:430px}.fc1-3d-stage{width:210px;height:330px;margin-left:-105px;margin-top:-165px}.fc1-3d-card{width:210px;height:330px}}
+@media(max-width:640px){.fc1-3d{height:350px}.fc1-3d-stage{width:158px;height:244px;margin-left:-79px;margin-top:-122px}.fc1-3d-card{width:158px;height:244px}}
 
 /* 10 대상자 추천 */
 .fc1-target{background:#f8f9fa;color:#141414}
@@ -694,7 +694,7 @@ const DETAIL_HTML = `<div class="fc1">
     var cards3d = stage3d.querySelectorAll('.fc1-3d-card');
     var n3d = cards3d.length;
     var isMob = typeof window.matchMedia === 'function' && window.matchMedia('(max-width:640px)').matches;
-    var radius = isMob ? 320 : 470;
+    var radius = isMob ? 240 : 360;
     var stepDeg = 360 / n3d;
     var rot = 0, vel = 0, dragging = false, lastX = 0, lastTs = 0, raf3d = 0;
     var autoSpeed = 0.05; // deg per ms
