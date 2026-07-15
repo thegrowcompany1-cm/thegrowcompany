@@ -189,6 +189,80 @@ const DETAIL_HTML = `<div class="fc1">
 
 .fc1-reveal-scale{opacity:0;transform:scale(.94);transition:opacity .7s ease,transform .7s ease}
 .fc1-reveal-scale.fc1-in{opacity:1;transform:scale(1)}
+
+/* 8 교육 현장 갤러리 */
+.fc1-gal{background:#111;color:#fff}
+.fc1-gal .fc1-wrap{text-align:center}
+.fc1-gal-mq{position:relative;overflow:hidden;width:100%;margin:36px 0}
+.fc1-gal-mq::before,.fc1-gal-mq::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+.fc1-gal-mq::before{left:0;background:linear-gradient(90deg,#111,rgba(17,17,17,0))}
+.fc1-gal-mq::after{right:0;background:linear-gradient(270deg,#111,rgba(17,17,17,0))}
+.fc1-gal-track{display:flex;gap:16px;width:max-content;animation:fc1AutoSlide 30s linear infinite}
+.fc1-gal-mq:hover .fc1-gal-track{animation-play-state:paused}
+.fc1-gal-track img{height:240px;width:auto;border-radius:14px;display:block;flex:0 0 auto;background:#1a1a1a}
+@keyframes fc1AutoSlide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.fc1-gal-gifs{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:680px;margin:8px auto 0}
+.fc1-gal-gifs img{width:100%;height:auto;border-radius:14px;display:block;border:1px solid #262626}
+.fc1-gal-msg{max-width:640px;margin:34px auto 0;font-size:17px;line-height:1.8;color:#e6e6e6}
+.fc1-gal-count{display:inline-block;margin-top:22px;background:rgba(34,181,115,.14);color:var(--g);font-weight:800;font-size:15px;padding:12px 24px;border-radius:50px}
+.fc1-gal-count b{color:#fff;font-size:17px}
+@media(max-width:640px){.fc1-gal-track img{height:180px}.fc1-gal-gifs{grid-template-columns:1fr}}
+
+/* 9 3D 캐러셀 */
+.fc1-3dsec{background:#0d0d0d;color:#fff}
+.fc1-3dsec .fc1-wrap{text-align:center}
+.fc1-3d-label{color:var(--g);font-weight:800;font-size:13px;letter-spacing:.1em;margin:0 0 10px}
+.fc1-3d{position:relative;width:100%;height:520px;perspective:1400px;overflow:hidden;margin-top:36px;cursor:grab;-webkit-user-select:none;user-select:none}
+.fc1-3d.is-drag{cursor:grabbing}
+.fc1-3d-stage{position:absolute;top:50%;left:50%;width:280px;height:440px;transform-style:preserve-3d;margin-left:-140px;margin-top:-220px}
+.fc1-3d-card{position:absolute;top:0;left:0;width:280px;height:440px;border-radius:18px;overflow:hidden;background:#1a1a1a;box-shadow:0 20px 50px rgba(0,0,0,.5);backface-visibility:hidden;transition:filter .3s,opacity .3s}
+.fc1-3d-card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+@media(max-width:640px){.fc1-3d{height:430px}.fc1-3d-stage{width:210px;height:330px;margin-left:-105px;margin-top:-165px}.fc1-3d-card{width:210px;height:330px}}
+
+/* 10 대상자 추천 */
+.fc1-target{background:#f8f9fa;color:#141414}
+.fc1-target .fc1-wrap{text-align:center}
+.fc1-tgt-list{max-width:620px;margin:28px auto 0;display:flex;flex-direction:column;gap:10px}
+.fc1-tgt{display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid #eaeaea;border-radius:12px;padding:16px 18px;font-size:15px;font-weight:600;color:#2a2a2a;line-height:1.5;text-align:left}
+.fc1-tgt-ic{flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;margin-top:1px}
+.fc1-ok{background:var(--g)}
+.fc1-x{background:#e23b3b}
+.fc1-tgt.fc1-no{color:#8a8a8a;background:#f3f3f3}
+.fc1-tgt-div{display:flex;align-items:center;justify-content:center;margin:26px 0}
+.fc1-tgt-div span{background:#e9ecef;color:#666;font-size:13px;font-weight:800;padding:8px 20px;border-radius:50px}
+.fc1-tgt-box{max-width:620px;margin:30px auto 0;border:2px dashed var(--g);border-radius:16px;padding:24px 22px;font-size:16px;line-height:1.75;color:#333;font-weight:600}
+
+/* 11 혜택 */
+.fc1-benefit{background:#fff;color:#141414}
+.fc1-benefit .fc1-wrap{text-align:center}
+.fc1-bf-badge{display:inline-block;background:#161616;color:#fff;font-size:12px;font-weight:800;padding:7px 16px;border-radius:50px;letter-spacing:.08em;margin-bottom:14px}
+.fc1-bf-list{max-width:680px;margin:32px auto 0;display:flex;flex-direction:column;gap:14px}
+.fc1-bf{display:flex;gap:18px;align-items:flex-start;background:#fafafa;border:1px solid #eee;border-radius:16px;padding:24px;text-align:left}
+.fc1-bf-no{flex:0 0 auto;width:44px;height:44px;border-radius:12px;background:rgba(34,181,115,.12);color:var(--g);font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center}
+.fc1-bf h3{font-size:17px;font-weight:800;color:#161616;margin:0 0 6px}
+.fc1-bf p{font-size:14px;color:#666;line-height:1.65;margin:0}
+
+/* 12 아코디언 */
+.fc1-acc-sec{background:#0d0d0d;color:#fff}
+.fc1-acc-sub{text-align:center;font-size:14px;font-weight:700;margin:0 0 24px;background:linear-gradient(90deg,#22B573,#8fe6bd,#22B573);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fc1Shimmer 3s linear infinite}
+@keyframes fc1Shimmer{to{background-position:200% center}}
+.fc1-acc{max-width:680px;margin:0 auto}
+.fc1-acc-item{border:1px solid #262626;border-radius:14px;margin-bottom:12px;overflow:hidden;background:#151515}
+.fc1-acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:22px 24px;background:none;border:none;cursor:pointer;text-align:left}
+.fc1-acc-t{font-size:17px;font-weight:800;color:#fff}
+.fc1-acc-ic{flex:0 0 auto;font-size:26px;font-weight:400;color:var(--g);transition:transform .3s;line-height:1}
+.fc1-acc-item.is-open .fc1-acc-ic{transform:rotate(45deg)}
+.fc1-acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.fc1-acc-body p{margin:0;padding:0 24px 24px;font-size:15px;color:#bdbdbd;line-height:1.75}
+
+/* 하단 고정 바 */
+.fc1-barspacer{height:92px}
+.fc1-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#0d0d0d;border-top:1px solid #222;padding:12px 16px calc(12px + env(safe-area-inset-bottom));transform:translateY(0);transition:transform .3s ease}
+.fc1-bar.is-hidden{transform:translateY(140%)}
+.fc1-bar-in{max-width:820px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.fc1-bar-when{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc1-bar-cta{flex:0 0 auto;background:var(--g);color:#fff;font-size:15px;font-weight:800;padding:13px 26px;border-radius:12px;text-decoration:none;white-space:nowrap}
+@media(max-width:480px){.fc1-bar-cta{padding:12px 20px;font-size:14px}.fc1-bar-when{font-size:13px}}
 </style>
 
 <!-- 1. 히어로 -->
@@ -423,6 +497,141 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
 </section>
 
+<!-- 8. 교육 현장 갤러리 -->
+<section class="fc1-sec fc1-gal">
+  <div class="fc1-wrap">
+    <h2 class="fc1-h2 fc1-reveal">실전 경험을 나누는<br>교육 현장</h2>
+    <p class="fc1-sub fc1-reveal">단순 이론이 아닌, 현장에서 바로 적용 가능한 실무 교육</p>
+  </div>
+  <div class="fc1-gal-mq">
+    <div class="fc1-gal-track">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/2c27053d77aa7.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/585cf1ee7e5d1.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 2">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/c51e290737724.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/d71d22f9eea53.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/2f1084024ac28.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/c8b4857c6a396.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 6">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/4b9ce2fb80778.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 7">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/626df956ffc13.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 8">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/2c27053d77aa7.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/585cf1ee7e5d1.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/c51e290737724.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/d71d22f9eea53.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/2f1084024ac28.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/c8b4857c6a396.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/4b9ce2fb80778.jpg" alt="" aria-hidden="true">
+      <img src="https://cdn.imweb.me/thumbnail/20260131/626df956ffc13.jpg" alt="" aria-hidden="true">
+    </div>
+  </div>
+  <div class="fc1-wrap">
+    <div class="fc1-gal-gifs">
+      <img class="fc1-reveal" src="https://cdn.imweb.me/thumbnail/20260131/333c1f7a7b929.gif" alt="그로우 아카데미 FC 클래스 교육 현장 움짤 1">
+      <img class="fc1-reveal" src="https://cdn.imweb.me/thumbnail/20260131/55301cde907fd.gif" alt="그로우 아카데미 FC 클래스 교육 현장 움짤 2">
+    </div>
+    <p class="fc1-gal-msg fc1-reveal">트레이너와 필라테스 강사를 위한 교육은 많습니다.<br>하지만 센터를 잘 운영하는 방법을 알려주는 교육은 그동안 없었습니다.</p>
+    <div class="fc1-gal-count fc1-reveal">지금까지 함께한 대표님 <b>500명+</b></div>
+  </div>
+</section>
+
+<!-- 9. 1:1 피드백 3D 캐러셀 -->
+<section class="fc1-sec fc1-3dsec">
+  <div class="fc1-wrap">
+    <p class="fc1-3d-label fc1-reveal">REAL REVIEWS</p>
+    <h2 class="fc1-h2 fc1-reveal">수강생들의 1:1 피드백<br>생생 후기</h2>
+    <p class="fc1-sub fc1-reveal">드래그하여 후기를 둘러보세요</p>
+  </div>
+  <div class="fc1-3d" id="fc13d">
+    <div class="fc1-3d-stage" id="fc13dStage">
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/325e18f723c82.png" alt="1:1 피드백 후기 1"></div>
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/ed309d98793f3.png" alt="1:1 피드백 후기 2"></div>
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/3b97350afcf9e.png" alt="1:1 피드백 후기 3"></div>
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/37e5750039353.png" alt="1:1 피드백 후기 4"></div>
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/5af1f4acdd9c9.png" alt="1:1 피드백 후기 5"></div>
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/7c6032aac5f02.png" alt="1:1 피드백 후기 6"></div>
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/69b9f91524388.png" alt="1:1 피드백 후기 7"></div>
+      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/3c46f72203a26.png" alt="1:1 피드백 후기 8"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 대상자 추천/비추천 -->
+<section class="fc1-sec fc1-target">
+  <div class="fc1-wrap">
+    <h2 class="fc1-h2 fc1-reveal"><span class="fc1-red2">50% 이상 해당</span>하신다면<br>망설이지 마세요.</h2>
+    <p class="fc1-sub fc1-sub-dark fc1-reveal">이런 분들을 위해 준비한 교육입니다</p>
+    <div class="fc1-tgt-list">
+      <div class="fc1-tgt fc1-reveal"><span class="fc1-tgt-ic fc1-ok">✓</span>2026년 피트니스·필라테스 마케팅 트렌드를 배우고 싶으신 분</div>
+      <div class="fc1-tgt fc1-reveal"><span class="fc1-tgt-ic fc1-ok">✓</span>신규, 재등록 등 클로징률을 상승시키고 싶으신 분</div>
+      <div class="fc1-tgt fc1-reveal"><span class="fc1-tgt-ic fc1-ok">✓</span>여러 지점 확장을 계획 중이신 분</div>
+      <div class="fc1-tgt fc1-reveal"><span class="fc1-tgt-ic fc1-ok">✓</span>내 매장을 차리고 싶으신 분</div>
+      <div class="fc1-tgt fc1-reveal"><span class="fc1-tgt-ic fc1-ok">✓</span>마케팅·운영 노하우를 전수받아 직접 적용해보고 싶으신 분</div>
+    </div>
+    <div class="fc1-tgt-div fc1-reveal"><span>반대로</span></div>
+    <div class="fc1-tgt-list">
+      <div class="fc1-tgt fc1-no fc1-reveal"><span class="fc1-tgt-ic fc1-x">✕</span>실행 시간이 0인 분</div>
+      <div class="fc1-tgt fc1-no fc1-reveal"><span class="fc1-tgt-ic fc1-x">✕</span>운영 데이터 없이 감으로만 하려는 분</div>
+    </div>
+    <div class="fc1-tgt-box fc1-reveal">이 교육은 '배우고 직접 실행하실 분'을 위한 교육입니다.<br>실행 의지가 있으시다면, 분명 결과가 달라질 겁니다.</div>
+  </div>
+</section>
+
+<!-- 11. 혜택 -->
+<section class="fc1-sec fc1-benefit">
+  <div class="fc1-wrap">
+    <span class="fc1-bf-badge fc1-reveal">ALL INCLUDED</span>
+    <h2 class="fc1-h2 fc1-reveal">이 강의로 얻어가는<br>것들입니다.</h2>
+    <div class="fc1-bf-list">
+      <div class="fc1-bf fc1-reveal">
+        <div class="fc1-bf-no">01</div>
+        <div><h3>4시간 오프라인 밀착 교육</h3><p>이론만이 아닌, 실습과 함께 바로 적용 가능한 실전 교육</p></div>
+      </div>
+      <div class="fc1-bf fc1-reveal">
+        <div class="fc1-bf-no">02</div>
+        <div><h3>템플릿 &amp; 스크립트 풀패키지</h3><p>상담 스크립트, 재등록 DM, 운영 시트, 마케팅 체크리스트 등</p></div>
+      </div>
+      <div class="fc1-bf fc1-reveal">
+        <div class="fc1-bf-no">03</div>
+        <div><h3>오픈채팅방 커뮤니티</h3><p>업계 정보를 무료로 제공해드리는 수강생 전용 커뮤니티</p></div>
+      </div>
+      <div class="fc1-bf fc1-reveal">
+        <div class="fc1-bf-no">04</div>
+        <div><h3>창업·운영·마케팅 전자책</h3><p>수강 후 복습용 전자책 무료 제공</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 아코디언 -->
+<section class="fc1-sec fc1-acc-sec">
+  <div class="fc1-wrap">
+    <p class="fc1-acc-sub fc1-reveal">FC 클래스가 특별한 이유</p>
+    <div class="fc1-acc" id="fc1Acc">
+      <div class="fc1-acc-item fc1-reveal">
+        <button class="fc1-acc-head" type="button">
+          <span class="fc1-acc-t">더 이상 마케팅 맡기지마세요.</span>
+          <span class="fc1-acc-ic">+</span>
+        </button>
+        <div class="fc1-acc-body"><p>실제 마케팅 회사에서 적용하는 방법을 모두 공개합니다. 직접 마케팅을 하고 싶으신 분, 직원이 있으시다면 몇백만원은 아끼실 수 있습니다.</p></div>
+      </div>
+      <div class="fc1-acc-item fc1-reveal">
+        <button class="fc1-acc-head" type="button">
+          <span class="fc1-acc-t">가격을 높이고 싶은 분들을 위한 강의</span>
+          <span class="fc1-acc-ic">+</span>
+        </button>
+        <div class="fc1-acc-body"><p>가격경쟁은 결국 망할 수밖에 없습니다. 상담방법, 재등록방법, 우리 매장의 차별화를 두기 위한 방법 등 500개 매장의 대표님들과 함께해오며 쌓아온 핵심 운영 노하우를 알려드립니다.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fc1-barspacer"></div>
+<div class="fc1-bar" id="fc1Bar">
+  <div class="fc1-bar-in">
+    <div class="fc1-bar-when">다음 기수 준비중 · 총 4시간</div>
+    <a href="#fc1-top" class="fc1-bar-cta" id="fc1BarCta">신청하기</a>
+  </div>
+</div>
+
 <script>
 (function(){
   var stops = [];
@@ -476,6 +685,103 @@ const DETAIL_HTML = `<div class="fc1">
     var onScroll = function(){ updateDots(); };
     track.addEventListener('scroll', onScroll, { passive: true });
     stops.push(function(){ track.removeEventListener('scroll', onScroll); });
+  }
+
+  // 1:1 피드백 3D 원형 캐러셀 (자동회전 rAF + 드래그 + 관성 — raf/리스너 전부 정리)
+  var wrap3d = document.getElementById('fc13d');
+  var stage3d = document.getElementById('fc13dStage');
+  if (wrap3d && stage3d){
+    var cards3d = stage3d.querySelectorAll('.fc1-3d-card');
+    var n3d = cards3d.length;
+    var isMob = typeof window.matchMedia === 'function' && window.matchMedia('(max-width:640px)').matches;
+    var radius = isMob ? 320 : 470;
+    var stepDeg = 360 / n3d;
+    var rot = 0, vel = 0, dragging = false, lastX = 0, lastTs = 0, raf3d = 0;
+    var autoSpeed = 0.05; // deg per ms
+    function place3d(){
+      for (var i = 0; i < n3d; i++){
+        var a = stepDeg * i + rot;
+        var rad = a * Math.PI / 180;
+        var z = Math.cos(rad);
+        var t = (z + 1) / 2;
+        cards3d[i].style.transform = 'rotateY(' + a + 'deg) translateZ(' + radius + 'px)';
+        cards3d[i].style.opacity = (0.35 + 0.65 * t).toFixed(3);
+        cards3d[i].style.filter = 'blur(' + ((1 - t) * 4).toFixed(2) + 'px)';
+        cards3d[i].style.zIndex = String(Math.round(t * 100));
+      }
+    }
+    function frame3d(ts){
+      if (!lastTs) lastTs = ts;
+      var dt = ts - lastTs; lastTs = ts;
+      if (dt > 60) dt = 16;
+      if (!dragging){
+        if (Math.abs(vel) > 0.0006){ rot += vel * dt; vel *= 0.94; }
+        else { vel = 0; rot += autoSpeed * dt; }
+      }
+      place3d();
+      raf3d = requestAnimationFrame(frame3d);
+    }
+    place3d();
+    raf3d = requestAnimationFrame(frame3d);
+    stops.push(function(){ cancelAnimationFrame(raf3d); });
+
+    function px3d(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
+    var onDown3d = function(e){ dragging = true; lastX = px3d(e); vel = 0; wrap3d.classList.add('is-drag'); };
+    var onMove3d = function(e){ if (!dragging) return; var x = px3d(e); var dx = x - lastX; lastX = x; var d = dx * 0.25; rot += d; vel = d / 16; place3d(); };
+    var onUp3d = function(){ if (!dragging) return; dragging = false; wrap3d.classList.remove('is-drag'); };
+    wrap3d.addEventListener('mousedown', onDown3d);
+    window.addEventListener('mousemove', onMove3d);
+    window.addEventListener('mouseup', onUp3d);
+    wrap3d.addEventListener('touchstart', onDown3d, { passive: true });
+    window.addEventListener('touchmove', onMove3d, { passive: true });
+    window.addEventListener('touchend', onUp3d);
+    stops.push(function(){
+      wrap3d.removeEventListener('mousedown', onDown3d);
+      window.removeEventListener('mousemove', onMove3d);
+      window.removeEventListener('mouseup', onUp3d);
+      wrap3d.removeEventListener('touchstart', onDown3d);
+      window.removeEventListener('touchmove', onMove3d);
+      window.removeEventListener('touchend', onUp3d);
+    });
+  }
+
+  // 아코디언 (클릭 토글 — 리스너 정리)
+  var acc = document.getElementById('fc1Acc');
+  if (acc){
+    var heads = acc.querySelectorAll('.fc1-acc-head');
+    for (var h = 0; h < heads.length; h++){
+      (function(head){
+        var item = head.parentNode;
+        var body = item.querySelector('.fc1-acc-body');
+        var onAcc = function(){
+          var open = item.classList.toggle('is-open');
+          body.style.maxHeight = open ? (body.scrollHeight + 'px') : '0px';
+        };
+        head.addEventListener('click', onAcc);
+        stops.push(function(){ head.removeEventListener('click', onAcc); });
+      })(heads[h]);
+    }
+  }
+
+  // 하단 고정 바 (최상단 결제영역이 보이면 숨김 + 부드러운 스크롤)
+  var bar = document.getElementById('fc1Bar');
+  var topEl = document.getElementById('fc1-top');
+  if (bar && topEl && typeof IntersectionObserver !== 'undefined'){
+    var ioBar = new IntersectionObserver(function(entries){
+      for (var b = 0; b < entries.length; b++){ bar.classList.toggle('is-hidden', entries[b].isIntersecting); }
+    }, { threshold: 0.12 });
+    ioBar.observe(topEl);
+    stops.push(function(){ ioBar.disconnect(); });
+  }
+  var barCta = document.getElementById('fc1BarCta');
+  if (barCta && topEl){
+    var onCta = function(e){
+      e.preventDefault();
+      var y = topEl.getBoundingClientRect().top + window.pageYOffset - 72;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    };
+    barCta.addEventListener('click', onCta);
+    stops.push(function(){ barCta.removeEventListener('click', onCta); });
   }
 
   // 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
@@ -551,7 +857,7 @@ export default function FcClass() {
       <style dangerouslySetInnerHTML={{ __html: TOP_STYLE }} />
 
       {/* ── 0. 최상단: 랜덤 강의사진 / 결제 카드 2개 ── */}
-      <section className="bg-[#f6f5f2] py-12 sm:py-16">
+      <section id="fc1-top" className="bg-[#f6f5f2] py-12 sm:py-16">
         <div className="mx-auto max-w-[1080px] px-4 sm:px-6">
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-[1.5fr_1fr]">
             {/* 좌: 랜덤 강의 사진 */}
