@@ -209,15 +209,15 @@ const DETAIL_HTML = `<div class="fc1">
 @media(max-width:640px){.fc1-gal-track img{height:180px}.fc1-gal-gifs{grid-template-columns:1fr}}
 
 /* 9 3D 캐러셀 */
-.fc1-3dsec{background:#0d0d0d;color:#fff}
+.fc1-3dsec{background:#111;color:#fff}
 .fc1-3dsec .fc1-wrap{text-align:center}
 .fc1-3d-label{color:var(--g);font-weight:800;font-size:13px;letter-spacing:.1em;margin:0 0 10px}
-.fc1-3d{position:relative;width:100%;height:430px;perspective:1300px;overflow:hidden;margin-top:36px;cursor:grab;-webkit-user-select:none;user-select:none}
-.fc1-3d.is-drag{cursor:grabbing}
-.fc1-3d-stage{position:absolute;top:50%;left:50%;width:200px;height:310px;transform-style:preserve-3d;margin-left:-100px;margin-top:-155px}
-.fc1-3d-card{position:absolute;top:0;left:0;width:200px;height:310px;border-radius:16px;overflow:hidden;background:#1a1a1a;box-shadow:0 16px 40px rgba(0,0,0,.5);backface-visibility:hidden;transition:filter .3s,opacity .3s}
+.fc1-3d{perspective:1200px;padding:40px 0;margin-top:20px;overflow:hidden;cursor:grab;user-select:none;-webkit-user-select:none}
+.fc1-3d:active{cursor:grabbing}
+.fc1-3d-stage{width:260px;height:460px;position:relative;margin:0 auto;transform-style:preserve-3d}
+.fc1-3d-card{position:absolute;width:260px;height:460px;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.4);backface-visibility:hidden;background:#222}
 .fc1-3d-card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-@media(max-width:640px){.fc1-3d{height:350px}.fc1-3d-stage{width:158px;height:244px;margin-left:-79px;margin-top:-122px}.fc1-3d-card{width:158px;height:244px}}
+@media(max-width:768px){.fc1-3d-stage{width:200px;height:354px}.fc1-3d-card{width:200px;height:354px}}
 
 /* 10 대상자 추천 */
 .fc1-target{background:#f8f9fa;color:#141414}
@@ -726,61 +726,65 @@ const DETAIL_HTML = `<div class="fc1">
     stops.push(function(){ track.removeEventListener('scroll', onScroll); });
   }
 
-  // 1:1 피드백 3D 원형 캐러셀 (자동회전 rAF + 드래그 + 관성 — raf/리스너 전부 정리)
-  var wrap3d = document.getElementById('fc13d');
+  // 1:1 피드백 3D 캐러셀 (원본 coverflow 로직 이식 — rAF/리스너 전부 stops 로 정리)
   var stage3d = document.getElementById('fc13dStage');
-  if (wrap3d && stage3d){
-    var cards3d = stage3d.querySelectorAll('.fc1-3d-card');
-    var n3d = cards3d.length;
-    var isMob = typeof window.matchMedia === 'function' && window.matchMedia('(max-width:640px)').matches;
-    var radius = isMob ? 240 : 360;
-    var stepDeg = 360 / n3d;
-    var rot = 0, vel = 0, dragging = false, lastX = 0, lastTs = 0, raf3d = 0;
-    var autoSpeed = 0.05; // deg per ms
-    function place3d(){
+  var wrap3d = stage3d ? stage3d.parentElement : null;
+  if (stage3d && wrap3d){
+    var items3d = stage3d.querySelectorAll('.fc1-3d-card');
+    var n3d = items3d.length;
+    var theta3d = 360 / n3d;
+    var isMob3d = window.innerWidth <= 768;
+    var radius3d = isMob3d ? 260 : 360;
+    var curAngle = 0;
+    var autoSpeed = 0.15;
+    var isDragging = false;
+    var startX = 0, dragAngle = 0, momentum = 0, raf3d = 0;
+    function render3d(){
       for (var i = 0; i < n3d; i++){
-        var a = stepDeg * i + rot;
-        var rad = a * Math.PI / 180;
-        var z = Math.cos(rad);
-        var t = (z + 1) / 2;
-        cards3d[i].style.transform = 'rotateY(' + a + 'deg) translateZ(' + radius + 'px)';
-        cards3d[i].style.opacity = (0.35 + 0.65 * t).toFixed(3);
-        cards3d[i].style.filter = 'blur(' + ((1 - t) * 4).toFixed(2) + 'px)';
-        cards3d[i].style.zIndex = String(Math.round(t * 100));
+        var angle = curAngle + i * theta3d;
+        var rad = angle * Math.PI / 180;
+        var z = radius3d * Math.cos(rad);
+        var x = radius3d * Math.sin(rad);
+        var scale = (z + radius3d) / (2 * radius3d);
+        scale = 0.6 + scale * 0.4;
+        var opacity = (z + radius3d) / (2 * radius3d);
+        opacity = 0.4 + opacity * 0.6;
+        items3d[i].style.transform = 'translateX(' + x + 'px) translateZ(' + z + 'px) scale(' + scale + ')';
+        items3d[i].style.opacity = opacity;
+        items3d[i].style.zIndex = String(Math.round(z + radius3d));
+        items3d[i].style.filter = z < -100 ? 'blur(2px)' : 'none';
       }
     }
-    function frame3d(ts){
-      if (!lastTs) lastTs = ts;
-      var dt = ts - lastTs; lastTs = ts;
-      if (dt > 60) dt = 16;
-      if (!dragging){
-        if (Math.abs(vel) > 0.0006){ rot += vel * dt; vel *= 0.94; }
-        else { vel = 0; rot += autoSpeed * dt; }
-      }
-      place3d();
-      raf3d = requestAnimationFrame(frame3d);
+    function autoRotate3d(){
+      if (!isDragging){ curAngle += autoSpeed + momentum; momentum *= 0.97; if (Math.abs(momentum) < 0.01) momentum = 0; }
+      render3d();
+      raf3d = requestAnimationFrame(autoRotate3d);
     }
-    place3d();
-    raf3d = requestAnimationFrame(frame3d);
-    stops.push(function(){ cancelAnimationFrame(raf3d); });
-
-    function px3d(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
-    var onDown3d = function(e){ dragging = true; lastX = px3d(e); vel = 0; wrap3d.classList.add('is-drag'); };
-    var onMove3d = function(e){ if (!dragging) return; var x = px3d(e); var dx = x - lastX; lastX = x; var d = dx * 0.25; rot += d; vel = d / 16; place3d(); };
-    var onUp3d = function(){ if (!dragging) return; dragging = false; wrap3d.classList.remove('is-drag'); };
-    wrap3d.addEventListener('mousedown', onDown3d);
-    window.addEventListener('mousemove', onMove3d);
-    window.addEventListener('mouseup', onUp3d);
-    wrap3d.addEventListener('touchstart', onDown3d, { passive: true });
-    window.addEventListener('touchmove', onMove3d, { passive: true });
-    window.addEventListener('touchend', onUp3d);
+    var onDown = function(e){ isDragging = true; momentum = 0; startX = e.clientX; dragAngle = curAngle; };
+    var onMove = function(e){ if (!isDragging) return; var dx = e.clientX - startX; momentum = dx * 0.002; curAngle = dragAngle + dx * 0.3; render3d(); };
+    var onUp = function(){ isDragging = false; };
+    var onLeave = function(){ isDragging = false; };
+    var onTStart = function(e){ isDragging = true; momentum = 0; startX = e.touches[0].clientX; dragAngle = curAngle; };
+    var onTMove = function(e){ if (!isDragging) return; var dx = e.touches[0].clientX - startX; momentum = dx * 0.002; curAngle = dragAngle + dx * 0.3; render3d(); };
+    var onTEnd = function(){ isDragging = false; };
+    wrap3d.addEventListener('mousedown', onDown);
+    wrap3d.addEventListener('mousemove', onMove);
+    wrap3d.addEventListener('mouseup', onUp);
+    wrap3d.addEventListener('mouseleave', onLeave);
+    wrap3d.addEventListener('touchstart', onTStart, { passive: true });
+    wrap3d.addEventListener('touchmove', onTMove, { passive: true });
+    wrap3d.addEventListener('touchend', onTEnd);
+    render3d();
+    raf3d = requestAnimationFrame(autoRotate3d);
     stops.push(function(){
-      wrap3d.removeEventListener('mousedown', onDown3d);
-      window.removeEventListener('mousemove', onMove3d);
-      window.removeEventListener('mouseup', onUp3d);
-      wrap3d.removeEventListener('touchstart', onDown3d);
-      window.removeEventListener('touchmove', onMove3d);
-      window.removeEventListener('touchend', onUp3d);
+      cancelAnimationFrame(raf3d);
+      wrap3d.removeEventListener('mousedown', onDown);
+      wrap3d.removeEventListener('mousemove', onMove);
+      wrap3d.removeEventListener('mouseup', onUp);
+      wrap3d.removeEventListener('mouseleave', onLeave);
+      wrap3d.removeEventListener('touchstart', onTStart);
+      wrap3d.removeEventListener('touchmove', onTMove);
+      wrap3d.removeEventListener('touchend', onTEnd);
     });
   }
 
