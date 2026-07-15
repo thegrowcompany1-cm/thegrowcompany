@@ -651,12 +651,6 @@ const DETAIL_HTML = `<div class="hjy">
 .hjy-prog-body{font-size:16px}
 .hjy-prog-list li{font-size:15px}
 
-.hjy-cur{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.hjy-cur-item{background:#141414;border:1px solid #232323;border-radius:12px;padding:18px 18px}
-.hjy-cur-item b{display:block;color:var(--g);font-weight:800;font-size:15px;margin-bottom:6px}
-.hjy-cur-item p{margin:0;font-size:14px;color:#c4c4c4;line-height:1.6}
-@media(max-width:640px){.hjy-cur{grid-template-columns:1fr}}
-
 .hjy-mqcap{text-align:center;font-size:17px;color:#d2d2d2;margin:0 auto 4px}
 
 #hjyRankMarquee .hjy-mq-track img{height:140px}
@@ -727,13 +721,13 @@ const DETAIL_HTML = `<div class="hjy">
 <!-- 섹션 4 — 계획 (좌측 정렬) -->
 <section class="hjy-sec hjy-sec--alt tl">
   <div class="hjy-inner">
-    <h2 class="hjy-h2">한 달이면 됩니다.<br>단, 순서가 있습니다.</h2>
+    <h2 class="hjy-h2">허준영 컨설턴트의 솔루션:<br>1인샵부터 다지점까지, <em>규모 맞춤 마케팅 마스터</em></h2>
     <p class="hjy-lead">광고 대행사는 유입만 봅니다.<br>운영 컨설턴트는 내부만 봅니다.<br>매출은 그 사이에서 샙니다.</p>
     <p class="hjy-lead"><em>저는 광고 계정과 상담 일지를<br>같은 날, 같은 테이블에서 봅니다.</em></p>
     <div class="hjy-prog">
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">프로그램</div>
-        <p class="hjy-prog-body">허준영 컨설턴트의 1:1 매출 구조 밀착 진단</p>
+        <p class="hjy-prog-body">허준영 컨설턴트의 1:1 규모 맞춤 마케팅 밀착 컨설팅</p>
       </div>
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">진단 시간</div>
@@ -741,12 +735,12 @@ const DETAIL_HTML = `<div class="hjy">
       </div>
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">커리큘럼</div>
-        <div class="hjy-cur">
-          <div class="hjy-cur-item"><b>[지표 판별]</b><p>상담 성공률·유지율 분석 및 매출 병목 지점 추출</p></div>
-          <div class="hjy-cur-item"><b>[권한 분리]</b><p>관리자-트레이너 직무 구분 및 자율 판단 범위 확정</p></div>
-          <div class="hjy-cur-item"><b>[루틴 교정]</b><p>결과 보고 회의의 폐기 및 데이터 기반 주간 액션 설계</p></div>
-          <div class="hjy-cur-item"><b>[구조 안착]</b><p>대표 부재 시의 의사결정 체계 검증 및 자생 환경 완성</p></div>
-        </div>
+        <ul class="hjy-prog-list">
+          <li><b>[규모 진단]</b> 1인샵·다지점 등 센터 규모와 상권에 맞는 마케팅 전략 수립</li>
+          <li><b>[채널 장악]</b> 플레이스·블로그·메타 광고, 대표가 직접 운용하는 채널 세팅</li>
+          <li><b>[실전 집행]</b> 광고 집행·소재 제작·글쓰기, 직접 해보며 몸에 익히는 실전</li>
+          <li><b>[매출 연결]</b> 유입이 상담·등록·재등록·손익으로 이어지는 구조 완성</li>
+        </ul>
       </div>
     </div>
   </div>
