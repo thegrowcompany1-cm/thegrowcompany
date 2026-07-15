@@ -31,7 +31,7 @@ export default function DiagnosisIntro() {
           onClick={() => setRevealed(true)}
           className="mt-8 inline-flex items-center justify-center rounded-full bg-[#22B573] px-8 py-4 text-base font-extrabold text-white transition-colors hover:bg-[#1c9e63]"
         >
-          궁금하다면 클릭
+          클릭 {">"}
         </button>
       </div>
 
