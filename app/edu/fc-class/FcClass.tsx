@@ -263,6 +263,24 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-bar-when{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fc1-bar-cta{flex:0 0 auto;background:var(--g);color:#fff;font-size:15px;font-weight:800;padding:13px 26px;border-radius:12px;text-decoration:none;white-space:nowrap}
 @media(max-width:480px){.fc1-bar-cta{padding:12px 20px;font-size:14px}.fc1-bar-when{font-size:13px}}
+
+/* 13 마지막 수강신청 */
+.fc1-enroll{background:#0A0A0A;color:#fff}
+.fc1-enroll .fc1-wrap{text-align:center}
+.fc1-enroll-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:680px;margin:32px auto 0}
+.fc1-enroll-card{position:relative;background:#fff;border:1px solid #e6e6e6;border-radius:18px;padding:30px 24px 26px;text-align:center;color:#141414}
+.fc1-enroll-card--sale{border:2px solid var(--g)}
+.fc1-enroll-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#e23b3b;color:#fff;font-size:11px;font-weight:800;padding:5px 14px;border-radius:50px;letter-spacing:.05em;white-space:nowrap}
+.fc1-enroll-tag{font-size:13px;font-weight:700;color:#888;margin-bottom:10px}
+.fc1-enroll-card--sale .fc1-enroll-tag{color:var(--g)}
+.fc1-enroll-price{font-size:22px;font-weight:900;color:#161616;margin-bottom:18px;line-height:1.3}
+.fc1-enroll-price s{color:#aaa;font-weight:700;font-size:15px;margin-right:6px}
+.fc1-enroll-price b{color:var(--g)}
+.fc1-enroll-price span{font-size:13px;color:#999;font-weight:600}
+.fc1-enroll-btn{width:100%;height:52px;border:none;border-radius:12px;background:#161616;color:#fff;font-size:15px;font-weight:800;cursor:pointer;transition:opacity .2s}
+.fc1-enroll-btn--sale{background:var(--g)}
+.fc1-enroll-btn:hover{opacity:.9}
+@media(max-width:640px){.fc1-enroll-cards{grid-template-columns:1fr}.fc1-enroll-price{font-size:20px}}
 </style>
 
 <!-- 1. 히어로 -->
@@ -624,6 +642,27 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
 </section>
 
+<!-- 13. 마지막 수강신청 -->
+<section class="fc1-sec fc1-enroll" id="fc1-enroll">
+  <div class="fc1-wrap">
+    <h2 class="fc1-h2 fc1-reveal">지금, 정규 FC 클래스에<br><em>합류하세요.</em></h2>
+    <p class="fc1-sub fc1-reveal">다음 기수 준비중 · 총 4시간</p>
+    <div class="fc1-enroll-cards">
+      <div class="fc1-enroll-card fc1-reveal">
+        <div class="fc1-enroll-tag">정상가</div>
+        <div class="fc1-enroll-price">${PRICE_ORIGINAL} <span>(VAT포함)</span></div>
+        <button type="button" class="fc1-enroll-btn">정상가로 신청하기</button>
+      </div>
+      <div class="fc1-enroll-card fc1-enroll-card--sale fc1-reveal">
+        <span class="fc1-enroll-badge">EARLY BIRD</span>
+        <div class="fc1-enroll-tag">얼리버드 할인가</div>
+        <div class="fc1-enroll-price"><s>${PRICE_ORIGINAL}</s> <b>${PRICE_SALE}</b> <span>(VAT포함)</span></div>
+        <button type="button" class="fc1-enroll-btn fc1-enroll-btn--sale">얼리버드 할인가로 신청하기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <div class="fc1-barspacer"></div>
 <div class="fc1-bar" id="fc1Bar">
   <div class="fc1-bar-in">
@@ -763,14 +802,34 @@ const DETAIL_HTML = `<div class="fc1">
     }
   }
 
-  // 하단 고정 바 (최상단 결제영역이 보이면 숨김 + 부드러운 스크롤)
+  // 마지막 수강신청 버튼 (TODO: 토스페이먼츠 연동)
+  var enrollBtns = document.querySelectorAll('.fc1-enroll-btn');
+  for (var eb = 0; eb < enrollBtns.length; eb++){
+    (function(btn){
+      var onEnroll = function(){
+        // TODO: 토스페이먼츠 연동
+        alert('결제 준비중입니다. 오픈 예정이니 조금만 기다려주세요.');
+      };
+      btn.addEventListener('click', onEnroll);
+      stops.push(function(){ btn.removeEventListener('click', onEnroll); });
+    })(enrollBtns[eb]);
+  }
+
+  // 하단 고정 바 (최상단 결제영역/하단 신청영역이 보이면 숨김 + 부드러운 스크롤)
   var bar = document.getElementById('fc1Bar');
   var topEl = document.getElementById('fc1-top');
-  if (bar && topEl && typeof IntersectionObserver !== 'undefined'){
+  var enrollEl = document.getElementById('fc1-enroll');
+  if (bar && typeof IntersectionObserver !== 'undefined'){
+    var barVisible = {};
     var ioBar = new IntersectionObserver(function(entries){
-      for (var b = 0; b < entries.length; b++){ bar.classList.toggle('is-hidden', entries[b].isIntersecting); }
+      for (var b = 0; b < entries.length; b++){
+        var vid = entries[b].target.id || ('el' + b);
+        if (entries[b].isIntersecting) barVisible[vid] = 1; else delete barVisible[vid];
+      }
+      bar.classList.toggle('is-hidden', Object.keys(barVisible).length > 0);
     }, { threshold: 0.12 });
-    ioBar.observe(topEl);
+    if (topEl) ioBar.observe(topEl);
+    if (enrollEl) ioBar.observe(enrollEl);
     stops.push(function(){ ioBar.disconnect(); });
   }
   var barCta = document.getElementById('fc1BarCta');
