@@ -1,85 +1,160 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "진단컨설팅 | 더그로우컴퍼니",
-  description: "기존 피트니스 센터의 문제점을 진단하고 개선 방안을 제시합니다. 매출, 운영, 마케팅 전반을 분석합니다.",
+  description:
+    "각 분야 전문가가 매장에 직접 방문해 1:1로 매출·운영·조직·마케팅을 진단하고 개선까지 함께합니다. 대표님의 문제에 맞는 진단 컨설턴트를 선택하세요.",
 };
 
-const diagnosisItems = [
-  { area: "매출 분석", items: ["회원 현황 및 이탈률 분석", "매출 추이 및 수익성 검토", "가격 정책 적정성 평가"] },
-  { area: "운영 진단", items: ["운영 프로세스 효율성 검토", "직원 배치 및 역량 평가", "고객 서비스 수준 진단"] },
-  { area: "마케팅 점검", items: ["SNS 및 온라인 채널 분석", "회원 유치 전략 평가", "경쟁사 대비 포지셔닝"] },
-  { area: "공간·시설", items: ["레이아웃 효율성 분석", "장비 상태 및 활용도 점검", "인테리어 개선 방향 제시"] },
+const CONSULTANTS = [
+  { slug: "kim-jaegang", name: "김재강", field: "FC운영 · 리더십", img: "/consultants/kim-jaegang.jpg" },
+  { slug: "kim-seungho", name: "김승호", field: "FC운영 · PT", img: "/consultants/kim-seungho.jpg" },
+  { slug: "hwang-bongnam", name: "황봉남", field: "인적자원 · PT", img: "/consultants/hwang-bongnam.jpg" },
+  { slug: "park-jungmin", name: "박정민", field: "FC운영 · PT", img: "/consultants/park-jungmin.png" },
+  { slug: "gu-jinwan", name: "구진완", field: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png" },
+  { slug: "heo-junyoung", name: "허준영", field: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg" },
 ];
+
+const STEPS = [
+  {
+    no: "1",
+    title: "신청",
+    desc: "상담 신청서를 남기면 상황에 맞는 방향을 안내해 드립니다.",
+  },
+  {
+    no: "2",
+    title: "방문 진단",
+    desc: "컨설턴트가 매장에 직접 방문해 매출·운영·조직·마케팅 등 문제 지점을 데이터로 특정합니다.",
+  },
+  {
+    no: "3",
+    title: "개선 실행",
+    desc: "주 1회 한달 코스로, 진단에서 끝나지 않고 실행과 정착까지 함께합니다.",
+  },
+];
+
+const FADE_STYLE = `
+@keyframes dgFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.dg-fade{opacity:0;animation:dgFadeUp .6s ease forwards}
+.dg-fade-1{animation-delay:.1s}
+.dg-fade-2{animation-delay:.7s}
+`;
 
 export default function DiagnosisPage() {
   return (
-    <div className="min-h-screen">
-      <section className="bg-[#111111] text-white py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-2 mb-6">
-              <Link href="/" className="text-gray-400 hover:text-white text-sm transition-colors">홈</Link>
-              <span className="text-gray-600">/</span>
-              <span className="text-[#009519] text-sm font-semibold">진단컨설팅</span>
-            </div>
-            <p className="text-[#009519] text-xs font-bold tracking-widest uppercase mb-4">DIAGNOSIS CONSULTING</p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-6">
-              센터의 문제,
-              <br />
-              <span className="text-[#009519]">정확하게 진단</span>합니다
-            </h1>
-            <p className="text-gray-400 text-base sm:text-lg leading-relaxed">
-              매출 정체, 회원 감소, 운영 비효율... 문제의 원인을 찾아드립니다.
-              <br className="hidden sm:block" />
-              현장 분석을 통한 정확한 진단과 실행 가능한 개선안을 제시합니다.
-            </p>
-            <div className="mt-8">
-              <a href="tel:15514476" className="inline-flex items-center gap-2 bg-[#009519] hover:bg-[#007a14] text-white font-bold px-6 py-3 rounded-full text-sm transition-all">
-                진단 신청하기
-              </a>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#0A0A0A] text-white">
+      <style dangerouslySetInnerHTML={{ __html: FADE_STYLE }} />
+
+      {/* ── 1. 인트로 ── */}
+      <section className="mx-auto max-w-6xl px-4 pt-14 pb-12 sm:px-6 sm:pt-20 sm:pb-16 lg:px-8">
+        <div className="flex items-center gap-2 mb-8">
+          <Link href="/" className="text-sm text-gray-400 transition-colors hover:text-white">홈</Link>
+          <span className="text-gray-600">/</span>
+          <span className="text-sm font-semibold text-[#22B573]">진단컨설팅</span>
         </div>
+
+        <p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#22B573]">DIAGNOSIS CONSULTING</p>
+        <h1 className="text-4xl font-black leading-tight sm:text-6xl">진단컨설팅</h1>
+
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-gray-300 sm:text-xl">
+          <span className="dg-fade dg-fade-1 block">
+            각 분야의 전문가가 대표님의 매장에 <span className="font-semibold text-[#22B573]">직접 방문</span>하여
+          </span>
+          <span className="dg-fade dg-fade-2 block">
+            <span className="font-semibold text-[#22B573]">1:1</span>로 문제를 진단하고 개선까지 함께하는 서비스입니다.
+          </span>
+        </p>
       </section>
 
-      <section className="py-14 sm:py-20 bg-[#111111]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p className="text-[#009519] text-xs font-bold tracking-widest uppercase mb-3">DIAGNOSIS AREAS</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#EEEEEE]">진단 영역</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {diagnosisItems.map((d) => (
-              <div key={d.area} className="p-6 rounded-2xl border border-white/10 hover:border-[#009519]/40 hover:shadow-lg hover:shadow-black/40 bg-[#1A1A1A] transition-all">
-                <h3 className="text-lg font-black text-[#EEEEEE] mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-[#009519] rounded-full" />
-                  {d.area}
-                </h3>
-                <ul className="space-y-2">
-                  {d.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-[#999999]">
-                      <svg className="w-4 h-4 text-[#009519] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+      {/* ── 2. 작동 방식 3스텝 ── */}
+      <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6 sm:pb-20 lg:px-8">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 sm:gap-5">
+          {STEPS.map((s) => (
+            <div
+              key={s.no}
+              className="rounded-2xl border border-white/10 bg-[#141414] p-7 sm:p-8"
+            >
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#22B573]/10 text-2xl font-black text-[#22B573]">
+                {s.no}
               </div>
-            ))}
+              <h3 className="mb-3 text-xl font-extrabold text-white">{s.title}</h3>
+              <p className="text-[15px] leading-relaxed text-gray-400">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-relaxed text-gray-500">
+          52개 센터 총괄, 110개 마케팅 운영, 600억 매출 경험 — 각 분야를 실제로 겪어낸 전문가들입니다.
+        </p>
+      </section>
+
+      {/* ── 3. 컨설턴트 선택 그리드 ── */}
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
+        <h2 className="mb-8 text-center text-2xl font-black leading-snug sm:mb-12 sm:text-3xl">
+          대표님의 문제에 맞는<br className="sm:hidden" /> 전문가를 선택하세요.
+        </h2>
+
+        <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3">
+          {CONSULTANTS.map((c) => (
+            <Link
+              key={c.slug}
+              href={`/consulting/diagnosis/${c.slug}`}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] transition-all duration-200 hover:-translate-y-1 hover:border-[#22B573] hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+            >
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1c1c]">
+                <Image
+                  src={c.img}
+                  alt={`${c.name} 헬스장·필라테스 운영 진단 컨설턴트`}
+                  fill
+                  className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                  sizes="(min-width: 1024px) 33vw, 50vw"
+                />
+              </div>
+              <div className="flex flex-col gap-1 p-3 sm:p-4">
+                <h3 className="text-sm font-bold text-white group-hover:text-[#22B573] sm:text-base">
+                  {c.name} 컨설턴트
+                </h3>
+                <p className="text-xs font-medium text-[#22B573]">{c.field}</p>
+              </div>
+            </Link>
+          ))}
+
+          {/* 이석훈 — 준비중 (링크 없음, 흐리게, 클릭 불가) */}
+          <div className="flex cursor-default flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] opacity-50 grayscale lg:col-start-2">
+            <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1c1c]">
+              <Image
+                src="/consultants/lee-seokhun.png"
+                alt="이석훈 헬스장·필라테스 운영 진단 컨설턴트 (준비중)"
+                fill
+                className="object-cover object-top"
+                sizes="(min-width: 1024px) 33vw, 50vw"
+              />
+              <span className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-[11px] font-bold text-white">
+                준비중
+              </span>
+            </div>
+            <div className="flex flex-col gap-1 p-3 sm:p-4">
+              <h3 className="text-sm font-bold text-white sm:text-base">이석훈 컨설턴트</h3>
+              <p className="text-xs font-medium text-gray-400">준비중</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-14 sm:py-20 bg-[#009519] text-center">
-        <div className="max-w-2xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-black text-white mb-4">진단 컨설팅 신청</h2>
-          <p className="text-white/70 mb-8">전문 컨설턴트가 직접 방문하여 진단합니다</p>
-          <a href="tel:15514476" className="inline-flex items-center gap-2 bg-white text-[#009519] font-black px-8 py-4 rounded-full text-base hover:bg-gray-100 transition-colors">
-            1551-4476 전화 신청
-          </a>
+      {/* ── 4. 클로징 CTA ── */}
+      <section className="border-t border-white/10 bg-[#0d0d0d] px-4 py-16 text-center sm:py-20">
+        <div className="mx-auto max-w-2xl">
+          <p className="text-lg font-bold leading-relaxed text-white sm:text-xl">
+            어떤 컨설턴트가 맞을지 고민된다면,<br />
+            편하게 남겨주세요. 상황에 맞는 전문가를 연결해 드립니다.
+          </p>
+          <Link
+            href="/consulting/diagnosis/kim-jaegang"
+            className="mt-8 inline-flex items-center justify-center rounded-full bg-[#22B573] px-8 py-4 text-base font-extrabold text-white transition-colors hover:bg-[#1c9e63]"
+          >
+            무료 상담 신청하기
+          </Link>
         </div>
       </section>
     </div>
