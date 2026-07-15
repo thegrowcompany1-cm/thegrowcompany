@@ -62,6 +62,9 @@ const DETAIL_HTML = `<div class="sm1">
 .sm1-pay-btn--sale{background:var(--g)}
 .sm1-pay-btn:hover{opacity:.9}
 .sm1-pay-note{font-size:12px;color:#888;line-height:1.7;margin:4px 2px 0}
+.sm1-apply-cards{max-width:720px;margin:32px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.sm1-apply-note{max-width:640px;margin:16px auto 0;text-align:center;font-size:12px;color:#9a9a9a;line-height:1.7}
+@media(max-width:640px){.sm1-apply-cards{grid-template-columns:1fr}}
 @media(max-width:860px){.sm1-top-grid{grid-template-columns:1fr;gap:22px}}
 @media(max-width:640px){.sm1-top-title{font-size:23px}.sm1-pay-price{font-size:23px}}
 
@@ -235,6 +238,26 @@ const DETAIL_HTML = `<div class="sm1">
   </div>
 </section>
 
+<!-- 8. 하단 신청/결제 -->
+<section class="sm1-sec sm1-dark" id="sm1-apply">
+  <div class="sm1-wrap">
+    <h2 class="sm1-h2">지금 바로<br><em>신청하세요.</em></h2>
+    <div class="sm1-apply-cards">
+      <div class="sm1-pay-card">
+        <div class="sm1-pay-tag">창업 원데이 클래스 정가</div>
+        <div class="sm1-pay-price">${PRICE_ORIGINAL} <span class="sm1-pay-vat">(VAT포함)</span></div>
+        <button type="button" class="sm1-pay-btn">결제하기</button>
+      </div>
+      <div class="sm1-pay-card sm1-pay-card--sale">
+        <div class="sm1-pay-tag">인스타 스토리 공유 시 할인가</div>
+        <div class="sm1-pay-price"><span class="sm1-pay-was">${PRICE_ORIGINAL}</span><span class="sm1-pay-now">${PRICE_SALE}</span> <span class="sm1-pay-vat">(VAT포함)</span></div>
+        <button type="button" class="sm1-pay-btn sm1-pay-btn--sale">할인가로 결제하기</button>
+      </div>
+    </div>
+    <p class="sm1-apply-note">현재 신청 문의가 많아 정원 초과 시 100% 환불해 드립니다. 응답이 없을 경우 자동 취소되는 점 양해 바랍니다.</p>
+  </div>
+</section>
+
 <div class="sm1-barspacer"></div>
 
 <!-- 10. 하단 고정 바 -->
@@ -288,11 +311,18 @@ const DETAIL_HTML = `<div class="sm1">
   /* 하단 고정 바 — 최상단(결제 카드)이 보이면 숨김, 스크롤 내리면 표시 + 부드러운 스크롤 */
   var bar = document.getElementById('sm1-bar');
   var target = document.getElementById('sm1-top');
-  if (bar && target && typeof IntersectionObserver !== 'undefined'){
+  var applyEl = document.getElementById('sm1-apply');
+  if (bar && typeof IntersectionObserver !== 'undefined'){
+    var visibleSet = {};
     var io = new IntersectionObserver(function(entries){
-      for (var k = 0; k < entries.length; k++){ bar.classList.toggle('is-hidden', entries[k].isIntersecting); }
+      for (var k = 0; k < entries.length; k++){
+        var id = entries[k].target.id;
+        if (entries[k].isIntersecting) visibleSet[id] = 1; else delete visibleSet[id];
+      }
+      bar.classList.toggle('is-hidden', Object.keys(visibleSet).length > 0);
     }, { threshold: 0.12 });
-    io.observe(target);
+    if (target) io.observe(target);
+    if (applyEl) io.observe(applyEl);
     stops.push(function(){ io.disconnect(); });
   }
   var cta = document.getElementById('sm1-bar-cta');
