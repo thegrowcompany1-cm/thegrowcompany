@@ -14,7 +14,7 @@ export default function DiagnosisIntro() {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div className="relative flex min-h-[320px] items-center justify-center sm:min-h-[380px]">
+    <div className="relative flex min-h-[340px] items-center justify-center sm:min-h-[400px]">
       <style dangerouslySetInnerHTML={{ __html: INTRO_STYLE }} />
 
       {/* 질문 상태 */}
@@ -61,6 +61,12 @@ export default function DiagnosisIntro() {
             style={{ animationDelay: "1.4s" }}
           >
             개선까지 함께하는 서비스입니다.
+          </p>
+          <p
+            className="di-line text-base font-bold leading-snug text-gray-300 sm:text-xl"
+            style={{ animationDelay: "1.85s" }}
+          >
+            헬스장 컨설팅, 필라테스 컨설팅 모두 가능합니다.
           </p>
         </div>
       )}

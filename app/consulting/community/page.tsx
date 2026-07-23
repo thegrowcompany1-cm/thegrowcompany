@@ -21,12 +21,12 @@ import { SITE_URL } from "@/lib/site";
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "커뮤니티 시설 위탁운영",
-  name: "기업·아파트 커뮤니티 피트니스 시설 위탁운영",
+  serviceType: "아파트 헬스장·커뮤니티 시설 위탁운영",
+  name: "아파트 헬스장·커뮤니티 시설 위탁운영",
   url: `${SITE_URL}/consulting/community`,
   areaServed: "KR",
   description:
-    "아파트·기업·공공기관·호텔 커뮤니티 피트니스 시설 위탁운영. 진단·기획·운영·교육을 한 회사에서 제공하는 더그로우컴퍼니 시설 위탁운영 컨설팅.",
+    "아파트, 기업, 공공기관 커뮤니티 헬스장 위탁운영 전문. 시설 기획부터 운영까지 더그로우컴퍼니가 책임집니다.",
   provider: {
     "@type": "Organization",
     name: "더그로우컴퍼니",
@@ -705,7 +705,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
 
     <div class="wo-hero-eyebrow">
       <span class="wo-hero-eyebrow-dot"></span>
-      <span class="wo-hero-eyebrow-text">아파트 · 공공기관 · 기업 · 호텔 <strong>위탁운영</strong></span>
+      <span class="wo-hero-eyebrow-text">아파트 헬스장 · 공공기관 · 기업 · 호텔 <strong>시설 위탁운영</strong></span>
     </div>
 
     <h1 class="wo-hero-title">
@@ -714,8 +714,9 @@ const DETAIL_HTML = `<!-- ============================================ -->
     </h1>
 
     <p class="wo-hero-sub">
+      아파트 커뮤니티 헬스장부터 기업·공공기관 시설까지,<br>
       <strong>진단 · 기획 · 운영 · 교육</strong>을 한 회사 안에서.<br>
-      컨설팅 기반의 체계적 위탁운영으로 시설의 가치를 끌어올립니다.
+      컨설팅 기반의 체계적 시설 위탁운영으로 가치를 끌어올립니다.
     </p>
 
     <div class="wo-hero-cta">
@@ -995,9 +996,9 @@ const DETAIL_HTML = `<!-- ============================================ -->
       <div class="wo-types-card is-apt">
         <div class="wo-types-num">01</div>
         <div class="wo-types-body">
-          <h3 class="wo-types-name">아파트</h3>
+          <h3 class="wo-types-name">아파트 헬스장</h3>
           <p class="wo-types-desc">
-            입주민 전용 커뮤니티 피트니스. 입대의·관리주체 대상 위탁운영.
+            입주민 전용 아파트 커뮤니티 헬스장. 입대의·관리주체 대상 시설 위탁운영.
           </p>
           <div class="wo-types-tags">
             <span class="wo-types-tag">입주민 케어</span>

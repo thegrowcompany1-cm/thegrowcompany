@@ -21,12 +21,12 @@ import { SITE_URL } from "@/lib/site";
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "피트니스 매장 위탁운영",
+  serviceType: "헬스장 위탁·필라테스 위탁",
   name: "헬스장·필라테스 매장 위탁운영",
   url: `${SITE_URL}/consulting/outsourcing`,
   areaServed: "KR",
   description:
-    "위탁운영 전문가가 직접 매장에 상주하며 헬스장운영·필라테스운영을 개선합니다. 매출이 오를 때까지 함께하는 더그로우컴퍼니 매장 위탁운영 컨설팅.",
+    "헬스장 위탁·필라테스 위탁 전문가가 매장에 직접 상주하며 헬스장 위탁운영으로 매출이 오를 때까지 함께합니다.",
   provider: {
     "@type": "Organization",
     name: "더그로우컴퍼니",
@@ -149,6 +149,13 @@ const DETAIL_HTML = `<style>
     transform: translateY(0);
   }
 
+  .hero-eyebrow {
+    font-size: 14px;
+    font-weight: 700;
+    color: #22B573;
+    margin-bottom: 12px;
+    letter-spacing: -0.2px;
+  }
   .hero-title {
     font-size: 38px;
     font-weight: 800;
@@ -251,6 +258,7 @@ const DETAIL_HTML = `<style>
 
 <div class="hero-section">
   <div class="hero-animate" id="heroTitle">
+    <p class="hero-eyebrow">헬스장 위탁 · 필라테스 위탁</p>
     <h1 class="hero-title">
       매장에 <span class="highlight">직접 가서</span><br>
       매출을 올려드립니다.
@@ -261,8 +269,8 @@ const DETAIL_HTML = `<style>
 
   <div class="hero-animate" id="heroSubtitle" style="transition-delay: 0.2s;">
     <p class="hero-subtitle">
-      더그로우 전문가가 센터에 직접 상주하며<br>
-      매출이 오를 때까지 함께 운영합니다.
+      더그로우 전문가가 헬스장·필라테스 센터에 직접 상주하며<br>
+      헬스장 위탁운영으로 매출이 오를 때까지 함께합니다.
     </p>
   </div>
 
@@ -1050,7 +1058,7 @@ const DETAIL_HTML = `<style>
     <span class="highlight">진행 과정</span>
   </h2>
   <p class="process-desc">
-    더그로우 간부급 전문가가 매장에 직접 상주하며<br>
+    더그로우 간부급 전문가가 헬스장·필라테스 위탁 매장에 직접 상주하며<br>
     매출이 오를 때까지 함께 운영합니다.
   </p>
 

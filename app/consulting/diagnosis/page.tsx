@@ -5,9 +5,9 @@ import DiagnosisIntro from "./DiagnosisIntro";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "진단컨설팅 | 더그로우컴퍼니",
+  title: "헬스장·필라테스 컨설팅 | 더그로우컴퍼니 진단컨설팅",
   description:
-    "각 분야 전문가가 매장에 직접 방문해 1:1로 매출·운영·조직·마케팅을 진단하고 개선까지 함께합니다. 대표님의 문제에 맞는 진단 컨설턴트를 선택하세요.",
+    "헬스장 컨설팅·필라테스 컨설팅 전문가가 매장에 직접 방문해 1:1로 진단하고 개선까지 함께합니다. 대표님의 문제에 맞는 진단 컨설턴트를 선택하세요.",
 };
 
 const CONSULTANTS = [
@@ -98,12 +98,15 @@ export default function DiagnosisPage() {
           ))}
         </div>
         <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-relaxed text-gray-500">
-          52개 센터 총괄, 110개 마케팅 운영, 600억 매출 경험 — 각 분야를 실제로 겪어낸 전문가들입니다.
+          52개 센터 총괄, 110개 마케팅 운영, 600억 매출 경험 — 헬스장 컨설팅·필라테스 컨설팅 각 분야를 실제로 겪어낸 전문가들입니다.
         </p>
       </section>
 
       {/* ── 3. 컨설턴트 선택 그리드 ── */}
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
+        <p className="mb-3 text-center text-xs font-bold uppercase tracking-widest text-[#22B573]">
+          헬스장 컨설팅 · 필라테스 컨설팅
+        </p>
         <h2 className="mb-8 text-center text-2xl font-black leading-snug sm:mb-12 sm:text-3xl">
           대표님의 문제에 맞는<br className="sm:hidden" /> 전문가를 선택하세요.
         </h2>

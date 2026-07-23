@@ -20,10 +20,12 @@ import { SITE_URL } from "@/lib/site";
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "피트니스 센터 진단 컨설팅",
+  serviceType: "헬스장 마케팅·필라테스 마케팅 컨설팅",
   name: "허준영 컨설턴트 진단 컨설팅",
   url: `${SITE_URL}/consulting/diagnosis/heo-junyoung`,
   areaServed: "KR",
+  description:
+    "허준영 컨설턴트의 헬스장 마케팅·필라테스 마케팅 1:1 진단으로 매출로 이어지는 구조를 설계합니다.",
   provider: {
     "@type": "Organization",
     name: "더그로우컴퍼니",
@@ -561,6 +563,8 @@ const DETAIL_HTML = `<div class="hjy">
 .hjy-vline{display:block;width:2px;height:56px;background:var(--g);margin:36px auto}
 .hjy-accent{font-size:19px;font-weight:800;color:#fff;text-align:center;margin:0;line-height:1.6}
 .hjy-accent em{font-style:normal;color:var(--g)}
+.hjy-kw{font-size:14px;font-weight:700;color:var(--g);text-align:center;margin:0 0 14px;letter-spacing:.01em}
+.hjy-sec.tl .hjy-kw{text-align:left}
 @media(max-width:640px){.hjy-h2{font-size:23px}.hjy-lead{font-size:15px}.hjy-sec{padding:76px 0}}
 
 .hjy-points{display:flex;flex-direction:column;gap:18px;max-width:600px;margin:36px auto 0}
@@ -687,6 +691,7 @@ const DETAIL_HTML = `<div class="hjy">
 <!-- 섹션 1 — 오프닝 (좌측 정렬) -->
 <section class="hjy-sec tl">
   <div class="hjy-inner">
+    <p class="hjy-kw">헬스장 마케팅·필라테스 마케팅, 매출 구조부터 다시 봅니다</p>
     <h1 class="hjy-h2">열심히는 하고 있습니다.<br>그런데 매출이 그걸 몰라줍니다.</h1>
     <p class="hjy-lead">신규는 들쭉날쭉, 재등록은 애매하게,<br>인건비는 꼬박꼬박.</p>
     <p class="hjy-lead">어디서 새는지 찾아 메꾸고,<br>한 달 뒤엔 대표님이 직접 굴리게 만들어 드립니다.</p>
@@ -725,7 +730,7 @@ const DETAIL_HTML = `<div class="hjy">
     <p class="hjy-accent"><em>매출은 광고가 아니라 구조가 만듭니다.</em></p>
     <div class="hjy-nums">
       <div class="hjy-num-card"><b class="hjy-count" data-to="10" data-suffix="억">0억</b><span>메타광고 누적 집행액</span></div>
-      <div class="hjy-num-card"><b class="hjy-count" data-to="110" data-suffix="개+">0개+</b><span>그로우 마케팅 운영 센터</span></div>
+      <div class="hjy-num-card"><b class="hjy-count" data-to="110" data-suffix="개+">0개+</b><span>헬스장·필라테스 마케팅 운영 센터</span></div>
       <div class="hjy-num-card"><b class="hjy-count" data-prefix="1급 " data-to="3" data-suffix="종">1급 0종</b><span>검색광고마케터 (네이버·구글·카카오)</span></div>
       <div class="hjy-num-card"><b class="hjy-count" data-to="800" data-suffix="명">0명</b><span>그로우 에듀 누적 수강생</span></div>
     </div>
@@ -753,7 +758,7 @@ const DETAIL_HTML = `<div class="hjy">
     <div class="hjy-prog">
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">프로그램</div>
-        <p class="hjy-prog-body">허준영 컨설턴트의 1:1 규모 맞춤 마케팅 밀착 컨설팅</p>
+        <p class="hjy-prog-body">허준영 컨설턴트의 1:1 헬스장·필라테스 마케팅 밀착 컨설팅</p>
       </div>
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">진단 시간</div>
