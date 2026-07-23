@@ -10,6 +10,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { SITE_URL } from "@/lib/site";
 
 /* ▼▼ 다음 세미나 때 이 상수만 수정 ▼▼ */
 const SEMINAR_DATE = "6월 14일 (일요일)";
@@ -19,6 +20,34 @@ const SEMINAR_PLACE =
 const PRICE_ORIGINAL = "220,000원";
 const PRICE_SALE = "99,000원";
 /* ▲▲ 여기까지 ▲▲ */
+
+// 창업 세미나 Course 구조화 데이터 — 일정 미정이므로 startDate/hasCourseInstance 는 넣지 않는다.
+const COURSE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "창업 세미나",
+  description:
+    "단 하루만에 끝내는 헬스장·필라테스 창업 노하우. 입지선정·인테리어·오픈 프리세일까지 공개하는 원데이 클래스입니다.",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+  },
+  offers: [
+    {
+      "@type": "Offer",
+      name: "정상가",
+      price: PRICE_ORIGINAL.replace(/[^0-9]/g, ""),
+      priceCurrency: "KRW",
+    },
+    {
+      "@type": "Offer",
+      name: "얼리버드 할인가",
+      price: PRICE_SALE.replace(/[^0-9]/g, ""),
+      priceCurrency: "KRW",
+    },
+  ],
+};
 
 // 다음 일정이 확정되면 SCHEDULE_TBD 를 false 로만 바꾸면 위 상수(날짜·시간·장소)가 자동 노출됨
 const SCHEDULE_TBD = true;
@@ -392,6 +421,10 @@ export default function StartupClass() {
 
   return (
     <div className="overflow-x-hidden bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(COURSE_SCHEMA) }}
+      />
       {mounted ? (
         <div
           ref={detailRef}

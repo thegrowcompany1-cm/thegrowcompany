@@ -14,6 +14,32 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
+import { SITE_URL } from "@/lib/site";
+
+// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 센터 진단 컨설팅",
+  name: "박정민 컨설턴트 진단 컨설팅",
+  url: `${SITE_URL}/consulting/diagnosis/park-jungmin`,
+  areaServed: "KR",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+    employee: {
+      "@type": "Person",
+      name: "박정민",
+      jobTitle: "FC운영·PT 컨설턴트",
+    },
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "KRW",
+  },
+};
 
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/park-jungmin.png";
@@ -582,7 +608,7 @@ const DETAIL_HTML = `<div class="pjm">
 <!-- 1. 공감 -->
 <section class="pjm-sec">
   <div class="pjm-inner">
-    <h2 class="pjm-h2">현장 없는 이론은<br>절대 실력이 될 수 없습니다.</h2>
+    <h1 class="pjm-h2">현장 없는 이론은<br>절대 실력이 될 수 없습니다.</h1>
     <p class="pjm-lead">2010년 강사로 시작해<br>총괄 임원까지 15년의 시간,<br>모든 계절을 현장에서 이겨냈습니다.</p>
     <p class="pjm-lead">운동이 좋아 뛰어든 이 시장에서<br>홀로 고군분투하는 대표님들을 볼 때마다<br>늘 마음이 무거웠습니다.</p>
     <span class="pjm-vline"></span>
@@ -853,6 +879,10 @@ export default function ParkJungminDiagnosisPage() {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">

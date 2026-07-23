@@ -10,6 +10,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { SITE_URL } from "@/lib/site";
 
 /* ▼▼ 다음 기수 때 이 상수만 수정 ▼▼ */
 const SEMINAR_DATE = "준비중";
@@ -18,6 +19,58 @@ const SEMINAR_PLACE = "준비중";
 const PRICE_ORIGINAL = "290,000원";
 const PRICE_SALE = "190,000원";
 /* ▲▲ 여기까지 ▲▲ */
+
+// 정규 FC 클래스 Course 구조화 데이터 — 일정 미정이므로 startDate/hasCourseInstance 는 넣지 않는다.
+const COURSE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "정규 FC 클래스",
+  description:
+    "매출에 관련된 모든 것 — 고객관리·상담·재등록·서비스·관리시스템·마케팅을 현장 전문가 2인이 직강하는 그로우 아카데미 정규 FC 클래스.",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+  },
+  offers: [
+    {
+      "@type": "Offer",
+      name: "정상가",
+      price: PRICE_ORIGINAL.replace(/[^0-9]/g, ""),
+      priceCurrency: "KRW",
+    },
+    {
+      "@type": "Offer",
+      name: "얼리버드 할인가",
+      price: PRICE_SALE.replace(/[^0-9]/g, ""),
+      priceCurrency: "KRW",
+    },
+  ],
+};
+
+// 아코디언(마케팅 직접 하기 / 가격 올리기) 내용을 그대로 FAQ 구조화 데이터로 변환
+const FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "더 이상 마케팅 맡기지마세요.",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "실제 마케팅 회사에서 적용하는 방법을 모두 공개합니다. 직접 마케팅을 하고 싶으신 분, 직원이 있으시다면 몇백만원은 아끼실 수 있습니다.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "가격을 높이고 싶은 분들을 위한 강의",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "가격경쟁은 결국 망할 수밖에 없습니다. 상담방법, 재등록방법, 우리 매장의 차별화를 두기 위한 방법 등 500개 매장의 대표님들과 함께해오며 쌓아온 핵심 운영 노하우를 알려드립니다.",
+      },
+    },
+  ],
+};
 
 // 최상단 좌측 강의 사진 후보 — 로드 시 클라이언트에서 1장 랜덤 선택
 const LECTURE_IMAGES = [
@@ -289,7 +342,7 @@ const DETAIL_HTML = `<div class="fc1">
   <div class="fc1-hero-ov"></div>
   <div class="fc1-hero-in">
     <p class="fc1-hero-sub fc1-fu fc1-d1">— 정규 FC 클래스 —</p>
-    <p class="fc1-hero-q fc1-fu fc1-d2">매달 신규 문의 때문에<br><span class="fc1-red">잠 못 드는 밤</span>이 있습니다.</p>
+    <h1 class="fc1-hero-q fc1-fu fc1-d2">매달 신규 문의 때문에<br><span class="fc1-red">잠 못 드는 밤</span>이 있습니다.</h1>
     <p class="fc1-hero-q fc1-fu fc1-d3">혹시 <span class="fc1-red">적자를 겨우 면하고</span> 있는 달도 있습니다.</p>
     <span class="fc1-divider fc1-fu fc1-d4"></span>
     <p class="fc1-hero-big fc1-fu fc1-d5">걱정마세요</p>
@@ -918,6 +971,14 @@ export default function FcClass() {
       data-seminar-place={SEMINAR_PLACE}
     >
       <style dangerouslySetInnerHTML={{ __html: TOP_STYLE }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(COURSE_SCHEMA) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
+      />
 
       {/* ── 0. 최상단: 랜덤 강의사진 / 결제 카드 2개 ── */}
       <section id="fc1-top" className="bg-[#f6f5f2] py-12 sm:py-16">

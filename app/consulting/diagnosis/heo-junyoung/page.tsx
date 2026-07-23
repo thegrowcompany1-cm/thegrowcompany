@@ -14,6 +14,32 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
+import { SITE_URL } from "@/lib/site";
+
+// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 센터 진단 컨설팅",
+  name: "허준영 컨설턴트 진단 컨설팅",
+  url: `${SITE_URL}/consulting/diagnosis/heo-junyoung`,
+  areaServed: "KR",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+    employee: {
+      "@type": "Person",
+      name: "허준영",
+      jobTitle: "FC운영·마케팅 컨설턴트",
+    },
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "KRW",
+  },
+};
 
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/heo-junyoung.jpg";
@@ -661,7 +687,7 @@ const DETAIL_HTML = `<div class="hjy">
 <!-- 섹션 1 — 오프닝 (좌측 정렬) -->
 <section class="hjy-sec tl">
   <div class="hjy-inner">
-    <h2 class="hjy-h2">열심히는 하고 있습니다.<br>그런데 매출이 그걸 몰라줍니다.</h2>
+    <h1 class="hjy-h2">열심히는 하고 있습니다.<br>그런데 매출이 그걸 몰라줍니다.</h1>
     <p class="hjy-lead">신규는 들쭉날쭉, 재등록은 애매하게,<br>인건비는 꼬박꼬박.</p>
     <p class="hjy-lead">어디서 새는지 찾아 메꾸고,<br>한 달 뒤엔 대표님이 직접 굴리게 만들어 드립니다.</p>
   </div>
@@ -978,6 +1004,10 @@ export default function HeoJunyoungDiagnosisPage() {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">

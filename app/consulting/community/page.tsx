@@ -15,6 +15,24 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/site";
+
+// 시설 위탁운영 Service 구조화 데이터
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "커뮤니티 시설 위탁운영",
+  name: "기업·아파트 커뮤니티 피트니스 시설 위탁운영",
+  url: `${SITE_URL}/consulting/community`,
+  areaServed: "KR",
+  description:
+    "아파트·기업·공공기관·호텔 커뮤니티 피트니스 시설 위탁운영. 진단·기획·운영·교육을 한 회사에서 제공하는 더그로우컴퍼니 시설 위탁운영 컨설팅.",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+  },
+};
 
 // 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 시설 위탁운영은 제외)
 const RELATED_SERVICES = [
@@ -5208,6 +5226,10 @@ export default function CommunityConsultingPage() {
 
   return (
     <div className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단: 좌 이미지 / 우 상담 폼) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">

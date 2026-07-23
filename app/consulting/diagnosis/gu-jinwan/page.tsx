@@ -14,6 +14,33 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
+import { SITE_URL } from "@/lib/site";
+
+// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+// ⚠️ 구진완 페이지는 유료 진단(150,000원)이므로 offers.price 를 0 이 아닌 실제 가격으로 지정
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 센터 진단 컨설팅",
+  name: "구진완 컨설턴트 진단 컨설팅",
+  url: `${SITE_URL}/consulting/diagnosis/gu-jinwan`,
+  areaServed: "KR",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+    employee: {
+      "@type": "Person",
+      name: "구진완",
+      jobTitle: "FC운영·리더십 컨설턴트",
+    },
+  },
+  offers: {
+    "@type": "Offer",
+    price: "150000",
+    priceCurrency: "KRW",
+  },
+};
 
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/gu-jinwan.png";
@@ -601,7 +628,7 @@ const DETAIL_HTML = `<div class="gjw">
 <!-- 1. 공감 -->
 <section class="gjw-sec">
   <div class="gjw-inner">
-    <h2 class="gjw-h2">54개 지점, 600억 매출.<br>도전하고 성공하고 실패한 사람의<br><em>'진짜'</em> 위로와 해답.</h2>
+    <h1 class="gjw-h2">54개 지점, 600억 매출.<br>도전하고 성공하고 실패한 사람의<br><em>'진짜'</em> 위로와 해답.</h1>
     <p class="gjw-lead">GOTO, 새마을 피트니스.<br>대한민국 피트니스의 표준을 만들었던 이름입니다.</p>
     <p class="gjw-lead">그 모든 과정을 직접 짊어졌기에<br>결정 앞에 홀로 선 대표님의 무게를 압니다.</p>
     <span class="gjw-vline"></span>
@@ -883,6 +910,10 @@ export default function GuJinwanDiagnosisPage() {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">

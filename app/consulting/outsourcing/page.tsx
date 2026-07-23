@@ -15,6 +15,24 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/site";
+
+// 매장 위탁운영 Service 구조화 데이터
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 매장 위탁운영",
+  name: "헬스장·필라테스 매장 위탁운영",
+  url: `${SITE_URL}/consulting/outsourcing`,
+  areaServed: "KR",
+  description:
+    "위탁운영 전문가가 직접 매장에 상주하며 헬스장운영·필라테스운영을 개선합니다. 매출이 오를 때까지 함께하는 더그로우컴퍼니 매장 위탁운영 컨설팅.",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+  },
+};
 
 // 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 매장 위탁운영은 제외)
 const RELATED_SERVICES = [
@@ -2279,6 +2297,10 @@ export default function OutsourcingConsultingPage() {
 
   return (
     <div className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
@@ -2319,9 +2341,9 @@ export default function OutsourcingConsultingPage() {
             <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#009519]">
               FREE CONSULTING
             </p>
-            <h1 className="mb-6 text-xl font-black leading-snug text-[#1a1a1a] sm:text-2xl">
+            <h2 className="mb-6 text-xl font-black leading-snug text-[#1a1a1a] sm:text-2xl">
               매장 위탁운영 상담 신청 (무료)
-            </h1>
+            </h2>
 
             <div className="space-y-5">
               {/* 희망 업종 */}

@@ -16,6 +16,32 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
+import { SITE_URL } from "@/lib/site";
+
+// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 센터 진단 컨설팅",
+  name: "김재강 컨설턴트 진단 컨설팅",
+  url: `${SITE_URL}/consulting/diagnosis/kim-jaegang`,
+  areaServed: "KR",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+    employee: {
+      "@type": "Person",
+      name: "김재강",
+      jobTitle: "대표 컨설턴트",
+    },
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "KRW",
+  },
+};
 
 // 좌측 메인 이미지 (public 기준). 없으면 회색 placeholder 로 대체.
 const MAIN_IMAGE = "/consultants/kim-jaegang.jpg";
@@ -597,7 +623,7 @@ const DETAIL_HTML_1 = `<div class="kjk">
 <section class="kjk-sec">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>STEP 01 · EMPATHY</span></div>
-    <h2 class="kjk-h2">대표님, 오늘도<br>혼자 뛰고 계셨습니다.</h2>
+    <h1 class="kjk-h2">대표님, 오늘도<br>혼자 뛰고 계셨습니다.</h1>
     <p class="kjk-lead">매출이 떨어지면 잠이 오지 않고<br>관리자가 흔들리면 대표가 대신 뜁니다.<br>그렇게 버티는 하루하루를, 저도 살아봤습니다.</p>
     <p class="kjk-lead">저는 46개 필라테스와 6개 대형 피트니스를 총괄하며<br>매출 압박 속에 눈치로 버티던 관리자들을<br>현장에서 직접 마주해온 사람입니다.</p>
     <span class="kjk-vline"></span>
@@ -1207,6 +1233,10 @@ export default function KimJaegangDiagnosisPage() {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">

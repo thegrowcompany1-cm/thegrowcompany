@@ -14,6 +14,32 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
+import { SITE_URL } from "@/lib/site";
+
+// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 센터 진단 컨설팅",
+  name: "김승호 컨설턴트 진단 컨설팅",
+  url: `${SITE_URL}/consulting/diagnosis/kim-seungho`,
+  areaServed: "KR",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+    employee: {
+      "@type": "Person",
+      name: "김승호",
+      jobTitle: "FC운영·PT 컨설턴트",
+    },
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "KRW",
+  },
+};
 
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/kim-seungho.jpg";
@@ -578,7 +604,7 @@ const DETAIL_HTML = `<div class="ksh">
 <!-- 1. 공감 -->
 <section class="ksh-sec">
   <div class="ksh-inner">
-    <h2 class="ksh-h2">피트니스 열정으로 시작했지만,<br>운영으로만 살아남습니다.</h2>
+    <h1 class="ksh-h2">피트니스 열정으로 시작했지만,<br>운영으로만 살아남습니다.</h1>
     <p class="ksh-lead">54개 지점, 500명의 조직을<br>오직 구조와 지시로 움직였습니다.</p>
     <p class="ksh-lead">누군가는 저를 '저승사자'라 불렀지만,<br>저는 타협 없이 운영의 거품을 걷어냈습니다.</p>
     <span class="ksh-vline"></span>
@@ -845,6 +871,10 @@ export default function KimSeunghoDiagnosisPage() {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">

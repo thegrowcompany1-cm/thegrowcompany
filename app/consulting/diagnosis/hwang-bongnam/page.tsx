@@ -14,6 +14,32 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
+import { SITE_URL } from "@/lib/site";
+
+// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 센터 진단 컨설팅",
+  name: "황봉남 컨설턴트 진단 컨설팅",
+  url: `${SITE_URL}/consulting/diagnosis/hwang-bongnam`,
+  areaServed: "KR",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+    employee: {
+      "@type": "Person",
+      name: "황봉남",
+      jobTitle: "인적자원·PT 컨설턴트",
+    },
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "KRW",
+  },
+};
 
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/hwang-bongnam.jpg";
@@ -578,7 +604,7 @@ const DETAIL_HTML = `<div class="hbn">
 <!-- 1. 공감 -->
 <section class="hbn-sec">
   <div class="hbn-inner">
-    <h2 class="hbn-h2">18년 실전 전문가의 깊이,<br>대표님께는 흔들리지 않는 확신을 드립니다.</h2>
+    <h1 class="hbn-h2">18년 실전 전문가의 깊이,<br>대표님께는 흔들리지 않는 확신을 드립니다.</h1>
     <p class="hbn-lead">밤낮없이 매달려도<br>늘 제자리걸음인 기분이 드는 건,<br>대표님의 헌신이 모자라서가 아닙니다.</p>
     <p class="hbn-lead">저는 1개의 매장에서 11개의 직영 전략까지,<br>수천 번의 시행착오를 먼저 겪어낸 사람입니다.</p>
     <span class="hbn-vline"></span>
@@ -842,6 +868,10 @@ export default function HwangBongnamDiagnosisPage() {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">

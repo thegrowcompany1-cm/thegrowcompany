@@ -15,6 +15,24 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import StickyCtaBar from "@/components/StickyCtaBar";
+import { SITE_URL } from "@/lib/site";
+
+// 창업 컨설팅 Service 구조화 데이터
+const SERVICE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "피트니스 창업 컨설팅",
+  name: "헬스장·필라테스 창업 컨설팅",
+  url: `${SITE_URL}/consulting/startup`,
+  areaServed: "KR",
+  description:
+    "헬스장창업·필라테스창업부터 피트니스 인테리어까지. 오픈 이후에도 살아남는 운영 구조를 설계하는 더그로우컴퍼니 창업 컨설팅.",
+  provider: {
+    "@type": "Organization",
+    name: "더그로우컴퍼니",
+    url: SITE_URL,
+  },
+};
 
 // 하단 "다른 서비스 둘러보기" 추천 카드
 const RELATED_SERVICES = [
@@ -4691,6 +4709,10 @@ export default function StartupConsultingPage() {
 
   return (
     <div className="bg-white overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
+      />
       {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">

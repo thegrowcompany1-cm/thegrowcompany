@@ -79,6 +79,10 @@ export default function HeroSection() {
               ? `slogan-exit ${EXIT_DURATION}ms ease-in both`
               : `slogan-enter ${ENTER_DURATION}ms ease-out both`;
           }
+          // 첫 슬로건만 페이지의 실질적 헤드라인이므로 h1, 나머지는 p
+          // (둘 다 항상 마운트되어 opacity로만 전환되므로, DOM에 h1이 2개
+          //  동시에 존재하지 않도록 태그를 분리한다 — 시각 스타일은 동일)
+          const Tag = i === 0 ? "h1" : "p";
           return (
             <div
               key={i}
@@ -88,7 +92,7 @@ export default function HeroSection() {
                 pointerEvents: isActive ? "auto" : "none",
               }}
             >
-              <p
+              <Tag
                 className={`w-full text-center text-white leading-relaxed ${slogan.sizeClass}`}
                 style={{
                   fontWeight: slogan.weight,
@@ -99,7 +103,7 @@ export default function HeroSection() {
                 }}
               >
                 {slogan.content}
-              </p>
+              </Tag>
             </div>
           );
         })}

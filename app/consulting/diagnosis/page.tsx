@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import DiagnosisIntro from "./DiagnosisIntro";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "진단컨설팅 | 더그로우컴퍼니",
@@ -36,9 +37,45 @@ const STEPS = [
   },
 ];
 
+// 컨설턴트 6명 목록 구조화 데이터
+const ITEM_LIST_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  itemListElement: CONSULTANTS.map((c, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    url: `${SITE_URL}/consulting/diagnosis/${c.slug}`,
+    name: `${c.name} 컨설턴트`,
+  })),
+};
+
+// AEO 대응 FAQ 구조화 데이터
+const FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "진단컨설팅은 어떤 서비스인가요",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "각 분야의 전문가가 대표님의 매장에 직접 방문하여 1:1로 문제를 진단하고 개선까지 함께하는 서비스입니다. 주 1회, 한달 코스로 진행됩니다.",
+      },
+    },
+  ],
+};
+
 export default function DiagnosisPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ITEM_LIST_SCHEMA) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
+      />
       {/* ── 1. 인트로 (질문 → 답변 인터랙션) ── */}
       <section className="mx-auto max-w-6xl px-4 pt-8 pb-10 sm:px-6 sm:pt-12 sm:pb-14 lg:px-8">
         <DiagnosisIntro />
