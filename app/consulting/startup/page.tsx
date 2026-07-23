@@ -1109,7 +1109,7 @@ const DETAIL_HTML = `<style>
 }
 </style>
 
-<section class="tgc-checklist" id="consulting-form">
+<section class="tgc-checklist" id="tgc-checklist-section">
   <div class="tgc-checklist-inner">
     <h2 class="tgc-fade-up tgc-delay-1">혹시 <span class="highlight">이런 상태는 아니신가요</h2>
     <p class="tgc-checklist-subtitle tgc-fade-up tgc-delay-2">아래 질문에 솔직하게 체크해보세요.</p>
@@ -3793,7 +3793,7 @@ function toggleFaq(element) {
 }
 </style>
 
-<section class="tgc-cta-section" id="consulting-form-2">
+<section class="tgc-cta-section" id="consulting-form">
   <div class="tgc-cta-inner">
     <div class="tgc-cta-header tgc-fade-up" id="ctaHeader">
       <span class="tgc-cta-badge"> 지금 바로 시작하세요</span>
@@ -3937,6 +3937,9 @@ function toggleFaq(element) {
   
   if (ctaHeader) observer.observe(ctaHeader);
   if (formWrapper) observer.observe(formWrapper);
+
+  // 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
+  window.__tgcCtaObserverStop = function () { observer.disconnect(); };
   
   document.getElementById('startupForm').addEventListener('submit', function (e) {
     const phone1 = this.querySelector('[name="phone1"]').value;
@@ -4041,6 +4044,14 @@ export default function StartupConsultingPage() {
     // 4) cleanup
     return () => {
       injected.forEach((s) => s.remove());
+
+      const w = window as unknown as Record<string, unknown>;
+
+      // CTA 폼 IntersectionObserver 정리 (호출 후 no-op 으로 교체 — 삭제 금지)
+      const stopObs = w["__tgcCtaObserverStop"];
+      if (typeof stopObs === "function") (stopObs as () => void)();
+      w["__tgcCtaObserverStop"] = () => {};
+
       // 인라인 onclick 이 참조하던 전역 함수 정리 (best-effort)
       const globals = [
         "toggleFaq",
@@ -4048,7 +4059,6 @@ export default function StartupConsultingPage() {
         "updateCheckResult",
         "animateCount",
       ];
-      const w = window as unknown as Record<string, unknown>;
       globals.forEach((fn) => {
         try {
           delete w[fn];
@@ -4329,8 +4339,8 @@ export default function StartupConsultingPage() {
         </div>
       </section>
 
-      {/* 하단 고정 CTA 바 — 상단 상담폼(#startup-consult-form)으로 스크롤 */}
-      <StickyCtaBar targetSelector="#startup-consult-form" />
+      {/* 하단 고정 CTA 바 — 하단 CTA 상담폼(#consulting-form)으로 스크롤 */}
+      <StickyCtaBar targetSelector="#consulting-form" />
     </div>
   );
 }
