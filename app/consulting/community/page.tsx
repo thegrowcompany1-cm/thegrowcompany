@@ -87,6 +87,216 @@ function RelatedServiceCard({
   );
 }
 
+// 최상단 좌측 이미지 (public 기준) — 메인 페이지 서비스 카드의 "시설 위탁운영" 이미지와 동일
+const MAIN_IMAGE = "/wt/community.png";
+
+// ─── 최상단 우측 상담 폼(하단 #contact 폼의 요약 카드 버전) ──────────────────────
+//  - action(GAS_URL)/token/source("커뮤니티문의")/전송 로직은 하단 폼과 완전히 동일하게 유지.
+//  - id 전부 -top 접미사로 하단 폼(wo-name, wo-phone 등)과 분리.
+//  - 하단 폼은 다크 글래스 패널 디자인(.wo-contact-*, 이미 자체 색상 !important 보유)이라
+//    페이지 다크 테마 침범 문제가 없음 — 이 상단 카드는 사진 옆 흰 카드 슬롯에 놓이므로
+//    별도 클래스(wo-top-*)로 밝은 카드 스타일(라벨/입력 #111, 배경 #fff, placeholder #999)을
+//    새로 정의한다(기존 .wo-contact-* 클래스 재사용 시 !important 규칙과 충돌하므로 분리).
+const TOP_CONTACT_HTML = `<style>
+.wo-top-card{background:#fff;border:1px solid #e5e5e5;border-radius:20px;padding:28px 24px;box-shadow:0 6px 24px rgba(0,0,0,.06);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif}
+.wo-top-eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;color:#009519;text-transform:uppercase;margin:0 0 6px}
+.wo-top-title{font-size:20px;font-weight:800;color:#111;margin:0 0 6px}
+.wo-top-sub{font-size:13px;color:#666;margin:0 0 24px;line-height:1.6}
+.wo-top-form{display:flex;flex-direction:column;gap:18px}
+.wo-top-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.wo-top-field{display:flex;flex-direction:column;gap:7px}
+.wo-top-label{font-size:13px;font-weight:700;color:#111}
+.wo-top-req{color:#009519;margin-left:2px}
+.wo-top-input,.wo-top-select,.wo-top-textarea{width:100%;background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px 14px;font-size:14px;color:#111;font-family:inherit;box-sizing:border-box;transition:border-color .2s}
+.wo-top-input::placeholder,.wo-top-textarea::placeholder{color:#999}
+.wo-top-input:focus,.wo-top-select:focus,.wo-top-textarea:focus{outline:none;border-color:#009519}
+.wo-top-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23009519' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.wo-top-textarea{min-height:90px;resize:vertical;line-height:1.55}
+.wo-top-mismatch{display:none;font-size:12px;color:#e23b3b;margin-top:2px}
+.wo-top-mismatch.visible{display:block}
+.wo-top-agree{display:flex;align-items:flex-start;gap:8px;margin-top:2px}
+.wo-top-checkbox{flex-shrink:0;width:16px;height:16px;margin:2px 0 0;accent-color:#009519}
+.wo-top-agree-text{font-size:12px;color:#555;line-height:1.5}
+.wo-top-agree-text a{color:#009519;text-decoration:underline}
+.wo-top-submit{width:100%;padding:15px;background:#009519;color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s}
+.wo-top-submit:hover{background:#007a14}
+.wo-top-submit:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:480px){.wo-top-row{grid-template-columns:1fr}}
+</style>
+
+<div class="wo-top-card">
+  <p class="wo-top-eyebrow">FREE CONSULTING</p>
+  <h3 class="wo-top-title">시설 위탁운영 상담 신청 (무료)</h3>
+  <p class="wo-top-sub">시설 정보를 입력해주시면 빠르게 회신드립니다.</p>
+
+  <div id="woCommunityForm-top" class="wo-top-form">
+    <div class="wo-top-row">
+      <div class="wo-top-field">
+        <label class="wo-top-label">담당자명<span class="wo-top-req">*</span></label>
+        <input type="text" id="wo-name-top" class="wo-top-input" placeholder="홍길동" />
+      </div>
+      <div class="wo-top-field">
+        <label class="wo-top-label">연락처<span class="wo-top-req">*</span></label>
+        <input type="tel" id="wo-phone-top" class="wo-top-input wo-phone-auto-top" placeholder="010-0000-0000" maxlength="13" />
+      </div>
+    </div>
+
+    <div class="wo-top-field">
+      <label class="wo-top-label">연락처 확인<span class="wo-top-req">*</span></label>
+      <input type="tel" id="wo-phone-confirm-top" class="wo-top-input wo-phone-auto-top" placeholder="연락처를 한 번 더 입력해주세요" maxlength="13" />
+      <div class="wo-top-mismatch" id="wo-phone-mismatch-top">연락처가 일치하지 않습니다.</div>
+    </div>
+
+    <div class="wo-top-field">
+      <label class="wo-top-label">이메일</label>
+      <input type="email" id="wo-email-top" class="wo-top-input" placeholder="example@email.com" />
+    </div>
+
+    <div class="wo-top-row">
+      <div class="wo-top-field">
+        <label class="wo-top-label">시설 유형<span class="wo-top-req">*</span></label>
+        <select id="wo-facilityType-top" class="wo-top-select">
+          <option value="">선택해주세요</option>
+          <option value="아파트 커뮤니티">아파트 커뮤니티</option>
+          <option value="공공기관 (주민센터·복지관·체육시설)">공공기관 (주민센터·복지관·체육시설)</option>
+          <option value="기업 사내 시설">기업 사내 시설</option>
+          <option value="호텔 부속 시설">호텔 부속 시설</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      <div class="wo-top-field">
+        <label class="wo-top-label">시설명·소속</label>
+        <input type="text" id="wo-facilityName-top" class="wo-top-input" placeholder="○○아파트 / ○○기업" />
+      </div>
+    </div>
+
+    <div class="wo-top-field">
+      <label class="wo-top-label">문의 내용</label>
+      <textarea id="wo-message-top" class="wo-top-textarea" placeholder="시설 규모·운영 상황·관심 있는 운영 모델 등을 자유롭게 작성해주세요."></textarea>
+    </div>
+
+    <div class="wo-top-agree">
+      <input type="checkbox" class="wo-top-checkbox" id="wo-contact-privacy-top" />
+      <label for="wo-contact-privacy-top" class="wo-top-agree-text">
+        <a href="#">개인정보 수집·이용</a>에 동의합니다. (위탁운영 상담 목적, 1년간 보관)
+      </label>
+    </div>
+
+    <button type="button" class="wo-top-submit" id="wo-submit-btn-top">
+      위탁 제안서 받기
+      <span>→</span>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec';
+
+  function formatPhone(value) {
+    var nums = value.replace(/[^0-9]/g, '');
+    if (nums.length <= 3) return nums;
+    if (nums.length <= 7) return nums.slice(0,3) + '-' + nums.slice(3);
+    return nums.slice(0,3) + '-' + nums.slice(3,7) + '-' + nums.slice(7,11);
+  }
+
+  function handlePhoneInput(e) {
+    var input = e.target;
+    var cursor = input.selectionStart;
+    var before = input.value;
+    var formatted = formatPhone(before);
+    input.value = formatted;
+    var diff = formatted.length - before.length;
+    input.setSelectionRange(cursor + diff, cursor + diff);
+    checkMatch();
+  }
+
+  function checkMatch() {
+    var phone = document.getElementById('wo-phone-top');
+    var confirm = document.getElementById('wo-phone-confirm-top');
+    var msg = document.getElementById('wo-phone-mismatch-top');
+    if (!phone || !confirm || !msg) return;
+    if (confirm.value.length === 0) { msg.classList.remove('visible'); return; }
+    if (phone.value !== confirm.value) { msg.classList.add('visible'); }
+    else { msg.classList.remove('visible'); }
+  }
+
+  var phoneInputs = document.querySelectorAll('.wo-phone-auto-top');
+  phoneInputs.forEach(function(input) {
+    input.addEventListener('input', handlePhoneInput);
+    input.addEventListener('keypress', function(e) {
+      if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
+        e.preventDefault();
+      }
+    });
+  });
+
+  var submitBtn = document.getElementById('wo-submit-btn-top');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function() {
+
+      var name          = document.getElementById('wo-name-top').value.trim();
+      var phone         = document.getElementById('wo-phone-top').value.trim();
+      var phoneConfirm  = document.getElementById('wo-phone-confirm-top').value.trim();
+      var email         = document.getElementById('wo-email-top').value.trim();
+      var facilityType  = document.getElementById('wo-facilityType-top').value;
+      var facilityName  = document.getElementById('wo-facilityName-top').value.trim();
+      var message       = document.getElementById('wo-message-top').value.trim();
+      var privacy       = document.getElementById('wo-contact-privacy-top').checked;
+
+      if (!name) { alert('담당자명을 입력해주세요.'); return; }
+      if (!phone) { alert('연락처를 입력해주세요.'); return; }
+      if (!phoneConfirm) { alert('연락처 확인을 입력해주세요.'); return; }
+      if (phone !== phoneConfirm) { alert('연락처가 일치하지 않습니다. 다시 확인해주세요.'); return; }
+      if (!facilityType) { alert('시설 유형을 선택해주세요.'); return; }
+      if (!privacy) { alert('개인정보 수집·이용에 동의해주세요.'); return; }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '전송 중...';
+
+      var formData = new URLSearchParams();
+      formData.append('source', '커뮤니티문의');
+      formData.append('token', 'grow2026secure');
+      formData.append('name', name);
+      formData.append('phone', phone);
+      formData.append('phoneConfirm', phoneConfirm);
+      formData.append('email', email);
+      formData.append('facilityType', facilityType);
+      formData.append('facilityName', facilityName);
+      formData.append('message', message);
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+      })
+      .then(function() {
+        alert('제출이 완료되었습니다.\\n24시간 이내로 연락드릴 예정입니다.\\n잠시만 기다려주세요.');
+        document.getElementById('wo-name-top').value = '';
+        document.getElementById('wo-phone-top').value = '';
+        document.getElementById('wo-phone-confirm-top').value = '';
+        document.getElementById('wo-email-top').value = '';
+        document.getElementById('wo-facilityType-top').value = '';
+        document.getElementById('wo-facilityName-top').value = '';
+        document.getElementById('wo-message-top').value = '';
+        document.getElementById('wo-contact-privacy-top').checked = false;
+        var mismatch = document.getElementById('wo-phone-mismatch-top');
+        if (mismatch) mismatch.classList.remove('visible');
+      })
+      .catch(function(err) {
+        alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        console.log('전송 오류:', err);
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '위탁 제안서 받기 <span>→</span>';
+      });
+
+    });
+  }
+})();
+</script>`;
+
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
 // 아임웹용 시설 위탁 11개 섹션 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 붙여넣으세요.
 //
@@ -491,7 +701,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
     </p>
 
     <div class="wo-hero-cta">
-      <a href="#contact" class="wo-hero-btn">
+      <a href="#contact-top" class="wo-hero-btn">
         위탁 제안서 받기
         <span class="wo-hero-btn-arrow">→</span>
       </a>
@@ -4241,7 +4451,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
           위에 없는 질문은 직접 문의해주시면 빠르게 회신드립니다.
         </p>
       </div>
-      <a href="#contact" class="wo-faq-foot-btn">
+      <a href="#contact-top" class="wo-faq-foot-btn">
         문의하기
         <span>→</span>
       </a>
@@ -4871,17 +5081,47 @@ const DETAIL_HTML = `<!-- ============================================ -->
 </script>`;
 
 export default function CommunityConsultingPage() {
+  // 최상단 좌측 이미지 로드 실패 시 placeholder 대체
+  const [imgError, setImgError] = useState(false);
+
   // 하단 상세정보 영역은 클라이언트에서만 렌더링하여 서버/클라이언트 HTML 불일치를
   // 원천 차단한다. (DETAIL_HTML 은 아임웹 원본 + script 가 섞인 외부 HTML)
   const [mounted, setMounted] = useState(false);
 
+  // 최상단 우측 상담 폼(TOP_CONTACT_HTML) 컨테이너 ref
+  const topFormRef = useRef<HTMLDivElement>(null);
+
   // 상세정보 HTML 컨테이너 ref
   const detailRef = useRef<HTMLDivElement>(null);
 
-  // 마운트 후에만 상세정보 HTML 을 삽입한다.
+  // 마운트 후에만 각 HTML 을 삽입한다.
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // 최상단 상담 폼(TOP_CONTACT_HTML) 주입 — <script> 재생성 + 언마운트 시 제거.
+  // 이 폼 자체 스크립트에는 IntersectionObserver 가 없어(전화번호 포맷/제출 핸들러만)
+  // 별도 옵저버 정리는 불필요하다.
+  useEffect(() => {
+    if (!mounted) return;
+    const container = topFormRef.current;
+    if (!container) return;
+
+    const injected: HTMLScriptElement[] = [];
+    container.querySelectorAll("script").forEach((oldScript) => {
+      const newScript = document.createElement("script");
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      newScript.textContent = oldScript.textContent;
+      document.body.appendChild(newScript);
+      injected.push(newScript);
+    });
+
+    return () => {
+      injected.forEach((s) => s.remove());
+    };
+  }, [mounted]);
 
   // 아임웹 원본 HTML(+CSS+JS)을 React 환경에서 제대로 동작시키기 위한 처리.
   //  1) dangerouslySetInnerHTML 로 들어온 DOM이 커밋된 뒤(useEffect 시점) 실행.
@@ -4968,7 +5208,57 @@ export default function CommunityConsultingPage() {
 
   return (
     <div className="bg-white">
-      {/* ───────────────── 상세정보 영역 ───────────────── */}
+      {/* ───────────────── 상단 메인 영역 (2단: 좌 이미지 / 우 상담 폼) ───────────────── */}
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
+          {/* 좌: 정사각형 이미지 */}
+          <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[#f1f1f1]">
+            {!imgError ? (
+              <Image
+                src={MAIN_IMAGE}
+                alt="더그로우 시설 위탁운영"
+                fill
+                priority
+                className="object-cover object-center"
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-400">
+                <svg
+                  className="h-12 w-12"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M2.25 6.75h19.5M3.75 4.5h16.5a1.5 1.5 0 011.5 1.5v12a1.5 1.5 0 01-1.5 1.5H3.75a1.5 1.5 0 01-1.5-1.5V6a1.5 1.5 0 011.5-1.5z"
+                  />
+                </svg>
+                <span className="text-xs">{MAIN_IMAGE}</span>
+              </div>
+            )}
+          </div>
+
+          {/* 우: 상담 신청 폼 카드 (TOP_CONTACT_HTML 주입, 히어로/FAQ 앵커 스크롤 타겟) */}
+          <div id="contact-top" className="scroll-mt-24">
+            {mounted ? (
+              <div
+                ref={topFormRef}
+                suppressHydrationWarning
+                dangerouslySetInnerHTML={{ __html: TOP_CONTACT_HTML }}
+              />
+            ) : (
+              <div ref={topFormRef} suppressHydrationWarning />
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ───────────────── 상세정보 영역 (기존 히어로 + 하단 문의 폼 #contact 포함) ───────────────── */}
       <section className="w-full">
         {/* 여기에 상세정보 HTML 삽입 — 위 DETAIL_HTML 문자열에 아임웹 시설 위탁 HTML 붙여넣기 */}
         {mounted ? (
