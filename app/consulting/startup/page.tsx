@@ -90,16 +90,6 @@ function RelatedServiceCard({
 // 좌측 메인 이미지 (public 기준). 없으면 회색 placeholder 로 대체.
 const MAIN_IMAGE = "/startup/startup50.png";
 
-const INDUSTRIES = ["헬스장", "필라테스", "PT 스튜디오", "요가", "기타"];
-
-const SOURCES = [
-  "네이버 검색",
-  "인스타·페이스북 광고",
-  "네이버 블로그",
-  "지인 소개·아카데미 수강생",
-  "기타",
-];
-
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
 // 아임웹용 7개 섹션 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 그대로 붙여넣으세요.
 //
@@ -3791,6 +3781,24 @@ function toggleFaq(element) {
   #startupForm { padding: 25px 20px; }
   .tg-phone { max-width: 80px; }
 }
+
+/* 폼 텍스트 가시성 — 페이지 다크 테마(body 기본 텍스트 #EEEEEE)가 상속되어
+   라디오/라벨/입력창 글자가 흰 배경 카드 위에서 안 보이는 문제 방지 */
+#formWrapper .tg-label,
+#formWrapper .tg-radio,
+#formWrapper .tg-radio span,
+#formWrapper .tgc-form-notice p {
+  color: #111;
+}
+#formWrapper .tg-input,
+#formWrapper select.tg-input,
+#formWrapper textarea.tg-input {
+  color: #111 !important;
+  background: #fff !important;
+}
+#formWrapper .tg-input::placeholder {
+  color: #999 !important;
+}
 </style>
 
 <section class="tgc-cta-section" id="consulting-form">
@@ -3961,7 +3969,8 @@ function toggleFaq(element) {
     }, 500);
   });
   
-  const phoneInputs = document.querySelectorAll('.tg-phone');
+  // 상단에도 동일 구조 폼(-top)이 있을 수 있으므로 전역이 아닌 이 폼 안에서만 조회
+  const phoneInputs = document.getElementById('startupForm').querySelectorAll('.tg-phone');
   phoneInputs.forEach((input, index) => {
     input.addEventListener('input', function() {
       if (this.value.length >= this.maxLength && index < phoneInputs.length - 1) {
@@ -3978,30 +3987,617 @@ function toggleFaq(element) {
 })();
 </script>`;
 
-export default function StartupConsultingPage() {
-  // ── 폼 상태 ──
-  const [industry, setIndustry] = useState("");
-  const [region, setRegion] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState(["", "", ""]);
-  const [phoneConfirm, setPhoneConfirm] = useState(["", "", ""]);
-  const [source, setSource] = useState("");
+// ─── 상단 CTA 폼(하단 CTA_FORM 과 동일 폼의 사본, 내부 id 전부 -top 접미사) ──────────
+//  - action / token(grow2026secure) / source(창업지원상담_아임웹) / name 속성은
+//    구글시트 Apps Script + Make 연동에 물려 있으므로 절대 변경하지 않는다.
+//  - id(consulting-form-top / ctaHeader-top / formWrapper-top / startupForm-top)와
+//    iframe name(hidden_iframe_top)만 하단 폼과 겹치지 않도록 접미사를 붙였다.
+//  - 위치/폭은 기존 React 폼이 있던 우측 카드 자리 그대로 쓰도록 .tgc-cta-section
+//    특유의 100px 여백/장식 버블은 .tgc-cta-section--top 로 무력화했다.
+const CTA_FORM_HTML_TOP = `<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
+.tgc-cta-section {
+  font-family: 'Pretendard', sans-serif;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e8f5e9 100%);
+  padding: 100px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tgc-cta-section::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(76,175,80,0.1) 0%, transparent 70%);
+  animation: floatBubble 8s ease-in-out infinite;
+}
+
+.tgc-cta-section::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  right: -50px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
+  animation: floatBubble 10s ease-in-out infinite reverse;
+}
+
+@keyframes floatBubble {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -30px); }
+}
+
+.tgc-cta-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.tgc-fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.tgc-fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tgc-cta-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.tgc-cta-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+  color: white;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  animation: badgePulse 2s ease infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.4); }
+  50% { box-shadow: 0 0 20px 5px rgba(76,175,80,0.2); }
+}
+
+.tgc-cta-header h2 {
+  font-size: 38px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.tgc-cta-header h2 .green {
+  color: #4CAF50;
+  position: relative;
+}
+
+.tgc-cta-header h2 .green::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  background: rgba(76, 175, 80, 0.2);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.8s ease 0.5s;
+}
+
+.tgc-cta-header.visible h2 .green::after {
+  transform: scaleX(1);
+}
+
+.tgc-cta-desc {
+  font-size: 18px;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.tgc-cta-benefits {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.tgc-cta-benefit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.5s ease;
+}
+
+.tgc-cta-benefit.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tgc-cta-benefit:nth-child(1) { transition-delay: 0.2s; }
+.tgc-cta-benefit:nth-child(2) { transition-delay: 0.35s; }
+.tgc-cta-benefit:nth-child(3) { transition-delay: 0.5s; }
+
+.tgc-cta-benefit:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(76,175,80,0.15);
+}
+
+.tgc-cta-benefit-icon {
+  width: 24px;
+  height: 24px;
+  background: #e8f5e9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tgc-cta-benefit-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: #4CAF50;
+}
+
+.tgc-form-wrapper {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease 0.3s;
+}
+
+.tgc-form-wrapper.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tg-form-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.tg-form-header {
+  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+  color: #ffffff;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  border-radius: 0;
+}
+
+.tg-form-icon {
+  margin-right: 10px;
+  font-size: 22px;
+}
+
+.tg-form-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+#startupForm-top {
+  padding: 35px;
+  border: none;
+  border-radius: 0;
+  background: #ffffff;
+}
+
+.tg-form-group {
+  margin-bottom: 22px;
+}
+
+.tg-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.tg-desc {
+  font-size: 13px;
+  color: #888;
+}
+
+.tg-required {
+  color: #ff6b6b;
+  font-size: 14px;
+}
+
+.tg-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.tg-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 4px rgba(76,175,80,0.1);
+}
+
+.tg-phone-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tg-phone {
+  max-width: 100px;
+  text-align: center;
+}
+
+.tg-phone-dash {
+  font-size: 16px;
+  color: #aaa;
+}
+
+.tg-radio {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.tg-radio:hover {
+  background: #e8f5e9;
+  border-color: #4CAF50;
+}
+
+.tg-radio input {
+  margin-right: 10px;
+  accent-color: #4CAF50;
+  width: 18px;
+  height: 18px;
+}
+
+.tg-form-actions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.tg-submit-btn {
+  min-width: 200px;
+  padding: 16px 50px;
+  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  font-size: 17px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(76,175,80,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.tg-submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.tg-submit-btn:hover::before {
+  left: 100%;
+}
+
+.tg-submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(76,175,80,0.4);
+}
+
+.tg-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tgc-form-notice {
+  text-align: center;
+  margin-top: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.tgc-form-notice p {
+  font-size: 14px;
+  color: #888;
+  line-height: 1.7;
+}
+
+.tgc-form-notice strong {
+  color: #4CAF50;
+}
+
+@media (max-width: 768px) {
+  .tgc-cta-section { padding: 70px 20px; }
+  .tgc-cta-header h2 { font-size: 26px; }
+  .tgc-cta-desc { font-size: 16px; }
+  .tgc-cta-benefits { gap: 12px; }
+  .tgc-cta-benefit { padding: 10px 16px; font-size: 13px; }
+  .tg-form-wrap { margin: 0; border-radius: 20px; }
+  #startupForm-top { padding: 25px 20px; }
+  .tg-phone { max-width: 80px; }
+}
+
+/* 폼 텍스트 가시성 — 페이지 다크 테마(body 기본 텍스트 #EEEEEE)가 상속되어
+   라디오/라벨/입력창 글자가 흰 배경 카드 위에서 안 보이는 문제 방지 */
+#formWrapper-top .tg-label,
+#formWrapper-top .tg-radio,
+#formWrapper-top .tg-radio span,
+#formWrapper-top .tgc-form-notice p {
+  color: #111;
+}
+#formWrapper-top .tg-input,
+#formWrapper-top select.tg-input,
+#formWrapper-top textarea.tg-input {
+  color: #111 !important;
+  background: #fff !important;
+}
+#formWrapper-top .tg-input::placeholder {
+  color: #999 !important;
+}
+
+/* 상단 슬롯용 — 하단 CTA 섹션의 배경/여백/장식 버블을 제거하고
+   기존 React 폼이 있던 우측 카드 자리에 맞춰 압축 */
+.tgc-cta-section--top {
+  padding: 0;
+  background: none;
+}
+.tgc-cta-section--top::before,
+.tgc-cta-section--top::after {
+  display: none;
+}
+</style>
+
+<section class="tgc-cta-section tgc-cta-section--top" id="consulting-form-top">
+  <div class="tgc-cta-inner">
+    <div class="tgc-cta-header tgc-fade-up" id="ctaHeader-top">
+      <span class="tgc-cta-badge"> 지금 바로 시작하세요</span>
+      <h2>첫 창업, <span class="green">첫 성공</span>으로<br>만들어 드립니다.</h2>
+      <p class="tgc-cta-desc">
+        무료 상담을 통해 대표님의 상황을 먼저 파악하고,<br>
+        맞춤형 창업 전략을 제안해 드립니다.
+      </p>
+      </div>
+    </div>
+
+    <div class="tgc-form-wrapper" id="formWrapper-top">
+      <div class="tg-form-wrap">
+        <div class="tg-form-header">
+          <span class="tg-form-icon">💬</span>
+          <span class="tg-form-title">창업 지원 상담 신청(무료)</span>
+        </div>
+
+        <form id="startupForm-top" action="https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec" method="POST" target="hidden_iframe_top">
+          <div class="tg-form-group">
+            <label class="tg-label">희망 업종을 선택해주세요. <span class="tg-required">*</span></label>
+            <select name="industry" class="tg-input" required>
+              <option value="">(선택)</option>
+              <option value="헬스장">헬스장</option>
+              <option value="필라테스">필라테스</option>
+              <option value="PT 스튜디오">PT 스튜디오</option>
+              <option value="요가">요가</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+
+          <div class="tg-form-group">
+            <label class="tg-label">
+              선호 희망 지역을 알려주세요.<br>
+              <small class="tg-desc">(입지 상권을 함께 봐드립니다.)</small>
+            </label>
+            <input type="text" name="area" class="tg-input" placeholder="예) 서울 마포구, 경기 남부, 부산 서면 인근 등" />
+          </div>
+
+          <div class="tg-form-group">
+            <label class="tg-label">이름을 입력해주세요. <span class="tg-required">*</span></label>
+            <input type="text" name="name" class="tg-input" required />
+          </div>
+
+          <div class="tg-form-group">
+            <label class="tg-label">연락처를 입력해주세요. <span class="tg-required">*</span></label>
+            <div class="tg-phone-row">
+              <input type="text" name="phone1" class="tg-input tg-phone" maxlength="3" required />
+              <span class="tg-phone-dash">-</span>
+              <input type="text" name="phone2" class="tg-input tg-phone" maxlength="4" required />
+              <span class="tg-phone-dash">-</span>
+              <input type="text" name="phone3" class="tg-input tg-phone" maxlength="4" required />
+            </div>
+          </div>
+
+          <div class="tg-form-group">
+            <label class="tg-label">연락처를 입력해주세요(중복확인). <span class="tg-required">*</span></label>
+            <div class="tg-phone-row">
+              <input type="text" name="phoneCheck1" class="tg-input tg-phone" maxlength="3" required />
+              <span class="tg-phone-dash">-</span>
+              <input type="text" name="phoneCheck2" class="tg-input tg-phone" maxlength="4" required />
+              <span class="tg-phone-dash">-</span>
+              <input type="text" name="phoneCheck3" class="tg-input tg-phone" maxlength="4" required />
+            </div>
+          </div>
+
+          <div class="tg-form-group">
+            <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
+
+            <label class="tg-radio">
+              <input type="radio" name="route" value="네이버 검색(창업, 창업컨설팅 등)" required />
+              <span>네이버 검색 (창업, 창업컨설팅 등)</span>
+            </label>
+
+            <label class="tg-radio">
+              <input type="radio" name="route" value="인스타/페이스북 광고" />
+              <span>인스타/페이스북 광고</span>
+            </label>
+
+            <label class="tg-radio">
+              <input type="radio" name="route" value="네이버 블로그" />
+              <span>네이버 블로그</span>
+            </label>
+
+            <label class="tg-radio">
+              <input type="radio" name="route" value="지인 소개/아카데미 수강생" />
+              <span>지인 소개 / 아카데미 수강생</span>
+            </label>
+
+            <label class="tg-radio">
+              <input type="radio" name="route" value="기타" />
+              <span>기타</span>
+            </label>
+          </div>
+
+          <!-- 페이지 구분 -->
+          <input type="hidden" name="source" value="창업지원상담_아임웹">
+
+          <!-- 🔒 보안 토큰 -->
+          <input type="hidden" name="token" value="grow2026secure">
+
+          <div class="tg-form-actions">
+            <button type="submit" class="tg-submit-btn">무료 상담 신청하기</button>
+          </div>
+        </form>
+
+        <iframe name="hidden_iframe_top" style="display:none;"></iframe>
+
+        <div class="tgc-form-notice">
+          <p>
+            📞 상담 신청 후 <strong>24시간 이내</strong> 담당자가 연락드립니다.<br>
+            궁금한 점은 편하게 문의해 주세요.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  const ctaHeader = document.getElementById('ctaHeader-top');
+  const formWrapper = document.getElementById('formWrapper-top');
+  const benefits = document.querySelectorAll('.tgc-cta-benefit');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        if (entry.target.id === 'ctaHeader-top') {
+          benefits.forEach((benefit, index) => {
+            setTimeout(() => {
+              benefit.classList.add('visible');
+            }, 400 + (index * 150));
+          });
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  if (ctaHeader) observer.observe(ctaHeader);
+  if (formWrapper) observer.observe(formWrapper);
+
+  // 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
+  window.__tgcCtaObserverStopTop = function () { observer.disconnect(); };
+
+  document.getElementById('startupForm-top').addEventListener('submit', function (e) {
+    const phone1 = this.querySelector('[name="phone1"]').value;
+    const phone2 = this.querySelector('[name="phone2"]').value;
+    const phone3 = this.querySelector('[name="phone3"]').value;
+    const phoneCheck1 = this.querySelector('[name="phoneCheck1"]').value;
+    const phoneCheck2 = this.querySelector('[name="phoneCheck2"]').value;
+    const phoneCheck3 = this.querySelector('[name="phoneCheck3"]').value;
+
+    if (phone1 !== phoneCheck1 || phone2 !== phoneCheck2 || phone3 !== phoneCheck3) {
+      e.preventDefault();
+      alert('연락처가 일치하지 않습니다. 다시 확인해주세요.');
+      return false;
+    }
+
+    setTimeout(function() {
+      alert('정상적으로 접수되었습니다. 감사합니다 :)');
+      document.getElementById('startupForm-top').reset();
+    }, 500);
+  });
+
+  // 하단에도 동일 구조 폼이 있으므로 전역이 아닌 이 폼(startupForm-top) 안에서만 조회
+  const phoneInputs = document.getElementById('startupForm-top').querySelectorAll('.tg-phone');
+  phoneInputs.forEach((input, index) => {
+    input.addEventListener('input', function() {
+      if (this.value.length >= this.maxLength && index < phoneInputs.length - 1) {
+        phoneInputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keypress', function(e) {
+      if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+  });
+})();
+</script>`;
+
+export default function StartupConsultingPage() {
   const [imgError, setImgError] = useState(false);
 
   // 하단 상세정보 영역은 클라이언트에서만 렌더링하여 서버/클라이언트 HTML 불일치를
   // 원천 차단한다. (DETAIL_HTML 은 아임웹 원본 + script 가 섞인 외부 HTML)
   const [mounted, setMounted] = useState(false);
 
-  // 상세정보 HTML 컨테이너 ref
+  // 상단 CTA 폼(-top) / 하단 상세정보(+CTA 폼) 컨테이너 ref
+  const topFormRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
 
-  // 마운트 후에만 상세정보 HTML 을 삽입한다.
+  // 마운트 후에만 각 HTML 을 삽입한다.
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // 아임웹 원본 HTML(+CSS+JS)을 React 환경에서 제대로 동작시키기 위한 처리.
+  // 아임웹 원본 HTML(+CSS+JS)을 React 환경에서 제대로 동작시키기 위한 공통 처리.
   //  1) dangerouslySetInnerHTML 로 들어온 DOM이 커밋된 뒤(useEffect 시점) 실행.
   //  2) 중복 id 충돌 방지: 두 번째부터 -2, -3 … 접미사를 붙임 (script 실행 전에 수행).
   //  3) innerHTML 로 삽입된 <script> 는 실행되지 않으므로, 같은 내용의 새 <script>를
@@ -4009,14 +4605,8 @@ export default function StartupConsultingPage() {
   //     스크립트가 전역 스코프에서 실행되므로 그 안의 함수 선언
   //     (function toggleFaq(){…}, function toggleCheck(){…} 등)이 자동으로
   //     window 전역에 등록되어, 인라인 onclick="toggleFaq(this)" 가 동작함.
-  //  4) 언마운트 시 추가한 <script> 와 인라인 핸들러용 전역 함수를 정리.
-  useEffect(() => {
-    // 마운트되어 DETAIL_HTML 이 실제 DOM 에 삽입된 뒤에만 실행한다.
-    if (!mounted) return;
-    const container = detailRef.current;
-    if (!container) return;
-
-    // 2) 중복 id 충돌 방지
+  const injectContainer = (container: HTMLDivElement) => {
+    // 중복 id 충돌 방지
     const seen = new Set<string>();
     container.querySelectorAll<HTMLElement>("[id]").forEach((el) => {
       if (!seen.has(el.id)) {
@@ -4028,11 +4618,10 @@ export default function StartupConsultingPage() {
       el.id = `${el.id}-${n}`;
     });
 
-    // 3) <script> 재생성 → body 에 append 하여 실행
+    // <script> 재생성 → body 에 append 하여 실행
     const injected: HTMLScriptElement[] = [];
     container.querySelectorAll("script").forEach((oldScript) => {
       const newScript = document.createElement("script");
-      // 속성 복사 (src, type 등)
       Array.from(oldScript.attributes).forEach((attr) => {
         newScript.setAttribute(attr.name, attr.value);
       });
@@ -4040,8 +4629,32 @@ export default function StartupConsultingPage() {
       document.body.appendChild(newScript);
       injected.push(newScript);
     });
+    return injected;
+  };
 
-    // 4) cleanup
+  // 상단 CTA 폼(CTA_FORM_HTML_TOP) 주입 — 언마운트 시 script 제거 + 그 폼 전용
+  // IntersectionObserver 정리(__tgcCtaObserverStopTop, 호출 후 no-op 교체).
+  useEffect(() => {
+    if (!mounted) return;
+    const container = topFormRef.current;
+    if (!container) return;
+    const injected = injectContainer(container);
+    return () => {
+      injected.forEach((s) => s.remove());
+      const w = window as unknown as Record<string, unknown>;
+      const stopObs = w["__tgcCtaObserverStopTop"];
+      if (typeof stopObs === "function") (stopObs as () => void)();
+      w["__tgcCtaObserverStopTop"] = () => {};
+    };
+  }, [mounted]);
+
+  // 하단 상세정보 + CTA 폼(DETAIL_HTML) 주입 — 언마운트 시 script 제거 +
+  // 그 폼 전용 IntersectionObserver 정리 + 인라인 onclick 이 참조하던 전역 함수 정리.
+  useEffect(() => {
+    if (!mounted) return;
+    const container = detailRef.current;
+    if (!container) return;
+    const injected = injectContainer(container);
     return () => {
       injected.forEach((s) => s.remove());
 
@@ -4068,41 +4681,6 @@ export default function StartupConsultingPage() {
       });
     };
   }, [mounted]);
-
-  // ── 연락처 입력 헬퍼 (숫자만, 칸별 자릿수 제한) ──
-  const maxLens = [3, 4, 4];
-  function handlePhoneChange(
-    value: string,
-    idx: number,
-    target: "phone" | "confirm",
-  ) {
-    const digits = value.replace(/[^0-9]/g, "").slice(0, maxLens[idx]);
-    const setter = target === "phone" ? setPhone : setPhoneConfirm;
-    setter((prev) => {
-      const next = [...prev];
-      next[idx] = digits;
-      return next;
-    });
-  }
-
-  // ── 제출 (아직 실제 전송 X, 검증 후 '준비중' 안내) ──
-  function handleSubmit() {
-    if (!industry) return alert("희망 업종을 선택해 주세요.");
-    if (!name.trim()) return alert("이름을 입력해 주세요.");
-    if (phone.some((p) => !p)) return alert("연락처를 모두 입력해 주세요.");
-    if (phoneConfirm.some((p) => !p))
-      return alert("연락처 중복확인을 모두 입력해 주세요.");
-    if (phone.join("") !== phoneConfirm.join(""))
-      return alert("연락처와 중복확인이 일치하지 않습니다.");
-    if (!source) return alert("신청 경로를 선택해 주세요.");
-
-    alert("준비중입니다. 곧 상담 신청 기능이 연결될 예정입니다.");
-  }
-
-  const labelCls = "block text-sm font-bold text-[#1a1a1a] mb-2";
-  const requiredMark = <span className="text-[#009519]">*</span>;
-  const inputCls =
-    "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-[#1a1a1a] outline-none transition-colors focus:border-[#009519] focus:ring-2 focus:ring-[#009519]/20";
 
   // 탭 클릭 시 DETAIL_HTML 내부 섹션으로 부드럽게 스크롤 (상단 고정 헤더 높이만큼 offset)
   const scrollToSection = (selector: string) => {
@@ -4149,142 +4727,17 @@ export default function StartupConsultingPage() {
             )}
           </div>
 
-          {/* 우: 상담 신청 폼 카드 (하단 CTA 바 스크롤/관찰 타겟) */}
-          <div
-            id="startup-consult-form"
-            className="scroll-mt-24 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8"
-          >
-            <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#009519]">
-              FREE CONSULTING
-            </p>
-            <h1 className="mb-6 text-xl font-black leading-snug text-[#1a1a1a] sm:text-2xl">
-              창업 지원 상담 신청 (무료)
-            </h1>
-
-            <div className="space-y-5">
-              {/* 희망 업종 */}
-              <div>
-                <label className={labelCls}>희망 업종 {requiredMark}</label>
-                <select
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  className={inputCls}
-                >
-                  <option value="">선택해 주세요</option>
-                  {INDUSTRIES.map((it) => (
-                    <option key={it} value={it}>
-                      {it}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 선호 희망 지역 */}
-              <div>
-                <label className={labelCls}>선호 희망 지역</label>
-                <input
-                  type="text"
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                  placeholder="예) 서울 마포구, 경기 남부"
-                  className={inputCls}
-                />
-              </div>
-
-              {/* 이름 */}
-              <div>
-                <label className={labelCls}>이름 {requiredMark}</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="성함을 입력해 주세요"
-                  className={inputCls}
-                />
-              </div>
-
-              {/* 연락처 */}
-              <div>
-                <label className={labelCls}>연락처 {requiredMark}</label>
-                <div className="flex items-center gap-2">
-                  {phone.map((v, i) => (
-                    <div key={i} className="flex flex-1 items-center gap-2">
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        value={v}
-                        onChange={(e) =>
-                          handlePhoneChange(e.target.value, i, "phone")
-                        }
-                        maxLength={maxLens[i]}
-                        className={`${inputCls} text-center`}
-                      />
-                      {i < 2 && <span className="text-gray-400">-</span>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 연락처 중복확인 */}
-              <div>
-                <label className={labelCls}>연락처 중복확인 {requiredMark}</label>
-                <div className="flex items-center gap-2">
-                  {phoneConfirm.map((v, i) => (
-                    <div key={i} className="flex flex-1 items-center gap-2">
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        value={v}
-                        onChange={(e) =>
-                          handlePhoneChange(e.target.value, i, "confirm")
-                        }
-                        maxLength={maxLens[i]}
-                        className={`${inputCls} text-center`}
-                      />
-                      {i < 2 && <span className="text-gray-400">-</span>}
-                    </div>
-                  ))}
-                </div>
-                {phoneConfirm.join("") &&
-                  phone.join("") !== phoneConfirm.join("") && (
-                    <p className="mt-1.5 text-xs text-red-500">
-                      연락처가 일치하지 않습니다.
-                    </p>
-                  )}
-              </div>
-
-              {/* 신청 경로 */}
-              <div>
-                <label className={labelCls}>신청 경로 {requiredMark}</label>
-                <div className="space-y-2">
-                  {SOURCES.map((s) => (
-                    <label
-                      key={s}
-                      className="flex cursor-pointer items-center gap-2.5 text-sm text-[#333]"
-                    >
-                      <input
-                        type="radio"
-                        name="source"
-                        value={s}
-                        checked={source === s}
-                        onChange={(e) => setSource(e.target.value)}
-                        className="h-4 w-4 accent-[#009519]"
-                      />
-                      {s}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* 제출 */}
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="mt-2 w-full rounded-full bg-[#009519] py-3.5 text-base font-bold text-white transition-colors hover:bg-[#007a14]"
-              >
-                무료 상담 신청하기
-              </button>
-            </div>
+          {/* 우: 상담 신청 폼 카드 (CTA_FORM_HTML_TOP 주입, 하단 CTA 바 스크롤/관찰 타겟) */}
+          <div id="startup-consult-form" className="scroll-mt-24">
+            {mounted ? (
+              <div
+                ref={topFormRef}
+                suppressHydrationWarning
+                dangerouslySetInnerHTML={{ __html: CTA_FORM_HTML_TOP }}
+              />
+            ) : (
+              <div ref={topFormRef} suppressHydrationWarning />
+            )}
           </div>
         </div>
       </section>
