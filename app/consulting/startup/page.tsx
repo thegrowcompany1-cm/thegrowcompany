@@ -4398,7 +4398,6 @@ const CTA_FORM_HTML_TOP = `<style>
 <section class="tgc-cta-section tgc-cta-section--top" id="consulting-form-top">
   <div class="tgc-cta-inner">
     <div class="tgc-cta-header tgc-fade-up" id="ctaHeader-top">
-      <span class="tgc-cta-badge"> 지금 바로 시작하세요</span>
       <h2>첫 창업, <span class="green">첫 성공</span>으로<br>만들어 드립니다.</h2>
       <p class="tgc-cta-desc">
         무료 상담을 통해 대표님의 상황을 먼저 파악하고,<br>
