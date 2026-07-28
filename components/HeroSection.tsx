@@ -4,19 +4,71 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 const FITNESS_LOGO_COUNT = 19;
-const fitnessLogos = Array.from({ length: FITNESS_LOGO_COUNT }, (_, i) =>
+// Source A — fitness store logos (public/fitness logos)
+const sourceALogos = Array.from({ length: FITNESS_LOGO_COUNT }, (_, i) =>
   encodeURI(`/fitness logos/${i + 1}.png`)
 );
+
+// Source B — logo set from the user-provided "아임웹 위젯 코드 - 로고 슬라이더 v4"
+const sourceBLogos = [
+  "https://cdn.imweb.me/thumbnail/20260223/7841a3371cc29.png",
+  "https://cdn.imweb.me/thumbnail/20260223/3945899095a5b.png",
+  "https://cdn.imweb.me/thumbnail/20260223/0a41b156648cf.png",
+  "https://cdn.imweb.me/thumbnail/20260223/ba9d2fadf5832.png",
+  "https://cdn.imweb.me/thumbnail/20260223/c4174f387fe6b.png",
+  "https://cdn.imweb.me/thumbnail/20260223/e13a8a36924c8.png",
+  "https://cdn.imweb.me/thumbnail/20260223/1cdfdc0ac2452.png",
+  "https://cdn.imweb.me/thumbnail/20260223/e7f1f1c277127.png",
+  "https://cdn.imweb.me/thumbnail/20260223/bb90b7eaef3d7.png",
+  "https://cdn.imweb.me/thumbnail/20260223/d3ae7ae970f2a.png",
+  "https://cdn.imweb.me/thumbnail/20260223/827c64d3f3db9.png",
+  "https://cdn.imweb.me/thumbnail/20260223/cccdfd0f52cb0.png",
+  "https://cdn.imweb.me/thumbnail/20260223/7749e65c1c4eb.png",
+  "https://cdn.imweb.me/thumbnail/20260223/ae249b50f1585.png",
+  "https://cdn.imweb.me/thumbnail/20260223/bd91df10a076b.png",
+  "https://cdn.imweb.me/thumbnail/20260223/49528417a6225.png",
+  "https://cdn.imweb.me/thumbnail/20260223/82d6d15032feb.png",
+  "https://cdn.imweb.me/thumbnail/20260223/5f15997a2500b.png",
+];
+
+// Dedupe by exact URL (the two sources use different domains/paths, so
+// this only guards against accidental exact-match duplicates).
+const uniqueALogos = Array.from(new Set(sourceALogos));
+const uniqueBLogos = Array.from(new Set(sourceBLogos));
+const seenAcrossSources = new Set(uniqueALogos);
+const mergedBLogos = uniqueBLogos.filter((logo) => {
+  if (seenAcrossSources.has(logo)) return false;
+  seenAcrossSources.add(logo);
+  return true;
+});
 
 const LOGO_ROW_COUNT = 4;
 // Tighter spacing shrinks each row's natural width, so the min-repeat
 // threshold is raised to keep the doubled marquee track wide enough
 // to loop without a blank gap on wide viewports.
 const MIN_LOGOS_PER_ROW = 10;
-const logoRows: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
-fitnessLogos.forEach((logo, i) => {
-  logoRows[i % LOGO_ROW_COUNT].push(logo);
-});
+
+// Distribute each source round-robin across rows independently, then
+// interleave each row's A/B items so the two sources mix instead of
+// clustering together within a row.
+const rowsA: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
+uniqueALogos.forEach((logo, i) => rowsA[i % LOGO_ROW_COUNT].push(logo));
+const rowsB: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
+mergedBLogos.forEach((logo, i) => rowsB[i % LOGO_ROW_COUNT].push(logo));
+
+function interleave(a: string[], b: string[]): string[] {
+  const result: string[] = [];
+  const max = Math.max(a.length, b.length);
+  for (let i = 0; i < max; i++) {
+    if (i < a.length) result.push(a[i]);
+    if (i < b.length) result.push(b[i]);
+  }
+  return result;
+}
+
+const logoRows: string[][] = Array.from({ length: LOGO_ROW_COUNT }, (_, i) =>
+  interleave(rowsA[i], rowsB[i])
+);
 const displayLogoRows = logoRows.map((row) => {
   if (row.length === 0 || row.length >= MIN_LOGOS_PER_ROW) return row;
   const repeated: string[] = [];
