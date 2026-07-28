@@ -8,7 +8,7 @@ const fitnessLogos = Array.from({ length: FITNESS_LOGO_COUNT }, (_, i) =>
   encodeURI(`/fitness logos/${i + 1}.png`)
 );
 
-const LOGO_ROW_COUNT = 5;
+const LOGO_ROW_COUNT = 4;
 const MIN_LOGOS_PER_ROW = 5;
 const logoRows: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
 fitnessLogos.forEach((logo, i) => {
@@ -26,7 +26,6 @@ const rowConfig = [
   { direction: "right", duration: 55 },
   { direction: "left", duration: 48 },
   { direction: "right", duration: 60 },
-  { direction: "left", duration: 50 },
 ] as const;
 
 const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[] = [
@@ -101,7 +100,7 @@ export default function HeroSection() {
       {/* Logo marquee background — bottom-weighted */}
       <div
         className="absolute inset-x-0 bottom-0 z-10 flex flex-col justify-between overflow-hidden"
-        style={{ height: "45%", pointerEvents: "none" }}
+        style={{ height: "55%", pointerEvents: "none" }}
         aria-hidden="true"
       >
         {displayLogoRows.map((row, rowIndex) => {
@@ -118,11 +117,11 @@ export default function HeroSection() {
                 {doubledRow.map((logoSrc, i) => (
                   <div
                     key={`${rowIndex}-${i}`}
-                    className="flex-shrink-0 flex items-center justify-center mx-3 sm:mx-6 h-10 sm:h-14"
+                    className="flex-shrink-0 flex items-center justify-center mx-8 sm:mx-14 h-[84px] sm:h-[120px]"
                   >
                     <div
-                      className="relative h-7 sm:h-10 w-16 sm:w-28"
-                      style={{ opacity: 0.5, filter: "grayscale(1)" }}
+                      className="relative h-[84px] w-[192px] sm:h-[120px] sm:w-[336px]"
+                      style={{ opacity: 0.7, filter: "grayscale(1)" }}
                     >
                       <Image
                         src={logoSrc}
@@ -130,7 +129,7 @@ export default function HeroSection() {
                         aria-hidden="true"
                         fill
                         className="object-contain"
-                        sizes="128px"
+                        sizes="336px"
                       />
                     </div>
                   </div>
@@ -144,6 +143,19 @@ export default function HeroSection() {
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 z-10" style={{ background: "rgba(0,0,0,0.45)" }} />
       <div className="absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-[#111111] to-transparent" />
+
+      {/* Local reinforcement gradient behind text — logos are larger/more opaque now */}
+      <div
+        className="absolute inset-x-0 z-10"
+        style={{
+          top: "37%",
+          transform: "translateY(-50%)",
+          height: "clamp(220px, 34vw, 320px)",
+          background:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 80%)",
+          pointerEvents: "none",
+        }}
+      />
 
       {/* Slogan crossfade — raised above vertical center (~37% of hero height) */}
       <div
