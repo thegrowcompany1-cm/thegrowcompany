@@ -31,6 +31,8 @@ const sourceBLogos = [
   "https://cdn.imweb.me/thumbnail/20260223/5f15997a2500b.png",
 ];
 
+type LogoItem = { src: string; source: "A" | "B" };
+
 // Dedupe by exact URL (the two sources use different domains/paths, so
 // this only guards against accidental exact-match duplicates).
 const uniqueALogos = Array.from(new Set(sourceALogos));
@@ -41,6 +43,8 @@ const mergedBLogos = uniqueBLogos.filter((logo) => {
   seenAcrossSources.add(logo);
   return true;
 });
+const taggedALogos: LogoItem[] = uniqueALogos.map((src) => ({ src, source: "A" }));
+const taggedBLogos: LogoItem[] = mergedBLogos.map((src) => ({ src, source: "B" }));
 
 const LOGO_ROW_COUNT = 4;
 // Tighter spacing shrinks each row's natural width, so the min-repeat
@@ -51,13 +55,13 @@ const MIN_LOGOS_PER_ROW = 10;
 // Distribute each source round-robin across rows independently, then
 // interleave each row's A/B items so the two sources mix instead of
 // clustering together within a row.
-const rowsA: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
-uniqueALogos.forEach((logo, i) => rowsA[i % LOGO_ROW_COUNT].push(logo));
-const rowsB: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
-mergedBLogos.forEach((logo, i) => rowsB[i % LOGO_ROW_COUNT].push(logo));
+const rowsA: LogoItem[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
+taggedALogos.forEach((logo, i) => rowsA[i % LOGO_ROW_COUNT].push(logo));
+const rowsB: LogoItem[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
+taggedBLogos.forEach((logo, i) => rowsB[i % LOGO_ROW_COUNT].push(logo));
 
-function interleave(a: string[], b: string[]): string[] {
-  const result: string[] = [];
+function interleave(a: LogoItem[], b: LogoItem[]): LogoItem[] {
+  const result: LogoItem[] = [];
   const max = Math.max(a.length, b.length);
   for (let i = 0; i < max; i++) {
     if (i < a.length) result.push(a[i]);
@@ -66,12 +70,12 @@ function interleave(a: string[], b: string[]): string[] {
   return result;
 }
 
-const logoRows: string[][] = Array.from({ length: LOGO_ROW_COUNT }, (_, i) =>
+const logoRows: LogoItem[][] = Array.from({ length: LOGO_ROW_COUNT }, (_, i) =>
   interleave(rowsA[i], rowsB[i])
 );
 const displayLogoRows = logoRows.map((row) => {
   if (row.length === 0 || row.length >= MIN_LOGOS_PER_ROW) return row;
-  const repeated: string[] = [];
+  const repeated: LogoItem[] = [];
   while (repeated.length < MIN_LOGOS_PER_ROW) repeated.push(...row);
   return repeated;
 });
@@ -171,26 +175,32 @@ export default function HeroSection() {
                   animation: `hero-logo-marquee-${config.direction} ${config.duration}s linear infinite`,
                 }}
               >
-                {doubledRow.map((logoSrc, i) => (
-                  <div
-                    key={`${rowIndex}-${i}`}
-                    className="flex-shrink-0 flex items-center justify-center mx-[10px] sm:mx-[18px] h-[76px] sm:h-[108px]"
-                  >
+                {doubledRow.map((logo, i) => {
+                  // Source B (user-provided CDN logos) render visually larger
+                  // than source A at the same box size, so it gets a ~10%
+                  // smaller box to match.
+                  const boxClass =
+                    logo.source === "B"
+                      ? "relative h-[68px] w-[156px] sm:h-[97px] sm:w-[272px]"
+                      : "relative h-[76px] w-[173px] sm:h-[108px] sm:w-[302px]";
+                  return (
                     <div
-                      className="relative h-[76px] w-[173px] sm:h-[108px] sm:w-[302px]"
-                      style={{ opacity: 0.7, filter: "grayscale(1)" }}
+                      key={`${rowIndex}-${i}`}
+                      className="flex-shrink-0 flex items-center justify-center mx-[5px] sm:mx-[9px] h-[76px] sm:h-[108px]"
                     >
-                      <Image
-                        src={logoSrc}
-                        alt=""
-                        aria-hidden="true"
-                        fill
-                        className="object-contain"
-                        sizes="302px"
-                      />
+                      <div className={boxClass} style={{ opacity: 0.7, filter: "grayscale(1)" }}>
+                        <Image
+                          src={logo.src}
+                          alt=""
+                          aria-hidden="true"
+                          fill
+                          className="object-contain"
+                          sizes="302px"
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );
