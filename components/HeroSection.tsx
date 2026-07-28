@@ -50,7 +50,7 @@ const LOGO_ROW_COUNT = 4;
 // Tighter spacing shrinks each row's natural width, so the min-repeat
 // threshold is raised to keep the doubled marquee track wide enough
 // to loop without a blank gap on wide viewports.
-const MIN_LOGOS_PER_ROW = 14;
+const MIN_LOGOS_PER_ROW = 18;
 
 // Distribute each source round-robin across rows independently, then
 // interleave each row's A/B items so the two sources mix instead of
@@ -181,12 +181,12 @@ export default function HeroSection() {
                   // smaller box to match.
                   const boxClass =
                     logo.source === "B"
-                      ? "relative h-[54px] w-[125px] sm:h-[78px] sm:w-[218px]"
-                      : "relative h-[61px] w-[138px] sm:h-[86px] sm:w-[242px]";
+                      ? "relative h-[43px] w-[100px] sm:h-[62px] sm:w-[174px]"
+                      : "relative h-[49px] w-[110px] sm:h-[69px] sm:w-[194px]";
                   return (
                     <div
                       key={`${rowIndex}-${i}`}
-                      className="flex-shrink-0 flex items-center justify-center mx-[3px] sm:mx-[5px] h-[61px] sm:h-[86px]"
+                      className="flex-shrink-0 flex items-center justify-center mx-[1px] sm:mx-[2px] h-[49px] sm:h-[69px]"
                     >
                       <div className={boxClass} style={{ opacity: 0.7, filter: "grayscale(1)" }}>
                         <Image
