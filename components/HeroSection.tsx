@@ -76,7 +76,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative bg-[#111111] overflow-hidden flex flex-col items-center justify-center"
+      className="relative bg-[#111111] overflow-hidden"
       style={{ minHeight: "70vh" }}
     >
       {/* Background image with pan animation */}
@@ -91,10 +91,10 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* Logo marquee background */}
+      {/* Logo marquee background — bottom-weighted */}
       <div
-        className="absolute inset-0 z-10 flex flex-col justify-between overflow-hidden"
-        style={{ pointerEvents: "none" }}
+        className="absolute inset-x-0 bottom-0 z-10 flex flex-col justify-between overflow-hidden"
+        style={{ height: "45%", pointerEvents: "none" }}
         aria-hidden="true"
       >
         {logoRows.map((row, rowIndex) => {
@@ -115,7 +115,7 @@ export default function HeroSection() {
                   >
                     <div
                       className="relative h-7 sm:h-10 w-16 sm:w-28"
-                      style={{ opacity: 0.3, filter: "grayscale(1)" }}
+                      style={{ opacity: 0.5, filter: "grayscale(1)" }}
                     >
                       <Image
                         src={partner.logo}
@@ -134,13 +134,13 @@ export default function HeroSection() {
       </div>
 
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 z-10" style={{ background: "rgba(0,0,0,0.55)" }} />
+      <div className="absolute inset-0 z-10" style={{ background: "rgba(0,0,0,0.45)" }} />
       <div className="absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-[#111111] to-transparent" />
 
-      {/* Slogan crossfade */}
+      {/* Slogan crossfade — raised above vertical center (~37% of hero height) */}
       <div
-        className="relative z-20 w-full max-w-4xl mx-auto text-center px-6"
-        style={{ height: "clamp(160px, 25vw, 220px)" }}
+        className="absolute inset-x-0 z-20 w-full max-w-4xl mx-auto text-center px-6"
+        style={{ top: "37%", transform: "translateY(-50%)", height: "clamp(160px, 25vw, 220px)" }}
       >
         {slogans.map((slogan, i) => {
           const isActive = i === activeIndex;
