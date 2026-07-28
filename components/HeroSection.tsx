@@ -9,7 +9,10 @@ const fitnessLogos = Array.from({ length: FITNESS_LOGO_COUNT }, (_, i) =>
 );
 
 const LOGO_ROW_COUNT = 4;
-const MIN_LOGOS_PER_ROW = 5;
+// Tighter spacing shrinks each row's natural width, so the min-repeat
+// threshold is raised to keep the doubled marquee track wide enough
+// to loop without a blank gap on wide viewports.
+const MIN_LOGOS_PER_ROW = 10;
 const logoRows: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
 fitnessLogos.forEach((logo, i) => {
   logoRows[i % LOGO_ROW_COUNT].push(logo);
@@ -21,11 +24,13 @@ const displayLogoRows = logoRows.map((row) => {
   return repeated;
 });
 
+// Durations scaled so px/s flow speed feels the same as before the
+// logos/spacing shrank (each row's track is now narrower per item).
 const rowConfig = [
-  { direction: "left", duration: 42 },
-  { direction: "right", duration: 55 },
-  { direction: "left", duration: 48 },
-  { direction: "right", duration: 60 },
+  { direction: "left", duration: 63 },
+  { direction: "right", duration: 83 },
+  { direction: "left", duration: 72 },
+  { direction: "right", duration: 68 },
 ] as const;
 
 const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[] = [
@@ -117,10 +122,10 @@ export default function HeroSection() {
                 {doubledRow.map((logoSrc, i) => (
                   <div
                     key={`${rowIndex}-${i}`}
-                    className="flex-shrink-0 flex items-center justify-center mx-8 sm:mx-14 h-[84px] sm:h-[120px]"
+                    className="flex-shrink-0 flex items-center justify-center mx-[10px] sm:mx-[18px] h-[76px] sm:h-[108px]"
                   >
                     <div
-                      className="relative h-[84px] w-[192px] sm:h-[120px] sm:w-[336px]"
+                      className="relative h-[76px] w-[173px] sm:h-[108px] sm:w-[302px]"
                       style={{ opacity: 0.7, filter: "grayscale(1)" }}
                     >
                       <Image
@@ -129,7 +134,7 @@ export default function HeroSection() {
                         aria-hidden="true"
                         fill
                         className="object-contain"
-                        sizes="336px"
+                        sizes="302px"
                       />
                     </div>
                   </div>
