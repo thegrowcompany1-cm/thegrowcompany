@@ -33,6 +33,16 @@
   animation-play-state: paused;
 }
 
+@keyframes hero-logo-marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes hero-logo-marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
 @keyframes hero-pan {
   0%   { transform: scale(1.15) translateX(-4%); }
   100% { transform: scale(1.15) translateX(4%); }

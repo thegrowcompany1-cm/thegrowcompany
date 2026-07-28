@@ -1,10 +1,37 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { partners } from "@/components/PartnerSlider";
+
+const uniqueLogos = Array.from(
+  new Map(partners.map((p) => [p.logo, p])).values()
+);
+
+const LOGO_ROW_COUNT = 5;
+const logoRows: (typeof partners)[] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
+uniqueLogos.forEach((logo, i) => {
+  logoRows[i % LOGO_ROW_COUNT].push(logo);
+});
+
+const rowConfig = [
+  { direction: "left", duration: 42 },
+  { direction: "right", duration: 55 },
+  { direction: "left", duration: 48 },
+  { direction: "right", duration: 60 },
+  { direction: "left", duration: 50 },
+] as const;
 
 const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[] = [
   {
-    content: "대표님들의 성장을 돕습니다.",
+    content: (
+      <>
+        창업 <span className="text-[#22B573]">300회</span> / 위탁운영{" "}
+        <span className="text-[#22B573]">700회</span> 이상
+        <br />
+        피트니스 전문 컨설팅회사
+      </>
+    ),
     sizeClass: "text-2xl sm:text-4xl lg:text-5xl xl:text-6xl",
     weight: 900,
   },
@@ -62,9 +89,53 @@ export default function HeroSection() {
           className="absolute inset-0 w-full h-full object-cover object-center"
           style={{ animation: "hero-pan 10s ease-in-out infinite alternate" }}
         />
-        <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.5)" }} />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#111111] to-transparent" />
       </div>
+
+      {/* Logo marquee background */}
+      <div
+        className="absolute inset-0 z-10 flex flex-col justify-between overflow-hidden"
+        style={{ pointerEvents: "none" }}
+        aria-hidden="true"
+      >
+        {logoRows.map((row, rowIndex) => {
+          const config = rowConfig[rowIndex];
+          const doubledRow = [...row, ...row];
+          return (
+            <div key={rowIndex} className="w-full overflow-hidden">
+              <div
+                className="flex items-center w-max"
+                style={{
+                  animation: `hero-logo-marquee-${config.direction} ${config.duration}s linear infinite`,
+                }}
+              >
+                {doubledRow.map((partner, i) => (
+                  <div
+                    key={`${rowIndex}-${i}`}
+                    className="flex-shrink-0 flex items-center justify-center mx-3 sm:mx-6 h-10 sm:h-14"
+                  >
+                    <div
+                      className="relative h-7 sm:h-10 w-16 sm:w-28"
+                      style={{ opacity: 0.3, filter: "grayscale(1)" }}
+                    >
+                      <Image
+                        src={partner.logo}
+                        alt=""
+                        fill
+                        className="object-contain"
+                        sizes="128px"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 z-10" style={{ background: "rgba(0,0,0,0.55)" }} />
+      <div className="absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-[#111111] to-transparent" />
 
       {/* Slogan crossfade */}
       <div

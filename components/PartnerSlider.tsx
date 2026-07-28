@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const partners = [
+export const partners = [
   { name: "LEXCO", logo: "/logos/lexco.png" },
   { name: "FirstCS", logo: "/logos/firstcs.png" },
   { name: "Bodydot", logo: "/logos/bodydot.png" },
