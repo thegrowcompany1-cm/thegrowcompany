@@ -2,16 +2,23 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { partners } from "@/components/PartnerSlider";
 
-const uniqueLogos = Array.from(
-  new Map(partners.map((p) => [p.logo, p])).values()
+const FITNESS_LOGO_COUNT = 19;
+const fitnessLogos = Array.from({ length: FITNESS_LOGO_COUNT }, (_, i) =>
+  encodeURI(`/fitness logos/${i + 1}.png`)
 );
 
 const LOGO_ROW_COUNT = 5;
-const logoRows: (typeof partners)[] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
-uniqueLogos.forEach((logo, i) => {
+const MIN_LOGOS_PER_ROW = 5;
+const logoRows: string[][] = Array.from({ length: LOGO_ROW_COUNT }, () => []);
+fitnessLogos.forEach((logo, i) => {
   logoRows[i % LOGO_ROW_COUNT].push(logo);
+});
+const displayLogoRows = logoRows.map((row) => {
+  if (row.length === 0 || row.length >= MIN_LOGOS_PER_ROW) return row;
+  const repeated: string[] = [];
+  while (repeated.length < MIN_LOGOS_PER_ROW) repeated.push(...row);
+  return repeated;
 });
 
 const rowConfig = [
@@ -97,7 +104,7 @@ export default function HeroSection() {
         style={{ height: "45%", pointerEvents: "none" }}
         aria-hidden="true"
       >
-        {logoRows.map((row, rowIndex) => {
+        {displayLogoRows.map((row, rowIndex) => {
           const config = rowConfig[rowIndex];
           const doubledRow = [...row, ...row];
           return (
@@ -108,7 +115,7 @@ export default function HeroSection() {
                   animation: `hero-logo-marquee-${config.direction} ${config.duration}s linear infinite`,
                 }}
               >
-                {doubledRow.map((partner, i) => (
+                {doubledRow.map((logoSrc, i) => (
                   <div
                     key={`${rowIndex}-${i}`}
                     className="flex-shrink-0 flex items-center justify-center mx-3 sm:mx-6 h-10 sm:h-14"
@@ -118,8 +125,9 @@ export default function HeroSection() {
                       style={{ opacity: 0.5, filter: "grayscale(1)" }}
                     >
                       <Image
-                        src={partner.logo}
+                        src={logoSrc}
                         alt=""
+                        aria-hidden="true"
                         fill
                         className="object-contain"
                         sizes="128px"
