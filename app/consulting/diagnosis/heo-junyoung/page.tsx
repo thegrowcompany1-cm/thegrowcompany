@@ -682,6 +682,32 @@ const DETAIL_HTML = `<div class="hjy">
 .hjy-prog-list li{font-size:15px}
 
 .hjy-mqcap{text-align:center;font-size:17px;color:#d2d2d2;margin:0 auto 4px}
+.hjy-lead mark{background:var(--mark);color:var(--ink);padding:1px 4px;border-radius:4px;font-weight:600}
+
+/* ── 웹사이트 제작 캐러셀 (hjy-web-, 3D 원통형 드래그 캐러셀 이식) ── */
+.hjy-web-wrap{margin-top:36px;overflow:hidden;-webkit-user-select:none;user-select:none}
+.hjy-web-scene{width:100%;height:340px;position:relative;perspective:1100px;overflow:visible;cursor:grab;touch-action:pan-y}
+.hjy-web-scene:active{cursor:grabbing}
+.hjy-web-rotor{width:260px;height:170px;position:absolute;left:50%;top:50%;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateX(-6deg) rotateY(0deg)}
+.hjy-web-card{position:absolute;width:260px;height:170px;left:0;top:0;border-radius:16px;overflow:hidden;backface-visibility:visible;-webkit-backface-visibility:visible;border:1px solid rgba(0,0,0,0.05);background:#111;transition:filter .5s ease,opacity .5s ease,box-shadow .5s ease;filter:brightness(0.3) contrast(1.1);opacity:.8;box-shadow:0 10px 30px rgba(0,0,0,0.1);display:block;text-decoration:none;color:inherit}
+.hjy-web-card img{width:100%;height:100%;object-fit:cover;object-position:top;pointer-events:none;display:block}
+.hjy-web-card.is-front{filter:brightness(1) contrast(1.05);opacity:1;border-color:rgba(255,59,48,.4);box-shadow:0 25px 50px -12px rgba(0,0,0,.3),0 0 0 1px rgba(255,59,48,.3),0 10px 20px rgba(255,59,48,.15)}
+.hjy-web-card.is-adjacent{filter:brightness(0.6) contrast(1.1);opacity:.95}
+.hjy-web-overlay{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);display:flex;align-items:center;justify-content:space-between;opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease;pointer-events:none}
+.hjy-web-card.is-front .hjy-web-overlay{opacity:1;transform:translateY(0)}
+.hjy-web-overlay-name{font-size:14px;font-weight:700;color:#fff}
+.hjy-web-overlay-link{font-size:11px;font-weight:600;color:#FF3B30;display:flex;align-items:center;gap:4px;background:#fff;padding:4px 8px;border-radius:20px}
+.hjy-web-overlay-link svg{width:12px;height:12px}
+.hjy-web-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:20;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,.08);box-shadow:0 4px 16px rgba(0,0,0,.1);color:#333;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s ease}
+.hjy-web-nav:hover{background:#111;color:#fff;border-color:#111;transform:translateY(-50%) scale(1.05)}
+.hjy-web-nav--prev{left:10px}
+.hjy-web-nav--next{right:10px}
+.hjy-web-nav svg{width:20px;height:20px}
+.hjy-web-dots{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px}
+.hjy-web-dot{width:8px;height:8px;border-radius:50%;background:#D1D1D1;cursor:pointer;transition:all .3s ease}
+.hjy-web-dot.active{background:#FF3B30;width:24px;border-radius:4px}
+@media(min-width:768px){.hjy-web-scene{height:440px;perspective:1300px}.hjy-web-rotor{width:360px;height:240px}.hjy-web-card{width:360px;height:240px;border-radius:20px}.hjy-web-nav{width:50px;height:50px}.hjy-web-nav--prev{left:30px}.hjy-web-nav--next{right:30px}}
+@media(min-width:1024px){.hjy-web-scene{height:540px;perspective:1500px}.hjy-web-rotor{width:460px;height:300px}.hjy-web-card{width:460px;height:300px;border-radius:24px}.hjy-web-nav--prev{left:calc(50% - 400px)}.hjy-web-nav--next{right:calc(50% - 400px)}}
 
 #hjyRankMarquee .hjy-mq-track img{height:140px}
 #hjyReviewMarquee .hjy-mq-track img{height:320px}
@@ -692,7 +718,7 @@ const DETAIL_HTML = `<div class="hjy">
 <section class="hjy-sec tl">
   <div class="hjy-inner">
     <p class="hjy-kw">헬스장 마케팅·필라테스 마케팅, 매출 구조부터 다시 봅니다</p>
-    <h1 class="hjy-h2">열심히는 하고 있습니다.<br>그런데 매출이 그걸 몰라줍니다.</h1>
+    <h1 class="hjy-h2"><em>지역 1등</em> 마케팅 매장으로 만들어 드립니다.</h1>
     <p class="hjy-lead">신규는 들쭉날쭉, 재등록은 애매하게,<br>인건비는 꼬박꼬박.</p>
     <p class="hjy-lead">어디서 새는지 찾아 메꾸고,<br>한 달 뒤엔 대표님이 직접 굴리게 만들어 드립니다.</p>
   </div>
@@ -725,11 +751,11 @@ const DETAIL_HTML = `<div class="hjy">
 <!-- 섹션 3 — 가이드 (공감 → 권위, 좌측 정렬) -->
 <section class="hjy-sec tl">
   <div class="hjy-inner">
-    <h2 class="hjy-h2">저도 10억을 태워보고 알았습니다.</h2>
-    <p class="hjy-lead">메타 광고에 누적 10억을 집행하며 확인했습니다.<br>광고를 잘해서 매출이 오른 센터보다,<br>상담·재등록·비용 구조를 고쳐서 오른 센터가 더 많았습니다.</p>
+    <h2 class="hjy-h2">저도 20억을 태워보고 알았습니다.</h2>
+    <p class="hjy-lead">광고에 누적 20억 이상 집행하며 확인했습니다.<br>광고를 잘해서 매출이 오른 센터보다,<br><mark>상담·재등록·비용 구조</mark>를 고쳐서 오른 센터가 더 많았습니다.</p>
     <p class="hjy-accent"><em>매출은 광고가 아니라 구조가 만듭니다.</em></p>
     <div class="hjy-nums">
-      <div class="hjy-num-card"><b class="hjy-count" data-to="10" data-suffix="억">0억</b><span>메타광고 누적 집행액</span></div>
+      <div class="hjy-num-card"><b class="hjy-count" data-to="20" data-suffix="억+">0억+</b><span>광고 누적 집행액</span></div>
       <div class="hjy-num-card"><b class="hjy-count" data-to="110" data-suffix="개+">0개+</b><span>헬스장·필라테스 마케팅 운영 센터</span></div>
       <div class="hjy-num-card"><b class="hjy-count" data-prefix="1급 " data-to="3" data-suffix="종">1급 0종</b><span>검색광고마케터 (네이버·구글·카카오)</span></div>
       <div class="hjy-num-card"><b class="hjy-count" data-to="800" data-suffix="명">0명</b><span>그로우 에듀 누적 수강생</span></div>
@@ -746,6 +772,80 @@ const DETAIL_HTML = `<div class="hjy">
       <img src="https://cdn.imweb.me/thumbnail/20250911/17751ea0cb81e.png" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20250911/993bfd5741d22.jpg" alt="" aria-hidden="true">
     </div>
+  </div>
+</section>
+
+<!-- 섹션 3.5 — 웹사이트 제작 (web-carousel.html 이식, hjy-web- 접두사) -->
+<section class="hjy-sec hjy-sec--alt tl">
+  <div class="hjy-inner">
+    <h2 class="hjy-h2">유입의 시작은 홈페이지입니다.<br>그래서 직접 만들고, 직접 운영합니다.</h2>
+    <p class="hjy-lead">피트니스 전문 웹사이트 제작 — 광고를 아는 사람이 만드는 홈페이지는 다릅니다.</p>
+  </div>
+  <div class="hjy-web-wrap">
+    <p class="hjy-mqcap" style="margin-top:20px">좌우로 드래그하여 확인해보세요</p>
+    <div class="hjy-web-scene" id="hjyWebScene">
+      <button class="hjy-web-nav hjy-web-nav--prev" id="hjyWebPrev" aria-label="이전">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button class="hjy-web-nav hjy-web-nav--next" id="hjyWebNext" aria-label="다음">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <div class="hjy-web-rotor" id="hjyWebRotor">
+        <a class="hjy-web-card" href="https://pilateslean.co.kr" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.imweb.me/thumbnail/20260210/93f98b61c2c1a.png" alt="필라테스 린">
+          <div class="hjy-web-overlay">
+            <span class="hjy-web-overlay-name">필라테스 린</span>
+            <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
+          </div>
+        </a>
+        <a class="hjy-web-card" href="https://chaeumofficial.com" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.imweb.me/thumbnail/20260210/152c69f74e0c0.png" alt="채움">
+          <div class="hjy-web-overlay">
+            <span class="hjy-web-overlay-name">채움</span>
+            <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
+          </div>
+        </a>
+        <a class="hjy-web-card" href="https://growinterior.co.kr" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.imweb.me/thumbnail/20260210/12ffb4b4c6c58.png" alt="그로우 인테리어">
+          <div class="hjy-web-overlay">
+            <span class="hjy-web-overlay-name">그로우 인테리어</span>
+            <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
+          </div>
+        </a>
+        <a class="hjy-web-card" href="https://fitness-demo-topaz.vercel.app/" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.imweb.me/thumbnail/20260210/048066d8b3030.png" alt="파워짐">
+          <div class="hjy-web-overlay">
+            <span class="hjy-web-overlay-name">파워짐</span>
+            <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
+          </div>
+        </a>
+        <a class="hjy-web-card" href="https://pilates-demo.vercel.app/" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.imweb.me/thumbnail/20260210/1c752a7dc6aa8.png" alt="소울 필라테스">
+          <div class="hjy-web-overlay">
+            <span class="hjy-web-overlay-name">소울 필라테스</span>
+            <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
+          </div>
+        </a>
+        <a class="hjy-web-card" href="https://thebenefit.co.kr/" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.imweb.me/thumbnail/20260210/bc4c1227c16a0.png" alt="더배내핏">
+          <div class="hjy-web-overlay">
+            <span class="hjy-web-overlay-name">더배내핏</span>
+            <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="hjy-web-dots" id="hjyWebDots">
+      <div class="hjy-web-dot active" data-dot="0"></div>
+      <div class="hjy-web-dot" data-dot="1"></div>
+      <div class="hjy-web-dot" data-dot="2"></div>
+      <div class="hjy-web-dot" data-dot="3"></div>
+      <div class="hjy-web-dot" data-dot="4"></div>
+      <div class="hjy-web-dot" data-dot="5"></div>
+    </div>
+  </div>
+  <div class="hjy-inner" style="margin-top:36px">
+    <p class="hjy-punch" style="text-align:center">지금 보고 계신 이 홈페이지도, 저희가 직접 만들어 운영합니다.</p>
   </div>
 </section>
 
@@ -886,6 +986,148 @@ const DETAIL_HTML = `<div class="hjy">
   marquee('hjyRankMarquee', 36, false);
   marquee('hjyReviewMarquee', 36, true);
   marquee('hjyLectureMarquee', 36, false);
+
+  // 웹사이트 제작 캐러셀 (hjy-web-, 3D 원통형 드래그 캐러셀 — window 리스너는
+  // stops[]에 추적해 언마운트 시 __hjyMarqueeStop 호출로 함께 정리)
+  (function(){
+    var scene = document.getElementById('hjyWebScene');
+    if (!scene) return;
+    var rotor = document.getElementById('hjyWebRotor');
+    var cards = scene.querySelectorAll('.hjy-web-card');
+    var dots = document.querySelectorAll('#hjyWebDots .hjy-web-dot');
+    var total = cards.length;
+    var stepAngle = 360 / total;
+
+    var currentAngle = 0;
+    var currentIndex = 0;
+    var isDragging = false;
+    var startX = 0;
+    var dragStartAngle = 0;
+    var hasDragged = false;
+
+    function getBaseRotX(){ return window.innerWidth >= 1024 ? -6 : -4; }
+
+    function getRadius(){
+      var cardWidth = rotor.offsetWidth;
+      var radius = (cardWidth / 2) / Math.tan(Math.PI / total);
+      return Math.round(radius) + (window.innerWidth >= 768 ? 40 : 20);
+    }
+
+    function layout(){
+      var r = getRadius();
+      cards.forEach(function(card, i){
+        card.style.transform = 'rotateY(' + (stepAngle * i) + 'deg) translateZ(' + r + 'px)';
+      });
+      updateClasses();
+    }
+
+    function render(angle, animate){
+      rotor.style.transition = animate ? 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none';
+      rotor.style.transform = 'translate(-50%, -50%) rotateX(' + getBaseRotX() + 'deg) rotateY(' + angle + 'deg)';
+    }
+
+    function updateClasses(){
+      var normalizedAngle = currentAngle % 360;
+      if (normalizedAngle > 0) normalizedAngle -= 360;
+      currentIndex = Math.round(Math.abs(normalizedAngle) / stepAngle) % total;
+      var prev = (currentIndex - 1 + total) % total;
+      var next = (currentIndex + 1) % total;
+      cards.forEach(function(card, i){
+        card.classList.remove('is-front', 'is-adjacent');
+        if (i === currentIndex) card.classList.add('is-front');
+        else if (i === prev || i === next) card.classList.add('is-adjacent');
+      });
+      dots.forEach(function(dot, i){ dot.classList.toggle('active', i === currentIndex); });
+    }
+
+    function moveToIndex(direction){
+      currentAngle -= direction * stepAngle;
+      render(currentAngle, true);
+      updateClasses();
+    }
+
+    function onDragStart(e){
+      isDragging = true;
+      hasDragged = false;
+      startX = e.type.indexOf('mouse') === 0 ? e.pageX : e.touches[0].pageX;
+      dragStartAngle = currentAngle;
+      scene.style.cursor = 'grabbing';
+    }
+    function onDragMove(e){
+      if (!isDragging) return;
+      var x = e.type.indexOf('mouse') === 0 ? e.pageX : e.touches[0].pageX;
+      var dist = x - startX;
+      if (Math.abs(dist) > 5) hasDragged = true;
+      var rotationSensitivity = 0.4;
+      currentAngle = dragStartAngle + (dist * rotationSensitivity);
+      render(currentAngle, false);
+      updateClasses();
+    }
+    function onDragEnd(){
+      if (!isDragging) return;
+      isDragging = false;
+      scene.style.cursor = 'grab';
+      currentAngle = Math.round(currentAngle / stepAngle) * stepAngle;
+      render(currentAngle, true);
+      updateClasses();
+    }
+    function onResize(){ layout(); render(currentAngle, true); }
+
+    scene.addEventListener('mousedown', onDragStart);
+    window.addEventListener('mousemove', onDragMove);
+    window.addEventListener('mouseup', onDragEnd);
+    scene.addEventListener('touchstart', onDragStart, { passive: true });
+    window.addEventListener('touchmove', onDragMove, { passive: true });
+    window.addEventListener('touchend', onDragEnd);
+    window.addEventListener('resize', onResize);
+
+    var prevBtn = document.getElementById('hjyWebPrev');
+    var nextBtn = document.getElementById('hjyWebNext');
+    function onPrevClick(){ moveToIndex(-1); }
+    function onNextClick(){ moveToIndex(1); }
+    if (prevBtn) prevBtn.addEventListener('click', onPrevClick);
+    if (nextBtn) nextBtn.addEventListener('click', onNextClick);
+
+    cards.forEach(function(card, idx){
+      card.addEventListener('click', function(e){
+        if (hasDragged){ e.preventDefault(); return; }
+        if (idx !== currentIndex){
+          // 정면이 아닌 카드를 클릭하면 이동만 하고, 새 탭 이동은 막는다.
+          e.preventDefault();
+          var diff = idx - currentIndex;
+          if (diff > total / 2) diff -= total;
+          if (diff < -total / 2) diff += total;
+          currentAngle -= diff * stepAngle;
+          render(currentAngle, true);
+          updateClasses();
+        }
+        // idx === currentIndex && !hasDragged → <a target="_blank"> 기본 동작으로 이동
+      });
+    });
+
+    dots.forEach(function(dot, idx){
+      dot.addEventListener('click', function(){
+        var diff = idx - currentIndex;
+        if (diff > total / 2) diff -= total;
+        if (diff < -total / 2) diff += total;
+        currentAngle -= diff * stepAngle;
+        render(currentAngle, true);
+        updateClasses();
+      });
+    });
+
+    layout();
+    render(currentAngle, false);
+    updateClasses();
+
+    stops.push(function(){
+      window.removeEventListener('mousemove', onDragMove);
+      window.removeEventListener('mouseup', onDragEnd);
+      window.removeEventListener('touchmove', onDragMove);
+      window.removeEventListener('touchend', onDragEnd);
+      window.removeEventListener('resize', onResize);
+    });
+  })();
 
   // 체크리스트 토글 (이벤트 위임, 전역 오염 없음 — 컨테이너 제거 시 리스너도 함께 GC)
   var checks = document.querySelector('.hjy-checks');
