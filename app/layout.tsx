@@ -23,9 +23,12 @@ const DEFAULT_DESC =
   "헬스장마케팅·필라테스마케팅부터 헬스장운영·필라테스운영, 위탁운영, 창업까지. 더그로우컴퍼니가 피트니스 비즈니스의 모든 단계를 전문 컨설팅으로 지원합니다.";
 
 // 모바일 뷰포트: 폭을 기기 폭에 맞추고 축소/핀치줌으로 뭉개지지 않게 (가로 오버플로우 방지와 병행)
+// 핀치줌/더블탭줌 차단 (요청에 따른 설정 — 저시력 사용자의 화면 확대 접근성에 영향을 줄 수 있음)
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export const metadata: Metadata = {
