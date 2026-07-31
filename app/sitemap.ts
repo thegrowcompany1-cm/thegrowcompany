@@ -13,6 +13,8 @@ const ROUTES = [
   "/consulting/diagnosis/hwang-bongnam",
   "/edu/fc-class",
   "/edu/startup-class",
+  "/legal/terms",
+  "/legal/privacy",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

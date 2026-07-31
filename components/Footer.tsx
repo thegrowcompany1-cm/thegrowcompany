@@ -119,8 +119,8 @@ export default function Footer() {
               <p>인천 서구 봉수대로 806 (연희동, 인천아시아드주경기장) 1층</p>
             </div>
             <div className="flex items-center gap-4 text-xs text-gray-500">
-              <Link href="/terms" className="hover:text-gray-300 transition-colors">이용약관</Link>
-              <Link href="/privacy" className="hover:text-gray-300 transition-colors">개인정보처리방침</Link>
+              <Link href="/legal/terms" className="hover:text-gray-300 transition-colors">이용약관</Link>
+              <Link href="/legal/privacy" className="font-bold text-gray-400 hover:text-gray-300 transition-colors">개인정보처리방침</Link>
             </div>
           </div>
           <p className="text-xs text-gray-600 mt-4">
