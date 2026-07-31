@@ -68,6 +68,11 @@ export const metadata: Metadata = {
     description: DEFAULT_DESC,
     images: [OG_IMAGE],
   },
+  verification: {
+    other: {
+      "naver-site-verification": "87d094f3a884ddc47196bdcfe790daab74615b50",
+    },
+  },
 };
 
 // 조직(Organization) 구조화 데이터 (JSON-LD)
