@@ -10,6 +10,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { SITE_URL } from "@/lib/site";
 
 /* ▼▼ 다음 기수 때 이 상수만 수정 ▼▼ */
@@ -900,6 +901,7 @@ const DETAIL_HTML = `<div class="fc1">
 </div>`;
 
 export default function FcClass() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const detailRef = useRef<HTMLDivElement>(null);
 
@@ -947,11 +949,6 @@ export default function FcClass() {
     };
   }, [mounted]);
 
-  const payAlert = () => {
-    // TODO: 토스페이먼츠 연동
-    alert("결제 준비중입니다. 오픈 예정이니 조금만 기다려주세요.");
-  };
-
   return (
     <div
       className="overflow-x-hidden bg-white"
@@ -993,7 +990,7 @@ export default function FcClass() {
                 </div>
                 <button
                   type="button"
-                  onClick={payAlert}
+                  onClick={() => router.push("/checkout?product=fc-class")}
                   className="mt-5 w-full rounded-xl bg-[#161616] py-4 text-base font-extrabold text-white transition-opacity hover:opacity-90"
                 >
                   정상가로 신청하기
@@ -1013,7 +1010,7 @@ export default function FcClass() {
                 </div>
                 <button
                   type="button"
-                  onClick={payAlert}
+                  onClick={() => router.push("/checkout?product=fc-class-early")}
                   className="fc1-pulse mt-5 w-full rounded-xl bg-[#22B573] py-4 text-base font-extrabold text-white transition-opacity hover:opacity-90"
                 >
                   얼리버드 할인가로 신청하기
