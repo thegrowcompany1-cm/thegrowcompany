@@ -127,21 +127,31 @@ const TEXT_REVIEWS = [
   },
 ];
 
-const TEXT_REVIEWS_HTML = TEXT_REVIEWS.map(
-  (r) => `
-      <div class="fc1-rev-item fc1-reveal">
-        <div class="fc1-rev-stars" aria-label="별점 5점 만점에 5점">★★★★★</div>
-        <p class="fc1-rev-body">${r.text}</p>
-        <div class="fc1-rev-meta"><span class="fc1-rev-name">${r.name}</span><span class="fc1-rev-date">${r.date}</span></div>
-      </div>`
-).join("");
-
 const TOP_STYLE = `@keyframes fc1Pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}.fc1-pulse{animation:fc1Pulse 2.2s ease-in-out infinite}
 .fc1-tab-bar{background:#fff;border-bottom:1px solid #ececec}
 .fc1-tab-in{max-width:820px;margin:0 auto;display:flex}
 .fc1-tab-btn{flex:1 1 0;min-width:0;padding:16px 4px;background:none;border:none;border-bottom:2px solid transparent;font-size:15px;font-weight:700;color:#666;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s;font-family:inherit;letter-spacing:-0.01em}
 .fc1-tab-btn:hover,.fc1-tab-btn.fc1-tab-active{color:#22B573;border-bottom-color:#22B573}
-@media(max-width:640px){.fc1-tab-btn{font-size:14px;padding:14px 2px}}`;
+@media(max-width:640px){.fc1-tab-btn{font-size:14px;padding:14px 2px}}
+#fc1-reviews{scroll-margin-top:80px}
+.fc1-rev-sec{background:#f8f9fa;color:#141414;padding:64px 0;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em}
+.fc1-rev-sec *{box-sizing:border-box}
+.fc1-rev-wrap{max-width:820px;margin:0 auto;padding:0 20px}
+.fc1-rev-head{text-align:center}
+.fc1-rev-title{font-size:28px;font-weight:800;line-height:1.45;margin:0 0 12px;color:#141414}
+.fc1-rev-score{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.fc1-rev-score-star{color:#ffb400;font-size:22px;line-height:1}
+.fc1-rev-score b{font-size:22px;font-weight:900;color:#161616;line-height:1}
+.fc1-rev-count{font-size:14px;color:#888;font-weight:600}
+.fc1-rev-list{margin-top:30px;display:flex;flex-direction:column;gap:16px}
+.fc1-rev-item{background:#fff;border:1px solid #ececec;border-radius:16px;padding:24px 26px;text-align:left;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.fc1-rev-stars{color:#ffb400;font-size:15px;letter-spacing:3px;margin-bottom:12px;line-height:1}
+.fc1-rev-body{font-size:15px;color:#333;line-height:1.8;margin:0 0 16px}
+.fc1-rev-meta{display:flex;align-items:center;gap:10px;font-size:13px}
+.fc1-rev-name{font-weight:700;color:#555}
+.fc1-rev-date{color:#999}
+.fc1-barspacer{height:92px}
+@media(max-width:640px){.fc1-rev-sec{padding:52px 0}.fc1-rev-title{font-size:23px}.fc1-rev-item{padding:20px}}`;
 
 const DETAIL_HTML = `<div class="fc1">
 <style>
@@ -392,22 +402,8 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-enroll-btn:hover{opacity:.9}
 @media(max-width:640px){.fc1-enroll-cards{grid-template-columns:1fr}.fc1-enroll-price{font-size:20px}}
 
-/* 14 수강생 텍스트 후기 */
-#fc1-curriculum,#fc1-instructors,#fc1-reviews{scroll-margin-top:72px}
-.fc1-rev-sec{background:#f8f9fa;color:#141414}
-.fc1-rev-head{text-align:center}
-.fc1-rev-score{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
-.fc1-rev-score-star{color:#ffb400;font-size:22px;line-height:1}
-.fc1-rev-score b{font-size:22px;font-weight:900;color:#161616;line-height:1}
-.fc1-rev-count{font-size:14px;color:#888;font-weight:600}
-.fc1-rev-list{margin-top:30px;display:flex;flex-direction:column;gap:16px}
-.fc1-rev-item{background:#fff;border:1px solid #ececec;border-radius:16px;padding:24px 26px;text-align:left;box-shadow:0 4px 16px rgba(0,0,0,.04)}
-.fc1-rev-stars{color:#ffb400;font-size:15px;letter-spacing:3px;margin-bottom:12px;line-height:1}
-.fc1-rev-body{font-size:15px;color:#333;line-height:1.8;margin:0 0 16px}
-.fc1-rev-meta{display:flex;align-items:center;gap:10px;font-size:13px}
-.fc1-rev-name{font-weight:700;color:#555}
-.fc1-rev-date{color:#999}
-@media(max-width:640px){.fc1-rev-item{padding:20px}}
+/* 탭 내비 스크롤 오프셋 */
+#fc1-curriculum,#fc1-instructors{scroll-margin-top:80px}
 </style>
 
 <!-- 1. 히어로 -->
@@ -790,19 +786,6 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
 </section>
 
-<!-- 14. 수강생 텍스트 후기 -->
-<section class="fc1-sec fc1-rev-sec" id="fc1-reviews">
-  <div class="fc1-wrap">
-    <div class="fc1-rev-head fc1-reveal">
-      <h2 class="fc1-h2">수강생 후기</h2>
-      <div class="fc1-rev-score"><span class="fc1-rev-score-star">★</span><b>5.0</b><span class="fc1-rev-count">후기 ${TEXT_REVIEWS.length}개</span></div>
-    </div>
-    <div class="fc1-rev-list">${TEXT_REVIEWS_HTML}
-    </div>
-  </div>
-</section>
-
-<div class="fc1-barspacer"></div>
 <div class="fc1-bar" id="fc1Bar">
   <div class="fc1-bar-in">
     <div class="fc1-bar-when">다음 기수 준비중 · 총 4시간</div>
@@ -978,7 +961,7 @@ export default function FcClass() {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const detailRef = useRef<HTMLDivElement>(null);
 
-  // 탭 클릭 → 주입 HTML 내 섹션으로 스크롤 (scroll-margin-top 72px 로 헤더 오프셋 처리)
+  // 탭 클릭 → 클릭 시점에 대상 조회, 없으면 무동작 (scroll-margin-top 80px 로 헤더 오프셋 처리)
   const onTabClick = (id: string) => {
     setActiveTab(id);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -1149,6 +1132,35 @@ export default function FcClass() {
       ) : (
         <div ref={detailRef} className="w-full" suppressHydrationWarning />
       )}
+
+      {/* ── 14. 수강생 텍스트 후기 — 주입 스크립트 비의존, 순수 React 렌더 ── */}
+      <section className="fc1-rev-sec" id="fc1-reviews">
+        <div className="fc1-rev-wrap">
+          <div className="fc1-rev-head">
+            <h2 className="fc1-rev-title">수강생 후기</h2>
+            <div className="fc1-rev-score">
+              <span className="fc1-rev-score-star">★</span>
+              <b>5.0</b>
+              <span className="fc1-rev-count">후기 {TEXT_REVIEWS.length}개</span>
+            </div>
+          </div>
+          <div className="fc1-rev-list">
+            {TEXT_REVIEWS.map((r) => (
+              <div key={`${r.name}-${r.date}`} className="fc1-rev-item">
+                <div className="fc1-rev-stars" aria-label="별점 5점 만점에 5점">
+                  ★★★★★
+                </div>
+                <p className="fc1-rev-body">{r.text}</p>
+                <div className="fc1-rev-meta">
+                  <span className="fc1-rev-name">{r.name}</span>
+                  <span className="fc1-rev-date">{r.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <div className="fc1-barspacer" />
     </div>
   );
 }
