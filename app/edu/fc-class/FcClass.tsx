@@ -166,8 +166,9 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-d1{animation-delay:.15s}.fc1-d2{animation-delay:.45s}.fc1-d3{animation-delay:.75s}
 .fc1-d4{animation-delay:1.05s}.fc1-d5{animation-delay:1.35s}.fc1-d6{animation-delay:1.65s}
 
-.fc1-reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
-.fc1-reveal.fc1-in{opacity:1;transform:none}
+/* fail-safe reveal — 기본은 완전 표시. 주입 스크립트가 루트에 fc1-anim 을 붙인 경우에만 숨김+애니메이션 */
+.fc1.fc1-anim .fc1-reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.fc1.fc1-anim .fc1-reveal.fc1-in{opacity:1;transform:none}
 .fc1-pcards .fc1-pcard:nth-child(2){transition-delay:.12s}
 .fc1-pcards .fc1-pcard:nth-child(3){transition-delay:.24s}
 .fc1-points .fc1-point:nth-child(2){transition-delay:.12s}
@@ -307,8 +308,8 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-res-big{display:block;width:100%;max-width:760px;margin:0 auto;border-radius:16px;border:1px solid #eee}
 @media(max-width:640px){.fc1-res-grid{grid-template-columns:1fr}}
 
-.fc1-reveal-scale{opacity:0;transform:scale(.94);transition:opacity .7s ease,transform .7s ease}
-.fc1-reveal-scale.fc1-in{opacity:1;transform:scale(1)}
+.fc1.fc1-anim .fc1-reveal-scale{opacity:0;transform:scale(.94);transition:opacity .7s ease,transform .7s ease}
+.fc1.fc1-anim .fc1-reveal-scale.fc1-in{opacity:1;transform:scale(1)}
 
 /* 8 교육 현장 갤러리 */
 .fc1-gal{background:#111;color:#fff}
@@ -796,17 +797,19 @@ const DETAIL_HTML = `<div class="fc1">
 <script>
 (function(){
   var stops = [];
+  /* fail-safe reveal — 스크립트가 실행됐을 때만 루트에 fc1-anim 을 붙여 숨김+애니메이션 활성화.
+     스크립트가 실행되지 않으면 fc1-anim 이 없으므로 전 섹션이 기본 표시 상태로 남는다. */
+  var animRoot = document.querySelector('.fc1');
   var els = document.querySelectorAll('.fc1-reveal, .fc1-reveal-scale');
-  if (els.length && typeof IntersectionObserver !== 'undefined'){
+  if (animRoot && els.length && typeof IntersectionObserver !== 'undefined'){
     var io = new IntersectionObserver(function(entries){
       for (var k = 0; k < entries.length; k++){
         if (entries[k].isIntersecting){ entries[k].target.classList.add('fc1-in'); io.unobserve(entries[k].target); }
       }
     }, { threshold: 0.15 });
+    animRoot.classList.add('fc1-anim');
     for (var i = 0; i < els.length; i++){ io.observe(els[i]); }
-    stops.push(function(){ io.disconnect(); });
-  } else {
-    for (var j = 0; j < els.length; j++){ els[j].classList.add('fc1-in'); }
+    stops.push(function(){ io.disconnect(); animRoot.classList.remove('fc1-anim'); });
   }
 
   // 후기 슬라이더 (화살표 · 도트 · 스크롤 동기 — 리스너 전부 stops 로 정리)
