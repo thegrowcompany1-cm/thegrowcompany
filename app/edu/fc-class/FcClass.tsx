@@ -76,7 +76,72 @@ const FAQ_SCHEMA = {
 // 최상단 좌측 고정 강의 사진
 const HERO_IMAGE = "/edu/edu.main.jpg";
 
-const TOP_STYLE = `@keyframes fc1Pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}.fc1-pulse{animation:fc1Pulse 2.2s ease-in-out infinite}`;
+// 탭 내비게이션 (히어로 바로 아래) — 주입 HTML 내 섹션 id 로 스크롤
+const TABS = [
+  { id: "fc1-curriculum", label: "커리큘럼" },
+  { id: "fc1-reviews", label: "수강생 후기" },
+  { id: "fc1-instructors", label: "강사 소개" },
+] as const;
+
+// 수강생 텍스트 후기 (문구 원문 그대로 — 오타 포함 수정 금지)
+const TEXT_REVIEWS = [
+  {
+    name: "김준****",
+    date: "2026-06-03",
+    text: "음..단순히 가격만 낮추는 방법 말고 단가,적절한 이벤트 ,운영적인 부분에 대한 정보를 얻을 수 있었서 좋았고 온라인 마케팅 어려웠는데 교육때 외에도 교육이후 피드백 받으면서 바로 적용해볼 수 있었던 점이 좋았습니다.",
+  },
+  {
+    name: "나현****",
+    date: "2026-03-31",
+    text: "내년에 또 바뀐 커리큘럼 나오면 또 신청해서 들어보고싶습니다!",
+  },
+  {
+    name: "이진****",
+    date: "2026-03-31",
+    text: "필라테스 강사 10년 하다가 처음 독립했는데 수업 말고는 아는 게 하나도 없었어요. 플레이스 사진 바꾸는 것부터 블로그 제목 쓰는 법까지 하나하나 알려주시고 강의 끝나고도 카톡으로 계속 잡아주시니까 혼자 하는 느낌이 아니어서 좋았어여",
+  },
+  {
+    name: "강진****",
+    date: "2026-03-31",
+    text: "창업하고 대행사 두 군데 맡겨봤는데 돈만 나가서 지쳐있었어요. 인스타에서 그로우 아카데미 보고 반신반의로 신청했는데 솔직히 4시간 금방 갔습니다. 제가 뭘 모르는지조차 몰랐던 거더라고요. 키워드 잡는 법이랑 플레이스 최적화 배우고 바로 적용했더니 한 달 만에 우리 동네 상위에 뜨기 시작했어요. 강의 끝나고 나서도 1:1 피드백으로 저희 매장 직접 분석해주시면서 방향 잡아주신 게 제일 좋았습니다.",
+  },
+  {
+    name: "김진****",
+    date: "2026-03-31",
+    text: "필라테스샵 오픈을 준비중인데 운영적인 부분에 대한 지식이없어서 한번 배워봐야겠다라는 생각으로 들었어요. 고객응대부터 마케팅까지 한번에 배울수있어서 좋았어요",
+  },
+  {
+    name: "이재****",
+    date: "2026-03-30",
+    text: "6기 수강생이에요! 하루 교육이라 교육 듣고 난후에도 바로 할 수 있을지 걱정했엇는데 교육후 한달 동안 1:1 피드백도 직접 해주셔서 정말 좋았어요",
+  },
+  {
+    name: "매니저강****",
+    date: "2026-03-30",
+    text: "6개월 동안 매출이 거의 제자리였습니다. 콜수 관리랑 미가입 리스트 추적 시트 받아서 세팅하니까 놓치고 있던 회원이 이렇게 많았나 싶더라고요. 재등록 DM 스크립트도 바로 써봤는데 반응이 와서 놀랐습니다. 실전에 바로 적용할수 있는 내용있어서 좋았습니다.",
+  },
+  {
+    name: "오종****",
+    date: "2026-03-30",
+    text: "대행사 두 군데 맡겨봤는데 돈만 나가서 지쳐있었어요. 키워드 잡는 법이랑 플레이스 최적화 배우고 바로 적용했더니 한 달 만에 동네 상위노출 되기 시작했습니다. 대행사 한 달 비용도 안 되는 돈으로 직접 할 수 있게 된 게 제일 큽니다.",
+  },
+];
+
+const TEXT_REVIEWS_HTML = TEXT_REVIEWS.map(
+  (r) => `
+      <div class="fc1-rev-item fc1-reveal">
+        <div class="fc1-rev-stars" aria-label="별점 5점 만점에 5점">★★★★★</div>
+        <p class="fc1-rev-body">${r.text}</p>
+        <div class="fc1-rev-meta"><span class="fc1-rev-name">${r.name}</span><span class="fc1-rev-date">${r.date}</span></div>
+      </div>`
+).join("");
+
+const TOP_STYLE = `@keyframes fc1Pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}.fc1-pulse{animation:fc1Pulse 2.2s ease-in-out infinite}
+.fc1-tab-bar{background:#fff;border-bottom:1px solid #ececec}
+.fc1-tab-in{max-width:820px;margin:0 auto;display:flex}
+.fc1-tab-btn{flex:1 1 0;min-width:0;padding:16px 4px;background:none;border:none;border-bottom:2px solid transparent;font-size:15px;font-weight:700;color:#666;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s;font-family:inherit;letter-spacing:-0.01em}
+.fc1-tab-btn:hover,.fc1-tab-btn.fc1-tab-active{color:#22B573;border-bottom-color:#22B573}
+@media(max-width:640px){.fc1-tab-btn{font-size:14px;padding:14px 2px}}`;
 
 const DETAIL_HTML = `<div class="fc1">
 <style>
@@ -326,6 +391,23 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-enroll-btn--sale{background:var(--g)}
 .fc1-enroll-btn:hover{opacity:.9}
 @media(max-width:640px){.fc1-enroll-cards{grid-template-columns:1fr}.fc1-enroll-price{font-size:20px}}
+
+/* 14 수강생 텍스트 후기 */
+#fc1-curriculum,#fc1-instructors,#fc1-reviews{scroll-margin-top:72px}
+.fc1-rev-sec{background:#f8f9fa;color:#141414}
+.fc1-rev-head{text-align:center}
+.fc1-rev-score{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.fc1-rev-score-star{color:#ffb400;font-size:22px;line-height:1}
+.fc1-rev-score b{font-size:22px;font-weight:900;color:#161616;line-height:1}
+.fc1-rev-count{font-size:14px;color:#888;font-weight:600}
+.fc1-rev-list{margin-top:30px;display:flex;flex-direction:column;gap:16px}
+.fc1-rev-item{background:#fff;border:1px solid #ececec;border-radius:16px;padding:24px 26px;text-align:left;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.fc1-rev-stars{color:#ffb400;font-size:15px;letter-spacing:3px;margin-bottom:12px;line-height:1}
+.fc1-rev-body{font-size:15px;color:#333;line-height:1.8;margin:0 0 16px}
+.fc1-rev-meta{display:flex;align-items:center;gap:10px;font-size:13px}
+.fc1-rev-name{font-weight:700;color:#555}
+.fc1-rev-date{color:#999}
+@media(max-width:640px){.fc1-rev-item{padding:20px}}
 </style>
 
 <!-- 1. 히어로 -->
@@ -402,7 +484,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 4. 강사 프로필 -->
-<section class="fc1-sec fc1-inst">
+<section class="fc1-sec fc1-inst" id="fc1-instructors">
   <div class="fc1-wrap">
     <span class="fc1-badge fc1-reveal">강사진</span>
     <h2 class="fc1-h2 fc1-reveal">그래서, 누가 가르치는지<br>보여드립니다.</h2>
@@ -461,7 +543,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 5. 커리큘럼 타임라인 -->
-<section class="fc1-sec fc1-curri">
+<section class="fc1-sec fc1-curri" id="fc1-curriculum">
   <div class="fc1-wrap">
     <span class="fc1-badge fc1-reveal">정규 FC과정 커리큘럼</span>
     <h2 class="fc1-h2 fc1-reveal">총 4시간, 이 순서로<br>쌓아 올립니다.</h2>
@@ -708,6 +790,18 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
 </section>
 
+<!-- 14. 수강생 텍스트 후기 -->
+<section class="fc1-sec fc1-rev-sec" id="fc1-reviews">
+  <div class="fc1-wrap">
+    <div class="fc1-rev-head fc1-reveal">
+      <h2 class="fc1-h2">수강생 후기</h2>
+      <div class="fc1-rev-score"><span class="fc1-rev-score-star">★</span><b>5.0</b><span class="fc1-rev-count">후기 ${TEXT_REVIEWS.length}개</span></div>
+    </div>
+    <div class="fc1-rev-list">${TEXT_REVIEWS_HTML}
+    </div>
+  </div>
+</section>
+
 <div class="fc1-barspacer"></div>
 <div class="fc1-bar" id="fc1Bar">
   <div class="fc1-bar-in">
@@ -881,7 +975,14 @@ const DETAIL_HTML = `<div class="fc1">
 export default function FcClass() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
   const detailRef = useRef<HTMLDivElement>(null);
+
+  // 탭 클릭 → 주입 HTML 내 섹션으로 스크롤 (scroll-margin-top 72px 로 헤더 오프셋 처리)
+  const onTabClick = (id: string) => {
+    setActiveTab(id);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -1020,6 +1121,22 @@ export default function FcClass() {
           </div>
         </div>
       </section>
+
+      {/* ── 탭 내비게이션 ── */}
+      <nav className="fc1-tab-bar" aria-label="페이지 섹션 이동">
+        <div className="fc1-tab-in">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`fc1-tab-btn${activeTab === t.id ? " fc1-tab-active" : ""}`}
+              onClick={() => onTabClick(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </nav>
 
       {/* ── 1~3. 히어로 / 문제 / 해결책 (DETAIL_HTML 주입) ── */}
       {mounted ? (
