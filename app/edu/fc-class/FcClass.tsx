@@ -962,8 +962,13 @@ export default function FcClass() {
   const detailRef = useRef<HTMLDivElement>(null);
 
   // 탭 클릭 → 클릭 시점에 대상 조회, 없으면 무동작 (scroll-margin-top 80px 로 헤더 오프셋 처리)
+  // 점프 시 IntersectionObserver 가 reveal 을 못 잡아 섹션이 투명으로 남으므로,
+  // 스크롤 직전에 전체 reveal 요소를 동기로 강제 표시 (첫 진입 자연 스크롤 애니메이션은 그대로)
   const onTabClick = (id: string) => {
     setActiveTab(id);
+    document
+      .querySelectorAll(".fc1-reveal, .fc1-reveal-scale")
+      .forEach((el) => el.classList.add("fc1-in"));
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
