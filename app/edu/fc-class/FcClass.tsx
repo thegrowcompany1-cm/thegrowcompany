@@ -851,20 +851,9 @@ const DETAIL_HTML = `<div class="fc1">
     }
   }
 
-  // 마지막 수강신청 버튼 (TODO: 토스페이먼츠 연동)
-  var enrollBtns = document.querySelectorAll('.fc1-enroll-btn');
-  for (var eb = 0; eb < enrollBtns.length; eb++){
-    (function(btn){
-      var onEnroll = function(){
-        // TODO: 토스페이먼츠 연동
-        alert('결제 준비중입니다. 오픈 예정이니 조금만 기다려주세요.');
-      };
-      btn.addEventListener('click', onEnroll);
-      stops.push(function(){ btn.removeEventListener('click', onEnroll); });
-    })(enrollBtns[eb]);
-  }
+  // 마지막 수강신청 버튼·하단 고정 바 CTA 는 React(useEffect)에서 router.push 로 체크아웃 연결
 
-  // 하단 고정 바 (최상단 결제영역/하단 신청영역이 보이면 숨김 + 부드러운 스크롤)
+  // 하단 고정 바 (최상단 결제영역/하단 신청영역이 보이면 숨김)
   var bar = document.getElementById('fc1Bar');
   var topEl = document.getElementById('fc1-top');
   var enrollEl = document.getElementById('fc1-enroll');
@@ -881,17 +870,6 @@ const DETAIL_HTML = `<div class="fc1">
     if (enrollEl) ioBar.observe(enrollEl);
     stops.push(function(){ ioBar.disconnect(); });
   }
-  var barCta = document.getElementById('fc1BarCta');
-  if (barCta && topEl){
-    var onCta = function(e){
-      e.preventDefault();
-      var y = topEl.getBoundingClientRect().top + window.pageYOffset - 72;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    };
-    barCta.addEventListener('click', onCta);
-    stops.push(function(){ barCta.removeEventListener('click', onCta); });
-  }
-
   // 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
   window.__fc1Stop = function(){
     for (var s = 0; s < stops.length; s++){ stops[s](); }
@@ -940,14 +918,36 @@ export default function FcClass() {
     const container = detailRef.current;
     if (!container) return;
     const injected = injectContainer(container);
+
+    // 마지막 수강신청 버튼 + 하단 고정 바 CTA → 체크아웃 연결
+    const cleanups: Array<() => void> = [];
+    const goCheckout = (product: string) => (e: Event) => {
+      e.preventDefault();
+      router.push(`/checkout?product=${product}`);
+    };
+    container.querySelectorAll<HTMLButtonElement>(".fc1-enroll-btn").forEach((btn) => {
+      const onEnroll = goCheckout(
+        btn.classList.contains("fc1-enroll-btn--sale") ? "fc-class-early" : "fc-class"
+      );
+      btn.addEventListener("click", onEnroll);
+      cleanups.push(() => btn.removeEventListener("click", onEnroll));
+    });
+    const barCta = container.querySelector<HTMLAnchorElement>(".fc1-bar-cta");
+    if (barCta) {
+      const onBar = goCheckout("fc-class-early");
+      barCta.addEventListener("click", onBar);
+      cleanups.push(() => barCta.removeEventListener("click", onBar));
+    }
+
     return () => {
+      cleanups.forEach((fn) => fn());
       injected.forEach((s) => s.remove());
       const w = window as unknown as Record<string, unknown>;
       const stop = w["__fc1Stop"];
       if (typeof stop === "function") (stop as () => void)();
       w["__fc1Stop"] = () => {};
     };
-  }, [mounted]);
+  }, [mounted, router]);
 
   return (
     <div

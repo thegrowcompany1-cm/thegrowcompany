@@ -10,6 +10,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { SITE_URL } from "@/lib/site";
 
 /* ▼▼ 다음 세미나 때 이 상수만 수정 ▼▼ */
@@ -328,16 +329,9 @@ const DETAIL_HTML = `<div class="sm1">
   }
   marquee('sm1LectureMarquee', 34, false);
 
-  /* 결제 버튼 (TODO: 토스페이먼츠 연동) */
-  var payBtns = document.querySelectorAll('.sm1-pay-btn');
-  for (var pi = 0; pi < payBtns.length; pi++){
-    payBtns[pi].addEventListener('click', function(){
-      // TODO: 토스페이먼츠 연동
-      alert('결제 준비중입니다. 오픈 예정이니 조금만 기다려주세요.');
-    });
-  }
+  /* 결제 버튼·하단 고정 바 CTA 는 React(useEffect)에서 router.push 로 체크아웃 연결 */
 
-  /* 하단 고정 바 — 최상단(결제 카드)이 보이면 숨김, 스크롤 내리면 표시 + 부드러운 스크롤 */
+  /* 하단 고정 바 — 최상단(결제 카드)이 보이면 숨김, 스크롤 내리면 표시 */
   var bar = document.getElementById('sm1-bar');
   var target = document.getElementById('sm1-top');
   var applyEl = document.getElementById('sm1-apply');
@@ -354,15 +348,6 @@ const DETAIL_HTML = `<div class="sm1">
     if (applyEl) io.observe(applyEl);
     stops.push(function(){ io.disconnect(); });
   }
-  var cta = document.getElementById('sm1-bar-cta');
-  if (cta && target){
-    cta.addEventListener('click', function(e){
-      e.preventDefault();
-      var y = target.getBoundingClientRect().top + window.pageYOffset - 72;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    });
-  }
-
   /* 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체) */
   window.__sm1Stop = function(){
     for (var i = 0; i < stops.length; i++){ stops[i](); }
@@ -372,6 +357,7 @@ const DETAIL_HTML = `<div class="sm1">
 </div>`;
 
 export default function StartupClass() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const detailRef = useRef<HTMLDivElement>(null);
 
@@ -410,14 +396,36 @@ export default function StartupClass() {
     const container = detailRef.current;
     if (!container) return;
     const injected = injectContainer(container);
+
+    // 결제 버튼 + 하단 고정 바 CTA → 체크아웃 연결
+    const cleanups: Array<() => void> = [];
+    const goCheckout = (product: string) => (e: Event) => {
+      e.preventDefault();
+      router.push(`/checkout?product=${product}`);
+    };
+    container.querySelectorAll<HTMLButtonElement>(".sm1-pay-btn").forEach((btn) => {
+      const onPay = goCheckout(
+        btn.classList.contains("sm1-pay-btn--sale") ? "startup-class-insta" : "startup-class"
+      );
+      btn.addEventListener("click", onPay);
+      cleanups.push(() => btn.removeEventListener("click", onPay));
+    });
+    const barCta = container.querySelector<HTMLAnchorElement>(".sm1-bar-cta");
+    if (barCta) {
+      const onBar = goCheckout("startup-class");
+      barCta.addEventListener("click", onBar);
+      cleanups.push(() => barCta.removeEventListener("click", onBar));
+    }
+
     return () => {
+      cleanups.forEach((fn) => fn());
       injected.forEach((s) => s.remove());
       const w = window as unknown as Record<string, unknown>;
       const stop = w["__sm1Stop"];
       if (typeof stop === "function") (stop as () => void)();
       w["__sm1Stop"] = () => {};
     };
-  }, [mounted]);
+  }, [mounted, router]);
 
   return (
     <div className="overflow-x-hidden bg-white">
