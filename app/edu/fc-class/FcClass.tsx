@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 정규 FC 클래스 랜딩 (1/3차) — 그로우 아카데미
 //  · 클래스 접두사 fc1- (아임웹 원본 클래스명 리네이밍, CSS 충돌 방지)
-//  · 최상단(랜덤 강의사진 + 결제 카드)은 React JSX, 히어로/문제/해결은 DETAIL_HTML 주입
+//  · 최상단(고정 강의사진 + 결제 카드)은 React JSX, 히어로/문제/해결은 DETAIL_HTML 주입
 //  · injectContainer 로 <script> 재생성 append (문제 섹션 IntersectionObserver)
 //  · IntersectionObserver 는 __fc1Stop 으로 언마운트 시 disconnect (전역함수 no-op 교체)
 //  · 다음 기수 때는 상단 SEMINAR_* / PRICE_* 상수만 수정
@@ -72,17 +72,8 @@ const FAQ_SCHEMA = {
   ],
 };
 
-// 최상단 좌측 강의 사진 후보 — 로드 시 클라이언트에서 1장 랜덤 선택
-const LECTURE_IMAGES = [
-  "https://cdn.imweb.me/thumbnail/20260131/2c27053d77aa7.jpg",
-  "https://cdn.imweb.me/thumbnail/20260131/585cf1ee7e5d1.jpg",
-  "https://cdn.imweb.me/thumbnail/20260131/c51e290737724.jpg",
-  "https://cdn.imweb.me/thumbnail/20260131/d71d22f9eea53.jpg",
-  "https://cdn.imweb.me/thumbnail/20260131/2f1084024ac28.jpg",
-  "https://cdn.imweb.me/thumbnail/20260131/c8b4857c6a396.jpg",
-  "https://cdn.imweb.me/thumbnail/20260131/4b9ce2fb80778.jpg",
-  "https://cdn.imweb.me/thumbnail/20260131/626df956ffc13.jpg",
-];
+// 최상단 좌측 고정 강의 사진
+const HERO_IMAGE = "/edu/edu.main.jpg";
 
 const TOP_STYLE = `@keyframes fc1Pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}.fc1-pulse{animation:fc1Pulse 2.2s ease-in-out infinite}`;
 
@@ -910,12 +901,10 @@ const DETAIL_HTML = `<div class="fc1">
 
 export default function FcClass() {
   const [mounted, setMounted] = useState(false);
-  const [heroImg, setHeroImg] = useState<string | null>(null);
   const detailRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    setHeroImg(LECTURE_IMAGES[Math.floor(Math.random() * LECTURE_IMAGES.length)]);
   }, []);
 
   // 컨테이너 내부 <script> 재생성 + 중복 id dedupe 공통 처리
@@ -980,20 +969,18 @@ export default function FcClass() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
       />
 
-      {/* ── 0. 최상단: 랜덤 강의사진 / 결제 카드 2개 ── */}
+      {/* ── 0. 최상단: 고정 강의사진 / 결제 카드 2개 ── */}
       <section id="fc1-top" className="bg-[#f6f5f2] py-12 sm:py-16">
         <div className="mx-auto max-w-[1080px] px-4 sm:px-6">
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-[1.5fr_1fr]">
-            {/* 좌: 랜덤 강의 사진 */}
+            {/* 좌: 강의 사진 */}
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#e6e4df]">
-              {heroImg ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={heroImg}
-                  alt="그로우 아카데미 FC 클래스 교육 현장"
-                  className="h-full w-full object-cover"
-                />
-              ) : null}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={HERO_IMAGE}
+                alt="그로우 아카데미 FC 클래스 강의 현장"
+                className="h-full w-full object-cover"
+              />
             </div>
 
             {/* 우: 결제 카드 2개 */}
