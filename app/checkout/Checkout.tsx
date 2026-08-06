@@ -1,16 +1,27 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 결제 페이지 1단계 — /checkout?product=<슬러그>
+// 결제 페이지 — /checkout?product=<슬러그>
 //  · Supabase products 테이블에서 slug 일치 + is_active=true 상품 조회
-//  · 좌: 주문 상품 정보 / 주문자 정보 · 우: 주문 요약 / 약관 동의 / 결제하기
-//  · 결제하기는 입력·약관 검증까지만 완성 (토스페이먼츠 위젯은 2단계)
+//  · 좌: 주문 상품 정보 / 주문자 정보 · 우: 주문 요약 / 결제 수단(위젯) / 약관 / 결제하기
+//  · 토스페이먼츠 결제위젯 v2 (주문서형): loadTossPayments → widgets(ANONYMOUS)
+//    → setAmount → renderPaymentMethods + renderAgreement → requestPayment
+//  · "구매조건 확인 및 결제진행 동의"는 위젯 약관(renderAgreement)으로 대체,
+//    "개인정보 수집 및 이용 동의"는 자체 체크박스 유지
+//  · 승인 처리(successUrl 도착 후 서버 승인 API)는 2단계
 //  · CSS 클래스 접두사 chk-
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import {
+  loadTossPayments,
+  ANONYMOUS,
+  type TossPaymentsWidgets,
+  type WidgetPaymentMethodWidget,
+  type WidgetAgreementWidget,
+} from "@tosspayments/tosspayments-sdk";
 import { supabase } from "@/lib/supabase";
 
 type Product = {
@@ -20,7 +31,7 @@ type Product = {
   price: number;
 };
 
-const CHK_STYLE = `
+export const CHK_STYLE = `
 .chk{min-height:100vh;background:#f6f5f2;color:#161616;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;overflow-x:hidden}
 .chk *{box-sizing:border-box}
 .chk-wrap{max-width:1080px;margin:0 auto;padding:48px 20px 80px}
@@ -43,16 +54,22 @@ const CHK_STYLE = `
 .chk-row b{font-weight:700;color:#161616}
 .chk-total{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #eee;padding-top:16px;margin-top:4px;font-size:15px;font-weight:800}
 .chk-total-amt{font-size:22px;font-weight:900;color:#009519}
+.chk-widget-card{background:#fff;border:1px solid #e8e6e1;border-radius:16px;padding:10px 4px;box-shadow:0 4px 16px rgba(0,0,0,.04);overflow:hidden}
 .chk-agree{display:flex;flex-direction:column;gap:12px}
-.chk-check{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#444;line-height:1.5;cursor:pointer}
+.chk-check{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#444;line-height:1.5;cursor:pointer;padding:0 20px 16px}
 .chk-check input{flex:0 0 auto;width:18px;height:18px;margin:1px 0 0;accent-color:#009519;cursor:pointer}
 .chk-check a{color:#009519;font-weight:700;text-decoration:underline;text-underline-offset:2px}
 .chk-pay{width:100%;height:56px;border:none;border-radius:12px;background:#009519;color:#fff;font-size:16px;font-weight:800;cursor:pointer;transition:opacity .2s}
 .chk-pay:hover{opacity:.9}
+.chk-pay:disabled{opacity:.5;cursor:not-allowed}
 .chk-center{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:40px 20px}
 .chk-center-t{font-size:20px;font-weight:800;margin:0}
 .chk-center-p{font-size:14px;color:#777;margin:0;line-height:1.6}
-.chk-home{display:inline-block;background:#161616;color:#fff;font-size:14px;font-weight:800;padding:14px 32px;border-radius:12px;text-decoration:none}
+.chk-info{width:100%;max-width:420px;background:#fff;border:1px solid #e8e6e1;border-radius:16px;padding:20px 22px;box-shadow:0 4px 16px rgba(0,0,0,.04);text-align:left}
+.chk-info-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:13.5px;color:#555;padding:6px 0;border-bottom:1px solid #f2f0eb;word-break:break-all}
+.chk-info-row:last-child{border-bottom:none}
+.chk-info-row b{flex:0 0 auto;font-weight:700;color:#161616}
+.chk-home{display:inline-block;background:#161616;color:#fff;font-size:14px;font-weight:800;padding:14px 32px;border-radius:12px;text-decoration:none;border:none;cursor:pointer}
 @media(max-width:820px){.chk-grid{grid-template-columns:1fr}.chk-wrap{padding:32px 16px 64px}.chk-title{font-size:22px}}
 `;
 
@@ -69,7 +86,9 @@ export default function Checkout() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [agreePrivacy, setAgreePrivacy] = useState(false);
-  const [agreePurchase, setAgreePurchase] = useState(false);
+
+  const widgetsRef = useRef<TossPaymentsWidgets | null>(null);
+  const [widgetsReady, setWidgetsReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -93,7 +112,54 @@ export default function Checkout() {
     };
   }, [slug]);
 
-  const handlePay = () => {
+  // 상품 로드 완료 후 결제위젯 초기화 (비회원 ANONYMOUS)
+  useEffect(() => {
+    if (!product) return;
+    let cancelled = false;
+    let paymentMethodWidget: WidgetPaymentMethodWidget | null = null;
+    let agreementWidget: WidgetAgreementWidget | null = null;
+
+    (async () => {
+      try {
+        const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY;
+        if (!clientKey) {
+          console.error("NEXT_PUBLIC_TOSS_CLIENT_KEY 가 설정되지 않았습니다.");
+          return;
+        }
+        const tossPayments = await loadTossPayments(clientKey);
+        if (cancelled) return;
+        const widgets = tossPayments.widgets({ customerKey: ANONYMOUS });
+        widgetsRef.current = widgets;
+        await widgets.setAmount({ currency: "KRW", value: product.price });
+        if (cancelled) return;
+        [paymentMethodWidget, agreementWidget] = await Promise.all([
+          widgets.renderPaymentMethods({
+            selector: "#chk-payment-methods",
+            variantKey: "DEFAULT",
+          }),
+          widgets.renderAgreement({
+            selector: "#chk-agreement",
+            variantKey: "AGREEMENT",
+          }),
+        ]);
+        if (cancelled) return;
+        setWidgetsReady(true);
+      } catch (err) {
+        console.error("결제위젯 초기화 실패:", err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      setWidgetsReady(false);
+      widgetsRef.current = null;
+      paymentMethodWidget?.destroy().catch(() => {});
+      agreementWidget?.destroy().catch(() => {});
+    };
+  }, [product]);
+
+  const handlePay = async () => {
+    if (!product) return;
     if (!name.trim()) {
       alert("주문자 이름을 입력해주세요.");
       return;
@@ -110,12 +176,29 @@ export default function Checkout() {
       alert("개인정보 수집 및 이용에 동의해주세요.");
       return;
     }
-    if (!agreePurchase) {
-      alert("구매조건 확인 및 결제진행에 동의해주세요.");
+    const widgets = widgetsRef.current;
+    if (!widgets) {
+      alert("결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
       return;
     }
-    // TODO: 토스페이먼츠 위젯
-    alert("결제 모듈 연동 준비중");
+    const orderId = `TGC-${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
+    try {
+      await widgets.requestPayment({
+        orderId,
+        orderName: product.name,
+        customerName: name.trim(),
+        customerEmail: email.trim(),
+        customerMobilePhone: phone.replace(/\D/g, ""),
+        successUrl: `${window.location.origin}/checkout/success`,
+        failUrl: `${window.location.origin}/checkout/fail`,
+      });
+    } catch (err) {
+      // 사용자가 결제창을 닫은 경우 등 — 위젯이 표시하는 메시지 외 별도 처리 없음
+      const e = err as { code?: string; message?: string };
+      if (e?.code !== "USER_CANCEL" && e?.message) {
+        alert(e.message);
+      }
+    }
   };
 
   if (loading) {
@@ -228,35 +311,36 @@ export default function Checkout() {
               </div>
             </section>
 
-            <section className="chk-card">
-              <h2 className="chk-card-t">약관 동의</h2>
-              <div className="chk-agree">
-                <label className="chk-check">
-                  <input
-                    type="checkbox"
-                    checked={agreePrivacy}
-                    onChange={(e) => setAgreePrivacy(e.target.checked)}
-                  />
-                  <span>
-                    개인정보 수집 및 이용 동의{" "}
-                    <a href="/legal/privacy" target="_blank" rel="noopener noreferrer">
-                      자세히 보기
-                    </a>
-                  </span>
-                </label>
-                <label className="chk-check">
-                  <input
-                    type="checkbox"
-                    checked={agreePurchase}
-                    onChange={(e) => setAgreePurchase(e.target.checked)}
-                  />
-                  <span>구매조건 확인 및 결제진행 동의</span>
-                </label>
-              </div>
+            {/* 결제 수단 (토스 위젯) */}
+            <section className="chk-widget-card">
+              <div id="chk-payment-methods" />
             </section>
 
-            <button type="button" className="chk-pay" onClick={handlePay}>
-              결제하기
+            {/* 약관: 위젯 약관(구매조건 동의) + 자체 개인정보 동의 */}
+            <section className="chk-widget-card">
+              <div id="chk-agreement" />
+              <label className="chk-check">
+                <input
+                  type="checkbox"
+                  checked={agreePrivacy}
+                  onChange={(e) => setAgreePrivacy(e.target.checked)}
+                />
+                <span>
+                  개인정보 수집 및 이용 동의{" "}
+                  <a href="/legal/privacy" target="_blank" rel="noopener noreferrer">
+                    자세히 보기
+                  </a>
+                </span>
+              </label>
+            </section>
+
+            <button
+              type="button"
+              className="chk-pay"
+              onClick={handlePay}
+              disabled={!widgetsReady}
+            >
+              {widgetsReady ? "결제하기" : "결제 모듈 불러오는 중"}
             </button>
           </div>
         </div>
