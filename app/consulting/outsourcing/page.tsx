@@ -2054,13 +2054,13 @@ function toggleFaq(el) {
           <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
 
           <label class="tg-radio">
-            <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
-            <span>네이버 검색 (창업, 창업솔루션 등)</span>
+            <input type="radio" name="route" value="네이버 검색" required />
+            <span>네이버 검색</span>
           </label>
 
           <label class="tg-radio">
-            <input type="radio" name="route" value="인스타/페이스북 광고" />
-            <span>인스타/페이스북 광고</span>
+            <input type="radio" name="route" value="인스타·페이스북 광고" />
+            <span>인스타·페이스북 광고</span>
           </label>
 
           <label class="tg-radio">
@@ -2069,8 +2069,8 @@ function toggleFaq(el) {
           </label>
 
           <label class="tg-radio">
-            <input type="radio" name="route" value="지인 소개/아카데미 수강생" />
-            <span>지인 소개 / 아카데미 수강생</span>
+            <input type="radio" name="route" value="지인 소개·아카데미 수강생" />
+            <span>지인 소개·아카데미 수강생</span>
           </label>
 
           <label class="tg-radio">
@@ -2107,7 +2107,7 @@ function toggleFaq(el) {
         </div>
 
         <!-- 페이지 구분 -->
-        <input type="hidden" name="source" value="매장위탁상담_아임웹">
+        <input type="hidden" name="source" value="위탁상담2">
 
         <!-- 🔒 보안 토큰 -->
         <input type="hidden" name="token" value="grow2026secure">
@@ -2173,7 +2173,7 @@ function toggleFaq(el) {
 </script>`;
 
 // ─── 상단 상담 폼 (하단 consultingForm 과 동일 필드 구성, id/iframe 만 -top 접미사) ──
-//  - action / token(grow2026secure) / source(매장위탁상담_아임웹) / name 속성은
+//  - action / token(grow2026secure) / source(위탁상담2) / name 속성은
 //    구글시트 Apps Script 연동에 물려 있으므로 절대 변경하지 않는다.
 //  - 우측 흰 카드(JSX) 안에 주입되므로 카드 톤에 맞는 스코프 스타일만 포함.
 const TOP_FORM_HTML = `<style>
@@ -2238,13 +2238,13 @@ const TOP_FORM_HTML = `<style>
       <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
 
       <label class="tg-radio">
-        <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
-        <span>네이버 검색 (창업, 창업솔루션 등)</span>
+        <input type="radio" name="route" value="네이버 검색" required />
+        <span>네이버 검색</span>
       </label>
 
       <label class="tg-radio">
-        <input type="radio" name="route" value="인스타/페이스북 광고" />
-        <span>인스타/페이스북 광고</span>
+        <input type="radio" name="route" value="인스타·페이스북 광고" />
+        <span>인스타·페이스북 광고</span>
       </label>
 
       <label class="tg-radio">
@@ -2253,8 +2253,8 @@ const TOP_FORM_HTML = `<style>
       </label>
 
       <label class="tg-radio">
-        <input type="radio" name="route" value="지인 소개/아카데미 수강생" />
-        <span>지인 소개 / 아카데미 수강생</span>
+        <input type="radio" name="route" value="지인 소개·아카데미 수강생" />
+        <span>지인 소개·아카데미 수강생</span>
       </label>
 
       <label class="tg-radio">
@@ -2291,7 +2291,7 @@ const TOP_FORM_HTML = `<style>
     </div>
 
     <!-- 페이지 구분 -->
-    <input type="hidden" name="source" value="매장위탁상담_아임웹">
+    <input type="hidden" name="source" value="위탁상담2">
 
     <!-- 🔒 보안 토큰 -->
     <input type="hidden" name="token" value="grow2026secure">
