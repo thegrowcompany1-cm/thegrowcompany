@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 const consultants = [
-  { name: "김재강", role: "대표 컨설턴트", image: "/consultants/kim-jaegang.jpg" },
-  { name: "박정민", role: "컨설턴트",      image: "/consultants/park-jungmin.png" },
-  { name: "김승호", role: "컨설턴트",      image: "/consultants/kim-seungho.jpg" },
-  { name: "구진완", role: "컨설턴트",      image: "/consultants/gu-jinwan.png" },
-  { name: "황봉남", role: "컨설턴트",      image: "/consultants/hwang-bongnam.jpg" },
-  { name: "허준영", role: "컨설턴트",      image: "/consultants/heo-junyoung.jpg" },
+  { name: "김재강", role: "대표 멘토", image: "/consultants/kim-jaegang.jpg" },
+  { name: "박정민", role: "멘토",      image: "/consultants/park-jungmin.png" },
+  { name: "김승호", role: "멘토",      image: "/consultants/kim-seungho.jpg" },
+  { name: "구진완", role: "멘토",      image: "/consultants/gu-jinwan.png" },
+  { name: "황봉남", role: "멘토",      image: "/consultants/hwang-bongnam.jpg" },
+  { name: "허준영", role: "멘토",      image: "/consultants/heo-junyoung.jpg" },
 ];
 
 const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[] = [
@@ -66,7 +66,7 @@ function ConsultantCard({
       {!imgError ? (
         <Image
           src={consultant.image}
-          alt={`${consultant.name} 헬스장·필라테스 운영 진단 컨설턴트`}
+          alt={`${consultant.name} 헬스장·필라테스 운영 진단 멘토`}
           fill
           className="object-cover"
           style={{ objectPosition: "center top", filter: "brightness(0.85)" }}

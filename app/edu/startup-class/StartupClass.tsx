@@ -2,7 +2,7 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 창업 세미나 (원데이 클래스) 랜딩 — 스마트스토어/상세페이지 문법
-//  · 클래스 접두사 sm1- (컨설턴트 페이지와 CSS 충돌 방지)
+//  · 클래스 접두사 sm1- (멘토 페이지와 CSS 충돌 방지)
 //  · 단일 DETAIL_HTML(백틱) + dangerouslySetInnerHTML + mounted + suppressHydrationWarning
 //  · injectContainer 로 <script> 재생성 append (마퀴 rAF / 결제 버튼 / 하단 고정바)
 //  · 마퀴는 requestAnimationFrame + cancelAnimationFrame 정리(__sm1Stop)

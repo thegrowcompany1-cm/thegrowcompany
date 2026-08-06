@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 진단 컨설턴트 상세페이지 — 구진완
+// 진단 멘토 상세페이지 — 구진완
 //  구조(김승호 최종본과 동일): [상단 인물사진 + 상담폼] → DETAIL_HTML(다크 랜딩)
 //   → [하단 상담폼(-bottom id)] → ConsultantCarousel → 추천 카드
 //  · 클래스 접두사 gjw- / 전역 정지 훅 __gjwMarqueeStop
@@ -16,13 +16,13 @@ import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
 import { SITE_URL } from "@/lib/site";
 
-// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+// 진단 솔루션 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
 // ⚠️ 구진완 페이지는 유료 진단(150,000원)이므로 offers.price 를 0 이 아닌 실제 가격으로 지정
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "피트니스 센터 진단 컨설팅",
-  name: "구진완 컨설턴트 진단 컨설팅",
+  serviceType: "피트니스 센터 진단 솔루션",
+  name: "구진완 멘토 진단 솔루션",
   url: `${SITE_URL}/consulting/diagnosis/gu-jinwan`,
   areaServed: "KR",
   provider: {
@@ -32,7 +32,7 @@ const SERVICE_SCHEMA = {
     employee: {
       "@type": "Person",
       name: "구진완",
-      jobTitle: "FC운영·리더십 컨설턴트",
+      jobTitle: "FC운영·리더십 멘토",
     },
   },
   offers: {
@@ -45,11 +45,11 @@ const SERVICE_SCHEMA = {
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/gu-jinwan.png";
 
-// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 컨설팅은 제외)
+// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 솔루션은 제외)
 const RELATED_SERVICES = [
   {
-    title: "창업 컨설팅",
-    desc: "헬스장·필라테스 등 창업 준비를 위한 컨설팅",
+    title: "창업 솔루션",
+    desc: "헬스장·필라테스 등 창업 준비를 위한 솔루션",
     href: "/consulting/startup",
     img: "/startup/startup50.png",
   },
@@ -116,7 +116,7 @@ function RelatedServiceCard({
 // ─── 진단 상담 폼 HTML (김승호/김재강과 동일, 폼 스코프 스크립트) ────────────────
 const FORM_HTML = `<div class="consult-form-wrapper">
   <div class="form-header">
-    <h2>진단 컨설팅 상담 신청(무료)</h2>
+    <h2>진단 솔루션 상담 신청(무료)</h2>
   </div>
 
   <form id="consultForm" class="consult-form">
@@ -202,7 +202,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">원하시는 컨설팅 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
+      <label class="form-label">원하시는 솔루션 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="checkbox" name="consultField" value="FC운영" class="consultField-checkbox">
@@ -224,7 +224,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">도움받고 싶은 컨설턴트를 알려주세요. <span class="required">*</span></label>
+      <label class="form-label">도움받고 싶은 멘토를 알려주세요. <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="radio" name="consultant" value="김재강" class="consultant-radio" required>
@@ -490,9 +490,9 @@ const FORM_HTML = `<div class="consult-form-wrapper">
       var selectedRoute = qa('.route-checkbox:checked');
       if (selectedRoute.length === 0){ alert('신청 경로를 선택해주세요.'); return; }
       var selectedConsultField = qa('.consultField-checkbox:checked');
-      if (selectedConsultField.length === 0){ alert('원하시는 컨설팅 분야를 선택해주세요.'); return; }
+      if (selectedConsultField.length === 0){ alert('원하시는 솔루션 분야를 선택해주세요.'); return; }
       var selectedConsultant = q('.consultant-radio:checked');
-      if (!selectedConsultant){ alert('도움받고 싶은 컨설턴트를 선택해주세요.'); return; }
+      if (!selectedConsultant){ alert('도움받고 싶은 멘토를 선택해주세요.'); return; }
 
       if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = '전송중...'; }
 
@@ -523,7 +523,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         body: params.toString()
       })
       .then(function(){
-        alert('진단 컨설팅 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
+        alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
         form.reset();
         if (etcInput) etcInput.disabled = true;
       })
@@ -695,16 +695,16 @@ const DETAIL_HTML = `<div class="gjw">
     <h2 class="gjw-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
   </div>
   <div class="gjw-strip">
-    <img src="https://cdn.imweb.me/thumbnail/20260219/499f15574e611.jpg" alt="구진완 컨설턴트 카톡 후기 1">
-    <img src="https://cdn.imweb.me/thumbnail/20260219/86da1e1f996da.png" alt="구진완 컨설턴트 카톡 후기 2">
-    <img src="https://cdn.imweb.me/thumbnail/20260219/4053262a9069e.jpg" alt="구진완 컨설턴트 카톡 후기 3">
-    <img src="https://cdn.imweb.me/thumbnail/20260305/29db790b59c4f.jpg" alt="구진완 컨설턴트 카톡 후기 4">
-    <img src="https://cdn.imweb.me/thumbnail/20260305/f871ed09cc67e.jpg" alt="구진완 컨설턴트 카톡 후기 5">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/7bd8e5cc0bedd.jpg" alt="구진완 컨설턴트 카톡 후기 6">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/f6533b0fc9f8b.jpg" alt="구진완 컨설턴트 카톡 후기 7">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/d603444f0c8c8.png" alt="구진완 컨설턴트 카톡 후기 8">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/29afb387277f8.jpg" alt="구진완 컨설턴트 카톡 후기 9">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/0cd8a1f2ed12c.png" alt="구진완 컨설턴트 카톡 후기 10">
+    <img src="https://cdn.imweb.me/thumbnail/20260219/499f15574e611.jpg" alt="구진완 멘토 카톡 후기 1">
+    <img src="https://cdn.imweb.me/thumbnail/20260219/86da1e1f996da.png" alt="구진완 멘토 카톡 후기 2">
+    <img src="https://cdn.imweb.me/thumbnail/20260219/4053262a9069e.jpg" alt="구진완 멘토 카톡 후기 3">
+    <img src="https://cdn.imweb.me/thumbnail/20260305/29db790b59c4f.jpg" alt="구진완 멘토 카톡 후기 4">
+    <img src="https://cdn.imweb.me/thumbnail/20260305/f871ed09cc67e.jpg" alt="구진완 멘토 카톡 후기 5">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/7bd8e5cc0bedd.jpg" alt="구진완 멘토 카톡 후기 6">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/f6533b0fc9f8b.jpg" alt="구진완 멘토 카톡 후기 7">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/d603444f0c8c8.png" alt="구진완 멘토 카톡 후기 8">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/29afb387277f8.jpg" alt="구진완 멘토 카톡 후기 9">
+    <img src="https://cdn.imweb.me/thumbnail/20260306/0cd8a1f2ed12c.png" alt="구진완 멘토 카톡 후기 10">
   </div>
 </section>
 
@@ -715,17 +715,17 @@ const DETAIL_HTML = `<div class="gjw">
   </div>
   <div class="gjw-mq" id="gjwLectureMarquee">
     <div class="gjw-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/52a13480199df.jpg" alt="구진완 컨설턴트 인증사진 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/ff209d8ca7a9b.jpg" alt="구진완 컨설턴트 인증사진 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3eed6529afda6.jpg" alt="구진완 컨설턴트 인증사진 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/71a22de08b880.jpg" alt="구진완 컨설턴트 인증사진 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/8ee3f4ec9659c.jpg" alt="구진완 컨설턴트 인증사진 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/e90d64c3f8402.jpg" alt="구진완 컨설턴트 인증사진 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3fce2398d905f.jpg" alt="구진완 컨설턴트 인증사진 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/f3b82bac654b5.jpg" alt="구진완 컨설턴트 인증사진 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3fa992edaac11.jpg" alt="구진완 컨설턴트 인증사진 9">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/bb03b9f3e5239.jpg" alt="구진완 컨설턴트 인증사진 10">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/e04d0f740d180.jpg" alt="구진완 컨설턴트 인증사진 11">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/52a13480199df.jpg" alt="구진완 멘토 인증사진 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/ff209d8ca7a9b.jpg" alt="구진완 멘토 인증사진 2">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/3eed6529afda6.jpg" alt="구진완 멘토 인증사진 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/71a22de08b880.jpg" alt="구진완 멘토 인증사진 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/8ee3f4ec9659c.jpg" alt="구진완 멘토 인증사진 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/e90d64c3f8402.jpg" alt="구진완 멘토 인증사진 6">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/3fce2398d905f.jpg" alt="구진완 멘토 인증사진 7">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/f3b82bac654b5.jpg" alt="구진완 멘토 인증사진 8">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/3fa992edaac11.jpg" alt="구진완 멘토 인증사진 9">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/bb03b9f3e5239.jpg" alt="구진완 멘토 인증사진 10">
+      <img src="https://cdn.imweb.me/thumbnail/20260128/e04d0f740d180.jpg" alt="구진완 멘토 인증사진 11">
       <img src="https://cdn.imweb.me/thumbnail/20260128/52a13480199df.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260128/ff209d8ca7a9b.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260128/3eed6529afda6.jpg" alt="" aria-hidden="true">
@@ -764,10 +764,10 @@ const DETAIL_HTML = `<div class="gjw">
         <p>600억 매출, 54개 지점, 250억 투자.<br>나의 도전은 한때 성공으로 포장된 적도 있었지만<br>결국에는 실패로 마무리 되었습니다.<br>실패를 복기하며 새로운 나를 만들었습니다.<br>실패가 나의 황금열쇠였습니다.</p>
         <p>대표가 쉬면서도 불안한 이유,<br>그건 '불확실성'이라는 겁 때문입니다.<br>하지만 불안은 전진을 멈추지 않게 하는 힘입니다.<br>문제가 있다면,<br>오답을 마주할 여유가 없는 것입니다.</p>
         <p>내 회사를 위협하는 5가지를 모른다면<br>안정이 아니라 자만입니다.<br>실패를 겪고 알게 되었습니다.<br>해야 할 일과, 하지 말아야 할 일,<br>그리고 모든 과정에는 먼저가 있다는 것을.</p>
-        <p>단순한 컨설턴트가 아닌,<br>힘들 때 돌아와 회복을 선물하는<br>피트니스 업계의 멘토가 되겠습니다.</p>
+        <p>단순한 멘토가 아닌,<br>힘들 때 돌아와 회복을 선물하는<br>피트니스 업계의 멘토가 되겠습니다.</p>
         <p class="gjw-sign">구 진 완</p>
       </div>
-      <img class="gjw-letter-img" src="/consultants/gu-jinwan.png" alt="더그로우컴퍼니 구진완 진단 컨설턴트">
+      <img class="gjw-letter-img" src="/consultants/gu-jinwan.png" alt="더그로우컴퍼니 구진완 진단 멘토">
     </div>
   </div>
 </section>
@@ -775,11 +775,11 @@ const DETAIL_HTML = `<div class="gjw">
 <!-- 4-5. 프로그램 (유료 진단) -->
 <section class="gjw-sec gjw-sec--alt">
   <div class="gjw-inner">
-    <h2 class="gjw-h2">구진완 컨설턴트의 통찰:<br><em>비즈니스 오답 지우기</em> 60분</h2>
+    <h2 class="gjw-h2">구진완 멘토의 통찰:<br><em>비즈니스 오답 지우기</em> 60분</h2>
     <div class="gjw-prog">
       <div class="gjw-prog-item">
         <div class="gjw-prog-label">프로그램</div>
-        <p class="gjw-prog-body">구진완 컨설턴트의 1:1 비즈니스 밀착 진단</p>
+        <p class="gjw-prog-body">구진완 멘토의 1:1 비즈니스 밀착 진단</p>
       </div>
       <div class="gjw-prog-item">
         <div class="gjw-prog-label">소요시간</div>
@@ -922,7 +922,7 @@ export default function GuJinwanDiagnosisPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="구진완 헬스장·필라테스 운영 진단 컨설턴트"
+                alt="구진완 헬스장·필라테스 운영 진단 멘토"
                 fill
                 priority
                 className="object-cover object-center"
@@ -992,7 +992,7 @@ export default function GuJinwanDiagnosisPage() {
         )}
       </section>
 
-      {/* ───────────────── 다른 컨설턴트 확인 ───────────────── */}
+      {/* ───────────────── 다른 멘토 확인 ───────────────── */}
       <ConsultantCarousel currentSlug="gu-jinwan" />
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}

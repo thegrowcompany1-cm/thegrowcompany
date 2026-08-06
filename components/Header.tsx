@@ -58,9 +58,9 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    label: "창업컨설팅",
+    label: "창업솔루션",
     href: "/consulting/startup",
-    desc: "헬스장, 필라테스 등 창업을 준비 중이신 분들을 위한 맞춤 컨설팅",
+    desc: "헬스장, 필라테스 등 창업을 준비 중이신 분들을 위한 맞춤 솔루션",
     external: false,
   },
   {
@@ -76,17 +76,17 @@ const navItems: NavItem[] = [
     external: false,
   },
   {
-    label: "진단컨설팅",
+    label: "진단솔루션",
     href: "/consulting/diagnosis",
     desc: "전문가의 1:1 현장 진단 및 맞춤 솔루션 제공",
     external: false,
     children: [
-      { label: "김재강 컨설턴트", href: "/consulting/diagnosis/kim-jaegang" },
-      { label: "김승호 컨설턴트", href: "/consulting/diagnosis/kim-seungho" },
-      { label: "황봉남 컨설턴트", href: "/consulting/diagnosis/hwang-bongnam" },
-      { label: "박정민 컨설턴트", href: "/consulting/diagnosis/park-jungmin" },
-      { label: "구진완 컨설턴트", href: "/consulting/diagnosis/gu-jinwan" },
-      { label: "허준영 컨설턴트", href: "/consulting/diagnosis/heo-junyoung" },
+      { label: "김재강 멘토", href: "/consulting/diagnosis/kim-jaegang" },
+      { label: "김승호 멘토", href: "/consulting/diagnosis/kim-seungho" },
+      { label: "황봉남 멘토", href: "/consulting/diagnosis/hwang-bongnam" },
+      { label: "박정민 멘토", href: "/consulting/diagnosis/park-jungmin" },
+      { label: "구진완 멘토", href: "/consulting/diagnosis/gu-jinwan" },
+      { label: "허준영 멘토", href: "/consulting/diagnosis/heo-junyoung" },
     ],
   },
   {
@@ -134,7 +134,7 @@ export default function Header() {
           <Link href="/" className="flex-shrink-0 flex items-center">
             <Image
               src="/logos/thegrow-logo.png"
-              alt="더그로우컴퍼니 - 헬스장·필라테스 창업·운영·마케팅 컨설팅 로고"
+              alt="더그로우컴퍼니 - 헬스장·필라테스 창업·운영·마케팅 솔루션 로고"
               width={210}
               height={60}
               className="h-[72px] lg:h-20 w-auto object-contain"

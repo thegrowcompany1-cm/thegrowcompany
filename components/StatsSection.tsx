@@ -1,5 +1,5 @@
 const stats = [
-  { value: "500+", label: "누적 컨설팅", sub: "건 수행" },
+  { value: "500+", label: "누적 솔루션", sub: "건 수행" },
   { value: "21+", label: "파트너사", sub: "국내외 협력" },
   { value: "5년+", label: "업계 경력", sub: "전문 노하우" },
   { value: "1,000+", label: "교육 수강생", sub: "그로우 에듀" },

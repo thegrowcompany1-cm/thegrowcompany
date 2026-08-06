@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 진단 컨설턴트 상세페이지 — 허준영
+// 진단 멘토 상세페이지 — 허준영
 //  구조(김승호 최종본과 동일): [상단 인물사진 + 상담폼] → DETAIL_HTML(다크 랜딩)
 //   → [하단 상담폼(-bottom id)] → ConsultantCarousel → 추천 카드
 //  · 클래스 접두사 hjy- / 전역 정지 훅 __hjyMarqueeStop
@@ -16,16 +16,16 @@ import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
 import { SITE_URL } from "@/lib/site";
 
-// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+// 진단 솔루션 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "헬스장 마케팅·필라테스 마케팅 컨설팅",
-  name: "허준영 컨설턴트 진단 컨설팅",
+  serviceType: "헬스장 마케팅·필라테스 마케팅 솔루션",
+  name: "허준영 멘토 진단 솔루션",
   url: `${SITE_URL}/consulting/diagnosis/heo-junyoung`,
   areaServed: "KR",
   description:
-    "허준영 컨설턴트의 헬스장 마케팅·필라테스 마케팅 1:1 진단으로 매출로 이어지는 구조를 설계합니다.",
+    "허준영 멘토의 헬스장 마케팅·필라테스 마케팅 1:1 진단으로 매출로 이어지는 구조를 설계합니다.",
   provider: {
     "@type": "Organization",
     name: "더그로우컴퍼니",
@@ -33,7 +33,7 @@ const SERVICE_SCHEMA = {
     employee: {
       "@type": "Person",
       name: "허준영",
-      jobTitle: "FC운영·마케팅 컨설턴트",
+      jobTitle: "FC운영·마케팅 멘토",
     },
   },
   offers: {
@@ -46,11 +46,11 @@ const SERVICE_SCHEMA = {
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/heo-junyoung.jpg";
 
-// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 컨설팅은 제외)
+// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 솔루션은 제외)
 const RELATED_SERVICES = [
   {
-    title: "창업 컨설팅",
-    desc: "헬스장·필라테스 등 창업 준비를 위한 컨설팅",
+    title: "창업 솔루션",
+    desc: "헬스장·필라테스 등 창업 준비를 위한 솔루션",
     href: "/consulting/startup",
     img: "/startup/startup50.png",
   },
@@ -117,7 +117,7 @@ function RelatedServiceCard({
 // ─── 진단 상담 폼 HTML (김승호/김재강과 동일, 폼 스코프 스크립트) ────────────────
 const FORM_HTML = `<div class="consult-form-wrapper">
   <div class="form-header">
-    <h2>진단 컨설팅 상담 신청(무료)</h2>
+    <h2>진단 솔루션 상담 신청(무료)</h2>
   </div>
 
   <form id="consultForm" class="consult-form">
@@ -203,7 +203,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">원하시는 컨설팅 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
+      <label class="form-label">원하시는 솔루션 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="checkbox" name="consultField" value="FC운영" class="consultField-checkbox">
@@ -225,7 +225,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">도움받고 싶은 컨설턴트를 알려주세요. <span class="required">*</span></label>
+      <label class="form-label">도움받고 싶은 멘토를 알려주세요. <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="radio" name="consultant" value="김재강" class="consultant-radio" required>
@@ -491,9 +491,9 @@ const FORM_HTML = `<div class="consult-form-wrapper">
       var selectedRoute = qa('.route-checkbox:checked');
       if (selectedRoute.length === 0){ alert('신청 경로를 선택해주세요.'); return; }
       var selectedConsultField = qa('.consultField-checkbox:checked');
-      if (selectedConsultField.length === 0){ alert('원하시는 컨설팅 분야를 선택해주세요.'); return; }
+      if (selectedConsultField.length === 0){ alert('원하시는 솔루션 분야를 선택해주세요.'); return; }
       var selectedConsultant = q('.consultant-radio:checked');
-      if (!selectedConsultant){ alert('도움받고 싶은 컨설턴트를 선택해주세요.'); return; }
+      if (!selectedConsultant){ alert('도움받고 싶은 멘토를 선택해주세요.'); return; }
 
       if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = '전송중...'; }
 
@@ -524,7 +524,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         body: params.toString()
       })
       .then(function(){
-        alert('진단 컨설팅 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
+        alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
         form.reset();
         if (etcInput) etcInput.disabled = true;
       })
@@ -763,10 +763,10 @@ const DETAIL_HTML = `<div class="hjy">
   </div>
   <div class="hjy-mq" id="hjyRankMarquee">
     <div class="hjy-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/7555d085677f2.png" alt="허준영 컨설턴트 상위노출 사례 1">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/ab6c3a9f7007f.png" alt="허준영 컨설턴트 상위노출 사례 2">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/17751ea0cb81e.png" alt="허준영 컨설턴트 상위노출 사례 3">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/993bfd5741d22.jpg" alt="허준영 컨설턴트 상위노출 사례 4">
+      <img src="https://cdn.imweb.me/thumbnail/20250911/7555d085677f2.png" alt="허준영 멘토 상위노출 사례 1">
+      <img src="https://cdn.imweb.me/thumbnail/20250911/ab6c3a9f7007f.png" alt="허준영 멘토 상위노출 사례 2">
+      <img src="https://cdn.imweb.me/thumbnail/20250911/17751ea0cb81e.png" alt="허준영 멘토 상위노출 사례 3">
+      <img src="https://cdn.imweb.me/thumbnail/20250911/993bfd5741d22.jpg" alt="허준영 멘토 상위노출 사례 4">
       <img src="https://cdn.imweb.me/thumbnail/20250911/7555d085677f2.png" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20250911/ab6c3a9f7007f.png" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20250911/17751ea0cb81e.png" alt="" aria-hidden="true">
@@ -852,13 +852,13 @@ const DETAIL_HTML = `<div class="hjy">
 <!-- 섹션 4 — 계획 (좌측 정렬) -->
 <section class="hjy-sec hjy-sec--alt tl">
   <div class="hjy-inner">
-    <h2 class="hjy-h2">허준영 컨설턴트의 솔루션:<br>1인샵부터 다지점까지, <em>규모 맞춤 마케팅 마스터</em></h2>
-    <p class="hjy-lead">광고 대행사는 유입만 봅니다.<br>운영 컨설턴트는 내부만 봅니다.<br>매출은 그 사이에서 샙니다.</p>
+    <h2 class="hjy-h2">허준영 멘토의 솔루션:<br>1인샵부터 다지점까지, <em>규모 맞춤 마케팅 마스터</em></h2>
+    <p class="hjy-lead">광고 대행사는 유입만 봅니다.<br>운영 멘토는 내부만 봅니다.<br>매출은 그 사이에서 샙니다.</p>
     <p class="hjy-lead"><em>저는 광고 계정과 상담 일지를<br>같은 날, 같은 테이블에서 봅니다.</em></p>
     <div class="hjy-prog">
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">프로그램</div>
-        <p class="hjy-prog-body">허준영 컨설턴트의 1:1 헬스장·필라테스 마케팅 밀착 컨설팅</p>
+        <p class="hjy-prog-body">허준영 멘토의 1:1 헬스장·필라테스 마케팅 밀착 솔루션</p>
       </div>
       <div class="hjy-prog-item">
         <div class="hjy-prog-label">진단 시간</div>
@@ -910,12 +910,12 @@ const DETAIL_HTML = `<div class="hjy">
   </div>
   <div class="hjy-mq" id="hjyReviewMarquee">
     <div class="hjy-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/ceddd35ebfc47.png" alt="허준영 컨설턴트 고객 후기 1">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/d5ef8194aae01.png" alt="허준영 컨설턴트 고객 후기 2">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/f1c64153b5faf.png" alt="허준영 컨설턴트 고객 후기 3">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/3a275f9fb2f61.png" alt="허준영 컨설턴트 고객 후기 4">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/77e4db3112261.png" alt="허준영 컨설턴트 고객 후기 5">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/07fd3d27b83d7.png" alt="허준영 컨설턴트 고객 후기 6">
+      <img src="https://cdn.imweb.me/thumbnail/20250728/ceddd35ebfc47.png" alt="허준영 멘토 고객 후기 1">
+      <img src="https://cdn.imweb.me/thumbnail/20250728/d5ef8194aae01.png" alt="허준영 멘토 고객 후기 2">
+      <img src="https://cdn.imweb.me/thumbnail/20250728/f1c64153b5faf.png" alt="허준영 멘토 고객 후기 3">
+      <img src="https://cdn.imweb.me/thumbnail/20250728/3a275f9fb2f61.png" alt="허준영 멘토 고객 후기 4">
+      <img src="https://cdn.imweb.me/thumbnail/20250728/77e4db3112261.png" alt="허준영 멘토 고객 후기 5">
+      <img src="https://cdn.imweb.me/thumbnail/20250728/07fd3d27b83d7.png" alt="허준영 멘토 고객 후기 6">
       <img src="https://cdn.imweb.me/thumbnail/20250728/ceddd35ebfc47.png" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20250728/d5ef8194aae01.png" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20250728/f1c64153b5faf.png" alt="" aria-hidden="true">
@@ -929,12 +929,12 @@ const DETAIL_HTML = `<div class="hjy">
   </div>
   <div class="hjy-mq" id="hjyLectureMarquee">
     <div class="hjy-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/8e4d9dcb6ba10.jpg" alt="허준영 컨설턴트 강의 현장 1">
-      <img src="https://cdn.imweb.me/thumbnail/20251024/82df487ecc05e.jpg" alt="허준영 컨설턴트 강의 현장 2">
-      <img src="https://cdn.imweb.me/thumbnail/20251024/21fbb1985dcd7.jpg" alt="허준영 컨설턴트 강의 현장 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/d7505685c11bd.jpg" alt="허준영 컨설턴트 강의 현장 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/d3366bea96bbb.jpg" alt="허준영 컨설턴트 강의 현장 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/cadc3e3228271.jpg" alt="허준영 컨설턴트 강의 현장 6">
+      <img src="https://cdn.imweb.me/thumbnail/20260129/8e4d9dcb6ba10.jpg" alt="허준영 멘토 강의 현장 1">
+      <img src="https://cdn.imweb.me/thumbnail/20251024/82df487ecc05e.jpg" alt="허준영 멘토 강의 현장 2">
+      <img src="https://cdn.imweb.me/thumbnail/20251024/21fbb1985dcd7.jpg" alt="허준영 멘토 강의 현장 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260129/d7505685c11bd.jpg" alt="허준영 멘토 강의 현장 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260129/d3366bea96bbb.jpg" alt="허준영 멘토 강의 현장 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260129/cadc3e3228271.jpg" alt="허준영 멘토 강의 현장 6">
       <img src="https://cdn.imweb.me/thumbnail/20260129/8e4d9dcb6ba10.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20251024/82df487ecc05e.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20251024/21fbb1985dcd7.jpg" alt="" aria-hidden="true">
@@ -951,7 +951,7 @@ const DETAIL_HTML = `<div class="hjy">
         <p>그래서 저는 광고만 봐드리지 않습니다.<br>유입부터 등록, 재등록, 손익까지<br>구조 전체를 함께 뜯어고칩니다.</p>
         <p class="hjy-sign">허 준 영</p>
       </div>
-      <img class="hjy-letter-img" src="/consultants/heo-junyoung.jpg" alt="더그로우컴퍼니 허준영 진단 컨설턴트">
+      <img class="hjy-letter-img" src="/consultants/heo-junyoung.jpg" alt="더그로우컴퍼니 허준영 진단 멘토">
     </div>
   </div>
 </section>
@@ -1263,7 +1263,7 @@ export default function HeoJunyoungDiagnosisPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="허준영 헬스장·필라테스 운영 진단 컨설턴트"
+                alt="허준영 헬스장·필라테스 운영 진단 멘토"
                 fill
                 priority
                 className="object-cover object-center"
@@ -1333,7 +1333,7 @@ export default function HeoJunyoungDiagnosisPage() {
         )}
       </section>
 
-      {/* ───────────────── 다른 컨설턴트 확인 ───────────────── */}
+      {/* ───────────────── 다른 멘토 확인 ───────────────── */}
       <ConsultantCarousel currentSlug="heo-junyoung" />
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}

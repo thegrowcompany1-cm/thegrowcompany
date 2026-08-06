@@ -5,9 +5,9 @@ import DiagnosisIntro from "./DiagnosisIntro";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "헬스장·필라테스 컨설팅 | 더그로우컴퍼니 진단컨설팅",
+  title: "헬스장·필라테스 솔루션 | 더그로우컴퍼니 진단솔루션",
   description:
-    "헬스장 컨설팅·필라테스 컨설팅 전문가가 매장에 직접 방문해 1:1로 진단하고 개선까지 함께합니다. 대표님의 문제에 맞는 진단 컨설턴트를 선택하세요.",
+    "헬스장 솔루션·필라테스 솔루션 전문가가 매장에 직접 방문해 1:1로 진단하고 개선까지 함께합니다. 대표님의 문제에 맞는 진단 멘토를 선택하세요.",
 };
 
 const CONSULTANTS = [
@@ -28,7 +28,7 @@ const STEPS = [
   {
     no: "2",
     title: "방문 진단",
-    desc: "컨설턴트가 매장에 직접 방문해 매출·운영·조직·마케팅 등 문제 지점을 데이터로 특정합니다.",
+    desc: "멘토가 매장에 직접 방문해 매출·운영·조직·마케팅 등 문제 지점을 데이터로 특정합니다.",
   },
   {
     no: "3",
@@ -37,7 +37,7 @@ const STEPS = [
   },
 ];
 
-// 컨설턴트 6명 목록 구조화 데이터
+// 멘토 6명 목록 구조화 데이터
 const ITEM_LIST_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -45,7 +45,7 @@ const ITEM_LIST_SCHEMA = {
     "@type": "ListItem",
     position: i + 1,
     url: `${SITE_URL}/consulting/diagnosis/${c.slug}`,
-    name: `${c.name} 컨설턴트`,
+    name: `${c.name} 멘토`,
   })),
 };
 
@@ -56,7 +56,7 @@ const FAQ_SCHEMA = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "진단컨설팅은 어떤 서비스인가요",
+      name: "진단솔루션은 어떤 서비스인가요",
       acceptedAnswer: {
         "@type": "Answer",
         text: "각 분야의 전문가가 대표님의 매장에 직접 방문하여 1:1로 문제를 진단하고 개선까지 함께하는 서비스입니다. 주 1회, 한달 코스로 진행됩니다.",
@@ -98,14 +98,14 @@ export default function DiagnosisPage() {
           ))}
         </div>
         <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-relaxed text-gray-500">
-          52개 센터 총괄, 110개 마케팅 운영, 600억 매출 경험 — 헬스장 컨설팅·필라테스 컨설팅 각 분야를 실제로 겪어낸 전문가들입니다.
+          52개 센터 총괄, 110개 마케팅 운영, 600억 매출 경험 — 헬스장 솔루션·필라테스 솔루션 각 분야를 실제로 겪어낸 전문가들입니다.
         </p>
       </section>
 
-      {/* ── 3. 컨설턴트 선택 그리드 ── */}
+      {/* ── 3. 멘토 선택 그리드 ── */}
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
         <p className="mb-3 text-center text-xs font-bold uppercase tracking-widest text-[#22B573]">
-          헬스장 컨설팅 · 필라테스 컨설팅
+          헬스장 솔루션 · 필라테스 솔루션
         </p>
         <h2 className="mb-8 text-center text-2xl font-black leading-snug sm:mb-12 sm:text-3xl">
           대표님의 문제에 맞는<br className="sm:hidden" /> 전문가를 선택하세요.
@@ -121,7 +121,7 @@ export default function DiagnosisPage() {
               <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1c1c]">
                 <Image
                   src={c.img}
-                  alt={`${c.name} 헬스장·필라테스 운영 진단 컨설턴트`}
+                  alt={`${c.name} 헬스장·필라테스 운영 진단 멘토`}
                   fill
                   className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
                   sizes="(min-width: 1024px) 33vw, 50vw"
@@ -129,7 +129,7 @@ export default function DiagnosisPage() {
               </div>
               <div className="flex flex-col gap-1 p-3 sm:p-4">
                 <h3 className="text-sm font-bold text-white group-hover:text-[#22B573] sm:text-base">
-                  {c.name} 컨설턴트
+                  {c.name} 멘토
                 </h3>
                 <p className="text-xs font-medium text-[#22B573]">{c.field}</p>
               </div>
@@ -141,7 +141,7 @@ export default function DiagnosisPage() {
             <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1c1c]">
               <Image
                 src="/consultants/lee-seokhun.png"
-                alt="이석훈 헬스장·필라테스 운영 진단 컨설턴트 (준비중)"
+                alt="이석훈 헬스장·필라테스 운영 진단 멘토 (준비중)"
                 fill
                 className="object-cover object-top"
                 sizes="(min-width: 1024px) 33vw, 50vw"
@@ -151,7 +151,7 @@ export default function DiagnosisPage() {
               </span>
             </div>
             <div className="flex flex-col gap-1 p-3 sm:p-4">
-              <h3 className="text-sm font-bold text-white sm:text-base">이석훈 컨설턴트</h3>
+              <h3 className="text-sm font-bold text-white sm:text-base">이석훈 멘토</h3>
               <p className="text-xs font-medium text-gray-400">준비중</p>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function DiagnosisPage() {
       <section className="border-t border-white/10 bg-[#0d0d0d] px-4 py-16 text-center sm:py-20">
         <div className="mx-auto max-w-2xl">
           <p className="text-lg font-bold leading-relaxed text-white sm:text-xl">
-            어떤 컨설턴트가 맞을지 고민된다면,<br />
+            어떤 멘토가 맞을지 고민된다면,<br />
             편하게 남겨주세요. 상황에 맞는 전문가를 연결해 드립니다.
           </p>
           <Link

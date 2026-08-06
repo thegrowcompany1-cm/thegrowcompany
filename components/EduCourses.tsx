@@ -42,7 +42,7 @@ const courses = [
     durationUnit: "완성",
     title: "1:1 관리자 PT",
     tag: "프리미엄",
-    desc: "전담 컨설턴트와 1:1로 진행하는 12주 관리자 밀착 코칭 프로그램입니다.",
+    desc: "전담 멘토와 1:1로 진행하는 12주 관리자 밀착 코칭 프로그램입니다.",
     href: "/edu/startup-class",
     accent: "from-amber-500/15 to-brand/5",
     premium: true,

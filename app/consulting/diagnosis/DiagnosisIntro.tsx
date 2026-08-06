@@ -1,6 +1,6 @@
 "use client";
 
-// 진단컨설팅 허브 인트로 — 질문 클릭 시 답변이 한 줄씩 순차 페이드업으로 등장.
+// 진단솔루션 허브 인트로 — 질문 클릭 시 답변이 한 줄씩 순차 페이드업으로 등장.
 // React state + CSS keyframes 만 사용(외부 라이브러리 없음). 한 번 열면 유지.
 
 import { useState } from "react";
@@ -24,7 +24,7 @@ export default function DiagnosisIntro() {
         }`}
       >
         <h1 className="text-4xl font-black leading-tight text-white sm:text-6xl">
-          진단컨설팅이 뭐예요..?
+          진단솔루션이 뭐예요..?
         </h1>
         <button
           type="button"
@@ -66,7 +66,7 @@ export default function DiagnosisIntro() {
             className="di-line text-base font-bold leading-snug text-gray-300 sm:text-xl"
             style={{ animationDelay: "1.85s" }}
           >
-            헬스장 컨설팅, 필라테스 컨설팅 모두 가능합니다.
+            헬스장 솔루션, 필라테스 솔루션 모두 가능합니다.
           </p>
         </div>
       )}

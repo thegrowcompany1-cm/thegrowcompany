@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "아파트 헬스장·커뮤니티 시설 위탁운영 | 더그로우컴퍼니",
     description:
-      "아파트 헬스장·아파트 커뮤니티 헬스장부터 기업·공공기관까지, 더그로우컴퍼니의 시설 위탁운영 컨설팅.",
+      "아파트 헬스장·아파트 커뮤니티 헬스장부터 기업·공공기관까지, 더그로우컴퍼니의 시설 위탁운영 솔루션.",
     url: "/consulting/community",
     type: "website",
     images: ["/wt/community.png"],

@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 진단 컨설턴트 상세페이지 — 김재강
+// 진단 멘토 상세페이지 — 김재강
 //
 // 구성
 //  1) 상단 메인 영역 (2단): 좌측 정사각형 이미지 / 우측 진단 상담 폼(FORM_HTML)
@@ -18,12 +18,12 @@ import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
 import { SITE_URL } from "@/lib/site";
 
-// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+// 진단 솔루션 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "피트니스 센터 진단 컨설팅",
-  name: "김재강 컨설턴트 진단 컨설팅",
+  serviceType: "피트니스 센터 진단 솔루션",
+  name: "김재강 멘토 진단 솔루션",
   url: `${SITE_URL}/consulting/diagnosis/kim-jaegang`,
   areaServed: "KR",
   provider: {
@@ -33,7 +33,7 @@ const SERVICE_SCHEMA = {
     employee: {
       "@type": "Person",
       name: "김재강",
-      jobTitle: "대표 컨설턴트",
+      jobTitle: "대표 멘토",
     },
   },
   offers: {
@@ -46,13 +46,13 @@ const SERVICE_SCHEMA = {
 // 좌측 메인 이미지 (public 기준). 없으면 회색 placeholder 로 대체.
 const MAIN_IMAGE = "/consultants/kim-jaegang.jpg";
 
-// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 컨설팅은 제외)
+// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 솔루션은 제외)
 const RELATED_SERVICES = [
   {
-    title: "창업 컨설팅",
-    desc: "헬스장·필라테스 등 창업 준비를 위한 컨설팅",
+    title: "창업 솔루션",
+    desc: "헬스장·필라테스 등 창업 준비를 위한 솔루션",
     href: "/consulting/startup",
-    img: "/startup/startup50.png", // 창업 컨설팅 카드 이미지
+    img: "/startup/startup50.png", // 창업 솔루션 카드 이미지
   },
   {
     title: "매장 위탁운영",
@@ -127,7 +127,7 @@ function RelatedServiceCard({
 //  - <style>, <script> 등은 그대로 둬도 아래 useEffect 가 동작하게 처리합니다.
 const FORM_HTML = `<div class="consult-form-wrapper">
   <div class="form-header">
-    <h2>진단 컨설팅 상담 신청(무료)</h2>
+    <h2>진단 솔루션 상담 신청(무료)</h2>
   </div>
 
   <form id="consultForm" class="consult-form">
@@ -213,7 +213,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">원하시는 컨설팅 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
+      <label class="form-label">원하시는 솔루션 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="checkbox" name="consultField" value="FC운영" class="consultField-checkbox">
@@ -235,7 +235,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">도움받고 싶은 컨설턴트를 알려주세요. <span class="required">*</span></label>
+      <label class="form-label">도움받고 싶은 멘토를 알려주세요. <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="radio" name="consultant" value="김재강" class="consultant-radio" required>
@@ -489,9 +489,9 @@ const FORM_HTML = `<div class="consult-form-wrapper">
       var selectedRoute = qa('.route-checkbox:checked');
       if (selectedRoute.length === 0){ alert('신청 경로를 선택해주세요.'); return; }
       var selectedConsultField = qa('.consultField-checkbox:checked');
-      if (selectedConsultField.length === 0){ alert('원하시는 컨설팅 분야를 선택해주세요.'); return; }
+      if (selectedConsultField.length === 0){ alert('원하시는 솔루션 분야를 선택해주세요.'); return; }
       var selectedConsultant = q('.consultant-radio:checked');
-      if (!selectedConsultant){ alert('도움받고 싶은 컨설턴트를 선택해주세요.'); return; }
+      if (!selectedConsultant){ alert('도움받고 싶은 멘토를 선택해주세요.'); return; }
 
       if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = '전송중...'; }
 
@@ -522,7 +522,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         body: params.toString()
       })
       .then(function(){
-        alert('진단 컨설팅 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
+        alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
         form.reset();
         if (etcInput) etcInput.disabled = true;
       })
@@ -696,16 +696,16 @@ const DETAIL_HTML_2 = `<div class="kjk">
     <h2 class="kjk-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
   </div>
   <div class="kjk-strip">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/e93ca9ff08f57.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 1">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/916c4041aee53.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 2">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/d9aad9fd0bfd0.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 3">
-    <img src="https://cdn.imweb.me/thumbnail/20260311/36b12b4672c0d.png" alt="김재강 컨설턴트 실시간 카톡 후기 4">
-    <img src="https://cdn.imweb.me/thumbnail/20260312/9e8faf83a4069.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 5">
-    <img src="https://cdn.imweb.me/thumbnail/20260312/b04ef0ea34d4b.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 6">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/6ab322c87ee75.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 7">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/36ab76ce44623.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 8">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/a139d97449a27.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 9">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/6c5b4f8faba0b.jpg" alt="김재강 컨설턴트 실시간 카톡 후기 10">
+    <img src="https://cdn.imweb.me/thumbnail/20260225/e93ca9ff08f57.jpg" alt="김재강 멘토 실시간 카톡 후기 1">
+    <img src="https://cdn.imweb.me/thumbnail/20260225/916c4041aee53.jpg" alt="김재강 멘토 실시간 카톡 후기 2">
+    <img src="https://cdn.imweb.me/thumbnail/20260225/d9aad9fd0bfd0.jpg" alt="김재강 멘토 실시간 카톡 후기 3">
+    <img src="https://cdn.imweb.me/thumbnail/20260311/36b12b4672c0d.png" alt="김재강 멘토 실시간 카톡 후기 4">
+    <img src="https://cdn.imweb.me/thumbnail/20260312/9e8faf83a4069.jpg" alt="김재강 멘토 실시간 카톡 후기 5">
+    <img src="https://cdn.imweb.me/thumbnail/20260312/b04ef0ea34d4b.jpg" alt="김재강 멘토 실시간 카톡 후기 6">
+    <img src="https://cdn.imweb.me/thumbnail/20260225/6ab322c87ee75.jpg" alt="김재강 멘토 실시간 카톡 후기 7">
+    <img src="https://cdn.imweb.me/thumbnail/20260225/36ab76ce44623.jpg" alt="김재강 멘토 실시간 카톡 후기 8">
+    <img src="https://cdn.imweb.me/thumbnail/20260225/a139d97449a27.jpg" alt="김재강 멘토 실시간 카톡 후기 9">
+    <img src="https://cdn.imweb.me/thumbnail/20260225/6c5b4f8faba0b.jpg" alt="김재강 멘토 실시간 카톡 후기 10">
   </div>
 </section>
 
@@ -717,14 +717,14 @@ const DETAIL_HTML_2 = `<div class="kjk">
   </div>
   <div class="kjk-mq" id="kjkCertMarquee">
     <div class="kjk-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/07206486c31ee.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/c39bde9d80ca8.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/6205ff8de0c6c.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/92e7b7e705ba3.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/fc284d3b69261.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/1c1186df37343.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/e813e7b6e3237.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260224/e62ff81508acf.jpg" alt="김재강 컨설턴트 회원 매출 인증 사진 8">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/07206486c31ee.jpg" alt="김재강 멘토 회원 매출 인증 사진 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/c39bde9d80ca8.jpg" alt="김재강 멘토 회원 매출 인증 사진 2">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/6205ff8de0c6c.jpg" alt="김재강 멘토 회원 매출 인증 사진 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/92e7b7e705ba3.jpg" alt="김재강 멘토 회원 매출 인증 사진 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/fc284d3b69261.jpg" alt="김재강 멘토 회원 매출 인증 사진 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/1c1186df37343.jpg" alt="김재강 멘토 회원 매출 인증 사진 6">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/e813e7b6e3237.jpg" alt="김재강 멘토 회원 매출 인증 사진 7">
+      <img src="https://cdn.imweb.me/thumbnail/20260224/e62ff81508acf.jpg" alt="김재강 멘토 회원 매출 인증 사진 8">
       <img src="https://cdn.imweb.me/thumbnail/20260223/07206486c31ee.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260223/c39bde9d80ca8.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260223/6205ff8de0c6c.jpg" alt="" aria-hidden="true">
@@ -745,11 +745,11 @@ const DETAIL_HTML_2 = `<div class="kjk">
   </div>
   <div class="kjk-mq" id="kjkSeminarMarquee">
     <div class="kjk-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/0beb9f453dc77.jpg" alt="김재강 컨설턴트 강연 현장 사진 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/fe5d6209a54a9.jpg" alt="김재강 컨설턴트 강연 현장 사진 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/42259675f4f0b.jpg" alt="김재강 컨설턴트 강연 현장 사진 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/9e172a0003d05.jpg" alt="김재강 컨설턴트 강연 현장 사진 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/82c1ee03de2f5.jpg" alt="김재강 컨설턴트 강연 현장 사진 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260223/0beb9f453dc77.jpg" alt="김재강 멘토 강연 현장 사진 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260220/fe5d6209a54a9.jpg" alt="김재강 멘토 강연 현장 사진 2">
+      <img src="https://cdn.imweb.me/thumbnail/20260220/42259675f4f0b.jpg" alt="김재강 멘토 강연 현장 사진 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260220/9e172a0003d05.jpg" alt="김재강 멘토 강연 현장 사진 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260220/82c1ee03de2f5.jpg" alt="김재강 멘토 강연 현장 사진 5">
       <img src="https://cdn.imweb.me/thumbnail/20260223/0beb9f453dc77.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260220/fe5d6209a54a9.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260220/42259675f4f0b.jpg" alt="" aria-hidden="true">
@@ -801,11 +801,11 @@ const DETAIL_HTML_2 = `<div class="kjk">
 <section class="kjk-sec">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>PROGRAM</span></div>
-    <h2 class="kjk-h2">김재강 컨설턴트의 솔루션:<br>멈추지 않는 <em>관리자 자립의 기술</em></h2>
+    <h2 class="kjk-h2">김재강 멘토의 솔루션:<br>멈추지 않는 <em>관리자 자립의 기술</em></h2>
     <div class="kjk-prog">
       <div class="kjk-prog-item">
         <div class="kjk-prog-label">프로그램</div>
-        <p class="kjk-prog-body">김재강 컨설턴트의 1:1 운영 시스템 밀착 구축</p>
+        <p class="kjk-prog-body">김재강 멘토의 1:1 운영 시스템 밀착 구축</p>
       </div>
       <div class="kjk-prog-item">
         <div class="kjk-prog-label">진단 시간</div>
@@ -1245,7 +1245,7 @@ export default function KimJaegangDiagnosisPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="김재강 헬스장·필라테스 운영 진단 컨설턴트"
+                alt="김재강 헬스장·필라테스 운영 진단 멘토"
                 fill
                 priority
                 className="object-cover object-center"
@@ -1348,7 +1348,7 @@ export default function KimJaegangDiagnosisPage() {
       </section>
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}
-      {/* 다른 컨설턴트 확인 */}
+      {/* 다른 멘토 확인 */}
       <ConsultantCarousel currentSlug="kim-jaegang" />
 
       <section className="w-full bg-[#f8f9fa]">

@@ -37,10 +37,10 @@ const SERVICE_SCHEMA = {
 // 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 시설 위탁운영은 제외)
 const RELATED_SERVICES = [
   {
-    title: "창업 컨설팅",
-    desc: "헬스장·필라테스 등 창업 준비를 위한 컨설팅",
+    title: "창업 솔루션",
+    desc: "헬스장·필라테스 등 창업 준비를 위한 솔루션",
     href: "/consulting/startup",
-    img: "/startup/startup50.png", // 창업 컨설팅 카드 이미지
+    img: "/startup/startup50.png", // 창업 솔루션 카드 이미지
   },
   {
     title: "매장 위탁운영",
@@ -49,10 +49,10 @@ const RELATED_SERVICES = [
     img: "/wt/wt.png", // 매장 위탁운영 카드 이미지
   },
   {
-    title: "진단 컨설팅",
+    title: "진단 솔루션",
     desc: "전문가의 1:1 현장 진단",
     href: "/consulting/diagnosis",
-    img: "/consultants/kim-jaegang.jpg", // 김재강 컨설턴트
+    img: "/consultants/kim-jaegang.jpg", // 김재강 멘토
   },
   {
     title: "그로우 에듀",
@@ -716,7 +716,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
     <p class="wo-hero-sub">
       아파트 커뮤니티 헬스장부터 기업·공공기관 시설까지,<br>
       <strong>진단 · 기획 · 운영 · 교육</strong>을 한 회사 안에서.<br>
-      컨설팅 기반의 체계적 시설 위탁운영으로 가치를 끌어올립니다.
+      솔루션 기반의 체계적 시설 위탁운영으로 가치를 끌어올립니다.
     </p>
 
     <div class="wo-hero-cta">
@@ -1983,7 +1983,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
         <span class="wo-why-title-accent">"운영의 깊이"</span>에서 시작됩니다.
       </h2>
       <p class="wo-why-lead">
-        단순 인력파견·시설 임대업체가 아닙니다. 컨설팅 회사의 분석력, 운영사의 실행력, 교육사의 인력양성 시스템을 한 회사에서 제공합니다.
+        단순 인력파견·시설 임대업체가 아닙니다. 솔루션 회사의 분석력, 운영사의 실행력, 교육사의 인력양성 시스템을 한 회사에서 제공합니다.
       </p>
     </div>
 
@@ -1992,7 +1992,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
       <div class="wo-why-item">
         <div class="wo-why-num">01</div>
         <div class="wo-why-content">
-          <h3 class="wo-why-name">컨설팅 회사가 직접 운영합니다</h3>
+          <h3 class="wo-why-name">솔루션 회사가 직접 운영합니다</h3>
           <p class="wo-why-desc">
             현장 진단·운영 기획부터 위탁운영까지 한 회사에서 책임집니다. 데이터 기반 분석으로 시설의 강점과 약점을 먼저 파악한 뒤 운영 전략을 설계합니다.
           </p>
@@ -2017,7 +2017,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
             네 가지가 분리된 외주가 아닌, 하나의 회사 안에서 일관성 있게 흐릅니다. 시설 분석 → 프로그램 기획 → 인력 운영 → 강사 교육이 끊김 없이 연결됩니다.
           </p>
           <ul class="wo-why-bullets">
-            <li>진단컨설팅</li>
+            <li>진단솔루션</li>
             <li>운영기획</li>
             <li>위탁운영</li>
             <li>그로우 에듀</li>
@@ -4903,7 +4903,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
             <div>
               <div class="wo-contact-direct-label">WEBSITE</div>
               <a href="https://www.thegrowcompany.co.kr" class="wo-contact-direct-value" target="_blank">www.thegrowcompany.co.kr</a>
-              <div class="wo-contact-direct-sub">컨설팅·진단·교육 서비스</div>
+              <div class="wo-contact-direct-sub">솔루션·진단·교육 서비스</div>
             </div>
           </div>
 

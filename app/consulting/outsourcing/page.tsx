@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 매장 위탁운영 상세페이지 (창업 컨설팅 페이지와 동일 구조)
+// 매장 위탁운영 상세페이지 (창업 솔루션 페이지와 동일 구조)
 //
 // 구성
 //  1) 상단 메인 영역: 좌측 정사각형 이미지 / 우측 상담 신청 폼 카드 (모바일 세로 스택)
@@ -37,10 +37,10 @@ const SERVICE_SCHEMA = {
 // 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 매장 위탁운영은 제외)
 const RELATED_SERVICES = [
   {
-    title: "창업 컨설팅",
-    desc: "헬스장·필라테스 등 창업 준비를 위한 컨설팅",
+    title: "창업 솔루션",
+    desc: "헬스장·필라테스 등 창업 준비를 위한 솔루션",
     href: "/consulting/startup",
-    img: "/startup/startup50.png", // 창업 컨설팅 카드 이미지
+    img: "/startup/startup50.png", // 창업 솔루션 카드 이미지
   },
   {
     title: "시설 위탁운영",
@@ -49,10 +49,10 @@ const RELATED_SERVICES = [
     img: "/wt/community.png", // 시설 위탁운영 카드 이미지
   },
   {
-    title: "진단 컨설팅",
+    title: "진단 솔루션",
     desc: "전문가의 1:1 현장 진단",
     href: "/consulting/diagnosis",
-    img: "/consultants/kim-jaegang.jpg", // 김재강 컨설턴트
+    img: "/consultants/kim-jaegang.jpg", // 김재강 멘토
   },
   {
     title: "그로우 에듀",
@@ -1345,7 +1345,7 @@ const DETAIL_HTML = `<style>
         </div>
         <div class="aftercare-block-item">
           <span class="aftercare-check">✓</span>
-          <span>운영 문제 발생 시 <strong>즉시 컨설팅</strong> 진행</span>
+          <span>운영 문제 발생 시 <strong>즉시 솔루션</strong> 진행</span>
         </div>
       </div>
 
@@ -1782,7 +1782,7 @@ const DETAIL_HTML = `<style>
 
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">
-        Q3. 타 컨설팅 업체와 다른점이 뭔가요?
+        Q3. 타 솔루션 업체와 다른점이 뭔가요?
         <div class="faq-toggle">+</div>
       </div>
       <div class="faq-answer">
@@ -2010,7 +2010,7 @@ function toggleFaq(el) {
 
     <div class="tg-form-wrap">
       <div class="tg-form-header">
-        <span class="tg-form-title">1회 무료 방문 진단 컨설팅 신청하기</span>
+        <span class="tg-form-title">1회 무료 방문 진단 솔루션 신청하기</span>
       </div>
 
       <form id="consultingForm" action="https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec" method="POST" target="hidden_iframe2">
@@ -2050,8 +2050,8 @@ function toggleFaq(el) {
           <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
 
           <label class="tg-radio">
-            <input type="radio" name="route" value="네이버 검색(창업, 창업컨설팅 등)" required />
-            <span>네이버 검색 (창업, 창업컨설팅 등)</span>
+            <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
+            <span>네이버 검색 (창업, 창업솔루션 등)</span>
           </label>
 
           <label class="tg-radio">
@@ -2317,7 +2317,7 @@ export default function OutsourcingConsultingPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="헬스장·필라테스 매장 위탁운영 컨설팅"
+                alt="헬스장·필라테스 매장 위탁운영 솔루션"
                 fill
                 priority
                 className="object-cover object-center"

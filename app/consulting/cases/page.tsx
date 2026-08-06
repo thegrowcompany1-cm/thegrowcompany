@@ -2,27 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "컨설팅사례 | 더그로우컴퍼니",
-  description: "더그로우컴퍼니의 실제 컨설팅 성공 사례들을 확인하세요.",
+  title: "솔루션사례 | 더그로우컴퍼니",
+  description: "더그로우컴퍼니의 실제 솔루션 성공 사례들을 확인하세요.",
 };
 
 const cases = [
   {
-    category: "창업컨설팅",
+    category: "창업솔루션",
     title: "필라테스 스튜디오 성공 창업",
     location: "인천 서구",
     result: "오픈 3개월 만에 회원 200명 달성",
     desc: "상권 분석부터 인테리어, 장비 선정, 강사 채용까지 전 과정을 지원하여 성공적인 창업을 이끌었습니다.",
   },
   {
-    category: "위탁컨설팅",
+    category: "위탁솔루션",
     title: "헬스장 위탁 운영 매출 2배 성장",
     location: "서울 강서",
     result: "위탁 6개월 후 매출 200% 증가",
     desc: "마케팅 전략 재정립과 운영 시스템 개선으로 침체된 헬스장을 성공적으로 살려냈습니다.",
   },
   {
-    category: "진단컨설팅",
+    category: "진단솔루션",
     title: "PT 센터 회원 이탈 문제 해결",
     location: "경기 부천",
     result: "이탈률 40% 감소, 재등록률 상승",
@@ -46,7 +46,7 @@ export default function CasesPage() {
             <div className="flex items-center gap-2 mb-6">
               <Link href="/" className="text-gray-400 hover:text-white text-sm transition-colors">홈</Link>
               <span className="text-gray-600">/</span>
-              <span className="text-[#009519] text-sm font-semibold">컨설팅사례</span>
+              <span className="text-[#009519] text-sm font-semibold">솔루션사례</span>
             </div>
             <p className="text-[#009519] text-xs font-bold tracking-widest uppercase mb-4">CASES</p>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-6">
@@ -55,7 +55,7 @@ export default function CasesPage() {
               증명합니다
             </h1>
             <p className="text-gray-400 text-base sm:text-lg leading-relaxed">
-              500건 이상의 컨설팅 경험에서 나온 실제 성공 사례들을 확인하세요.
+              500건 이상의 솔루션 경험에서 나온 실제 성공 사례들을 확인하세요.
             </p>
           </div>
         </div>

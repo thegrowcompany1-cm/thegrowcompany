@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 const services = [
   {
     num: "01",
-    title: "창업컨설팅",
+    title: "창업솔루션",
     desc: "헬스장, 필라테스 등 창업을 준비 중이신 분들",
     href: "/consulting/startup",
     external: false,
@@ -42,8 +42,8 @@ const services = [
   },
   {
     num: "04",
-    title: "진단컨설팅",
-    desc: "전문가의 1:1 컨설팅이 필요하신 분",
+    title: "진단솔루션",
+    desc: "전문가의 1:1 솔루션이 필요하신 분",
     href: "/consulting/diagnosis",
     external: false,
     icon: (
@@ -55,7 +55,7 @@ const services = [
   {
     num: "05",
     title: "그로우 에듀",
-    desc: "피트니스 1등 컨설팅 기업의 맞춤별 교육이 필요하신 분",
+    desc: "피트니스 1등 솔루션 기업의 맞춤별 교육이 필요하신 분",
     href: "/edu/fc-class",
     external: false,
     icon: (

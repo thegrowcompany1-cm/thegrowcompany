@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="mb-4">
               <Image
                 src="/logos/thegrow-logo.png"
-                alt="더그로우컴퍼니 - 헬스장·필라테스 창업·운영·마케팅 컨설팅 로고"
+                alt="더그로우컴퍼니 - 헬스장·필라테스 창업·운영·마케팅 솔루션 로고"
                 width={140}
                 height={40}
                 className="h-9 w-auto object-contain brightness-0 invert"
@@ -20,7 +20,7 @@ export default function Footer() {
             <p className="text-gray-400 text-sm leading-relaxed">
               피트니스 비즈니스의 성장을 설계합니다.<br />
               창업부터 운영, 위탁, 교육까지<br />
-              전문 컨설턴트가 함께합니다.
+              전문 멘토가 함께합니다.
             </p>
             <div className="flex gap-3 mt-5">
               <a
@@ -53,11 +53,11 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">서비스</h4>
             <ul className="space-y-2.5">
               {[
-                { label: "창업컨설팅", href: "/consulting/startup" },
-                { label: "위탁컨설팅", href: "/consulting/outsourcing" },
+                { label: "창업솔루션", href: "/consulting/startup" },
+                { label: "위탁솔루션", href: "/consulting/outsourcing" },
                 { label: "기업/커뮤니티 위탁", href: "/consulting/community" },
-                { label: "진단컨설팅", href: "/consulting/diagnosis" },
-                { label: "컨설팅사례", href: "/consulting/cases" },
+                { label: "진단솔루션", href: "/consulting/diagnosis" },
+                { label: "솔루션사례", href: "/consulting/cases" },
                 { label: "정규 FC 클래스", href: "/edu/fc-class" },
                 { label: "창업 클래스", href: "/edu/startup-class" },
               ].map((link) => (

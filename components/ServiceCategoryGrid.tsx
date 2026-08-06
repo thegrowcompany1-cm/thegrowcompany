@@ -29,24 +29,24 @@ type Group = {
 
 const groups: Group[] = [
   {
-    category: "창업 컨설팅",
+    category: "창업 솔루션",
     cards: [
       {
-        title: "창업 컨설팅",
+        title: "창업 솔루션",
         desc: "헬스장, 필라테스 등 창업을 준비 중인 대표님",
         price: "0원",
-        img: "/startup/startup50.png", // 창업 컨설팅 카드 이미지
+        img: "/startup/startup50.png", // 창업 솔루션 카드 이미지
         photo: true,
-        href: "/consulting/startup", // 클릭 시 창업 컨설팅 상세페이지로 이동
+        href: "/consulting/startup", // 클릭 시 창업 솔루션 상세페이지로 이동
       },
     ],
   },
   {
-    category: "위탁 컨설팅",
+    category: "위탁 솔루션",
     cards: [
       {
         title: "매장 위탁운영",
-        desc: "헬스장, 필라테스 샵 등 매장 운영이 어려우신 대표님을 위한 컨설팅",
+        desc: "헬스장, 필라테스 샵 등 매장 운영이 어려우신 대표님을 위한 솔루션",
         price: "0원",
         img: "/wt/wt.png", // 매장 위탁운영 카드 이미지
         href: "/consulting/outsourcing", // 클릭 시 매장 위탁운영 상세페이지로 이동
@@ -55,7 +55,7 @@ const groups: Group[] = [
       },
       {
         title: "시설 위탁운영",
-        desc: "아파트, 기업, 공공기관, 대학교 등 커뮤니티 시설 장기 위탁 컨설팅",
+        desc: "아파트, 기업, 공공기관, 대학교 등 커뮤니티 시설 장기 위탁 솔루션",
         price: "0원",
         img: "/wt/community.png", // 시설 위탁운영 카드 이미지
         href: "/consulting/community", // 클릭 시 시설 위탁운영 상세페이지로 이동
@@ -65,15 +65,15 @@ const groups: Group[] = [
     ],
   },
   {
-    category: "진단 컨설팅",
+    category: "진단 솔루션",
     desc: "우리 매장에 직접 방문하여 1:1로 매장 운영을 개선해드립니다.",
     cards: [
-      { title: "김재강 컨설턴트", desc: "FC운영 · 리더십", img: "/consultants/kim-jaegang.jpg", href: "/consulting/diagnosis/kim-jaegang", photo: true },
-      { title: "김승호 컨설턴트", desc: "FC운영 · PT", img: "/consultants/kim-seungho.jpg", href: "/consulting/diagnosis/kim-seungho", photo: true },
-      { title: "황봉남 컨설턴트", desc: "인적자원 · PT", img: "/consultants/hwang-bongnam.jpg", href: "/consulting/diagnosis/hwang-bongnam", photo: true },
-      { title: "박정민 컨설턴트", desc: "FC운영 · PT", img: "/consultants/park-jungmin.png", href: "/consulting/diagnosis/park-jungmin", photo: true },
-      { title: "구진완 컨설턴트", desc: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png", href: "/consulting/diagnosis/gu-jinwan", photo: true },
-      { title: "허준영 컨설턴트", desc: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
+      { title: "김재강 멘토", desc: "FC운영 · 리더십", img: "/consultants/kim-jaegang.jpg", href: "/consulting/diagnosis/kim-jaegang", photo: true },
+      { title: "김승호 멘토", desc: "FC운영 · PT", img: "/consultants/kim-seungho.jpg", href: "/consulting/diagnosis/kim-seungho", photo: true },
+      { title: "황봉남 멘토", desc: "인적자원 · PT", img: "/consultants/hwang-bongnam.jpg", href: "/consulting/diagnosis/hwang-bongnam", photo: true },
+      { title: "박정민 멘토", desc: "FC운영 · PT", img: "/consultants/park-jungmin.png", href: "/consulting/diagnosis/park-jungmin", photo: true },
+      { title: "구진완 멘토", desc: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png", href: "/consulting/diagnosis/gu-jinwan", photo: true },
+      { title: "허준영 멘토", desc: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
     ],
   },
   {
@@ -101,7 +101,7 @@ function ServiceCard({ card }: { card: Card }) {
         {card.photo ? (
           <Image
             src={card.img}
-            alt={`${card.title} - 더그로우컴퍼니 헬스장·필라테스 피트니스 컨설팅`}
+            alt={`${card.title} - 더그로우컴퍼니 헬스장·필라테스 피트니스 솔루션`}
             fill
             className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
             style={{ objectPosition: card.objectPosition ?? "center top", filter: "brightness(0.9)" }}

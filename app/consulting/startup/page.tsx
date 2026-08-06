@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 창업 컨설팅 상세페이지 (정관장 상품 상세 스타일)
+// 창업 솔루션 상세페이지 (정관장 상품 상세 스타일)
 //
 // 구성
 //  1) 상단 메인 영역: 좌측 정사각형 이미지 / 우측 상담 신청 폼 카드 (모바일 세로 스택)
@@ -17,16 +17,16 @@ import Link from "next/link";
 import StickyCtaBar from "@/components/StickyCtaBar";
 import { SITE_URL } from "@/lib/site";
 
-// 창업 컨설팅 Service 구조화 데이터
+// 창업 솔루션 Service 구조화 데이터
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "피트니스 창업 컨설팅",
-  name: "헬스장·필라테스 창업 컨설팅",
+  serviceType: "피트니스 창업 솔루션",
+  name: "헬스장·필라테스 창업 솔루션",
   url: `${SITE_URL}/consulting/startup`,
   areaServed: "KR",
   description:
-    "헬스장창업·필라테스창업부터 피트니스 인테리어까지. 오픈 이후에도 살아남는 운영 구조를 설계하는 더그로우컴퍼니 창업 컨설팅.",
+    "헬스장창업·필라테스창업부터 피트니스 인테리어까지. 오픈 이후에도 살아남는 운영 구조를 설계하는 더그로우컴퍼니 창업 솔루션.",
   provider: {
     "@type": "Organization",
     name: "더그로우컴퍼니",
@@ -49,10 +49,10 @@ const RELATED_SERVICES = [
     img: "/wt/community.png", // 시설 위탁운영 카드 이미지
   },
   {
-    title: "진단 컨설팅",
+    title: "진단 솔루션",
     desc: "전문가의 1:1 현장 진단",
     href: "/consulting/diagnosis",
-    img: "/consultants/kim-jaegang.jpg", // 김재강 컨설턴트
+    img: "/consultants/kim-jaegang.jpg", // 김재강 멘토
   },
   {
     title: "그로우 에듀",
@@ -3149,7 +3149,7 @@ function animateCount(element, target) {
         <div class="tgc-faq-question" onclick="toggleFaq(this)">
           <div class="tgc-faq-q-content">
             <span class="tgc-faq-q-badge">Q</span>
-            <span class="tgc-faq-q-text">컨설팅 비용은 어느 정도인가요?</span>
+            <span class="tgc-faq-q-text">솔루션 비용은 어느 정도인가요?</span>
           </div>
           <div class="tgc-faq-toggle">
             <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
@@ -3157,7 +3157,7 @@ function animateCount(element, target) {
         </div>
         <div class="tgc-faq-answer">
           <div class="tgc-faq-answer-inner">
-            <p>컨설팅 비용은 센터 규모, 지역, 필요한 서비스 범위에 따라 달라집니다. 무료 상담을 통해 대표님의 상황을 파악한 뒤 정확한 견적을 안내드립니다. 투자 대비 확실한 결과를 약속드립니다.</p>
+            <p>솔루션 비용은 센터 규모, 지역, 필요한 서비스 범위에 따라 달라집니다. 무료 상담을 통해 대표님의 상황을 파악한 뒤 정확한 견적을 안내드립니다. 투자 대비 확실한 결과를 약속드립니다.</p>
           </div>
         </div>
       </div>
@@ -3166,7 +3166,7 @@ function animateCount(element, target) {
         <div class="tgc-faq-question" onclick="toggleFaq(this)">
           <div class="tgc-faq-q-content">
             <span class="tgc-faq-q-badge">Q</span>
-            <span class="tgc-faq-q-text">지방에서도 컨설팅 가능한가요?</span>
+            <span class="tgc-faq-q-text">지방에서도 솔루션 가능한가요?</span>
           </div>
           <div class="tgc-faq-toggle">
             <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
@@ -3267,12 +3267,12 @@ function animateCount(element, target) {
       </div>
 
       <div class="tgc-plan-grid">
-        <!-- 왼쪽: 더그로우 창업컨설팅 -->
+        <!-- 왼쪽: 더그로우 창업솔루션 -->
         <div class="tgc-plan-card">
           <div class="tgc-plan-card-head">
             <span class="tgc-plan-accent"></span>
             <div>
-              <div class="tgc-plan-name">더그로우 창업컨설팅</div>
+              <div class="tgc-plan-name">더그로우 창업솔루션</div>
               <span class="tgc-plan-size">헬스장, 6:1 이상 필라테스 등</span>
             </div>
           </div>
@@ -3294,12 +3294,12 @@ function animateCount(element, target) {
           </ul>
         </div>
 
-        <!-- 오른쪽: 소자본 창업컨설팅 -->
+        <!-- 오른쪽: 소자본 창업솔루션 -->
         <div class="tgc-plan-card">
           <div class="tgc-plan-card-head">
             <span class="tgc-plan-accent"></span>
             <div>
-              <div class="tgc-plan-name">소자본 창업컨설팅</div>
+              <div class="tgc-plan-name">소자본 창업솔루션</div>
               <span class="tgc-plan-size">1:1 피티샵, 개인·소그룹 필라테스 샵 등</span>
             </div>
           </div>
@@ -3890,8 +3890,8 @@ function toggleFaq(element) {
             <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
 
             <label class="tg-radio">
-              <input type="radio" name="route" value="네이버 검색(창업, 창업컨설팅 등)" required />
-              <span>네이버 검색 (창업, 창업컨설팅 등)</span>
+              <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
+              <span>네이버 검색 (창업, 창업솔루션 등)</span>
             </label>
 
             <label class="tg-radio">
@@ -4483,8 +4483,8 @@ const CTA_FORM_HTML_TOP = `<style>
             <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
 
             <label class="tg-radio">
-              <input type="radio" name="route" value="네이버 검색(창업, 창업컨설팅 등)" required />
-              <span>네이버 검색 (창업, 창업컨설팅 등)</span>
+              <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
+              <span>네이버 검색 (창업, 창업솔루션 등)</span>
             </label>
 
             <label class="tg-radio">
@@ -4721,7 +4721,7 @@ export default function StartupConsultingPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="헬스장·필라테스 창업 컨설팅"
+                alt="헬스장·필라테스 창업 솔루션"
                 fill
                 priority
                 className="object-cover object-center"

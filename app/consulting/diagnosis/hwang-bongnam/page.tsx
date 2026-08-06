@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 진단 컨설턴트 상세페이지 — 황봉남
+// 진단 멘토 상세페이지 — 황봉남
 //  구조(김승호 최종본과 동일): [상단 인물사진 + 상담폼] → DETAIL_HTML(다크 랜딩)
 //   → [하단 상담폼(-bottom id)] → ConsultantCarousel → 추천 카드
 //  · 클래스 접두사 hbn- / 전역 정지 훅 __hbnMarqueeStop
@@ -16,12 +16,12 @@ import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
 import { SITE_URL } from "@/lib/site";
 
-// 진단 컨설팅 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
+// 진단 솔루션 Service 구조화 데이터 — 담당자는 provider.employee(Person)로 중첩
 const SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "Service",
-  serviceType: "피트니스 센터 진단 컨설팅",
-  name: "황봉남 컨설턴트 진단 컨설팅",
+  serviceType: "피트니스 센터 진단 솔루션",
+  name: "황봉남 멘토 진단 솔루션",
   url: `${SITE_URL}/consulting/diagnosis/hwang-bongnam`,
   areaServed: "KR",
   provider: {
@@ -31,7 +31,7 @@ const SERVICE_SCHEMA = {
     employee: {
       "@type": "Person",
       name: "황봉남",
-      jobTitle: "인적자원·PT 컨설턴트",
+      jobTitle: "인적자원·PT 멘토",
     },
   },
   offers: {
@@ -44,11 +44,11 @@ const SERVICE_SCHEMA = {
 // 좌측 메인 이미지 (public 기준)
 const MAIN_IMAGE = "/consultants/hwang-bongnam.jpg";
 
-// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 컨설팅은 제외)
+// 하단 "다른 서비스 둘러보기" 추천 카드 (현재 페이지인 진단 솔루션은 제외)
 const RELATED_SERVICES = [
   {
-    title: "창업 컨설팅",
-    desc: "헬스장·필라테스 등 창업 준비를 위한 컨설팅",
+    title: "창업 솔루션",
+    desc: "헬스장·필라테스 등 창업 준비를 위한 솔루션",
     href: "/consulting/startup",
     img: "/startup/startup50.png",
   },
@@ -115,7 +115,7 @@ function RelatedServiceCard({
 // ─── 진단 상담 폼 HTML (김승호/김재강과 동일, 폼 스코프 스크립트) ────────────────
 const FORM_HTML = `<div class="consult-form-wrapper">
   <div class="form-header">
-    <h2>진단 컨설팅 상담 신청(무료)</h2>
+    <h2>진단 솔루션 상담 신청(무료)</h2>
   </div>
 
   <form id="consultForm" class="consult-form">
@@ -201,7 +201,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">원하시는 컨설팅 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
+      <label class="form-label">원하시는 솔루션 분야를 선택해주세요. (중복 선택 가능합니다) <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="checkbox" name="consultField" value="FC운영" class="consultField-checkbox">
@@ -223,7 +223,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     </div>
 
     <div class="form-group">
-      <label class="form-label">도움받고 싶은 컨설턴트를 알려주세요. <span class="required">*</span></label>
+      <label class="form-label">도움받고 싶은 멘토를 알려주세요. <span class="required">*</span></label>
       <div class="checkbox-group">
         <label class="checkbox-label">
           <input type="radio" name="consultant" value="김재강" class="consultant-radio" required>
@@ -477,9 +477,9 @@ const FORM_HTML = `<div class="consult-form-wrapper">
       var selectedRoute = qa('.route-checkbox:checked');
       if (selectedRoute.length === 0){ alert('신청 경로를 선택해주세요.'); return; }
       var selectedConsultField = qa('.consultField-checkbox:checked');
-      if (selectedConsultField.length === 0){ alert('원하시는 컨설팅 분야를 선택해주세요.'); return; }
+      if (selectedConsultField.length === 0){ alert('원하시는 솔루션 분야를 선택해주세요.'); return; }
       var selectedConsultant = q('.consultant-radio:checked');
-      if (!selectedConsultant){ alert('도움받고 싶은 컨설턴트를 선택해주세요.'); return; }
+      if (!selectedConsultant){ alert('도움받고 싶은 멘토를 선택해주세요.'); return; }
 
       if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = '전송중...'; }
 
@@ -510,7 +510,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         body: params.toString()
       })
       .then(function(){
-        alert('진단 컨설팅 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
+        alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
         form.reset();
         if (etcInput) etcInput.disabled = true;
       })
@@ -671,19 +671,19 @@ const DETAIL_HTML = `<div class="hbn">
   </div>
   <div class="hbn-mq" id="hbnLectureMarquee">
     <div class="hbn-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/bd4e478ad71f0.jpg" alt="황봉남 컨설턴트 현장 기록 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/1cb2029e978ba.jpg" alt="황봉남 컨설턴트 현장 기록 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/9fbbe601c5177.jpg" alt="황봉남 컨설턴트 현장 기록 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/c396446783205.jpg" alt="황봉남 컨설턴트 현장 기록 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/8fac3547be40c.jpg" alt="황봉남 컨설턴트 현장 기록 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/f04c5607f96aa.jpg" alt="황봉남 컨설턴트 현장 기록 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/661eed89397cd.jpg" alt="황봉남 컨설턴트 현장 기록 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/b909e9f5af176.jpg" alt="황봉남 컨설턴트 현장 기록 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/327b17c75bcc6.jpg" alt="황봉남 컨설턴트 현장 기록 9">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/f10244845d35b.jpg" alt="황봉남 컨설턴트 현장 기록 10">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/de6905c98e19c.jpg" alt="황봉남 컨설턴트 현장 기록 11">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/56d9bcb6230a7.jpg" alt="황봉남 컨설턴트 현장 기록 12">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/456372ee5d93c.jpg" alt="황봉남 컨설턴트 현장 기록 13">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/bd4e478ad71f0.jpg" alt="황봉남 멘토 현장 기록 1">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/1cb2029e978ba.jpg" alt="황봉남 멘토 현장 기록 2">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/9fbbe601c5177.jpg" alt="황봉남 멘토 현장 기록 3">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/c396446783205.jpg" alt="황봉남 멘토 현장 기록 4">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/8fac3547be40c.jpg" alt="황봉남 멘토 현장 기록 5">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/f04c5607f96aa.jpg" alt="황봉남 멘토 현장 기록 6">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/661eed89397cd.jpg" alt="황봉남 멘토 현장 기록 7">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/b909e9f5af176.jpg" alt="황봉남 멘토 현장 기록 8">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/327b17c75bcc6.jpg" alt="황봉남 멘토 현장 기록 9">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/f10244845d35b.jpg" alt="황봉남 멘토 현장 기록 10">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/de6905c98e19c.jpg" alt="황봉남 멘토 현장 기록 11">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/56d9bcb6230a7.jpg" alt="황봉남 멘토 현장 기록 12">
+      <img src="https://cdn.imweb.me/thumbnail/20260210/456372ee5d93c.jpg" alt="황봉남 멘토 현장 기록 13">
       <img src="https://cdn.imweb.me/thumbnail/20260210/bd4e478ad71f0.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260210/1cb2029e978ba.jpg" alt="" aria-hidden="true">
       <img src="https://cdn.imweb.me/thumbnail/20260210/9fbbe601c5177.jpg" alt="" aria-hidden="true">
@@ -726,7 +726,7 @@ const DETAIL_HTML = `<div class="hbn">
         <p>그 고통을 끝내기 위해<br>저는 피트니스 데이터에 매달렸습니다.<br>저의 시스템은 단순한 이론이 아니라,<br>현장에서 살아남아 수익을 남기기 위해 찾아낸<br>'유일한 생존 해답'입니다.</p>
         <p class="hbn-sign">황 봉 남</p>
       </div>
-      <img class="hbn-letter-img" src="/consultants/hwang-bongnam.jpg" alt="더그로우컴퍼니 황봉남 진단 컨설턴트">
+      <img class="hbn-letter-img" src="/consultants/hwang-bongnam.jpg" alt="더그로우컴퍼니 황봉남 진단 멘토">
     </div>
   </div>
 </section>
@@ -734,11 +734,11 @@ const DETAIL_HTML = `<div class="hbn">
 <!-- 4-4. 프로그램 -->
 <section class="hbn-sec">
   <div class="hbn-inner">
-    <h2 class="hbn-h2">황봉남 컨설턴트의 전략:<br>현장형 <em>생존 데이터 시스템</em></h2>
+    <h2 class="hbn-h2">황봉남 멘토의 전략:<br>현장형 <em>생존 데이터 시스템</em></h2>
     <div class="hbn-prog">
       <div class="hbn-prog-item">
         <div class="hbn-prog-label">프로그램</div>
-        <p class="hbn-prog-body">황봉남 컨설턴트의 1:1 [확신 경영 지표] 이식</p>
+        <p class="hbn-prog-body">황봉남 멘토의 1:1 [확신 경영 지표] 이식</p>
       </div>
       <div class="hbn-prog-item">
         <div class="hbn-prog-label">진단 시간</div>
@@ -880,7 +880,7 @@ export default function HwangBongnamDiagnosisPage() {
             {!imgError ? (
               <Image
                 src={MAIN_IMAGE}
-                alt="황봉남 헬스장·필라테스 운영 진단 컨설턴트"
+                alt="황봉남 헬스장·필라테스 운영 진단 멘토"
                 fill
                 priority
                 className="object-cover object-center"
@@ -950,7 +950,7 @@ export default function HwangBongnamDiagnosisPage() {
         )}
       </section>
 
-      {/* ───────────────── 다른 컨설턴트 확인 ───────────────── */}
+      {/* ───────────────── 다른 멘토 확인 ───────────────── */}
       <ConsultantCarousel currentSlug="hwang-bongnam" />
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}

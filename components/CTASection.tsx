@@ -32,7 +32,7 @@ export default function CTASection() {
         </h2>
 
         <p className="text-[#999999] text-sm sm:text-base lg:text-lg leading-relaxed mb-8 sm:mb-10 max-w-2xl mx-auto">
-          더그로우컴퍼니의 전문 컨설턴트가 무료로 상담해 드립니다.
+          더그로우컴퍼니의 전문 멘토가 무료로 상담해 드립니다.
           <br className="hidden sm:block" />
           창업 아이디어부터 실행 계획까지, 함께 설계해 드립니다.
         </p>
@@ -92,7 +92,7 @@ export default function CTASection() {
             <svg className="w-4 h-4 text-[#009519]" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
             </svg>
-            현장 경험 기반 전문 컨설팅
+            현장 경험 기반 전문 솔루션
           </div>
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-[#009519]" fill="currentColor" viewBox="0 0 20 20">

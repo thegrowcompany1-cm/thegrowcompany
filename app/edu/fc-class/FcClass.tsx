@@ -490,7 +490,7 @@ const DETAIL_HTML = `<div class="fc1">
       <div class="fc1-inst-card fc1-reveal">
         <div class="fc1-inst-photo"><img src="https://cdn.imweb.me/thumbnail/20260626/f7d9b54bd7ce2.jpg" alt="김재강 대표"></div>
         <div class="fc1-inst-body">
-          <div class="fc1-inst-tags"><span class="fc1-inst-tag">창업</span><span class="fc1-inst-tag">운영</span><span class="fc1-inst-tag">컨설팅</span></div>
+          <div class="fc1-inst-tags"><span class="fc1-inst-tag">창업</span><span class="fc1-inst-tag">운영</span><span class="fc1-inst-tag">솔루션</span></div>
           <p class="fc1-inst-role">(주)더그로우컴퍼니 대표</p>
           <p class="fc1-inst-tagline">창업 217개 · 위탁 560개를 직접 만들어 온 현장 그 자체</p>
           <ul class="fc1-inst-career">

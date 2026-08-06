@@ -93,7 +93,7 @@ const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[]
   {
     content: (
       <>
-        피트니스전문 컨설팅회사
+        피트니스전문 솔루션회사
         <br />
         <span className="text-[#22B573]">1000개</span> 이상 브랜드들이 더그로우와 함께 성장했습니다
       </>
