@@ -108,16 +108,6 @@ function RelatedServiceCard({
 // 좌측 메인 이미지 (public 기준). 없으면 회색 placeholder 로 대체.
 const MAIN_IMAGE = "/wt/wt.png";
 
-const INDUSTRIES = ["헬스장", "필라테스", "PT 스튜디오", "요가", "기타"];
-
-const SOURCES = [
-  "네이버 검색",
-  "인스타·페이스북 광고",
-  "네이버 블로그",
-  "지인 소개·아카데미 수강생",
-  "기타",
-];
-
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
 // 아임웹용 위탁 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 그대로 붙여넣으세요.
 //
@@ -1974,6 +1964,20 @@ function toggleFaq(el) {
     color: #888;
   }
 
+  /* 폼 텍스트 가시성 — 밝은 카드 배경과 대비 명시 */
+  #consultingForm .tg-label,
+  #consultingForm .tg-radio,
+  #consultingForm .tg-radio span {
+    color: #111;
+  }
+  #consultingForm .tg-input {
+    color: #111 !important;
+    background: #fff !important;
+  }
+  #consultingForm .tg-input::placeholder {
+    color: #999 !important;
+  }
+
   @media (max-width: 768px) {
     .cta-section {
       padding: 60px 20px;
@@ -2150,17 +2154,212 @@ function toggleFaq(el) {
       document.getElementById('consultingForm').reset();
     }, 500);
   });
+
+  // 전화 3칸 자동이동 + 숫자만 입력 (상단에도 동일 구조 폼(-top)이 있으므로 이 폼 안에서만 조회)
+  const wtPhoneInputs = document.getElementById('consultingForm').querySelectorAll('.tg-phone');
+  wtPhoneInputs.forEach((input, index) => {
+    input.addEventListener('input', function () {
+      if (this.value.length >= this.maxLength && index < wtPhoneInputs.length - 1) {
+        wtPhoneInputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keypress', function (e) {
+      if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>`;
+
+// ─── 상단 상담 폼 (하단 consultingForm 과 동일 필드 구성, id/iframe 만 -top 접미사) ──
+//  - action / token(grow2026secure) / source(매장위탁상담_아임웹) / name 속성은
+//    구글시트 Apps Script 연동에 물려 있으므로 절대 변경하지 않는다.
+//  - 우측 흰 카드(JSX) 안에 주입되므로 카드 톤에 맞는 스코프 스타일만 포함.
+const TOP_FORM_HTML = `<style>
+#wtTopForm .tg-form-group { margin-bottom: 18px; text-align: left; }
+#wtTopForm .tg-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: #111; }
+#wtTopForm .tg-required { color: #ff5757; font-size: 13px; }
+#wtTopForm .tg-input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111; background: #fff; transition: border-color 0.3s; }
+#wtTopForm .tg-input:focus { outline: none; border-color: #009519; }
+#wtTopForm .tg-input::placeholder { color: #999; }
+#wtTopForm .tg-phone-row { display: flex; align-items: center; gap: 8px; }
+#wtTopForm .tg-phone { max-width: 100px; text-align: center; }
+#wtTopForm .tg-phone-dash { font-size: 15px; color: #9ca3af; }
+#wtTopForm .tg-radio { display: flex; align-items: center; font-size: 14px; color: #111; margin-bottom: 8px; cursor: pointer; }
+#wtTopForm .tg-radio input { margin-right: 10px; accent-color: #009519; width: 16px; height: 16px; }
+#wtTopForm .tg-radio-inline { display: flex; align-items: center; gap: 10px; margin-bottom: 0; }
+#wtTopForm .tg-radio-inline label { display: flex; align-items: center; font-size: 14px; color: #111; cursor: pointer; }
+#wtTopForm .tg-input-inline { max-width: 160px; }
+#wtTopForm .tg-form-actions { margin-top: 24px; }
+#wtTopForm .tg-submit-btn { width: 100%; padding: 14px 30px; background: #009519; color: #fff; border: none; border-radius: 999px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.3s; }
+#wtTopForm .tg-submit-btn:hover { background: #007a14; }
+#wtTopForm .form-notice { margin-top: 14px; font-size: 13px; color: #888; text-align: center; }
+@media (max-width: 768px) {
+  #wtTopForm .tg-phone { max-width: 80px; }
+}
+</style>
+
+<div id="wtTopForm">
+  <form id="consultingForm-top" action="https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec" method="POST" target="hidden_iframe2_top">
+    <div class="tg-form-group">
+      <label class="tg-label">이름을 입력해주세요. <span class="tg-required">*</span></label>
+      <input type="text" name="name" class="tg-input" required />
+    </div>
+
+    <div class="tg-form-group">
+      <label class="tg-label">이메일을 입력해주세요. <span class="tg-required">*</span></label>
+      <input type="email" name="email" class="tg-input" placeholder="example@naver.com" required />
+    </div>
+
+    <div class="tg-form-group">
+      <label class="tg-label">연락처를 입력해주세요. <span class="tg-required">*</span></label>
+      <div class="tg-phone-row">
+        <input type="text" name="phone1" class="tg-input tg-phone" maxlength="3" required />
+        <span class="tg-phone-dash">-</span>
+        <input type="text" name="phone2" class="tg-input tg-phone" maxlength="4" required />
+        <span class="tg-phone-dash">-</span>
+        <input type="text" name="phone3" class="tg-input tg-phone" maxlength="4" required />
+      </div>
+    </div>
+
+    <div class="tg-form-group">
+      <label class="tg-label">연락처를 입력해주세요(중복확인). <span class="tg-required">*</span></label>
+      <div class="tg-phone-row">
+        <input type="text" name="phoneCheck1" class="tg-input tg-phone" maxlength="3" required />
+        <span class="tg-phone-dash">-</span>
+        <input type="text" name="phoneCheck2" class="tg-input tg-phone" maxlength="4" required />
+        <span class="tg-phone-dash">-</span>
+        <input type="text" name="phoneCheck3" class="tg-input tg-phone" maxlength="4" required />
+      </div>
+    </div>
+
+    <div class="tg-form-group">
+      <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
+
+      <label class="tg-radio">
+        <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
+        <span>네이버 검색 (창업, 창업솔루션 등)</span>
+      </label>
+
+      <label class="tg-radio">
+        <input type="radio" name="route" value="인스타/페이스북 광고" />
+        <span>인스타/페이스북 광고</span>
+      </label>
+
+      <label class="tg-radio">
+        <input type="radio" name="route" value="네이버 블로그" />
+        <span>네이버 블로그</span>
+      </label>
+
+      <label class="tg-radio">
+        <input type="radio" name="route" value="지인 소개/아카데미 수강생" />
+        <span>지인 소개 / 아카데미 수강생</span>
+      </label>
+
+      <label class="tg-radio">
+        <input type="radio" name="route" value="기타" />
+        <span>기타</span>
+      </label>
+    </div>
+
+    <div class="tg-form-group">
+      <label class="tg-label">종목을 알려주세요. <span class="tg-required">*</span></label>
+
+      <label class="tg-radio">
+        <input type="radio" name="type" value="헬스장" required />
+        <span>헬스장</span>
+      </label>
+
+      <label class="tg-radio">
+        <input type="radio" name="type" value="필라테스" />
+        <span>필라테스</span>
+      </label>
+
+      <label class="tg-radio">
+        <input type="radio" name="type" value="PT샵" />
+        <span>PT샵</span>
+      </label>
+
+      <div class="tg-radio tg-radio-inline">
+        <label>
+          <input type="radio" name="type" value="기타" />
+          <span>기타</span>
+        </label>
+        <input type="text" name="typeEtc" class="tg-input tg-input-inline" placeholder="직접입력" />
+      </div>
+    </div>
+
+    <!-- 페이지 구분 -->
+    <input type="hidden" name="source" value="매장위탁상담_아임웹">
+
+    <!-- 🔒 보안 토큰 -->
+    <input type="hidden" name="token" value="grow2026secure">
+
+    <div class="tg-form-actions">
+      <button type="submit" class="tg-submit-btn">무료 상담 신청하기</button>
+    </div>
+
+    <p class="form-notice">* 신청 후 1-2일 내 연락드립니다.</p>
+  </form>
+
+  <iframe name="hidden_iframe2_top" style="display:none;"></iframe>
+</div>
+
+<script>
+(function () {
+  const form = document.getElementById('consultingForm-top');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    const phone1 = this.querySelector('[name="phone1"]').value.trim();
+    const phone2 = this.querySelector('[name="phone2"]').value.trim();
+    const phone3 = this.querySelector('[name="phone3"]').value.trim();
+    const phoneCheck1 = this.querySelector('[name="phoneCheck1"]').value.trim();
+    const phoneCheck2 = this.querySelector('[name="phoneCheck2"]').value.trim();
+    const phoneCheck3 = this.querySelector('[name="phoneCheck3"]').value.trim();
+
+    if (phone1 !== phoneCheck1 || phone2 !== phoneCheck2 || phone3 !== phoneCheck3) {
+      e.preventDefault();
+      alert('연락처가 일치하지 않습니다. 다시 확인해주세요.');
+      return false;
+    }
+
+    const typeRadio = this.querySelector('input[name="type"]:checked');
+    const typeEtc = this.querySelector('[name="typeEtc"]').value.trim();
+    if (typeRadio && typeRadio.value === '기타' && typeEtc) {
+      const hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'typeFinal';
+      hidden.value = '기타 - ' + typeEtc;
+      this.appendChild(hidden);
+    }
+
+    setTimeout(function () {
+      alert('정상적으로 접수되었습니다. 감사합니다 :)');
+      form.reset();
+    }, 500);
+  });
+
+  // 전화 3칸 자동이동 + 숫자만 입력 (하단에도 동일 구조 폼이 있으므로 이 폼 안에서만 조회)
+  const phoneInputs = form.querySelectorAll('.tg-phone');
+  phoneInputs.forEach((input, index) => {
+    input.addEventListener('input', function () {
+      if (this.value.length >= this.maxLength && index < phoneInputs.length - 1) {
+        phoneInputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keypress', function (e) {
+      if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+  });
+})();
 </script>`;
 
 export default function OutsourcingConsultingPage() {
-  // ── 폼 상태 ──
-  const [industry, setIndustry] = useState("");
-  const [region, setRegion] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState(["", "", ""]);
-  const [phoneConfirm, setPhoneConfirm] = useState(["", "", ""]);
-  const [source, setSource] = useState("");
-
   const [imgError, setImgError] = useState(false);
 
   // 하단 상세정보 영역은 클라이언트에서만 렌더링하여 서버/클라이언트 HTML 불일치를
@@ -2169,6 +2368,9 @@ export default function OutsourcingConsultingPage() {
 
   // 상세정보 HTML 컨테이너 ref
   const detailRef = useRef<HTMLDivElement>(null);
+
+  // 상단 상담 폼(TOP_FORM_HTML) 컨테이너 ref
+  const topFormRef = useRef<HTMLDivElement>(null);
 
   // 마운트 후에만 상세정보 HTML 을 삽입한다.
   useEffect(() => {
@@ -2260,40 +2462,27 @@ export default function OutsourcingConsultingPage() {
     };
   }, [mounted]);
 
-  // ── 연락처 입력 헬퍼 (숫자만, 칸별 자릿수 제한) ──
-  const maxLens = [3, 4, 4];
-  function handlePhoneChange(
-    value: string,
-    idx: number,
-    target: "phone" | "confirm",
-  ) {
-    const digits = value.replace(/[^0-9]/g, "").slice(0, maxLens[idx]);
-    const setter = target === "phone" ? setPhone : setPhoneConfirm;
-    setter((prev) => {
-      const next = [...prev];
-      next[idx] = digits;
-      return next;
+  // 상단 상담 폼(TOP_FORM_HTML) 주입 — innerHTML 로 들어온 <script> 는 실행되지
+  // 않으므로 같은 내용의 새 <script> 를 만들어 실행시키고, 언마운트 시 제거한다.
+  useEffect(() => {
+    if (!mounted) return;
+    const container = topFormRef.current;
+    if (!container) return;
+
+    const injected: HTMLScriptElement[] = [];
+    container.querySelectorAll("script").forEach((oldScript) => {
+      const newScript = document.createElement("script");
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      newScript.textContent = oldScript.textContent;
+      document.body.appendChild(newScript);
+      injected.push(newScript);
     });
-  }
-
-  // ── 제출 (아직 실제 전송 X, 검증 후 '준비중' 안내) ──
-  function handleSubmit() {
-    if (!industry) return alert("희망 업종을 선택해 주세요.");
-    if (!name.trim()) return alert("이름을 입력해 주세요.");
-    if (phone.some((p) => !p)) return alert("연락처를 모두 입력해 주세요.");
-    if (phoneConfirm.some((p) => !p))
-      return alert("연락처 중복확인을 모두 입력해 주세요.");
-    if (phone.join("") !== phoneConfirm.join(""))
-      return alert("연락처와 중복확인이 일치하지 않습니다.");
-    if (!source) return alert("신청 경로를 선택해 주세요.");
-
-    alert("준비중입니다. 곧 상담 신청 기능이 연결될 예정입니다.");
-  }
-
-  const labelCls = "block text-sm font-bold text-[#1a1a1a] mb-2";
-  const requiredMark = <span className="text-[#009519]">*</span>;
-  const inputCls =
-    "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-[#1a1a1a] outline-none transition-colors focus:border-[#009519] focus:ring-2 focus:ring-[#009519]/20";
+    return () => {
+      injected.forEach((s) => s.remove());
+    };
+  }, [mounted]);
 
   // 탭 클릭 시 DETAIL_HTML 내부 섹션으로 부드럽게 스크롤 (상단 고정 헤더 높이만큼 offset)
   const scrollToSection = (selector: string) => {
@@ -2344,139 +2533,21 @@ export default function OutsourcingConsultingPage() {
             )}
           </div>
 
-          {/* 우: 상담 신청 폼 카드 */}
+          {/* 우: 상담 신청 폼 카드 (TOP_FORM_HTML 주입 — 하단 consultingForm 과 동일 구성) */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
-            <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#009519]">
-              FREE CONSULTING
-            </p>
             <h2 className="mb-6 text-xl font-black leading-snug text-[#1a1a1a] sm:text-2xl">
               매장 위탁운영 상담 신청 (무료)
             </h2>
 
-            <div className="space-y-5">
-              {/* 희망 업종 */}
-              <div>
-                <label className={labelCls}>희망 업종 {requiredMark}</label>
-                <select
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  className={inputCls}
-                >
-                  <option value="">선택해 주세요</option>
-                  {INDUSTRIES.map((it) => (
-                    <option key={it} value={it}>
-                      {it}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 선호 희망 지역 */}
-              <div>
-                <label className={labelCls}>선호 희망 지역</label>
-                <input
-                  type="text"
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                  placeholder="예) 서울 마포구, 경기 남부"
-                  className={inputCls}
-                />
-              </div>
-
-              {/* 이름 */}
-              <div>
-                <label className={labelCls}>이름 {requiredMark}</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="성함을 입력해 주세요"
-                  className={inputCls}
-                />
-              </div>
-
-              {/* 연락처 */}
-              <div>
-                <label className={labelCls}>연락처 {requiredMark}</label>
-                <div className="flex items-center gap-2">
-                  {phone.map((v, i) => (
-                    <div key={i} className="flex flex-1 items-center gap-2">
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        value={v}
-                        onChange={(e) =>
-                          handlePhoneChange(e.target.value, i, "phone")
-                        }
-                        maxLength={maxLens[i]}
-                        className={`${inputCls} text-center`}
-                      />
-                      {i < 2 && <span className="text-gray-400">-</span>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 연락처 중복확인 */}
-              <div>
-                <label className={labelCls}>연락처 중복확인 {requiredMark}</label>
-                <div className="flex items-center gap-2">
-                  {phoneConfirm.map((v, i) => (
-                    <div key={i} className="flex flex-1 items-center gap-2">
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        value={v}
-                        onChange={(e) =>
-                          handlePhoneChange(e.target.value, i, "confirm")
-                        }
-                        maxLength={maxLens[i]}
-                        className={`${inputCls} text-center`}
-                      />
-                      {i < 2 && <span className="text-gray-400">-</span>}
-                    </div>
-                  ))}
-                </div>
-                {phoneConfirm.join("") &&
-                  phone.join("") !== phoneConfirm.join("") && (
-                    <p className="mt-1.5 text-xs text-red-500">
-                      연락처가 일치하지 않습니다.
-                    </p>
-                  )}
-              </div>
-
-              {/* 신청 경로 */}
-              <div>
-                <label className={labelCls}>신청 경로 {requiredMark}</label>
-                <div className="space-y-2">
-                  {SOURCES.map((s) => (
-                    <label
-                      key={s}
-                      className="flex cursor-pointer items-center gap-2.5 text-sm text-[#333]"
-                    >
-                      <input
-                        type="radio"
-                        name="source"
-                        value={s}
-                        checked={source === s}
-                        onChange={(e) => setSource(e.target.value)}
-                        className="h-4 w-4 accent-[#009519]"
-                      />
-                      {s}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* 제출 */}
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="mt-2 w-full rounded-full bg-[#009519] py-3.5 text-base font-bold text-white transition-colors hover:bg-[#007a14]"
-              >
-                무료 상담 신청하기
-              </button>
-            </div>
+            {mounted ? (
+              <div
+                ref={topFormRef}
+                suppressHydrationWarning
+                dangerouslySetInnerHTML={{ __html: TOP_FORM_HTML }}
+              />
+            ) : (
+              <div ref={topFormRef} suppressHydrationWarning />
+            )}
           </div>
         </div>
       </section>

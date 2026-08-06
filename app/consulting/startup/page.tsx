@@ -3654,7 +3654,7 @@ function toggleFaq(element) {
   margin-bottom: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #111;
 }
 
 .tg-desc {
@@ -3674,7 +3674,12 @@ function toggleFaq(element) {
   border: 2px solid #e9ecef;
   border-radius: 12px;
   font-size: 15px;
+  color: #111;
   transition: all 0.3s ease;
+}
+
+.tg-input::placeholder {
+  color: #999;
 }
 
 .tg-input:focus {
@@ -3710,6 +3715,7 @@ function toggleFaq(element) {
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  color: #111;
 }
 
 .tg-radio:hover {
@@ -4237,7 +4243,7 @@ const CTA_FORM_HTML_TOP = `<style>
   margin-bottom: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #111;
 }
 
 .tg-desc {
@@ -4257,7 +4263,12 @@ const CTA_FORM_HTML_TOP = `<style>
   border: 2px solid #e9ecef;
   border-radius: 12px;
   font-size: 15px;
+  color: #111;
   transition: all 0.3s ease;
+}
+
+.tg-input::placeholder {
+  color: #999;
 }
 
 .tg-input:focus {
@@ -4293,6 +4304,7 @@ const CTA_FORM_HTML_TOP = `<style>
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  color: #111;
 }
 
 .tg-radio:hover {
