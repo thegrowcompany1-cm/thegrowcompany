@@ -159,7 +159,7 @@ const DETAIL_HTML = `<div class="sm1">
           <div class="sm1-pay-price"><span class="sm1-pay-was">${PRICE_ORIGINAL}</span><span class="sm1-pay-now">${PRICE_SALE}</span> <span class="sm1-pay-vat">(VAT포함)</span></div>
           <button type="button" class="sm1-pay-btn sm1-pay-btn--sale">할인가로 결제하기</button>
         </div>
-        <p class="sm1-pay-note">현재 신청 문의가 많아 정원 초과 시 100% 환불해 드립니다. 응답이 없을 경우 자동 취소되는 점 양해 바랍니다.</p>
+        <p class="sm1-pay-note">현재 신청 문의가 많아 정원 초과 시 결제 금액은 전액 환불해 드리며, 응답이 없을 경우 자동 취소됩니다. 세미나 시작 7일 전까지 취소 시 결제 금액 전액 환불되고, 이후 취소 및 환불 기준은 관련 법령과 소비자분쟁해결기준에 따릅니다. 취소 문의: 1551-4476</p>
       </div>
     </div>
   </div>
@@ -284,7 +284,7 @@ const DETAIL_HTML = `<div class="sm1">
         <button type="button" class="sm1-pay-btn sm1-pay-btn--sale">할인가로 결제하기</button>
       </div>
     </div>
-    <p class="sm1-apply-note">현재 신청 문의가 많아 정원 초과 시 100% 환불해 드립니다. 응답이 없을 경우 자동 취소되는 점 양해 바랍니다.</p>
+    <p class="sm1-apply-note">현재 신청 문의가 많아 정원 초과 시 결제 금액은 전액 환불해 드리며, 응답이 없을 경우 자동 취소됩니다. 세미나 시작 7일 전까지 취소 시 결제 금액 전액 환불되고, 이후 취소 및 환불 기준은 관련 법령과 소비자분쟁해결기준에 따릅니다. 취소 문의: 1551-4476</p>
   </div>
 </section>
 

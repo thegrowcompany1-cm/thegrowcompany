@@ -401,6 +401,7 @@ const DETAIL_HTML = `<div class="fc1">
 .fc1-enroll-btn{width:100%;height:52px;border:none;border-radius:12px;background:#161616;color:#fff;font-size:15px;font-weight:800;cursor:pointer;transition:opacity .2s}
 .fc1-enroll-btn--sale{background:var(--g)}
 .fc1-enroll-btn:hover{opacity:.9}
+.fc1-enroll-note{max-width:680px;margin:18px auto 0;font-size:12px;color:#9a9a9a;line-height:1.7;text-align:center}
 @media(max-width:640px){.fc1-enroll-cards{grid-template-columns:1fr}.fc1-enroll-price{font-size:20px}}
 
 /* 탭 내비 스크롤 오프셋 */
@@ -784,6 +785,7 @@ const DETAIL_HTML = `<div class="fc1">
         <button type="button" class="fc1-enroll-btn fc1-enroll-btn--sale">얼리버드 할인가로 신청하기</button>
       </div>
     </div>
+    <p class="fc1-enroll-note fc1-reveal">세미나 시작 7일 전까지 취소 시 결제 금액 전액 환불됩니다. 이후 취소 및 환불 기준은 관련 법령과 소비자분쟁해결기준에 따릅니다. 취소 문의: 1551-4476</p>
   </div>
 </section>
 
