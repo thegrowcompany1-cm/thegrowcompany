@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import StickyCtaBar from "@/components/StickyCtaBar";
+import CostCalculator from "@/components/CostCalculator";
 import { SITE_URL } from "@/lib/site";
 
 // 창업 솔루션 Service 구조화 데이터
@@ -4827,6 +4828,9 @@ export default function StartupConsultingPage() {
 
       {/* 하단 고정 CTA 바 — 하단 CTA 상담폼(#consulting-form)으로 스크롤 */}
       <StickyCtaBar targetSelector="#consulting-form" />
+
+      {/* 창업비용 계산기 팝업 (플로팅 버튼 + 패널) */}
+      <CostCalculator />
     </div>
   );
 }
