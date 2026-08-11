@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 원본 영상 소스 (GitHub 100MB 제한 초과 — 커밋 금지)
+/video-raw/
