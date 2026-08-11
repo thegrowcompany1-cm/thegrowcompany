@@ -320,7 +320,7 @@ const DETAIL_HTML = `<style>
       <strong style="color:#4CAF50;">오픈 이후에도 살아남는 구조</strong>를 설계하는 팀입니다.
     </p>
     
-    <a href="#consulting-form" class="tgc-hero-cta tgc-fade-up tgc-delay-4">
+    <a href="#tgc-checklist-section" class="tgc-hero-cta tgc-fade-up tgc-delay-4">
       내 창업 계획, 위험한지 먼저 확인하기
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
@@ -860,6 +860,18 @@ const DETAIL_HTML = `<style>
   // 결론 및 하이라이트 별도 관찰
   if (conclusion) observer.observe(conclusion);
   if (highlight) observer.observe(highlight);
+
+  // 히어로 CTA → 체크리스트 섹션으로 부드러운 스크롤 (고정 헤더 높이만큼 오프셋)
+  const heroCta = document.querySelector('.tgc-hero-cta');
+  if (heroCta) {
+    heroCta.addEventListener('click', function (e) {
+      const target = document.getElementById('tgc-checklist-section');
+      if (!target) return; // 섹션이 없으면 기본 앵커 동작으로 폴백
+      e.preventDefault();
+      const y = target.getBoundingClientRect().top + window.pageYOffset - 96;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+  }
 })();
 </script><!-- 섹션 4: 실패 체크리스트 -->
 <style>
@@ -869,6 +881,7 @@ const DETAIL_HTML = `<style>
   font-family: 'Pretendard', sans-serif;
   background: #fff;
   padding: 100px 20px;
+  scroll-margin-top: 96px; /* 앵커 폴백 시에도 고정 헤더에 가리지 않도록 */
 }
 
 .tgc-checklist-inner {
@@ -903,20 +916,6 @@ const DETAIL_HTML = `<style>
 .tgc-checklist h2 .highlight {
   color: #ff6b6b;
   position: relative;
-}
-
-.tgc-checklist h2 .highlight::after {
-  content: '?';
-  position: absolute;
-  top: -5px;
-  right: -20px;
-  font-size: 24px;
-  animation: questionPulse 1.5s ease infinite;
-}
-
-@keyframes questionPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.1); }
 }
 
 .tgc-checklist-subtitle {
@@ -1109,7 +1108,6 @@ const DETAIL_HTML = `<style>
 @media (max-width: 768px) {
   .tgc-checklist { padding: 70px 20px; }
   .tgc-checklist h2 { font-size: 24px; }
-  .tgc-checklist h2 .highlight::after { right: -15px; font-size: 20px; }
   .tgc-checklist-box { padding: 25px 20px; }
   .tgc-check-item { padding: 15px; }
   .tgc-check-text { font-size: 15px; }
@@ -1120,7 +1118,7 @@ const DETAIL_HTML = `<style>
 
 <section class="tgc-checklist" id="tgc-checklist-section">
   <div class="tgc-checklist-inner">
-    <h2 class="tgc-fade-up tgc-delay-1">혹시 <span class="highlight">이런 상태는 아니신가요</h2>
+    <h2 class="tgc-fade-up tgc-delay-1">혹시 <span class="highlight">이런 상태는 아니신지</span>, 솔직하게 체크해보세요.</h2>
     <p class="tgc-checklist-subtitle tgc-fade-up tgc-delay-2">아래 질문에 솔직하게 체크해보세요.</p>
     
     <div class="tgc-checklist-box tgc-fade-up" id="checklistBox">
