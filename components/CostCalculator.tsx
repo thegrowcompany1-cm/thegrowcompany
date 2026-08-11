@@ -2,7 +2,10 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 창업비용 계산기 팝업 패널
-//  · 플로팅 버튼(우측 하단) → PC: 우측 슬라이드 패널(420px) / 모바일: 바텀시트(88vh)
+//  · 하단 전체 폭 고정 바(트리거) → PC: 우측 슬라이드 패널(420px) / 모바일: 바텀시트(88vh)
+//  · 하단 바는 페이지의 StickyCtaBar(z-50)보다 위(z-60)에 놓여 같은 자리를 대체하며,
+//    StickyCtaBar 가 깔아둔 60px 스페이서가 푸터 가림을 동일하게 보정한다
+//  · 패널이 열려 있는 동안 하단 바는 숨김(닫으면 다시 표시)
 //  · 5단계 플로우: 업종 → 전용면적 → 인테리어 등급 → 기구 구성 → 결과
 //  · 단가는 아래 PRICING 객체에서만 수정 (단위: 만원)
 //  · CSS 클래스 접두사 calc- / 패널 대기 위치는 transform + 루트 overflow 클리핑
@@ -108,10 +111,11 @@ function fmtMan(n: number, withUnit = true): string {
 const round100 = (n: number) => Math.round(n / 100) * 100;
 
 const CALC_STYLE = `
-.calc-fab{position:fixed;right:24px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:70;display:flex;align-items:center;gap:8px;background:#009519;color:#fff;border:none;border-radius:999px;padding:14px 20px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(0,149,25,.4);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;transition:transform .2s,background .2s}
-.calc-fab:hover{background:#007a14;transform:translateY(-2px)}
-.calc-fab svg{flex:0 0 auto}
-@media(max-width:480px){.calc-fab{padding:12px 16px;font-size:14px}}
+.calc-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;justify-content:center;gap:8px;height:calc(56px + env(safe-area-inset-bottom));padding:0 16px env(safe-area-inset-bottom);background:#009519;color:#fff;border:none;border-top:1px solid rgba(255,255,255,.25);box-shadow:0 -4px 20px rgba(0,0,0,.18);font-size:15px;font-weight:800;cursor:pointer;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;transition:transform .3s ease,background .2s}
+.calc-bar:hover{background:#007a14}
+.calc-bar.is-hidden{transform:translateY(110%);pointer-events:none}
+.calc-bar svg{flex:0 0 auto}
+@media(min-width:768px){.calc-bar{height:calc(60px + env(safe-area-inset-bottom));font-size:16px}}
 
 .calc-root{position:fixed;inset:0;z-index:90;overflow:hidden;pointer-events:none;visibility:hidden;transition:visibility 0s .4s;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em}
 .calc-root.is-open{pointer-events:auto;visibility:visible;transition:visibility 0s}
@@ -345,15 +349,17 @@ export default function CostCalculator() {
     <>
       <style dangerouslySetInnerHTML={{ __html: CALC_STYLE }} />
 
-      {/* 플로팅 버튼 */}
+      {/* 하단 전체 폭 고정 바 (트리거) — 패널 열림 동안 숨김 */}
       <button
         type="button"
-        className="calc-fab"
+        className={`calc-bar${open ? " is-hidden" : ""}`}
         onClick={() => {
           setOpen(true);
           if (!industry) setStep(1);
         }}
         aria-label="창업비용 계산기 열기"
+        aria-hidden={open}
+        tabIndex={open ? -1 : 0}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <rect x="4" y="2" width="16" height="20" rx="2.5" stroke="#fff" strokeWidth="2" />
@@ -365,7 +371,7 @@ export default function CostCalculator() {
           <circle cx="12" cy="17" r="1.3" fill="#fff" />
           <circle cx="15.4" cy="17" r="1.3" fill="#fff" />
         </svg>
-        창업비용 계산
+        내 창업비용 계산해보기
       </button>
 
       {/* 패널 (대기 시 transform 으로 화면 밖, 루트가 overflow 클리핑) */}
