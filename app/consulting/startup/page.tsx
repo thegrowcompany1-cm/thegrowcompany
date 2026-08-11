@@ -147,6 +147,171 @@ const VIDEO_CARDS_HTML =
   VIDEO_REVIEWS.map((v) => vidCardHtml(v, false)).join("") +
   VIDEO_REVIEWS.map((v) => vidCardHtml(v, true)).join("").repeat(3);
 
+// ─── 영상 후기 슬라이더 섹션 (히어로 바로 아래 별도 컨테이너로 주입) ──────────
+//  · 기본: rAF 자동 마퀴. 영상 재생 시 자동 흐름만 정지, 드래그/화살표 수동 이동 허용
+//  · 드래그 10px 이상은 클릭으로 간주하지 않음. 재생 카드가 밖으로 나가면 자동 pause(IO)
+//  · 정리는 __tgcVidStop (React cleanup 에서 호출 후 no-op 교체)
+const VIDEO_SECTION_HTML = `<style>
+.tgc-vid{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;background:#0d0d0d;color:#fff;padding:90px 0;overflow:hidden;letter-spacing:-0.01em}
+.tgc-vid-inner{max-width:1000px;margin:0 auto;padding:0 20px;text-align:center}
+.tgc-vid h2{font-size:32px;font-weight:800;line-height:1.4;margin:0 0 12px;color:#fff}
+.tgc-vid h2 .green{color:#22B573}
+.tgc-vid-sub{font-size:15px;color:#9a9a9a;margin:0 0 40px}
+.tgc-vid-stage{position:relative}
+.tgc-vid-mq{overflow:hidden;width:100%;max-width:100%;-webkit-user-select:none;user-select:none;touch-action:pan-y;cursor:grab}
+.tgc-vid-mq:active{cursor:grabbing}
+.tgc-vid-track{display:flex;gap:18px;width:max-content;will-change:transform}
+.tgc-vid-card{flex:0 0 auto;width:320px}
+.tgc-vid-media{position:relative;width:100%;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#1a1a1a}
+.tgc-vid-media video{width:100%;height:100%;object-fit:cover;display:block}
+.tgc-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;cursor:pointer;transition:background .2s}
+.tgc-vid-play:hover{background:rgba(0,0,0,.32)}
+.tgc-vid-play span{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(0,149,25,.92);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.tgc-vid-close{position:absolute;top:10px;right:10px;z-index:3;width:34px;height:34px;border:none;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:15px;line-height:1;cursor:pointer;display:none}
+.tgc-vid-card.is-playing .tgc-vid-play{display:none}
+.tgc-vid-card.is-playing .tgc-vid-close{display:block}
+.tgc-vid-cap{margin:12px 4px 0;font-size:14px;font-weight:600;color:#cfcfcf;line-height:1.5;text-align:left}
+.tgc-vid-arrow{display:none;position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:46px;height:46px;border:none;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:24px;line-height:1;cursor:pointer;align-items:center;justify-content:center;transition:background .2s}
+.tgc-vid-arrow:hover{background:rgba(0,149,25,.85)}
+.tgc-vid-arrow--l{left:14px}
+.tgc-vid-arrow--r{right:14px}
+@media(min-width:768px){.tgc-vid.is-manual .tgc-vid-arrow{display:flex}}
+@media(max-width:640px){.tgc-vid{padding:64px 0}.tgc-vid h2{font-size:24px}.tgc-vid-card{width:260px}.tgc-vid-track{gap:14px}}
+</style>
+
+<section class="tgc-vid" id="tgc-vid-sec">
+  <div class="tgc-vid-inner">
+    <h2>먼저 창업한 <span class="green">대표님들의 이야기</span></h2>
+    <p class="tgc-vid-sub">영상을 누르면 대표님들의 실제 목소리를 들을 수 있습니다.</p>
+  </div>
+  <div class="tgc-vid-stage">
+    <button type="button" class="tgc-vid-arrow tgc-vid-arrow--l" id="tgcVidPrev" aria-label="이전 영상으로 이동">‹</button>
+    <div class="tgc-vid-mq" id="tgcVidMq">
+      <div class="tgc-vid-track" id="tgcVidTrack">${VIDEO_CARDS_HTML}
+      </div>
+    </div>
+    <button type="button" class="tgc-vid-arrow tgc-vid-arrow--r" id="tgcVidNext" aria-label="다음 영상으로 이동">›</button>
+  </div>
+</section>
+
+<script>
+(function () {
+  var section = document.getElementById('tgc-vid-sec');
+  var mq = document.getElementById('tgcVidMq');
+  var track = document.getElementById('tgcVidTrack');
+  if (!section || !mq || !track) return;
+
+  var offset = 0, last = 0, rafId = 0;
+  var current = null;   /* 재생 중 video (동시 재생 금지) */
+  var io = null;        /* 재생 카드 화면 이탈 감지용 IntersectionObserver */
+  var dragging = false, dragStartX = 0, dragStartOffset = 0, dragDist = 0;
+
+  function normalize() {
+    var half = track.scrollWidth / 2;
+    if (half <= 0) return;
+    while (offset <= -half) offset += half;
+    while (offset > 0) offset -= half;
+  }
+  function apply() { track.style.transform = 'translateX(' + offset + 'px)'; }
+
+  /* 자동 가로 흐름 — 영상 재생 중이거나 드래그 중에는 멈춤 */
+  function frame(ts) {
+    if (!last) last = ts;
+    var dt = ts - last; last = ts;
+    if (!current && !dragging) {
+      offset -= 26 * dt / 1000;
+      normalize();
+      apply();
+    }
+    rafId = requestAnimationFrame(frame);
+  }
+  rafId = requestAnimationFrame(frame);
+
+  function stopVideo(video) {
+    video.pause();
+    video.controls = false;
+    var card = video.closest('.tgc-vid-card');
+    if (card) card.classList.remove('is-playing');
+  }
+  function closeCurrent() {
+    if (io) { io.disconnect(); io = null; }
+    if (current) { stopVideo(current); current = null; }
+    section.classList.remove('is-manual');
+  }
+  function playVideo(card, video) {
+    if (current && current !== video) stopVideo(current);
+    if (io) { io.disconnect(); io = null; }
+    current = video;
+    card.classList.add('is-playing');
+    section.classList.add('is-manual');
+    video.controls = true;
+    video.play();
+    /* 재생 카드가 스와이프로 마퀴 영역 밖으로 완전히 나가면 자동 pause */
+    io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (!entries[i].isIntersecting) closeCurrent();
+      }
+    }, { root: mq, threshold: 0 });
+    io.observe(card);
+  }
+
+  track.addEventListener('click', function (e) {
+    if (dragDist > 10) { dragDist = 0; return; } /* 드래그였으면 클릭 무시 */
+    if (e.target.closest('.tgc-vid-close')) { closeCurrent(); return; }
+    var card = e.target.closest('.tgc-vid-card');
+    if (!card) return;
+    if (card.classList.contains('is-playing')) return; /* 재생 중 카드는 video controls 에 맡김 */
+    var video = card.querySelector('video');
+    if (video) playVideo(card, video);
+  });
+
+  /* ended 는 버블링되지 않으므로 캡처 단계에서 위임 — 종료 시 자동 흐름 재개 */
+  track.addEventListener('ended', function (e) {
+    if (e.target === current) closeCurrent();
+  }, true);
+
+  /* 수동 이동 — 드래그 (터치/마우스 공통, Pointer Events) */
+  function onDown(e) {
+    /* 재생 중 카드의 video(기본 controls) 위에서 시작한 제스처는 통과 — 시크바 조작 보호 */
+    if (e.target.closest && e.target.closest('.tgc-vid-card.is-playing video')) return;
+    dragging = true;
+    dragDist = 0;
+    dragStartX = e.clientX;
+    dragStartOffset = offset;
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    var dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > dragDist) dragDist = Math.abs(dx);
+    offset = dragStartOffset + dx;
+    normalize();
+    apply();
+  }
+  function onUp() { dragging = false; }
+  mq.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
+
+  /* PC 좌우 화살표 (재생 중 표시) — 카드 1장 폭만큼 이동 */
+  function nudge(dir) { offset += dir * 338; normalize(); apply(); }
+  var prevBtn = document.getElementById('tgcVidPrev');
+  var nextBtn = document.getElementById('tgcVidNext');
+  if (prevBtn) prevBtn.addEventListener('click', function () { nudge(1); });
+  if (nextBtn) nextBtn.addEventListener('click', function () { nudge(-1); });
+
+  /* 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 교체 — delete 금지) */
+  window.__tgcVidStop = function () {
+    cancelAnimationFrame(rafId);
+    if (io) { io.disconnect(); io = null; }
+    if (current) { current.pause(); current = null; }
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+  };
+})();
+</script>`;
+
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
 // 아임웹용 7개 섹션 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 그대로 붙여넣으세요.
 //
@@ -2175,97 +2340,6 @@ function animateCount(element, target) {
   }, { threshold: 0.2 });
   
   steps.forEach(step => stepObserver.observe(step));
-})();
-</script><!-- 섹션 6.5: 자체 영상 후기 슬라이더 -->
-<style>
-.tgc-vid{font-family:'Pretendard',sans-serif;background:#0d0d0d;color:#fff;padding:90px 0;overflow:hidden}
-.tgc-vid-inner{max-width:1000px;margin:0 auto;padding:0 20px;text-align:center}
-.tgc-vid h2{font-size:32px;font-weight:800;line-height:1.4;margin:0 0 12px;color:#fff}
-.tgc-vid h2 .green{color:#22B573}
-.tgc-vid-sub{font-size:15px;color:#9a9a9a;margin:0 0 40px}
-.tgc-vid-mq{overflow:hidden;width:100%;max-width:100%;-webkit-user-select:none;user-select:none}
-.tgc-vid-track{display:flex;gap:18px;width:max-content;will-change:transform}
-.tgc-vid-card{flex:0 0 auto;width:320px}
-.tgc-vid-media{position:relative;width:100%;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#1a1a1a}
-.tgc-vid-media video{width:100%;height:100%;object-fit:cover;display:block}
-.tgc-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;cursor:pointer;transition:background .2s}
-.tgc-vid-play:hover{background:rgba(0,0,0,.32)}
-.tgc-vid-play span{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(0,149,25,.92);box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.tgc-vid-close{position:absolute;top:10px;right:10px;z-index:3;width:34px;height:34px;border:none;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:15px;line-height:1;cursor:pointer;display:none}
-.tgc-vid-card.is-playing .tgc-vid-play{display:none}
-.tgc-vid-card.is-playing .tgc-vid-close{display:block}
-.tgc-vid-cap{margin:12px 4px 0;font-size:14px;font-weight:600;color:#cfcfcf;line-height:1.5;text-align:left}
-@media(max-width:640px){.tgc-vid{padding:64px 0}.tgc-vid h2{font-size:24px}.tgc-vid-card{width:260px}.tgc-vid-track{gap:14px}}
-</style>
-
-<section class="tgc-vid" id="tgc-vid-sec">
-  <div class="tgc-vid-inner">
-    <h2>먼저 창업한 <span class="green">대표님들의 이야기</span></h2>
-    <p class="tgc-vid-sub">영상을 누르면 대표님들의 실제 목소리를 들을 수 있습니다.</p>
-  </div>
-  <div class="tgc-vid-mq" id="tgcVidMq">
-    <div class="tgc-vid-track" id="tgcVidTrack">${VIDEO_CARDS_HTML}
-    </div>
-  </div>
-</section>
-
-<script>
-(function () {
-  var track = document.getElementById('tgcVidTrack');
-  if (!track) return;
-
-  /* 자동 가로 흐름 마퀴 (rAF) — 영상 재생 중에는 정지 */
-  var paused = false, offset = 0, last = 0, rafId = 0;
-  function frame(ts) {
-    if (!last) last = ts;
-    var dt = ts - last; last = ts;
-    var half = track.scrollWidth / 2;
-    if (!paused && half > 0) {
-      offset -= 26 * dt / 1000;
-      if (offset <= -half) offset += half;
-      track.style.transform = 'translateX(' + offset + 'px)';
-    }
-    rafId = requestAnimationFrame(frame);
-  }
-  rafId = requestAnimationFrame(frame);
-
-  var current = null; /* 현재 재생 중 video (동시 재생 금지) */
-  function stopVideo(video) {
-    video.pause();
-    video.controls = false;
-    var card = video.closest('.tgc-vid-card');
-    if (card) card.classList.remove('is-playing');
-  }
-  function closeCurrent() {
-    if (current) { stopVideo(current); current = null; }
-    paused = false;
-  }
-
-  track.addEventListener('click', function (e) {
-    if (e.target.closest('.tgc-vid-close')) { closeCurrent(); return; }
-    var card = e.target.closest('.tgc-vid-card');
-    if (!card) return;
-    if (card.classList.contains('is-playing')) return; /* 재생 중 카드는 video controls 에 맡김 */
-    var video = card.querySelector('video');
-    if (!video) return;
-    if (current && current !== video) stopVideo(current);
-    current = video;
-    paused = true;
-    card.classList.add('is-playing');
-    video.controls = true;
-    video.play();
-  });
-
-  /* ended 는 버블링되지 않으므로 캡처 단계에서 위임 — 종료 시 마퀴 재개 */
-  track.addEventListener('ended', function (e) {
-    if (e.target === current) closeCurrent();
-  }, true);
-
-  /* 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 교체 — delete 금지) */
-  window.__tgcVidStop = function () {
-    cancelAnimationFrame(rafId);
-    if (current) { current.pause(); current = null; }
-  };
 })();
 </script><!-- 섹션 7: 신뢰 증명 - 후기 및 대표 소개 -->
 <style>
@@ -4745,8 +4819,9 @@ export default function StartupConsultingPage() {
   // 원천 차단한다. (DETAIL_HTML 은 아임웹 원본 + script 가 섞인 외부 HTML)
   const [mounted, setMounted] = useState(false);
 
-  // 상단 CTA 폼(-top) / 하단 상세정보(+CTA 폼) 컨테이너 ref
+  // 상단 CTA 폼(-top) / 영상 후기 슬라이더 / 하단 상세정보(+CTA 폼) 컨테이너 ref
   const topFormRef = useRef<HTMLDivElement>(null);
+  const vidRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
 
   // 마운트 후에만 각 HTML 을 삽입한다.
@@ -4789,6 +4864,22 @@ export default function StartupConsultingPage() {
     return injected;
   };
 
+  // 영상 후기 슬라이더(VIDEO_SECTION_HTML) 주입 — 언마운트 시 script 제거 +
+  // rAF/IO/포인터 리스너 정리(__tgcVidStop, 호출 후 no-op 교체).
+  useEffect(() => {
+    if (!mounted) return;
+    const container = vidRef.current;
+    if (!container) return;
+    const injected = injectContainer(container);
+    return () => {
+      injected.forEach((s) => s.remove());
+      const w = window as unknown as Record<string, unknown>;
+      const stopVid = w["__tgcVidStop"];
+      if (typeof stopVid === "function") (stopVid as () => void)();
+      w["__tgcVidStop"] = () => {};
+    };
+  }, [mounted]);
+
   // 상단 CTA 폼(CTA_FORM_HTML_TOP) 주입 — 언마운트 시 script 제거 + 그 폼 전용
   // IntersectionObserver 정리(__tgcCtaObserverStopTop, 호출 후 no-op 교체).
   useEffect(() => {
@@ -4821,11 +4912,6 @@ export default function StartupConsultingPage() {
       const stopObs = w["__tgcCtaObserverStop"];
       if (typeof stopObs === "function") (stopObs as () => void)();
       w["__tgcCtaObserverStop"] = () => {};
-
-      // 영상 후기 마퀴 rAF 정지 + 재생 중 영상 pause (호출 후 no-op 교체 — 삭제 금지)
-      const stopVid = w["__tgcVidStop"];
-      if (typeof stopVid === "function") (stopVid as () => void)();
-      w["__tgcVidStop"] = () => {};
 
       // 인라인 onclick 이 참조하던 전역 함수 정리 (best-effort)
       const globals = [
@@ -4907,6 +4993,17 @@ export default function StartupConsultingPage() {
           </div>
         </div>
       </section>
+
+      {/* ───────────────── 영상 후기 슬라이더 (히어로 바로 아래) ───────────────── */}
+      {mounted ? (
+        <div
+          ref={vidRef}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: VIDEO_SECTION_HTML }}
+        />
+      ) : (
+        <div ref={vidRef} suppressHydrationWarning />
+      )}
 
       {/* ───────────────── 탭 네비게이션 바 ───────────────── */}
       <nav className="w-full border-y border-gray-200 bg-white">
