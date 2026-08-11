@@ -111,12 +111,19 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
+  // 모바일 아코디언 — 동시에 하나만 펼침 (라벨 저장, null = 전부 접힘)
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // 모바일 메뉴가 닫히면 펼침 상태 전부 초기화
+  useEffect(() => {
+    if (!mobileOpen) setMobileExpanded(null);
+  }, [mobileOpen]);
 
   const hoveredItem = navItems.find((n) => n.label === hoveredLabel) ?? null;
 
@@ -282,59 +289,107 @@ export default function Header() {
         }`}
       >
         <div className="border-t border-white/10 bg-[#111111] pb-4">
-          {navItems.map((item) => (
-            <div key={item.label} className="border-b border-white/[0.06] last:border-0">
-              {item.external ? (
-                <a
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 px-4 py-3.5"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#EEEEEE] flex items-center gap-1.5">
-                      {item.label}
-                      <svg className="w-3 h-3 opacity-50 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                    </p>
-                    <p className="text-xs text-[#666666] mt-0.5 leading-snug">{item.desc}</p>
-                  </div>
-                </a>
-              ) : (
-                <Link
-                  href={item.href}
-                  className="flex items-start gap-3 px-4 py-3.5"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#EEEEEE]">{item.label}</p>
-                    <p className="text-xs text-[#666666] mt-0.5 leading-snug">{item.desc}</p>
-                  </div>
-                </Link>
-              )}
-
-              {/* 하위 메뉴 (모바일: 펼쳐 표시) */}
-              {item.children && (
-                <div className="pb-2 pl-4">
-                  {item.children.map((child) => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      className="flex items-baseline gap-2 rounded-lg px-4 py-2 text-[#BBBBBB] transition-colors hover:bg-white/5 hover:text-[#009519]"
-                      onClick={() => setMobileOpen(false)}
+          {navItems.map((item) => {
+            const isExpanded = mobileExpanded === item.label;
+            return (
+              <div key={item.label} className="border-b border-white/[0.06] last:border-0">
+                {item.children ? (
+                  // 하위 메뉴가 있는 카테고리 — 행 전체가 펼침 토글 (아코디언)
+                  <button
+                    type="button"
+                    className="flex w-full items-start gap-3 px-4 py-3.5 text-left"
+                    onClick={() =>
+                      setMobileExpanded(isExpanded ? null : item.label)
+                    }
+                    aria-expanded={isExpanded}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#EEEEEE]">{item.label}</p>
+                      <p className="text-xs text-[#666666] mt-0.5 leading-snug">{item.desc}</p>
+                    </div>
+                    <svg
+                      className={`mt-1 h-4 w-4 flex-shrink-0 text-[#888888] transition-transform duration-200 ${
+                        isExpanded ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      aria-hidden="true"
                     >
-                      <span className="text-sm">{child.label}</span>
-                      {child.sub && (
-                        <span className="text-xs text-[#666666]">{child.sub}</span>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                ) : item.external ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-3 px-4 py-3.5"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#EEEEEE] flex items-center gap-1.5">
+                        {item.label}
+                        <svg className="w-3 h-3 opacity-50 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </p>
+                      <p className="text-xs text-[#666666] mt-0.5 leading-snug">{item.desc}</p>
+                    </div>
+                  </a>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="flex items-start gap-3 px-4 py-3.5"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#EEEEEE]">{item.label}</p>
+                      <p className="text-xs text-[#666666] mt-0.5 leading-snug">{item.desc}</p>
+                    </div>
+                  </Link>
+                )}
+
+                {/* 하위 메뉴 — 기본 접힘, 터치 시 슬라이드 다운 (CSS transition) */}
+                {item.children && (
+                  <div
+                    className="overflow-hidden"
+                    style={{
+                      maxHeight: isExpanded
+                        ? `${(item.children.length + 1) * 48 + 16}px`
+                        : "0px",
+                      transition: "max-height 0.25s ease",
+                    }}
+                  >
+                    <div className="pb-2 pl-4">
+                      {/* 허브 페이지 링크 — 카테고리 라벨 대신 하위 맨 위에 배치 */}
+                      <Link
+                        href={item.href}
+                        className="flex items-baseline gap-2 rounded-lg px-4 py-2 font-semibold text-[#009519] transition-colors hover:bg-white/5"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <span className="text-sm">{item.label} 전체 보기</span>
+                      </Link>
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className="flex items-baseline gap-2 rounded-lg px-4 py-2 text-[#BBBBBB] transition-colors hover:bg-white/5 hover:text-[#009519]"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          <span className="text-sm">{child.label}</span>
+                          {child.sub && (
+                            <span className="text-xs text-[#666666]">{child.sub}</span>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
           <div className="flex items-center gap-4 px-4 pt-4">
             <a
               href={INSTAGRAM_URL}
