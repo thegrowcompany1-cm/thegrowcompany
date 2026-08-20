@@ -420,59 +420,11 @@ const DETAIL_HTML = `<style>
   color: #b0b0b0;
   font-size: 18px;
   line-height: 1.8;
-  margin-bottom: 40px;
-}
-
-.tgc-hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: #4CAF50;
-  color: white;
-  padding: 18px 40px;
-  border-radius: 50px;
-  font-size: 18px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.tgc-hero-cta::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.tgc-hero-cta:hover::before {
-  left: 100%;
-}
-
-.tgc-hero-cta:hover {
-  background: #43a047;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(76, 175, 80, 0.5);
-}
-
-.tgc-hero-cta svg {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.3s ease;
-}
-
-.tgc-hero-cta:hover svg {
-  transform: translateX(5px);
+  margin-bottom: 0;
 }
 
 .tgc-hero-trust {
-  margin-top: 40px;
+  margin-top: 44px;
   display: flex;
   justify-content: center;
   gap: 40px;
@@ -500,8 +452,7 @@ const DETAIL_HTML = `<style>
   .tgc-hero { padding: 60px 20px; }
   .tgc-hero h1 { font-size: 28px; }
   .tgc-hero-sub { font-size: 16px; }
-  .tgc-hero-cta { padding: 16px 32px; font-size: 16px; }
-  .tgc-hero-trust { gap: 20px; }
+  .tgc-hero-trust { margin-top: 36px; gap: 20px; }
   .tgc-hero-trust-item strong { font-size: 24px; }
 }
 </style>
@@ -523,14 +474,7 @@ const DETAIL_HTML = `<style>
       <strong style="color:#4CAF50;">오픈 이후에도 살아남는 구조</strong>를 설계하는 팀입니다.
     </p>
     
-    <a href="#tgc-checklist-section" class="tgc-hero-cta tgc-fade-up tgc-delay-4">
-      내 창업 계획, 위험한지 먼저 확인하기
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-      </svg>
-    </a>
-    
-    <div class="tgc-hero-trust tgc-fade-up tgc-delay-5">
+    <div class="tgc-hero-trust tgc-fade-up tgc-delay-4">
       <div class="tgc-hero-trust-item">
         <strong><span class="count-num" data-target="200">0</span>+</strong>
         오픈 센터
@@ -711,7 +655,8 @@ const DETAIL_HTML = `<style>
 .tgc-empathy {
   font-family: 'Pretendard', sans-serif;
   background: #1a1a1a;
-  padding: 100px 20px;
+  /* 하단은 바로 뒤 체크리스트로 시선이 이어지도록 좁게 */
+  padding: 96px 20px 56px;
   position: relative;
   overflow: hidden;
 }
@@ -756,6 +701,13 @@ const DETAIL_HTML = `<style>
 .tgc-delay-2 { transition-delay: 0.3s; }
 .tgc-delay-3 { transition-delay: 0.5s; }
 .tgc-delay-4 { transition-delay: 0.7s; }
+
+/* fail-safe: JS 가 동작하지 않으면 카피는 그냥 보인다.
+   스크립트가 섹션에 .is-anim 을 붙였을 때만 숨김 → 등장(reveal) 효과가 걸린다. */
+.tgc-empathy .tgc-fade-up { opacity: 1; transform: none; }
+.tgc-empathy.is-anim .tgc-fade-up { opacity: 0; transform: translateY(30px); }
+.tgc-empathy.is-anim .tgc-fade-up.visible { opacity: 1; transform: translateY(0); }
+.tgc-empathy:not(.is-anim) .tgc-empathy-quote .typing-text { border-right: none; animation: none; }
 
 /* 인용문 */
 .tgc-empathy-quote {
@@ -842,12 +794,16 @@ const DETAIL_HTML = `<style>
   background: rgba(255, 107, 107, 0.08);
   border-radius: 10px;
   border-left: 3px solid #ff6b6b;
-  opacity: 0;
-  transform: translateX(-30px);
   transition: all 0.5s ease;
 }
 
-.tgc-empathy-list-item.visible {
+/* fail-safe — 위와 동일: .is-anim 이 붙은 경우에만 숨겼다가 순차 등장 */
+.tgc-empathy.is-anim .tgc-empathy-list-item {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.tgc-empathy.is-anim .tgc-empathy-list-item.visible {
   opacity: 1;
   transform: translateX(0);
 }
@@ -881,12 +837,13 @@ const DETAIL_HTML = `<style>
   75% { transform: rotate(10deg); }
 }
 
-/* 결론 */
+/* 강조 블록 */
 .tgc-empathy-conclusion {
-  font-size: 19px;
+  font-size: 26px;
+  font-weight: 700;
   color: #fff;
-  line-height: 1.9;
-  margin-bottom: 50px;
+  line-height: 1.7;
+  margin-bottom: 44px;
 }
 
 .tgc-empathy-conclusion strong {
@@ -907,6 +864,14 @@ const DETAIL_HTML = `<style>
 
 .tgc-empathy-conclusion.visible strong::after {
   width: 100%;
+}
+
+/* 전환부 */
+.tgc-empathy-bridge {
+  font-size: 17px;
+  color: #aaa;
+  line-height: 1.8;
+  margin-bottom: 22px;
 }
 
 /* 하이라이트 박스 */
@@ -944,12 +909,14 @@ const DETAIL_HTML = `<style>
 }
 
 .tgc-empathy-highlight h3 .brand {
-  color: #4CAF50;
+  color: #fff;
 }
 
+/* 강조는 '첫 성공' 한 곳에만 준다 */
 .tgc-empathy-highlight h3 .success {
   position: relative;
   display: inline-block;
+  color: #4CAF50;
 }
 
 .tgc-empathy-highlight h3 .success::after {
@@ -971,7 +938,7 @@ const DETAIL_HTML = `<style>
 }
 
 @media (max-width: 768px) {
-  .tgc-empathy { padding: 70px 20px; }
+  .tgc-empathy { padding: 64px 20px 44px; }
   .tgc-empathy-quote { font-size: 18px; }
   .tgc-empathy-quote::before,
   .tgc-empathy-quote::after { font-size: 30px; top: -5px; }
@@ -979,7 +946,8 @@ const DETAIL_HTML = `<style>
   .tgc-empathy-quote::after { right: -18px; }
   .tgc-empathy-problems { padding: 30px 20px; }
   .tgc-empathy-list-item { font-size: 15px; padding: 10px 14px; }
-  .tgc-empathy-conclusion { font-size: 16px; }
+  .tgc-empathy-conclusion { font-size: 20px; margin-bottom: 36px; }
+  .tgc-empathy-bridge { font-size: 15px; }
   .tgc-empathy-highlight { padding: 30px 25px; }
   .tgc-empathy-highlight h3 { font-size: 22px; }
 }
@@ -988,14 +956,14 @@ const DETAIL_HTML = `<style>
 <section class="tgc-empathy">
   <div class="tgc-empathy-inner">
     <p class="tgc-empathy-quote tgc-fade-up tgc-delay-1">
-      <span class="typing-text">센터 차릴 때 자본만 있으면 <br>누구나 할 수 있는 거 아닌가요?</span>
+      <span class="typing-text">센터 차릴 때 자본만 있으면 <br>되는 거 아닌가요..</span>
     </p>
-    
+
     <p class="tgc-empathy-sub tgc-fade-up tgc-delay-2">많은 대표님들이 처음엔 이렇게 말씀하십니다.</p>
-    
+
     <div class="tgc-empathy-problems tgc-fade-up tgc-delay-3">
       <p>하지만 막상 문을 열고 나면,</p>
-      
+
       <div class="tgc-empathy-list">
         <div class="tgc-empathy-list-item">
           <span class="x-icon">✕</span>
@@ -1007,21 +975,24 @@ const DETAIL_HTML = `<style>
         </div>
         <div class="tgc-empathy-list-item">
           <span class="x-icon">✕</span>
-          <span>직원은 있는데 방향이 없다는 걸 <br>느끼시죠</span>
+          <span>직원은 있는데 방향이 없다는 걸 <br>느끼시죠.</span>
         </div>
       </div>
     </div>
-    
+
     <p class="tgc-empathy-conclusion tgc-fade-up tgc-delay-4">
       이건 대표님의 능력 문제가 아닙니다.<br>
-      <strong>창업 구조 자체가 잘못 설계된 경우</strong>가 대부분입니다.<br><br>
+      <strong>창업 구조 자체가 잘못 설계된 경우</strong>가 대부분입니다.
+    </p>
+
+    <p class="tgc-empathy-bridge tgc-fade-up tgc-delay-4">
       저희는 그런 현실을 바꿔온 사람들입니다.
     </p>
-    
+
     <div class="tgc-empathy-highlight tgc-fade-up">
       <h3>
-        '<span class="brand">더그로우컴퍼니</span>'는 대표님의<br>
-        첫 창업이 아니라 <br><span class="success">첫 성공</span>을 만듭니다.
+        <span class="brand">더그로우컴퍼니</span>는 대표님의<br>
+        첫 창업이 아니라 <br>'<span class="success">첫 성공</span>'을 만듭니다.
       </h3>
     </div>
   </div>
@@ -1029,11 +1000,23 @@ const DETAIL_HTML = `<style>
 
 <script>
 (function() {
+  const section = document.querySelector('.tgc-empathy');
+  if (!section) return;
+
+  // JS 가 여기까지 왔을 때만 숨김 상태를 켠다 (fail-safe — 스크립트 미실행 시 기본 표시)
+  section.classList.add('is-anim');
+
   const fadeElements = document.querySelectorAll('.tgc-empathy .tgc-fade-up');
   const listItems = document.querySelectorAll('.tgc-empathy-list-item');
   const conclusion = document.querySelector('.tgc-empathy-conclusion');
   const highlight = document.querySelector('.tgc-empathy-highlight');
-  
+
+  // IntersectionObserver 미지원 환경이면 등장 효과 없이 그대로 표시
+  if (typeof IntersectionObserver === 'undefined') {
+    section.classList.remove('is-anim');
+    return;
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -1063,18 +1046,6 @@ const DETAIL_HTML = `<style>
   // 결론 및 하이라이트 별도 관찰
   if (conclusion) observer.observe(conclusion);
   if (highlight) observer.observe(highlight);
-
-  // 히어로 CTA → 체크리스트 섹션으로 부드러운 스크롤 (고정 헤더 높이만큼 오프셋)
-  const heroCta = document.querySelector('.tgc-hero-cta');
-  if (heroCta) {
-    heroCta.addEventListener('click', function (e) {
-      const target = document.getElementById('tgc-checklist-section');
-      if (!target) return; // 섹션이 없으면 기본 앵커 동작으로 폴백
-      e.preventDefault();
-      const y = target.getBoundingClientRect().top + window.pageYOffset - 96;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    });
-  }
 })();
 </script><!-- 섹션 4: 실패 체크리스트 -->
 <style>
