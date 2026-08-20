@@ -2149,6 +2149,11 @@ function toggleFaq(el) {
       this.appendChild(hidden);
     }
 
+    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'form_submit', { form_source: '위탁상담2' });
+    }
+
     setTimeout(function () {
       alert('정상적으로 접수되었습니다. 감사합니다 :)');
       document.getElementById('consultingForm').reset();
@@ -2333,6 +2338,11 @@ const TOP_FORM_HTML = `<style>
       hidden.name = 'typeFinal';
       hidden.value = '기타 - ' + typeEtc;
       this.appendChild(hidden);
+    }
+
+    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'form_submit', { form_source: '위탁상담2' });
     }
 
     setTimeout(function () {

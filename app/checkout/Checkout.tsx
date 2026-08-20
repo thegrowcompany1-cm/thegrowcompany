@@ -181,6 +181,18 @@ export default function Checkout() {
       alert("결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
       return;
     }
+    // GA4 전환 이벤트 — 검증을 모두 통과해 실제 결제창을 띄우는 시점.
+    // gtag 가 없으면(측정 ID 미설정·차단 등) 조용히 넘어간다.
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
+      .gtag;
+    if (typeof gtag === "function") {
+      gtag("event", "begin_checkout", {
+        item_name: product.name,
+        value: product.price,
+        currency: "KRW",
+      });
+    }
+
     const orderId = `TGC-${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
     try {
       await widgets.requestPayment({

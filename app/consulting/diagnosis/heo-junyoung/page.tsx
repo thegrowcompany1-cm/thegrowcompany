@@ -524,6 +524,10 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         body: params.toString()
       })
       .then(function(){
+        /* GA4 전환 이벤트 (gtag 미로드 시 조용히 무시) */
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'form_submit', { form_source: '진단상담' });
+        }
         alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
         form.reset();
         if (etcInput) etcInput.disabled = true;

@@ -4160,6 +4160,11 @@ function toggleFaq(element) {
       return false;
     }
     
+    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'form_submit', { form_source: '창업지원상담_아임웹' });
+    }
+
     setTimeout(function() {
       alert('정상적으로 접수되었습니다. 감사합니다 :)');
       document.getElementById('startupForm').reset();
@@ -4757,6 +4762,11 @@ const CTA_FORM_HTML_TOP = `<style>
       e.preventDefault();
       alert('연락처가 일치하지 않습니다. 다시 확인해주세요.');
       return false;
+    }
+
+    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'form_submit', { form_source: '창업지원상담_아임웹' });
     }
 
     setTimeout(function() {

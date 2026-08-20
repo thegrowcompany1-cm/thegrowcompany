@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
-import Script from "next/script";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -13,9 +13,9 @@ const notoSansKR = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
 });
 
-// 구글 태그 매니저 ID — 실제 ID 발급 후 NEXT_PUBLIC_GTM_ID 환경변수로 주입하거나
-// 아래 플레이스홀더("GTM-XXXXXXX")를 실제 ID로 교체하세요.
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-XXXXXXX"; // ← 여기에 실제 GTM ID 입력
+// GA4 측정 ID — .env.local 의 NEXT_PUBLIC_GA_ID 로 주입한다.
+// 값이 없으면 <GoogleAnalytics> 를 아예 렌더하지 않아 gtag.js 도 로드되지 않는다.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const DEFAULT_TITLE =
   "더그로우컴퍼니 | 헬스장·필라테스 창업, 운영, 마케팅 전문 솔루션";
@@ -107,14 +107,6 @@ export default function RootLayout({
   return (
     <html lang="ko" className={notoSansKR.variable}>
       <head>
-        {/* Google Tag Manager */}
-        <Script id="gtm-base" strategy="afterInteractive">
-          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${GTM_ID}');`}
-        </Script>
         {/* Organization JSON-LD */}
         <script
           type="application/ld+json"
@@ -122,19 +114,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
       </head>
       <body className="min-h-screen flex flex-col antialiased">
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          />
-        </noscript>
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
+      {/* GA4 (gtag.js) — 측정 ID 가 설정된 경우에만 로드 */}
+      {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
     </html>
   );
 }
