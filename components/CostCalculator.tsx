@@ -18,44 +18,46 @@ import { useEffect, useMemo, useState } from "react";
 // 단가 상수 — 모든 금액 단위는 "만원". 아래 숫자만 바꾸면 계산에 반영됩니다.
 // ═══════════════════════════════════════════════════════════════════════════
 const PRICING = {
-  // 인테리어 평당 단가 [실속형, 스탠다드, 프리미엄]
+  // 인테리어 평당 단가 [실속형, 스탠다드, 프리미엄] — 전속 시공팀 기준 −5%
   interiorPerPyeong: {
-    yoga: [120, 160, 220],
-    pilates: [130, 180, 250],
-    gym: [140, 190, 260],
-    ptshop: [130, 180, 240],
-    barre: [120, 170, 230],
-    crossfit: [100, 140, 190],
+    yoga: [115, 150, 210],
+    pilates: [125, 170, 240],
+    gym: [135, 180, 245],
+    ptshop: [125, 170, 230],
+    barre: [115, 160, 220],
+    crossfit: [95, 135, 180],
   } as Record<string, number[]>,
 
+  // 기구·장비 — B2B 직거래 단가 기준 −7%
   equipment: {
     // 필라테스 리포머 1대 [국산/수입]
-    pilatesReformer: { domestic: 350, imported: 750 },
+    pilatesReformer: { domestic: 325, imported: 700 },
     // 리포머가 이 대수 이상이면 캐딜락+체어+바렐 세트 자동 추가
     pilatesSetThreshold: 5,
-    pilatesSet: { domestic: 800, imported: 1600 },
+    pilatesSet: { domestic: 745, imported: 1490 },
     // 헬스장 평당 (유산소+머신+프리웨이트 포함 개산)
-    gymPerPyeong: { domestic: 55, imported: 90 },
+    gymPerPyeong: { domestic: 51, imported: 84 },
     // PT샵 랙 1세트당 (랙+덤벨+벤치+케이블 포함)
-    ptRack: { domestic: 450, imported: 800 },
+    ptRack: { domestic: 420, imported: 745 },
     // 크로스핏 리그 규모별 (국산 기준, 수입은 배수 적용)
-    crossfitRig: { small: 2000, mid: 3500, large: 5500 },
+    crossfitRig: { small: 1860, mid: 3250, large: 5100 },
     crossfitImportedMultiplier: 1.4,
     // 요가/바레 소도구 구성 (바레는 바 설치+거울 포함)
-    yogaTools: { basic: 300, full: 600 },
-    barreTools: { basic: 500, full: 900 },
+    yogaTools: { basic: 280, full: 560 },
+    barreTools: { basic: 465, full: 840 },
   },
 
+  // 설비·인허가 등 고정 항목 — 협력업체 단가 기준 −3% (소폭)
   extras: {
-    hvacPerPyeong: 18, // 냉난방(시스템에어컨) 평당
-    electricHeavy: 400, // 전기 증설 — 헬스장·크로스핏
-    electricNormal: 150, // 전기 증설 — 그 외
-    showerPerPyeong: 8, // 샤워실·락커룸 — 헬스장·크로스핏만 평당 추가
-    signage: 350, // 간판·사인물 고정
-    firePermit: 250, // 소방·인허가 고정
-    system: 400, // 음향·CCTV·출입시스템 고정
-    marketingRate: 0.08, // 오픈 마케팅(프리세일) — 총 공사비 대비 비율
-    reservePerPyeong: 12, // 예비 운영자금 평당 (손익분기 도달 전 2~3개월 고정비)
+    hvacPerPyeong: 17.5, // 냉난방(시스템에어컨) 평당
+    electricHeavy: 390, // 전기 증설 — 헬스장·크로스핏
+    electricNormal: 145, // 전기 증설 — 그 외
+    showerPerPyeong: 7.8, // 샤워실·락커룸 — 헬스장·크로스핏만 평당 추가
+    signage: 340, // 간판·사인물 고정
+    firePermit: 245, // 소방·인허가 고정
+    system: 390, // 음향·CCTV·출입시스템 고정
+    marketingRate: 0.08, // 오픈 마케팅(프리세일) — 총 공사비 대비 비율 (유지)
+    reservePerPyeong: 12, // 예비 운영자금 평당 (손익분기 전 2~3개월 고정비 — 유지)
   },
 
   // 더그로우 진행 시 절감률
