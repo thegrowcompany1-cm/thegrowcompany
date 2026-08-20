@@ -106,9 +106,6 @@ function RelatedServiceCard({
   );
 }
 
-// 좌측 메인 이미지 (public 기준). 없으면 회색 placeholder 로 대체.
-const MAIN_IMAGE = "/startup/startup50.png";
-
 // ─── 자체 영상 후기 슬라이더 (유튜브 미사용, public/reviews/ 정적 파일) ────────
 //  - 원본: video-raw/ → ffmpeg 720p(세로 720x1280) CRF28 + AAC 96k 인코딩본
 //  - 카드 클릭 전에는 poster 만 보여주고 영상은 preload="none" (모바일 데이터 절약)
@@ -312,22 +309,19 @@ const VIDEO_SECTION_HTML = `<style>
 })();
 </script>`;
 
-// ─── 상세정보 HTML ───────────────────────────────────────────────────────────
-// 아임웹용 7개 섹션 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 그대로 붙여넣으세요.
-//
-// 붙여넣기 주의:
-//  - 백틱( ` ) 과 ${ 두 가지만 \` , \${ 로 이스케이프하면 됩니다. (그 외엔 손댈 필요 없음)
-//  - <style>, <script>, 인라인 onclick="toggleFaq(this)" 등은 그대로 둬도
-//    아래 useEffect 가 동작하게 처리합니다.
-//  - 중복 id(예: consulting-form 2개)는 런타임에 자동으로 -2, -3 … 접미사를 붙여
-//    충돌을 방지하므로 직접 고칠 필요 없습니다.
-const DETAIL_HTML = `<style>
+// ─── 히어로 섹션 (페이지 최상단 별도 컨테이너로 주입) ────────────────────────
+//  · 원래 DETAIL_HTML 맨 앞에 있던 .tgc-hero 를 분리한 것. 카피만 교체하고
+//    배지 / 메인·서브카피 / 숫자 3종 구조는 그대로 유지한다.
+//  · 등장 효과는 이 블록이 자체 IntersectionObserver 로 처리한다.
+//    (DETAIL_HTML 의 전역 .tgc-fade-up 옵저버에 의존하지 않도록 독립시킴)
+//  · fail-safe: 스크립트가 실행되지 않으면 .is-anim 이 안 붙어 카피가 그냥 보인다.
+const HERO_SECTION_HTML = `<style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 .tgc-hero {
   font-family: 'Pretendard', sans-serif;
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  padding: 80px 20px;
+  padding: 80px 20px 64px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -363,6 +357,11 @@ const DETAIL_HTML = `<style>
   transform: translateY(0);
 }
 
+/* fail-safe: JS 가 .is-anim 을 붙였을 때만 숨김 시작점을 켠다 */
+.tgc-hero .tgc-fade-up { opacity: 1; transform: none; }
+.tgc-hero.is-anim .tgc-fade-up { opacity: 0; transform: translateY(30px); }
+.tgc-hero.is-anim .tgc-fade-up.visible { opacity: 1; transform: translateY(0); }
+
 /* 순차 딜레이 */
 .tgc-delay-1 { transition-delay: 0.1s; }
 .tgc-delay-2 { transition-delay: 0.3s; }
@@ -391,30 +390,40 @@ const DETAIL_HTML = `<style>
   color: #ffffff;
   font-size: 42px;
   font-weight: 800;
-  line-height: 1.3;
+  line-height: 1.35;
   margin-bottom: 20px;
+  word-break: keep-all;
 }
 
-.tgc-hero h1 .danger {
-  color: #ff6b6b;
-  position: relative;
-  display: inline-block;
+/* 4단계 흐름 줄 — 본문보다 한 단계 작게 잡아 800px 안에서 한 줄로 떨어지게 */
+.tgc-hero-steps {
+  display: block;
+  font-size: 28px;
+  line-height: 1.45;
+  margin-bottom: 6px;
 }
 
-.tgc-hero h1 .danger::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 3px;
-  background: #ff6b6b;
-  transition: width 0.8s ease 1s;
+/* 단계와 화살표를 한 덩어리로 묶어 "→" 가 줄 첫머리에 홀로 떨어지지 않게 한다 */
+.tgc-hero-step { white-space: nowrap; }
+
+.tgc-hero-step em {
+  font-style: normal;
+  color: #4CAF50;
+  margin: 0 2px;
 }
 
-.tgc-hero h1.visible .danger::after {
-  width: 100%;
+/* 좁은 화면에서만 4단계를 2줄로 끊는 줄바꿈.
+   한 줄로 들어가지 않는 폭(≈900px 이하)부터 켜서 어중간한 자동 줄바꿈을 막는다. */
+.tgc-hero-br-m { display: none; }
+
+@media (max-width: 900px) {
+  .tgc-hero-br-m { display: inline; }
 }
+
+/* 모바일에서 둘째 줄이 "갑니다." 만 남지 않게 끊는 줄바꿈 */
+.tgc-hero-br-m2 { display: none; }
+
+.tgc-hero-accent { color: #4CAF50; }
 
 .tgc-hero-sub {
   color: #b0b0b0;
@@ -448,32 +457,69 @@ const DETAIL_HTML = `<style>
   display: inline-block;
 }
 
+/* 아래 영상 후기로 시선을 넘기는 연결 문장 */
+.tgc-hero-next {
+  margin-top: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.tgc-hero-next-text {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #cfcfcf;
+  letter-spacing: -0.01em;
+}
+
+/* fail-safe: 화살표는 기본 상태에서 이미 보인다. 애니메이션은 위치만 흔든다 */
+.tgc-hero-next-arrow {
+  width: 22px;
+  height: 22px;
+  color: #4CAF50;
+  opacity: 0.9;
+  animation: tgcHeroNudge 1.8s ease-in-out infinite;
+}
+
+@keyframes tgcHeroNudge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tgc-hero-next-arrow { animation: none; }
+  .tgc-hero-badge { animation: none; }
+}
+
 @media (max-width: 768px) {
-  .tgc-hero { padding: 60px 20px; }
-  .tgc-hero h1 { font-size: 28px; }
-  .tgc-hero-sub { font-size: 16px; }
+  .tgc-hero { padding: 56px 20px 48px; }
+  .tgc-hero h1 { font-size: 24px; margin-bottom: 16px; }
+  .tgc-hero-steps { font-size: 20px; margin-bottom: 4px; }
+  .tgc-hero-br-m2 { display: inline; }
+  .tgc-hero-sub { font-size: 15px; }
   .tgc-hero-trust { margin-top: 36px; gap: 20px; }
   .tgc-hero-trust-item strong { font-size: 24px; }
+  .tgc-hero-next { margin-top: 36px; }
+  .tgc-hero-next-text { font-size: 14px; }
 }
 </style>
 
 <section class="tgc-hero">
   <div class="tgc-hero-content">
     <div class="tgc-hero-badge tgc-fade-up tgc-delay-1">헬스장 · 필라테스 창업 전문</div>
-    
-    <h1 class="tgc-fade-up tgc-delay-2">
-      입지와 인테리어만<br>믿고 시작하면<br>
 
-      <span class="danger">오픈 3개월 안에<br>흔들릴지도 모릅니다.</span>
+    <h1 class="tgc-fade-up tgc-delay-2">
+      <span class="tgc-hero-steps"><span class="tgc-hero-step">입지 분석 <em>→</em></span> <span class="tgc-hero-step">인테리어 <em>→</em></span> <br class="tgc-hero-br-m"><span class="tgc-hero-step">프리세일 <em>→</em></span> <span class="tgc-hero-step">운영 세팅.</span></span>
+      창업의 4단계를<br class="tgc-hero-br-m2"> <span class="tgc-hero-accent">한 팀</span>이 끝까지 갑니다.
     </h1>
-    
+
     <p class="tgc-hero-sub tgc-fade-up tgc-delay-3">
-      프리세일이 안 되고, 오픈 후 매출이 안 잡히는 센터에는<br>
-      공통된 <strong style="color:#fff;">구조적인 문제</strong>가 있습니다.<br><br>
-      더그로우는 센터를 "오픈만"시키는 회사가 아닙니다.<br>
-      <strong style="color:#4CAF50;">오픈 이후에도 살아남는 구조</strong>를 설계하는 팀입니다.
+      단계마다 업체를 바꿔가며 소모되지 않도록,<br>
+      처음부터 끝까지 같은 팀이 책임집니다.
     </p>
-    
+
     <div class="tgc-hero-trust tgc-fade-up tgc-delay-4">
       <div class="tgc-hero-trust-item">
         <strong><span class="count-num" data-target="200">0</span>+</strong>
@@ -488,9 +534,52 @@ const DETAIL_HTML = `<style>
         인테리어 시공
       </div>
     </div>
+
+    <div class="tgc-hero-next tgc-fade-up tgc-delay-5">
+      <p class="tgc-hero-next-text">저희와 함께한 대표님들을 확인해보세요</p>
+      <svg class="tgc-hero-next-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 5v13"></path>
+        <path d="M6 13l6 6 6-6"></path>
+      </svg>
+    </div>
   </div>
 </section>
 
+<script>
+(function () {
+  var hero = document.querySelector('.tgc-hero');
+  if (!hero) return;
+
+  /* IntersectionObserver 가 없으면 등장 효과 없이 그대로 보여준다 (fail-safe) */
+  if (typeof IntersectionObserver === 'undefined') return;
+
+  /* JS 가 여기까지 온 경우에만 숨김 시작점을 켠다 */
+  hero.classList.add('is-anim');
+
+  var io = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) entries[i].target.classList.add('visible');
+    }
+  }, { threshold: 0.1 });
+
+  var els = hero.querySelectorAll('.tgc-fade-up');
+  for (var j = 0; j < els.length; j++) io.observe(els[j]);
+
+  /* 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 교체 — delete 금지) */
+  window.__tgcHeroStop = function () { io.disconnect(); };
+})();
+</script>`;
+
+// ─── 상세정보 HTML ───────────────────────────────────────────────────────────
+// 아임웹용 7개 섹션 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 그대로 붙여넣으세요.
+//
+// 붙여넣기 주의:
+//  - 백틱( ` ) 과 ${ 두 가지만 \` , \${ 로 이스케이프하면 됩니다. (그 외엔 손댈 필요 없음)
+//  - <style>, <script>, 인라인 onclick="toggleFaq(this)" 등은 그대로 둬도
+//    아래 useEffect 가 동작하게 처리합니다.
+//  - 중복 id(예: consulting-form 2개)는 런타임에 자동으로 -2, -3 … 접미사를 붙여
+//    충돌을 방지하므로 직접 고칠 필요 없습니다.
+const DETAIL_HTML = `
 <script>
 (function() {
   // 페이드업 애니메이션
@@ -4189,619 +4278,13 @@ function toggleFaq(element) {
 })();
 </script>`;
 
-// ─── 상단 CTA 폼(하단 CTA_FORM 과 동일 폼의 사본, 내부 id 전부 -top 접미사) ──────────
-//  - action / token(grow2026secure) / source(창업지원상담_아임웹) / name 속성은
-//    구글시트 Apps Script + Make 연동에 물려 있으므로 절대 변경하지 않는다.
-//  - id(consulting-form-top / ctaHeader-top / formWrapper-top / startupForm-top)와
-//    iframe name(hidden_iframe_top)만 하단 폼과 겹치지 않도록 접미사를 붙였다.
-//  - 위치/폭은 기존 React 폼이 있던 우측 카드 자리 그대로 쓰도록 .tgc-cta-section
-//    특유의 100px 여백/장식 버블은 .tgc-cta-section--top 로 무력화했다.
-const CTA_FORM_HTML_TOP = `<style>
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
-.tgc-cta-section {
-  font-family: 'Pretendard', sans-serif;
-  background: linear-gradient(180deg, #f8f9fa 0%, #e8f5e9 100%);
-  padding: 100px 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.tgc-cta-section::before {
-  content: '';
-  position: absolute;
-  top: -100px;
-  left: -100px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(76,175,80,0.1) 0%, transparent 70%);
-  animation: floatBubble 8s ease-in-out infinite;
-}
-
-.tgc-cta-section::after {
-  content: '';
-  position: absolute;
-  bottom: -50px;
-  right: -50px;
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
-  animation: floatBubble 10s ease-in-out infinite reverse;
-}
-
-@keyframes floatBubble {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(30px, -30px); }
-}
-
-.tgc-cta-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-
-.tgc-fade-up {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.tgc-fade-up.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.tgc-cta-header {
-  text-align: center;
-  margin-bottom: 50px;
-}
-
-.tgc-cta-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
-  color: white;
-  padding: 12px 28px;
-  border-radius: 50px;
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 25px;
-  animation: badgePulse 2s ease infinite;
-}
-
-@keyframes badgePulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.4); }
-  50% { box-shadow: 0 0 20px 5px rgba(76,175,80,0.2); }
-}
-
-.tgc-cta-header h2 {
-  font-size: 38px;
-  font-weight: 800;
-  color: #1a1a1a;
-  margin-bottom: 20px;
-  line-height: 1.4;
-}
-
-.tgc-cta-header h2 .green {
-  color: #4CAF50;
-  position: relative;
-}
-
-.tgc-cta-header h2 .green::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  background: rgba(76, 175, 80, 0.2);
-  z-index: -1;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.8s ease 0.5s;
-}
-
-.tgc-cta-header.visible h2 .green::after {
-  transform: scaleX(1);
-}
-
-.tgc-cta-desc {
-  font-size: 18px;
-  color: #666;
-  line-height: 1.8;
-  margin-bottom: 30px;
-}
-
-.tgc-cta-benefits {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.tgc-cta-benefit {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: white;
-  padding: 12px 20px;
-  border-radius: 50px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  font-size: 14px;
-  color: #333;
-  font-weight: 500;
-  opacity: 0;
-  transform: translateY(15px);
-  transition: all 0.5s ease;
-}
-
-.tgc-cta-benefit.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.tgc-cta-benefit:nth-child(1) { transition-delay: 0.2s; }
-.tgc-cta-benefit:nth-child(2) { transition-delay: 0.35s; }
-.tgc-cta-benefit:nth-child(3) { transition-delay: 0.5s; }
-
-.tgc-cta-benefit:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(76,175,80,0.15);
-}
-
-.tgc-cta-benefit-icon {
-  width: 24px;
-  height: 24px;
-  background: #e8f5e9;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tgc-cta-benefit-icon svg {
-  width: 14px;
-  height: 14px;
-  fill: #4CAF50;
-}
-
-.tgc-form-wrapper {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s ease 0.3s;
-}
-
-.tgc-form-wrapper.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.tg-form-wrap {
-  max-width: 900px;
-  margin: 0 auto;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-  overflow: hidden;
-}
-
-.tg-form-header {
-  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
-  color: #ffffff;
-  padding: 20px 28px;
-  display: flex;
-  align-items: center;
-  border-radius: 0;
-}
-
-.tg-form-icon {
-  margin-right: 10px;
-  font-size: 22px;
-}
-
-.tg-form-title {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-#startupForm-top {
-  padding: 35px;
-  border: none;
-  border-radius: 0;
-  background: #ffffff;
-}
-
-.tg-form-group {
-  margin-bottom: 22px;
-}
-
-.tg-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #111;
-}
-
-.tg-desc {
-  font-size: 13px;
-  color: #888;
-}
-
-.tg-required {
-  color: #ff6b6b;
-  font-size: 14px;
-}
-
-.tg-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 14px 16px;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
-  font-size: 15px;
-  color: #111;
-  transition: all 0.3s ease;
-}
-
-.tg-input::placeholder {
-  color: #999;
-}
-
-.tg-input:focus {
-  outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 4px rgba(76,175,80,0.1);
-}
-
-.tg-phone-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tg-phone {
-  max-width: 100px;
-  text-align: center;
-}
-
-.tg-phone-dash {
-  font-size: 16px;
-  color: #aaa;
-}
-
-.tg-radio {
-  display: flex;
-  align-items: center;
-  font-size: 15px;
-  margin-bottom: 10px;
-  padding: 10px 14px;
-  background: #f8f9fa;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-  color: #111;
-}
-
-.tg-radio:hover {
-  background: #e8f5e9;
-  border-color: #4CAF50;
-}
-
-.tg-radio input {
-  margin-right: 10px;
-  accent-color: #4CAF50;
-  width: 18px;
-  height: 18px;
-}
-
-.tg-form-actions {
-  text-align: center;
-  margin-top: 30px;
-}
-
-.tg-submit-btn {
-  min-width: 200px;
-  padding: 16px 50px;
-  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 50px;
-  font-size: 17px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(76,175,80,0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.tg-submit-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.tg-submit-btn:hover::before {
-  left: 100%;
-}
-
-.tg-submit-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(76,175,80,0.4);
-}
-
-.tg-submit-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.tgc-form-notice {
-  text-align: center;
-  margin-top: 30px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-}
-
-.tgc-form-notice p {
-  font-size: 14px;
-  color: #888;
-  line-height: 1.7;
-}
-
-.tgc-form-notice strong {
-  color: #4CAF50;
-}
-
-@media (max-width: 768px) {
-  .tgc-cta-section { padding: 70px 20px; }
-  .tgc-cta-header h2 { font-size: 26px; }
-  .tgc-cta-desc { font-size: 16px; }
-  .tgc-cta-benefits { gap: 12px; }
-  .tgc-cta-benefit { padding: 10px 16px; font-size: 13px; }
-  .tg-form-wrap { margin: 0; border-radius: 20px; }
-  #startupForm-top { padding: 25px 20px; }
-  .tg-phone { max-width: 80px; }
-}
-
-/* 폼 텍스트 가시성 — 페이지 다크 테마(body 기본 텍스트 #EEEEEE)가 상속되어
-   라디오/라벨/입력창 글자가 흰 배경 카드 위에서 안 보이는 문제 방지 */
-#formWrapper-top .tg-label,
-#formWrapper-top .tg-radio,
-#formWrapper-top .tg-radio span,
-#formWrapper-top .tgc-form-notice p {
-  color: #111;
-}
-#formWrapper-top .tg-input,
-#formWrapper-top select.tg-input,
-#formWrapper-top textarea.tg-input {
-  color: #111 !important;
-  background: #fff !important;
-}
-#formWrapper-top .tg-input::placeholder {
-  color: #999 !important;
-}
-
-/* 상단 슬롯용 — 하단 CTA 섹션의 배경/여백/장식 버블을 제거하고
-   기존 React 폼이 있던 우측 카드 자리에 맞춰 압축 */
-.tgc-cta-section--top {
-  padding: 0;
-  background: none;
-}
-.tgc-cta-section--top::before,
-.tgc-cta-section--top::after {
-  display: none;
-}
-</style>
-
-<section class="tgc-cta-section tgc-cta-section--top" id="consulting-form-top">
-  <div class="tgc-cta-inner">
-    <div class="tgc-cta-header tgc-fade-up" id="ctaHeader-top">
-      <h2>첫 창업, <span class="green">첫 성공</span>으로<br>만들어 드립니다.</h2>
-      <p class="tgc-cta-desc">
-        무료 상담을 통해 대표님의 상황을 먼저 파악하고,<br>
-        맞춤형 창업 전략을 제안해 드립니다.
-      </p>
-      </div>
-    </div>
-
-    <div class="tgc-form-wrapper" id="formWrapper-top">
-      <div class="tg-form-wrap">
-        <div class="tg-form-header">
-          <span class="tg-form-icon">💬</span>
-          <span class="tg-form-title">창업 지원 상담 신청(무료)</span>
-        </div>
-
-        <form id="startupForm-top" action="https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec" method="POST" target="hidden_iframe_top">
-          <div class="tg-form-group">
-            <label class="tg-label">희망 업종을 선택해주세요. <span class="tg-required">*</span></label>
-            <select name="industry" class="tg-input" required>
-              <option value="">(선택)</option>
-              <option value="헬스장">헬스장</option>
-              <option value="필라테스">필라테스</option>
-              <option value="PT 스튜디오">PT 스튜디오</option>
-              <option value="요가">요가</option>
-              <option value="기타">기타</option>
-            </select>
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">
-              선호 희망 지역을 알려주세요.<br>
-              <small class="tg-desc">(입지 상권을 함께 봐드립니다.)</small>
-            </label>
-            <input type="text" name="area" class="tg-input" placeholder="예) 서울 마포구, 경기 남부, 부산 서면 인근 등" />
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">이름을 입력해주세요. <span class="tg-required">*</span></label>
-            <input type="text" name="name" class="tg-input" required />
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">연락처를 입력해주세요. <span class="tg-required">*</span></label>
-            <div class="tg-phone-row">
-              <input type="text" name="phone1" class="tg-input tg-phone" maxlength="3" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phone2" class="tg-input tg-phone" maxlength="4" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phone3" class="tg-input tg-phone" maxlength="4" required />
-            </div>
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">연락처를 입력해주세요(중복확인). <span class="tg-required">*</span></label>
-            <div class="tg-phone-row">
-              <input type="text" name="phoneCheck1" class="tg-input tg-phone" maxlength="3" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phoneCheck2" class="tg-input tg-phone" maxlength="4" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phoneCheck3" class="tg-input tg-phone" maxlength="4" required />
-            </div>
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
-              <span>네이버 검색 (창업, 창업솔루션 등)</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="인스타/페이스북 광고" />
-              <span>인스타/페이스북 광고</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="네이버 블로그" />
-              <span>네이버 블로그</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="지인 소개/아카데미 수강생" />
-              <span>지인 소개 / 아카데미 수강생</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="기타" />
-              <span>기타</span>
-            </label>
-          </div>
-
-          <!-- 페이지 구분 -->
-          <input type="hidden" name="source" value="창업지원상담_아임웹">
-
-          <!-- 🔒 보안 토큰 -->
-          <input type="hidden" name="token" value="grow2026secure">
-
-          <div class="tg-form-actions">
-            <button type="submit" class="tg-submit-btn">무료 상담 신청하기</button>
-          </div>
-        </form>
-
-        <iframe name="hidden_iframe_top" style="display:none;"></iframe>
-
-        <div class="tgc-form-notice">
-          <p>
-            📞 상담 신청 후 <strong>24시간 이내</strong> 담당자가 연락드립니다.<br>
-            궁금한 점은 편하게 문의해 주세요.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<script>
-(function() {
-  const ctaHeader = document.getElementById('ctaHeader-top');
-  const formWrapper = document.getElementById('formWrapper-top');
-  const benefits = document.querySelectorAll('.tgc-cta-benefit');
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-
-        if (entry.target.id === 'ctaHeader-top') {
-          benefits.forEach((benefit, index) => {
-            setTimeout(() => {
-              benefit.classList.add('visible');
-            }, 400 + (index * 150));
-          });
-        }
-      }
-    });
-  }, { threshold: 0.2 });
-
-  if (ctaHeader) observer.observe(ctaHeader);
-  if (formWrapper) observer.observe(formWrapper);
-
-  // 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
-  window.__tgcCtaObserverStopTop = function () { observer.disconnect(); };
-
-  document.getElementById('startupForm-top').addEventListener('submit', function (e) {
-    const phone1 = this.querySelector('[name="phone1"]').value;
-    const phone2 = this.querySelector('[name="phone2"]').value;
-    const phone3 = this.querySelector('[name="phone3"]').value;
-    const phoneCheck1 = this.querySelector('[name="phoneCheck1"]').value;
-    const phoneCheck2 = this.querySelector('[name="phoneCheck2"]').value;
-    const phoneCheck3 = this.querySelector('[name="phoneCheck3"]').value;
-
-    if (phone1 !== phoneCheck1 || phone2 !== phoneCheck2 || phone3 !== phoneCheck3) {
-      e.preventDefault();
-      alert('연락처가 일치하지 않습니다. 다시 확인해주세요.');
-      return false;
-    }
-
-    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'form_submit', { form_source: '창업지원상담_아임웹' });
-    }
-
-    setTimeout(function() {
-      alert('정상적으로 접수되었습니다. 감사합니다 :)');
-      document.getElementById('startupForm-top').reset();
-    }, 500);
-  });
-
-  // 하단에도 동일 구조 폼이 있으므로 전역이 아닌 이 폼(startupForm-top) 안에서만 조회
-  const phoneInputs = document.getElementById('startupForm-top').querySelectorAll('.tg-phone');
-  phoneInputs.forEach((input, index) => {
-    input.addEventListener('input', function() {
-      if (this.value.length >= this.maxLength && index < phoneInputs.length - 1) {
-        phoneInputs[index + 1].focus();
-      }
-    });
-
-    input.addEventListener('keypress', function(e) {
-      if (!/[0-9]/.test(e.key)) {
-        e.preventDefault();
-      }
-    });
-  });
-})();
-</script>`;
-
 export default function StartupConsultingPage() {
-  const [imgError, setImgError] = useState(false);
-
   // 하단 상세정보 영역은 클라이언트에서만 렌더링하여 서버/클라이언트 HTML 불일치를
   // 원천 차단한다. (DETAIL_HTML 은 아임웹 원본 + script 가 섞인 외부 HTML)
   const [mounted, setMounted] = useState(false);
 
-  // 상단 CTA 폼(-top) / 영상 후기 슬라이더 / 하단 상세정보(+CTA 폼) 컨테이너 ref
-  const topFormRef = useRef<HTMLDivElement>(null);
+  // 히어로 / 영상 후기 슬라이더 / 하단 상세정보(+CTA 폼) 컨테이너 ref
+  const heroRef = useRef<HTMLDivElement>(null);
   const vidRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
 
@@ -4845,6 +4328,22 @@ export default function StartupConsultingPage() {
     return injected;
   };
 
+  // 히어로(HERO_SECTION_HTML) 주입 — 언마운트 시 script 제거 +
+  // 등장 효과 IntersectionObserver 정리(__tgcHeroStop, 호출 후 no-op 교체).
+  useEffect(() => {
+    if (!mounted) return;
+    const container = heroRef.current;
+    if (!container) return;
+    const injected = injectContainer(container);
+    return () => {
+      injected.forEach((s) => s.remove());
+      const w = window as unknown as Record<string, unknown>;
+      const stopHero = w["__tgcHeroStop"];
+      if (typeof stopHero === "function") (stopHero as () => void)();
+      w["__tgcHeroStop"] = () => {};
+    };
+  }, [mounted]);
+
   // 영상 후기 슬라이더(VIDEO_SECTION_HTML) 주입 — 언마운트 시 script 제거 +
   // rAF/IO/포인터 리스너 정리(__tgcVidStop, 호출 후 no-op 교체).
   useEffect(() => {
@@ -4858,22 +4357,6 @@ export default function StartupConsultingPage() {
       const stopVid = w["__tgcVidStop"];
       if (typeof stopVid === "function") (stopVid as () => void)();
       w["__tgcVidStop"] = () => {};
-    };
-  }, [mounted]);
-
-  // 상단 CTA 폼(CTA_FORM_HTML_TOP) 주입 — 언마운트 시 script 제거 + 그 폼 전용
-  // IntersectionObserver 정리(__tgcCtaObserverStopTop, 호출 후 no-op 교체).
-  useEffect(() => {
-    if (!mounted) return;
-    const container = topFormRef.current;
-    if (!container) return;
-    const injected = injectContainer(container);
-    return () => {
-      injected.forEach((s) => s.remove());
-      const w = window as unknown as Record<string, unknown>;
-      const stopObs = w["__tgcCtaObserverStopTop"];
-      if (typeof stopObs === "function") (stopObs as () => void)();
-      w["__tgcCtaObserverStopTop"] = () => {};
     };
   }, [mounted]);
 
@@ -4925,55 +4408,16 @@ export default function StartupConsultingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }}
       />
-      {/* ───────────────── 상단 메인 영역 (2단) ───────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
-          {/* 좌: 정사각형 이미지 */}
-          <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[#f1f1f1]">
-            {!imgError ? (
-              <Image
-                src={MAIN_IMAGE}
-                alt="헬스장·필라테스 창업 솔루션"
-                fill
-                priority
-                className="object-cover object-center"
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                onError={() => setImgError(true)}
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-400">
-                <svg
-                  className="h-12 w-12"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M2.25 6.75h19.5M3.75 4.5h16.5a1.5 1.5 0 011.5 1.5v12a1.5 1.5 0 01-1.5 1.5H3.75a1.5 1.5 0 01-1.5-1.5V6a1.5 1.5 0 011.5-1.5z"
-                  />
-                </svg>
-                <span className="text-xs">{MAIN_IMAGE}</span>
-              </div>
-            )}
-          </div>
-
-          {/* 우: 상담 신청 폼 카드 (CTA_FORM_HTML_TOP 주입, 하단 CTA 바 스크롤/관찰 타겟) */}
-          <div id="startup-consult-form" className="scroll-mt-24">
-            {mounted ? (
-              <div
-                ref={topFormRef}
-                suppressHydrationWarning
-                dangerouslySetInnerHTML={{ __html: CTA_FORM_HTML_TOP }}
-              />
-            ) : (
-              <div ref={topFormRef} suppressHydrationWarning />
-            )}
-          </div>
-        </div>
-      </section>
+      {/* ───────────────── 히어로 (최상단) ───────────────── */}
+      {mounted ? (
+        <div
+          ref={heroRef}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: HERO_SECTION_HTML }}
+        />
+      ) : (
+        <div ref={heroRef} suppressHydrationWarning />
+      )}
 
       {/* ───────────────── 영상 후기 슬라이더 (히어로 바로 아래) ───────────────── */}
       {mounted ? (
