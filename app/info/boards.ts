@@ -9,6 +9,8 @@
 //   페이지 컴포넌트는 수정할 필요가 없습니다.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { displayName } from "@/lib/displayName";
+
 export type BoardSlug = "column" | "knowhow" | "free";
 
 export type Board = {
@@ -43,12 +45,24 @@ export const BOARDS: Board[] = [
 export type Post = {
   id: number;
   title: string;
+  /** 작성자 닉네임 — 게시판에 공개되는 이름 */
   author: string;
+  /**
+   * 작성자 실명. 공개하지 않으며, 닉네임이 없는 예전 글의 대체 표시용으로만 둔다.
+   * TODO(Supabase): posts 테이블 연동 시 profiles 조인 결과(nickname, username)를
+   *   그대로 담고, 화면에서는 displayName() 으로만 표시할 것.
+   */
+  authorName?: string;
   date: string;
   views: number;
   /** 상세 본문 — 문단 배열 */
   body: string[];
 };
+
+/** 게시글 작성자의 공개 표시명 — 닉네임 우선 */
+export function postAuthor(post: Post): string {
+  return displayName({ nickname: post.author, username: post.authorName });
+}
 
 export const BOARD_POSTS: Record<BoardSlug, Post[]> = {
   column: [

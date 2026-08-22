@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { displayName } from "@/lib/displayName";
 
 type Props = {
   variant: "desktop" | "mobile";
@@ -33,12 +34,35 @@ export default function AuthNav({ variant, onNavigate }: Props) {
     const load = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (!alive) return;
+
       if (error || !data.user) {
         setName(null);
-      } else {
-        const meta = data.user.user_metadata as { username?: string };
-        setName(meta?.username?.trim() || data.user.email?.split("@")[0] || "회원");
+        setReady(true);
+        return;
       }
+
+      // 공개 표시명은 닉네임 기준. profiles 를 먼저 보고, 아직 없으면
+      // 가입 시 넣어둔 메타데이터로 대체한다.
+      const meta = data.user.user_metadata as {
+        nickname?: string;
+        username?: string;
+      };
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("nickname, username")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      if (!alive) return;
+
+      setName(
+        displayName({
+          nickname: profile?.nickname ?? meta?.nickname,
+          username: profile?.username ?? meta?.username,
+          email: data.user.email,
+        }),
+      );
       setReady(true);
     };
 

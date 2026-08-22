@@ -6,6 +6,7 @@ import {
   getBoard,
   getPosts,
   fmtViews,
+  postAuthor,
   type BoardSlug,
 } from "../boards";
 import WriteButton from "../WriteButton";
@@ -105,7 +106,7 @@ export default async function BoardListPage({ params }: Props) {
                 </span>
                 {/* 모바일: 메타 정보 한 줄로 */}
                 <span className="mt-2 flex items-center gap-3 text-xs text-[#777] sm:hidden">
-                  <span>{post.author}</span>
+                  <span>{postAuthor(post)}</span>
                   <span className="text-[#3a3a3a]">|</span>
                   <span className="tabular-nums">{post.date}</span>
                   <span className="text-[#3a3a3a]">|</span>
@@ -115,7 +116,7 @@ export default async function BoardListPage({ params }: Props) {
                 </span>
                 {/* PC: 컬럼 정렬 */}
                 <span className="hidden w-24 flex-shrink-0 text-center text-sm text-[#999] sm:block">
-                  {post.author}
+                  {postAuthor(post)}
                 </span>
                 <span className="hidden w-24 flex-shrink-0 text-center text-sm tabular-nums text-[#777] sm:block">
                   {post.date}

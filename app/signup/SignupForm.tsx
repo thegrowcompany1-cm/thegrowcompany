@@ -10,6 +10,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import NicknameField from "@/components/NicknameField";
 import {
   AUTH_PAGE,
   AUTH_CARD,
@@ -26,10 +27,14 @@ import {
   EMAIL_RE,
   PHONE_RE,
   MIN_PASSWORD,
+  validateNickname,
 } from "@/lib/authStyles";
 
 type Errors = Partial<
-  Record<"name" | "email" | "phone" | "password" | "confirm" | "agree", string>
+  Record<
+    "name" | "nickname" | "email" | "phone" | "password" | "confirm" | "agree",
+    string
+  >
 >;
 
 export default function SignupForm() {
@@ -44,6 +49,8 @@ export default function SignupForm() {
       : "/";
 
   const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [nicknameOk, setNicknameOk] = useState(false);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -60,6 +67,9 @@ export default function SignupForm() {
   const validate = (): Errors => {
     const e: Errors = {};
     if (!name.trim()) e.name = "이름을 입력해주세요.";
+    const nickErr = validateNickname(nickname);
+    if (nickErr) e.nickname = nickErr;
+    else if (!nicknameOk) e.nickname = "닉네임 중복확인을 완료해주세요.";
     if (!email.trim()) e.email = "이메일을 입력해주세요.";
     else if (!EMAIL_RE.test(email.trim()))
       e.email = "이메일 형식이 올바르지 않습니다.";
@@ -89,8 +99,12 @@ export default function SignupForm() {
         email: email.trim(),
         password,
         options: {
-          // handle_new_user 트리거가 이 두 값을 읽어 profiles 행을 만든다
-          data: { username: name.trim(), phone: phone.trim() },
+          // handle_new_user 트리거가 이 값들을 읽어 profiles 행을 만든다
+          data: {
+            username: name.trim(),
+            nickname: nickname.trim(),
+            phone: phone.trim(),
+          },
         },
       });
 
@@ -200,8 +214,24 @@ export default function SignupForm() {
               placeholder="홍길동"
               className={`${INPUT} ${errors.name ? INPUT_ERR : ""}`}
             />
-            {errors.name && <p className={FIELD_ERR}>{errors.name}</p>}
+            {errors.name ? (
+              <p className={FIELD_ERR}>{errors.name}</p>
+            ) : (
+              <p className="mt-1.5 text-xs leading-relaxed text-[#666]">
+                이름은 상담과 결제 확인에만 사용되며 공개되지 않습니다
+              </p>
+            )}
           </div>
+
+          {/* 닉네임 — 공개 표시명 */}
+          <NicknameField
+            id="su-nickname"
+            value={nickname}
+            onChange={setNickname}
+            confirmed={nicknameOk}
+            onConfirmedChange={setNicknameOk}
+            error={errors.nickname}
+          />
 
           {/* 이메일 */}
           <div>

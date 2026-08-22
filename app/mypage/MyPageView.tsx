@@ -8,6 +8,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import NicknameField from "@/components/NicknameField";
 import {
   AUTH_PAGE,
   AUTH_TITLE,
@@ -23,6 +24,7 @@ import {
   formatPhone,
   PHONE_RE,
   MIN_PASSWORD,
+  validateNickname,
 } from "@/lib/authStyles";
 
 const CARD = "rounded-2xl border border-[#242424] bg-[#141414] p-6 sm:p-7";
@@ -32,15 +34,28 @@ type Props = {
   email: string;
   initialName: string;
   initialPhone: string;
+  initialNickname: string;
 };
 
-export default function MyPageView({ email, initialName, initialPhone }: Props) {
+export default function MyPageView({
+  email,
+  initialName,
+  initialPhone,
+  initialNickname,
+}: Props) {
   const router = useRouter();
 
   // ── 프로필 ──
   const [name, setName] = useState(initialName);
   const [phone, setPhone] = useState(initialPhone);
-  const [profileErr, setProfileErr] = useState<{ name?: string; phone?: string }>({});
+  const [nickname, setNickname] = useState(initialNickname);
+  // 기존 닉네임을 그대로 두고 저장하는 경우에는 중복확인을 요구하지 않는다
+  const [nicknameOk, setNicknameOk] = useState(!!initialNickname);
+  const [profileErr, setProfileErr] = useState<{
+    name?: string;
+    phone?: string;
+    nickname?: string;
+  }>({});
   const [profileMsg, setProfileMsg] = useState("");
   const [profileFail, setProfileFail] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
@@ -66,8 +81,12 @@ export default function MyPageView({ email, initialName, initialPhone }: Props) 
     setProfileMsg("");
     setProfileFail("");
 
-    const e: { name?: string; phone?: string } = {};
+    const e: { name?: string; phone?: string; nickname?: string } = {};
     if (!name.trim()) e.name = "이름을 입력해주세요.";
+    const nickErr = validateNickname(nickname);
+    if (nickErr) e.nickname = nickErr;
+    else if (nickname.trim() !== initialNickname && !nicknameOk)
+      e.nickname = "닉네임 중복확인을 완료해주세요.";
     if (!phone.trim()) e.phone = "전화번호를 입력해주세요.";
     else if (!PHONE_RE.test(phone.trim()))
       e.phone = "전화번호를 010-0000-0000 형식으로 입력해주세요.";
@@ -90,19 +109,34 @@ export default function MyPageView({ email, initialName, initialPhone }: Props) 
         .from("profiles")
         .update({
           username: name.trim(),
+          nickname: nickname.trim(),
           phone: phone.trim(),
           updated_at: new Date().toISOString(),
         })
         .eq("id", user.id);
 
       if (error) {
+        // lower(nickname) 유니크 인덱스 위반 — 확인과 저장 사이에 선점된 경우
+        if (error.code === "23505" && error.message.includes("nickname")) {
+          setProfileErr({ nickname: "이미 사용 중인 닉네임입니다." });
+          setNicknameOk(false);
+          return;
+        }
+        if (error.code === "23505" && error.message.includes("phone")) {
+          setProfileErr({ phone: "이미 등록된 전화번호입니다." });
+          return;
+        }
         setProfileFail("정보 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
         return;
       }
 
       // 헤더에 표시되는 이름도 함께 갱신되도록 메타데이터를 맞춰 둔다
       await supabase.auth.updateUser({
-        data: { username: name.trim(), phone: phone.trim() },
+        data: {
+          username: name.trim(),
+          nickname: nickname.trim(),
+          phone: phone.trim(),
+        },
       });
 
       setProfileMsg("회원 정보가 저장되었습니다.");
@@ -238,6 +272,19 @@ export default function MyPageView({ email, initialName, initialPhone }: Props) 
           <p className={AUTH_SUB}>회원 정보를 확인하고 수정하실 수 있습니다.</p>
         </header>
 
+        {/* 닉네임 미설정 회원 — 설정 유도 */}
+        {!initialNickname && (
+          <div className="mb-5 rounded-2xl border border-[#22B573]/40 bg-[#22B573]/10 px-5 py-4">
+            <p className="text-sm font-bold text-[#7fe0b0]">
+              닉네임을 설정해주세요
+            </p>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-[#9ad9bd]">
+              게시판과 댓글에는 실명 대신 닉네임이 표시됩니다. 아래에서 닉네임을
+              정하시면 이름은 공개되지 않습니다.
+            </p>
+          </div>
+        )}
+
         <div className="space-y-5">
           {/* 회원 정보 */}
           <section className={CARD}>
@@ -274,8 +321,24 @@ export default function MyPageView({ email, initialName, initialPhone }: Props) 
                   onChange={(e) => setName(e.target.value)}
                   className={`${INPUT} ${profileErr.name ? INPUT_ERR : ""}`}
                 />
-                {profileErr.name && <p className={FIELD_ERR}>{profileErr.name}</p>}
+                {profileErr.name ? (
+                  <p className={FIELD_ERR}>{profileErr.name}</p>
+                ) : (
+                  <p className="mt-1.5 text-xs leading-relaxed text-[#666]">
+                    이름은 상담과 결제 확인에만 사용되며 공개되지 않습니다
+                  </p>
+                )}
               </div>
+
+              {/* 닉네임 — 공개 표시명 */}
+              <NicknameField
+                id="mp-nickname"
+                value={nickname}
+                onChange={setNickname}
+                confirmed={nicknameOk}
+                onConfirmedChange={setNicknameOk}
+                error={profileErr.nickname}
+              />
 
               <div>
                 <label htmlFor="mp-phone" className={LABEL}>

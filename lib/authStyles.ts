@@ -49,3 +49,22 @@ export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const PHONE_RE = /^01[016789]-\d{3,4}-\d{4}$/;
 
 export const MIN_PASSWORD = 8;
+
+// ── 닉네임 ────────────────────────────────────────────────────────────────
+// 공개 표시명. 2~12자, 한글/영문/숫자만 허용 (공백·특수문자 불가).
+// DB 의 profiles_nickname_unique 인덱스가 lower(nickname) 기준이라
+// 대소문자만 다른 닉네임은 같은 것으로 취급된다.
+export const NICKNAME_MIN = 2;
+export const NICKNAME_MAX = 12;
+export const NICKNAME_RE = /^[가-힣a-zA-Z0-9]+$/;
+
+/** 형식 검증 — 통과하면 null, 아니면 안내 문구를 돌려준다 */
+export function validateNickname(raw: string): string | null {
+  const v = raw.trim();
+  if (!v) return "닉네임을 입력해주세요.";
+  if (v.length < NICKNAME_MIN || v.length > NICKNAME_MAX)
+    return `닉네임은 ${NICKNAME_MIN}자 이상 ${NICKNAME_MAX}자 이하로 입력해주세요.`;
+  if (!NICKNAME_RE.test(v))
+    return "닉네임은 한글, 영문, 숫자만 사용하실 수 있습니다.";
+  return null;
+}

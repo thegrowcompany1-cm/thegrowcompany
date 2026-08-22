@@ -22,18 +22,23 @@ export default async function MyPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, phone")
+    .select("username, phone, nickname")
     .eq("id", user.id)
     .maybeSingle();
 
   // 트리거로 만들어지는 profiles 행이 아직 없을 수 있으므로 메타데이터로 보완
-  const meta = user.user_metadata as { username?: string; phone?: string };
+  const meta = user.user_metadata as {
+    username?: string;
+    phone?: string;
+    nickname?: string;
+  };
 
   return (
     <MyPageView
       email={user.email ?? ""}
       initialName={profile?.username ?? meta.username ?? ""}
       initialPhone={profile?.phone ?? meta.phone ?? ""}
+      initialNickname={profile?.nickname ?? meta.nickname ?? ""}
     />
   );
 }

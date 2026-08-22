@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBoard, getPost, fmtViews } from "../../boards";
+import { getBoard, getPost, fmtViews, postAuthor } from "../../boards";
 import { createClient } from "@/lib/supabase/server";
 import CommentGate from "../../CommentGate";
 import LockedNotice from "../../LockedNotice";
@@ -72,7 +72,7 @@ export default async function PostDetailPage({ params }: Props) {
               {post.title}
             </h1>
             <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#777]">
-              <span className="font-semibold text-[#aaa]">{post.author}</span>
+              <span className="font-semibold text-[#aaa]">{postAuthor(post)}</span>
               <span className="text-[#3a3a3a]">|</span>
               <span className="tabular-nums">{post.date}</span>
               <span className="text-[#3a3a3a]">|</span>
