@@ -100,6 +100,17 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    label: "정보마당",
+    href: "/info",
+    desc: "창업 칼럼과 운영 노하우, 대표님들의 자유게시판",
+    external: false,
+    children: [
+      { label: "창업 칼럼", href: "/info/column" },
+      { label: "운영 노하우", href: "/info/knowhow" },
+      { label: "자유게시판", href: "/info/free" },
+    ],
+  },
+  {
     label: "(주)그로우인테리어",
     href: "https://www.growinterior.co.kr",
     desc: "리모델링, 신규 입점 등 피트니스 전문 인테리어",
