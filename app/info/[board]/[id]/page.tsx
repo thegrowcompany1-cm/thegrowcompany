@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getBoard, getPost, fmtViews } from "../../boards";
 import { createClient } from "@/lib/supabase/server";
 import CommentGate from "../../CommentGate";
+import LockedNotice from "../../LockedNotice";
 
 type Props = { params: Promise<{ board: string; id: string }> };
 
@@ -21,7 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     // 루트 layout 의 title.template 중복 부착을 막기 위해 absolute 사용
     title: { absolute: `${post.title} | ${found.name} | 더그로우컴퍼니` },
-    description: post.body[0].slice(0, 120),
+    // 본문은 회원 전용이므로 메타 설명에 싣지 않는다 (HTML 유출 방지)
+    description: `더그로우컴퍼니 정보마당 ${found.name} 게시글입니다. 로그인 후 전문을 확인하실 수 있습니다.`,
     alternates: { canonical: `/info/${found.slug}/${post.id}` },
   };
 }
@@ -43,8 +45,8 @@ export default async function PostDetailPage({ params }: Props) {
   const loggedIn = !!user;
 
   const returnTo = `/info/${found.slug}/${post.id}`;
-  // 자유게시판은 회원 전용 — 목록은 공개하되 본문은 로그인해야 열람 가능
-  const locked = found.slug === "free" && !loggedIn;
+  // 3개 게시판 공통 정책 — 목록은 공개, 상세 본문은 로그인한 회원만 열람
+  const locked = !loggedIn;
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
@@ -78,36 +80,9 @@ export default async function PostDetailPage({ params }: Props) {
             </div>
           </header>
 
-          {/* 본문 — 자유게시판은 회원만 열람 */}
+          {/* 본문 — 미로그인이면 서버에서 아예 만들지 않는다 */}
           {locked ? (
-            <div className="my-8 rounded-2xl border border-[#242424] bg-[#141414] px-6 py-12 text-center">
-              <svg
-                className="mx-auto h-8 w-8 text-[#22B573]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.6}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-              <p className="mt-4 text-[15px] font-bold text-[#e5e5e5]">
-                회원 전용 게시판입니다
-              </p>
-              <p className="mt-2 text-[13px] leading-relaxed text-[#8a8a8a]">
-                로그인 후 열람하실 수 있습니다.
-              </p>
-              <Link
-                href={`/login?redirect=${encodeURIComponent(returnTo)}`}
-                className="mt-6 inline-flex items-center justify-center rounded-xl bg-[#22B573] px-7 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1a9c60]"
-              >
-                로그인
-              </Link>
-            </div>
+            <LockedNotice returnTo={returnTo} />
           ) : (
             <div className="space-y-5 py-8 text-[15px] leading-[1.85] text-[#cfcfcf]">
               {post.body.map((para, i) => (
@@ -117,8 +92,8 @@ export default async function PostDetailPage({ params }: Props) {
           )}
         </article>
 
-        {/* 댓글 영역 — 본문이 잠긴 경우에는 노출하지 않는다 */}
-        {!locked && <CommentGate loggedIn={loggedIn} returnTo={returnTo} />}
+        {/* 댓글 영역 — 잠긴 글에는 노출하지 않는다 (여기 도달하면 항상 로그인 상태) */}
+        {!locked && <CommentGate />}
 
         {/* 하단 목록으로 */}
         <div className="mt-10 flex justify-center">

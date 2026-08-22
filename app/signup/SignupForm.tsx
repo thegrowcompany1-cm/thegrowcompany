@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   AUTH_PAGE,
@@ -34,6 +34,14 @@ type Errors = Partial<
 
 export default function SignupForm() {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  // 가입 완료 후 돌아갈 경로 — 외부 URL 로 튕기지 않도록 내부 경로만 허용
+  const rawRedirect = searchParams.get("redirect");
+  const redirectTo =
+    rawRedirect && rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
+      ? rawRedirect
+      : "/";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -112,9 +120,9 @@ export default function SignupForm() {
 
       setDone(true);
       if (data.session) {
-        // 자동 로그인 상태 — 잠시 환영 문구를 보여준 뒤 메인으로
+        // 자동 로그인 상태 — 잠시 환영 문구를 보여준 뒤 원래 보던 곳으로
         router.refresh();
-        setTimeout(() => router.push("/"), 1600);
+        setTimeout(() => router.push(redirectTo), 1600);
       } else {
         // 프로젝트에서 이메일 인증을 켜둔 경우
         setNeedsConfirm(true);
@@ -136,7 +144,14 @@ export default function SignupForm() {
                 인증을 완료하시면 로그인하실 수 있습니다.
               </p>
               <div className="mt-6">
-                <Link href="/login" className={LINK}>
+                <Link
+                  href={
+                    redirectTo === "/"
+                      ? "/login"
+                      : `/login?redirect=${encodeURIComponent(redirectTo)}`
+                  }
+                  className={LINK}
+                >
                   로그인 화면으로 이동
                 </Link>
               </div>
@@ -144,10 +159,13 @@ export default function SignupForm() {
           ) : (
             <>
               <p className={AUTH_SUB}>
-                {name.trim()}님, 반갑습니다. 잠시 후 메인 화면으로 이동합니다.
+                {name.trim()}님, 반갑습니다.{" "}
+                {redirectTo === "/"
+                  ? "잠시 후 메인 화면으로 이동합니다."
+                  : "잠시 후 보시던 글로 돌아갑니다."}
               </p>
               <div className="mt-6">
-                <Link href="/" className={LINK}>
+                <Link href={redirectTo} className={LINK}>
                   바로 이동하기
                 </Link>
               </div>
@@ -287,7 +305,14 @@ export default function SignupForm() {
 
         <p className="mt-6 text-center text-[13px] text-[#8a8a8a]">
           이미 계정이 있으신가요.{" "}
-          <Link href="/login" className={LINK}>
+          <Link
+            href={
+              redirectTo === "/"
+                ? "/login"
+                : `/login?redirect=${encodeURIComponent(redirectTo)}`
+            }
+            className={LINK}
+          >
             로그인
           </Link>
         </p>
