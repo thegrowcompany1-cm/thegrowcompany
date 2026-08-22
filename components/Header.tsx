@@ -162,10 +162,10 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-0">
+          <nav className="hidden xl:flex items-center gap-0">
             {navItems.map((item) => {
               const isHov = hoveredLabel === item.label;
-              const linkCls = `px-3 py-2.5 text-sm font-medium transition-colors duration-150 flex items-center gap-1 rounded-lg hover:bg-white/8 ${
+              const linkCls = `whitespace-nowrap px-2.5 py-2.5 text-sm font-medium transition-colors duration-150 flex items-center gap-1 rounded-lg hover:bg-white/8 2xl:px-3 ${
                 isHov ? "text-[#009519]" : "text-[#CCCCCC] hover:text-white"
               }`;
 
@@ -235,7 +235,7 @@ export default function Header() {
           </nav>
 
           {/* Right: 인증 + SNS + CTA */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden xl:flex items-center gap-2 2xl:gap-3">
             <AuthNav variant="desktop" />
             <span className="h-4 w-px bg-white/15" aria-hidden="true" />
             <a
@@ -243,7 +243,7 @@ export default function Header() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="더그로우컴퍼니 인스타그램"
-              className="p-1.5 text-[#CCCCCC] hover:text-[#009519] transition-colors rounded-lg hover:bg-white/10"
+              className="p-1 text-[#CCCCCC] hover:text-[#009519] transition-colors rounded-lg hover:bg-white/10 2xl:p-1.5"
             >
               <InstagramIcon className="w-6 h-6" />
             </a>
@@ -252,13 +252,13 @@ export default function Header() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="더그로우컴퍼니 유튜브"
-              className="p-1.5 text-[#CCCCCC] hover:text-[#009519] transition-colors rounded-lg hover:bg-white/10"
+              className="p-1 text-[#CCCCCC] hover:text-[#009519] transition-colors rounded-lg hover:bg-white/10 2xl:p-1.5"
             >
               <YoutubeIcon className="w-6 h-6" />
             </a>
             <a
               href="tel:15514476"
-              className="ml-1 px-5 py-2 bg-[#009519] hover:bg-[#007a14] text-white text-sm font-bold rounded-full transition-colors"
+              className="ml-0.5 whitespace-nowrap px-4 py-2 bg-[#009519] hover:bg-[#007a14] text-white text-sm font-bold rounded-full transition-colors 2xl:px-5"
             >
               무료 상담
             </a>
@@ -266,7 +266,7 @@ export default function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="lg:hidden p-2 text-[#CCCCCC] rounded-lg hover:bg-white/10"
+            className="xl:hidden p-2 text-[#CCCCCC] rounded-lg hover:bg-white/10"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="메뉴 열기"
           >
@@ -284,7 +284,7 @@ export default function Header() {
         const showDesc = !!hoveredItem && !hoveredItem.children;
         return (
           <div
-            className="hidden lg:block overflow-hidden transition-all duration-200"
+            className="hidden xl:block overflow-hidden transition-all duration-200"
             style={{ maxHeight: showDesc ? "44px" : "0px", borderTop: showDesc ? "1px solid rgba(255,255,255,0.07)" : "1px solid transparent" }}
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
@@ -298,7 +298,7 @@ export default function Header() {
 
       {/* ── Mobile menu ── */}
       <div
-        className={`lg:hidden overflow-y-auto overflow-x-hidden transition-all duration-300 ${
+        className={`xl:hidden overflow-y-auto overflow-x-hidden transition-all duration-300 ${
           mobileOpen ? "max-h-[80vh]" : "max-h-0"
         }`}
       >

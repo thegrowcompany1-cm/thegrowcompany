@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -9,5 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <LoginForm />;
+  // LoginForm 이 useSearchParams(redirect) 를 쓰므로 Suspense 로 감싼다
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0d0d0d]" />}>
+      <LoginForm />
+    </Suspense>
+  );
 }

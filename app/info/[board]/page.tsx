@@ -75,6 +75,14 @@ export default async function BoardListPage({ params }: Props) {
           {found.writable && <WriteButton />}
         </header>
 
+        {/* 자유게시판은 목록만 공개하고 본문은 회원 전용 */}
+        {found.slug === "free" && (
+          <p className="mb-6 rounded-xl border border-[#242424] bg-[#141414] px-4 py-3 text-[13px] leading-relaxed text-[#8a8a8a]">
+            자유게시판의 글 내용은 회원 전용입니다. 로그인하시면 본문을 열람하실 수
+            있습니다.
+          </p>
+        )}
+
         {/* 목록 헤더 (PC 전용) */}
         <div className="hidden border-b border-[#222] px-3 pb-3 text-xs font-bold text-[#777] sm:flex sm:items-center sm:gap-4">
           <span className="w-12 flex-shrink-0 text-center">번호</span>
