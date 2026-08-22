@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import AuthNav from "./AuthNav";
 
 // SNS 링크
 const INSTAGRAM_URL =
@@ -233,8 +234,10 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Right: SNS + CTA */}
+          {/* Right: 인증 + SNS + CTA */}
           <div className="hidden lg:flex items-center gap-3">
+            <AuthNav variant="desktop" />
+            <span className="h-4 w-px bg-white/15" aria-hidden="true" />
             <a
               href={INSTAGRAM_URL}
               target="_blank"
@@ -401,6 +404,10 @@ export default function Header() {
               </div>
             );
           })}
+          {/* 인증 영역 — 기존 SNS 줄 위에 추가 */}
+          <div className="border-t border-white/[0.06] pb-1">
+            <AuthNav variant="mobile" onNavigate={() => setMobileOpen(false)} />
+          </div>
           <div className="flex items-center gap-4 px-4 pt-4">
             <a
               href={INSTAGRAM_URL}
