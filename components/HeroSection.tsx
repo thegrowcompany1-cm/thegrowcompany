@@ -111,8 +111,9 @@ const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[]
         피트니스 비즈니스 전문 그룹.
       </>
     ),
-    sizeClass: "text-lg sm:text-2xl lg:text-4xl",
-    weight: 400,
+    // 첫 번째 슬로건과 동일한 크기·굵기 (반응형 단계까지 그대로 맞춤)
+    sizeClass: "text-2xl sm:text-4xl lg:text-5xl xl:text-6xl",
+    weight: 900,
   },
 ];
 
