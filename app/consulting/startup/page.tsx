@@ -1427,7 +1427,7 @@ const DETAIL_HTML = `
         <p class="tgc-checklist-result-count">현재 <strong id="countDisplay">0</strong>개 체크됨</p>
         <p class="tgc-checklist-result-title" id="resultTitle">항목을 체크해보세요</p>
         <p class="tgc-checklist-result-desc" id="resultDesc">
-          2개 이상 해당되면 운영 구조 점검이 필요합니다.
+          2개 이상 해당되면 유입·등록·유지 어딘가에 구멍이 있다는 신호입니다. 오픈 전에 점검하는 것이 가장 쌉니다.
         </p>
       </div>
     </div>
@@ -1494,7 +1494,7 @@ function updateCheckResult() {
     checklistBox.classList.remove('danger-mode');
     resultIcon.textContent = '✅';
     resultTitle.textContent = '항목을 체크해보세요';
-    resultDesc.innerHTML = '2개 이상 해당되면 운영 구조 점검이 필요합니다.';
+    resultDesc.innerHTML = '2개 이상 해당되면 유입·등록·유지 어딘가에 구멍이 있다는 신호입니다. 오픈 전에 점검하는 것이 가장 쌉니다.';
   }
 }
 
@@ -1522,7 +1522,8 @@ function animateCount(element, target) {
 .tgc-problem {
   font-family: 'Pretendard', sans-serif;
   background: #f8f9fa;
-  padding: 100px 20px;
+  /* 문제 카드 제거 후 솔루션 박스만 남아 상단 여백을 줄였다 */
+  padding: 70px 20px 100px;
 }
 
 .tgc-problem-inner {
@@ -1546,128 +1547,6 @@ function animateCount(element, target) {
 .tgc-delay-2 { transition-delay: 0.3s; }
 .tgc-delay-3 { transition-delay: 0.5s; }
 
-.tgc-problem h2 {
-  text-align: center;
-  font-size: 34px;
-  font-weight: 800;
-  color: #1a1a1a;
-  margin-bottom: 20px;
-  line-height: 1.4;
-}
-
-.tgc-problem h2 .danger {
-  color: #ff6b6b;
-  position: relative;
-  display: inline-block;
-}
-
-.tgc-problem h2 .danger::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 4px;
-  background: #ff6b6b;
-  border-radius: 2px;
-  transition: width 0.8s ease 0.5s;
-}
-
-.tgc-problem h2.visible .danger::after {
-  width: 100%;
-}
-
-.tgc-problem-desc {
-  text-align: center;
-  font-size: 18px;
-  color: #666;
-  line-height: 1.8;
-  margin-bottom: 60px;
-}
-
-.tgc-problem-desc strong {
-  color: #1a1a1a;
-  position: relative;
-}
-
-/* 문제 카드 그리드 */
-.tgc-problem-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 70px;
-}
-
-.tgc-problem-card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 35px 28px;
-  text-align: center;
-  box-shadow: 0 4px 25px rgba(0,0,0,0.06);
-  border: 2px solid transparent;
-  transition: all 0.4s ease;
-  opacity: 0;
-  transform: translateY(40px);
-}
-
-.tgc-problem-card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.tgc-problem-card:nth-child(1) { transition-delay: 0.1s; }
-.tgc-problem-card:nth-child(2) { transition-delay: 0.25s; }
-.tgc-problem-card:nth-child(3) { transition-delay: 0.4s; }
-
-.tgc-problem-card:hover {
-  border-color: #ff6b6b;
-  transform: translateY(-8px);
-  box-shadow: 0 12px 35px rgba(255, 107, 107, 0.15);
-}
-
-.tgc-problem-card-icon {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 22px;
-  font-size: 32px;
-  transition: transform 0.4s ease;
-}
-
-.tgc-problem-card:hover .tgc-problem-card-icon {
-  transform: scale(1.1) rotate(-5deg);
-  animation: iconShake 0.5s ease;
-}
-
-@keyframes iconShake {
-  0%, 100% { transform: scale(1.1) rotate(-5deg); }
-  25% { transform: scale(1.1) rotate(5deg); }
-  75% { transform: scale(1.1) rotate(-3deg); }
-}
-
-.tgc-problem-card h4 {
-  font-size: 19px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 12px;
-  line-height: 1.4;
-}
-
-.tgc-problem-card h4 .red {
-  color: #ff6b6b;
-}
-
-.tgc-problem-card p {
-  font-size: 14px;
-  color: #888;
-  line-height: 1.7;
-}
-
-/* 해결책 섹션 */
 .tgc-solution {
   background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
   border-radius: 28px;
@@ -1787,33 +1666,8 @@ function animateCount(element, target) {
   fill: #4CAF50;
 }
 
-/* 화살표 연결선 */
-.tgc-arrow-connector {
-  display: flex;
-  justify-content: center;
-  margin: -20px 0;
-  position: relative;
-  z-index: 1;
-}
-
-.tgc-arrow-connector svg {
-  width: 50px;
-  height: 50px;
-  fill: #4CAF50;
-  animation: arrowPulse 1.5s ease infinite;
-}
-
-@keyframes arrowPulse {
-  0%, 100% { transform: translateY(0); opacity: 1; }
-  50% { transform: translateY(8px); opacity: 0.6; }
-}
-
 @media (max-width: 768px) {
-  .tgc-problem { padding: 70px 20px; }
-  .tgc-problem h2 { font-size: 26px; }
-  .tgc-problem-desc { font-size: 16px; margin-bottom: 40px; }
-  .tgc-problem-grid { grid-template-columns: 1fr; gap: 16px; }
-  .tgc-problem-card { padding: 28px 24px; }
+  .tgc-problem { padding: 50px 20px 70px; }
   .tgc-solution { padding: 40px 25px; border-radius: 20px; }
   .tgc-solution h3 { font-size: 24px; }
   .tgc-solution-sub { font-size: 16px; }
@@ -1824,37 +1678,6 @@ function animateCount(element, target) {
 
 <section class="tgc-problem">
   <div class="tgc-problem-inner">
-    <h2 class="tgc-fade-up tgc-delay-1">왜 대부분의 창업이 <span class="danger">흔들리는가</span></h2>
-    
-    <p class="tgc-problem-desc tgc-fade-up tgc-delay-2">
-      대부분 창업은 <strong>'오픈까지는'</strong> 할 수 있습니다..<br>
-      하지만 진짜 문제는 오픈 이후, <br>지속적인 운영이 되는것이 중요합니다.
-    </p>
-    
-    <div class="tgc-problem-grid" id="problemGrid">
-      <div class="tgc-problem-card">
-        <div class="tgc-problem-card-icon">📉</div>
-        <h4>유입은 있는데<br><span class="red">등록이 안 됨</span></h4>
-        <p>상담 구조와 가격 설계가<br>제대로 되어있지 않아서</p>
-      </div>
-      
-      <div class="tgc-problem-card">
-        <div class="tgc-problem-card-icon">🔄</div>
-        <h4>등록은 되는데<br><span class="red">유지가 안 됨</span></h4>
-        <p>회원 관리 시스템과<br>재등록 전략이 없어서</p>
-      </div>
-      
-      <div class="tgc-problem-card">
-        <div class="tgc-problem-card-icon">💸</div>
-        <h4>매출은 있는데<br><span class="red">남는 돈이 없음</span></h4>
-        <p>비용 구조와 운영 효율이<br>설계되지 않아서</p>
-      </div>
-    </div>
-    
-    <div class="tgc-arrow-connector">
-      <svg viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M12 20v0"/><path d="M12 16l-4 4h8l-4-4z"/></svg>
-    </div>
-    
     <div class="tgc-solution" id="solutionBox">
       <span class="tgc-solution-badge">💡 더그로우는 어떤 곳이길래?</span>
       <h3>저희는 이렇게 창업을 도와드립니다.</h3>
@@ -1890,7 +1713,6 @@ function animateCount(element, target) {
 <script>
 (function() {
   const fadeElements = document.querySelectorAll('.tgc-problem .tgc-fade-up');
-  const problemCards = document.querySelectorAll('.tgc-problem-card');
   const solutionBox = document.getElementById('solutionBox');
   const solutionFeatures = document.querySelectorAll('.tgc-solution-feature');
   
@@ -1903,23 +1725,6 @@ function animateCount(element, target) {
   }, { threshold: 0.2 });
   
   fadeElements.forEach(el => observer.observe(el));
-  
-  // 문제 카드 관찰
-  const cardObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        problemCards.forEach((card, index) => {
-          setTimeout(() => {
-            card.classList.add('visible');
-          }, index * 150);
-        });
-      }
-    });
-  }, { threshold: 0.3 });
-  
-  if (document.getElementById('problemGrid')) {
-    cardObserver.observe(document.getElementById('problemGrid'));
-  }
   
   // 솔루션 박스 관찰
   const solutionObserver = new IntersectionObserver((entries) => {
