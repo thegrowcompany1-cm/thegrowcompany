@@ -106,7 +106,9 @@ const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[]
       <>
         현장 경력 도합 100년.
         <br />
-        창업부터 운영까지, 어떤 미션도 수행하는
+        창업부터 운영까지,
+        <br />
+        어떤 미션도 수행하는
         <br />
         피트니스 비즈니스 전문 그룹.
       </>
