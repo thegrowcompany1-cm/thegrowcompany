@@ -4,13 +4,18 @@
 // 각 카드의 상단 이미지 영역은 회색 placeholder 박스입니다.
 // 나중에 이미지를 넣을 때는 각 항목의 `img` 경로(public/ 기준)에 파일을 넣고,
 // 아래 ServiceCard의 placeholder 블록을 <Image .../> 로 교체하시면 됩니다.
-// 가격이 "0원"인 항목은 그대로 "0원"으로 표시됩니다 (price 값만 수정하면 됨).
+// 가격 표기는 price 값으로 제어합니다.
+// 단, FREE_CONSULT_SLUGS 에 포함된 상담형 상품은 가격 대신 "무료 상담 받아보기" 문구를
+// 표시합니다. 대상 식별은 카드 이름이 아니라 slug 로만 하므로, 표시명이 바뀌어도
+// 로직이 깨지지 않습니다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
 import Link from "next/link";
 
 type Card = {
+  /** 상품 식별자 — 표시명이 바뀌어도 유지되는 안정적인 키 */
+  slug?: string;
   title: string;
   desc?: string;
   price?: string;
@@ -20,6 +25,16 @@ type Card = {
   objectPosition?: string; // 사진 노출 위치 (기본: top). 천장이 많은 사진은 아래쪽으로 내림
   href?: string; // 설정 시 카드 클릭하면 해당 상세페이지로 이동
 };
+
+// 가격 대신 무료 상담 안내를 노출할 상담형 상품.
+// 이 세 상품은 정가가 정해진 판매 상품이 아니라 무료 상담으로 시작하는 서비스라
+// "0원" 대신 상담 유도 문구를 보여준다. (Supabase products 데이터는 변경하지 않는다)
+const FREE_CONSULT_SLUGS = ["startup", "outsourcing", "community"] as const;
+
+const FREE_CONSULT_LABEL = "무료 상담 받아보기 →";
+
+const isFreeConsult = (slug?: string) =>
+  !!slug && (FREE_CONSULT_SLUGS as readonly string[]).includes(slug);
 
 type Group = {
   category: string;
@@ -32,6 +47,7 @@ const groups: Group[] = [
     category: "창업 솔루션",
     cards: [
       {
+        slug: "startup",
         title: "창업 솔루션",
         desc: "헬스장, 필라테스 등 창업을 준비 중인 대표님",
         price: "0원",
@@ -45,6 +61,7 @@ const groups: Group[] = [
     category: "위탁 솔루션",
     cards: [
       {
+        slug: "outsourcing",
         title: "매장 위탁운영",
         desc: "헬스장, 필라테스 샵 등 매장 운영이 어려우신 대표님을 위한 솔루션",
         price: "0원",
@@ -54,6 +71,7 @@ const groups: Group[] = [
         accent: true,
       },
       {
+        slug: "community",
         title: "시설 위탁운영",
         desc: "아파트, 기업, 공공기관, 대학교 등 커뮤니티 시설 장기 위탁 솔루션",
         price: "0원",
@@ -139,10 +157,16 @@ function ServiceCard({ card }: { card: Card }) {
             {card.desc}
           </p>
         )}
-        {card.price && (
-          <p className="mt-3 text-base font-black text-[#009519] sm:text-lg">
-            {card.price}
+        {isFreeConsult(card.slug) ? (
+          <p className="mt-3 text-[13px] font-black leading-snug text-[#009519] sm:text-[15px]">
+            {FREE_CONSULT_LABEL}
           </p>
+        ) : (
+          card.price && (
+            <p className="mt-3 text-base font-black text-[#009519] sm:text-lg">
+              {card.price}
+            </p>
+          )
         )}
       </div>
     </>
