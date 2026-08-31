@@ -12,7 +12,7 @@
 //  · 열림 시 body 스크롤 잠금, 닫힘/언마운트 시 해제
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 단가 상수 — 모든 금액 단위는 "만원". 아래 숫자만 바꾸면 계산에 반영됩니다.
@@ -335,6 +335,25 @@ export default function CostCalculator() {
       document.querySelector("#consulting-form");
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  // 결과 화면(5단계) 도달 시 메타 커스텀 이벤트 — 세션당 1회만 보낸다.
+  // 픽셀이 매핑되지 않은 페이지에서는 헬퍼가 조용히 무시한다.
+  const calcTrackedRef = useRef(false);
+  useEffect(() => {
+    if (step !== 5) return;
+    if (calcTrackedRef.current) return;
+    calcTrackedRef.current = true;
+
+    const w = window as Window & {
+      __tgcFbTrackCustom?: (e: string, p?: Record<string, unknown>) => void;
+    };
+    if (typeof w.__tgcFbTrackCustom === "function") {
+      w.__tgcFbTrackCustom("CalculatorComplete", {
+        industry: industry ?? "",
+        area,
+      });
+    }
+  }, [step, industry, area]);
 
   const industryLabel = industry
     ? INDUSTRY_LIST.find((i) => i.key === industry)!.label

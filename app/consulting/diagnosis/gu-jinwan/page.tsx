@@ -539,6 +539,10 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         if (typeof window.gtag === 'function') {
           window.gtag('event', 'form_submit', { form_source: '진단상담' });
         }
+        /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
+        if (typeof window.__tgcFbTrack === 'function') {
+          window.__tgcFbTrack('Lead', { content_name: '진단상담' });
+        }
         alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
         form.reset();
         if (etcInput) etcInput.disabled = true;

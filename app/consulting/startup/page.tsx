@@ -3689,6 +3689,10 @@ function toggleFaq(element) {
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'form_submit', { form_source: '창업지원상담_아임웹' });
     }
+    /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
+    if (typeof window.__tgcFbTrack === 'function') {
+      window.__tgcFbTrack('Lead', { content_name: '창업지원상담_아임웹' });
+    }
 
     setTimeout(function() {
       alert('정상적으로 접수되었습니다. 감사합니다 :)');

@@ -305,6 +305,10 @@ const TOP_CONTACT_HTML = `<style>
         if (typeof window.gtag === 'function') {
           window.gtag('event', 'form_submit', { form_source: '커뮤니티문의' });
         }
+        /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
+        if (typeof window.__tgcFbTrack === 'function') {
+          window.__tgcFbTrack('Lead', { content_name: '커뮤니티문의' });
+        }
         alert('제출이 완료되었습니다.\\n24시간 이내로 연락드릴 예정입니다.\\n잠시만 기다려주세요.');
         document.getElementById('wo-name-top').value = '';
         document.getElementById('wo-phone-top').value = '';
@@ -5090,6 +5094,10 @@ const DETAIL_HTML = `<!-- ============================================ -->
         /* GA4 전환 이벤트 (gtag 미로드 시 조용히 무시) */
         if (typeof window.gtag === 'function') {
           window.gtag('event', 'form_submit', { form_source: '커뮤니티문의' });
+        }
+        /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
+        if (typeof window.__tgcFbTrack === 'function') {
+          window.__tgcFbTrack('Lead', { content_name: '커뮤니티문의' });
         }
         alert('제출이 완료되었습니다.\\n24시간 이내로 연락드릴 예정입니다.\\n잠시만 기다려주세요.');
         /* 폼 초기화 */
