@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import AuthNav from "./AuthNav";
+import FcLink from "./FcLink";
 
 // SNS 링크
 const INSTAGRAM_URL =
@@ -48,7 +49,13 @@ function YoutubeIcon({ className }: { className?: string }) {
   );
 }
 
-type NavChild = { label: string; href: string; sub?: string };
+type NavChild = {
+  label: string;
+  href: string;
+  sub?: string;
+  /** 기간 한정 외부 링크로 처리할 항목 (FcLink 가 시각을 보고 판정) */
+  fc?: boolean;
+};
 type NavItem = {
   label: string;
   href: string;
@@ -97,7 +104,8 @@ const navItems: NavItem[] = [
     external: false,
     children: [
       { label: "창업 세미나", href: "/edu/startup-class" },
-      { label: "정규 FC 세미나", href: "/edu/fc-class" },
+      // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
+      { label: "정규 FC 세미나", href: "/edu/fc-class", fc: true },
     ],
   },
   {
@@ -214,18 +222,27 @@ export default function Header() {
                       }`}
                     >
                       <div className="min-w-[220px] rounded-xl border border-white/10 bg-[#1b1b1b] py-2 shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            className="block px-4 py-2.5 text-[#CCCCCC] transition-colors hover:bg-white/5 hover:text-[#009519]"
-                          >
-                            <span className="text-sm font-medium">{child.label}</span>
-                            {child.sub && (
-                              <span className="mt-0.5 block text-xs text-[#777777]">{child.sub}</span>
-                            )}
-                          </Link>
-                        ))}
+                        {item.children.map((child) => {
+                          const childCls =
+                            "block px-4 py-2.5 text-[#CCCCCC] transition-colors hover:bg-white/5 hover:text-[#009519]";
+                          const childInner = (
+                            <>
+                              <span className="text-sm font-medium">{child.label}</span>
+                              {child.sub && (
+                                <span className="mt-0.5 block text-xs text-[#777777]">{child.sub}</span>
+                              )}
+                            </>
+                          );
+                          return child.fc ? (
+                            <FcLink key={child.href} className={childCls}>
+                              {childInner}
+                            </FcLink>
+                          ) : (
+                            <Link key={child.href} href={child.href} className={childCls}>
+                              {childInner}
+                            </Link>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -385,19 +402,36 @@ export default function Header() {
                       >
                         <span className="text-sm">{item.label} 전체 보기</span>
                       </Link>
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className="flex items-baseline gap-2 rounded-lg px-4 py-2 text-[#BBBBBB] transition-colors hover:bg-white/5 hover:text-[#009519]"
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          <span className="text-sm">{child.label}</span>
-                          {child.sub && (
-                            <span className="text-xs text-[#666666]">{child.sub}</span>
-                          )}
-                        </Link>
-                      ))}
+                      {item.children.map((child) => {
+                        const mCls =
+                          "flex items-baseline gap-2 rounded-lg px-4 py-2 text-[#BBBBBB] transition-colors hover:bg-white/5 hover:text-[#009519]";
+                        const mInner = (
+                          <>
+                            <span className="text-sm">{child.label}</span>
+                            {child.sub && (
+                              <span className="text-xs text-[#666666]">{child.sub}</span>
+                            )}
+                          </>
+                        );
+                        return child.fc ? (
+                          <FcLink
+                            key={child.href}
+                            className={mCls}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            {mInner}
+                          </FcLink>
+                        ) : (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className={mCls}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            {mInner}
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

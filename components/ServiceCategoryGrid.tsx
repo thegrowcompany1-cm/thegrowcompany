@@ -12,6 +12,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import FcLink from "./FcLink";
 
 type Card = {
   /** 상품 식별자 — 표시명이 바뀌어도 유지되는 안정적인 키 */
@@ -24,6 +25,8 @@ type Card = {
   photo?: boolean; // img 파일이 실제로 존재하여 placeholder 대신 사진을 표시할지 여부
   objectPosition?: string; // 사진 노출 위치 (기본: top). 천장이 많은 사진은 아래쪽으로 내림
   href?: string; // 설정 시 카드 클릭하면 해당 상세페이지로 이동
+  /** 기간 한정 외부 링크로 처리할 카드 (FcLink 가 시각을 보고 판정) */
+  fc?: boolean;
 };
 
 // 가격 대신 무료 상담 안내를 노출할 상담형 상품.
@@ -99,7 +102,8 @@ const groups: Group[] = [
     desc: "피트니스 업계에 도움이 필요한 세미나를 진행합니다.",
     cards: [
       { title: "창업 세미나", img: "/edu/edustartup.jpg", href: "/edu/startup-class", photo: true, objectPosition: "center 78%" }, // 창업 세미나 카드 이미지
-      { title: "정규 FC 세미나", img: "/edu/edufc.jpg", href: "/edu/fc-class", photo: true, objectPosition: "center 78%" }, // 정규 FC 세미나 카드 이미지
+      // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
+      { title: "정규 FC 세미나", img: "/edu/edufc.jpg", href: "/edu/fc-class", fc: true, photo: true, objectPosition: "center 78%" }, // 정규 FC 세미나 카드 이미지
     ],
   },
 ];
@@ -171,6 +175,11 @@ function ServiceCard({ card }: { card: Card }) {
       </div>
     </>
   );
+
+  // 기간 한정 외부 링크 카드
+  if (card.fc) {
+    return <FcLink className={cardClass}>{inner}</FcLink>;
+  }
 
   // href가 있으면 카드를 상세페이지 링크로 렌더링
   if (card.href) {

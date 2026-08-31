@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import FcLink from "@/components/FcLink";
 
 const LINE1 = "그로우 에듀.";
 const LINE2 = "체육시설업 종사자를 위한 성장 교육입니다.";
@@ -32,7 +33,9 @@ const COURSES = [
     badge: "원데이 클래스",
   },
   {
+    // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
     href: "/edu/fc-class",
+    fc: true,
     img: "https://cdn.imweb.me/thumbnail/20260131/2c27053d77aa7.jpg",
     alt: "그로우 에듀 정규 FC 클래스 교육 현장",
     title: "정규 FC 클래스",
@@ -197,12 +200,19 @@ export default function EduHub() {
           지금 상황에 맞는<br className="sm:hidden" /> 교육을 선택하세요.
         </h2>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {COURSES.map((c) => (
-            <Link
-              key={c.href}
-              href={c.href}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] transition-all duration-200 hover:-translate-y-1 hover:border-[#22B573] hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
-            >
+          {COURSES.map((c) => {
+            const courseCls =
+              "group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] transition-all duration-200 hover:-translate-y-1 hover:border-[#22B573] hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]";
+            const CourseWrap = ({ children }: { children: React.ReactNode }) =>
+              "fc" in c && c.fc ? (
+                <FcLink className={courseCls}>{children}</FcLink>
+              ) : (
+                <Link href={c.href} className={courseCls}>
+                  {children}
+                </Link>
+              );
+            return (
+            <CourseWrap key={c.href}>
               <div className="relative aspect-video w-full overflow-hidden bg-[#1c1c1c]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -242,8 +252,9 @@ export default function EduHub() {
                   자세히 보기 <span aria-hidden="true">→</span>
                 </span>
               </div>
-            </Link>
-          ))}
+            </CourseWrap>
+            );
+          })}
         </div>
       </section>
 

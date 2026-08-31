@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import FcLink from "./FcLink";
 
 export default function Footer() {
   return (
@@ -58,18 +59,24 @@ export default function Footer() {
                 { label: "기업/커뮤니티 위탁", href: "/consulting/community" },
                 { label: "진단솔루션", href: "/consulting/diagnosis" },
                 { label: "솔루션사례", href: "/consulting/cases" },
-                { label: "정규 FC 클래스", href: "/edu/fc-class" },
+                // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
+                { label: "정규 FC 클래스", href: "/edu/fc-class", fc: true },
                 { label: "창업 클래스", href: "/edu/startup-class" },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-gray-400 hover:text-[#009519] transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              ].map((link) => {
+                const linkCls =
+                  "text-sm text-gray-400 hover:text-[#009519] transition-colors";
+                return (
+                  <li key={link.href}>
+                    {"fc" in link && link.fc ? (
+                      <FcLink className={linkCls}>{link.label}</FcLink>
+                    ) : (
+                      <Link href={link.href} className={linkCls}>
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
