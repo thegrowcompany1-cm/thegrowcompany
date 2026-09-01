@@ -3542,7 +3542,7 @@ function toggleFaq(element) {
           <span class="tg-form-title">창업 지원 상담 신청(무료)</span>
         </div>
 
-        <form id="startupForm" action="https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec" method="POST" target="hidden_iframe">
+        <form id="startupForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe">
           <div class="tg-form-group">
             <label class="tg-label">희망 업종을 선택해주세요. <span class="tg-required">*</span></label>
             <select name="industry" class="tg-input" required>

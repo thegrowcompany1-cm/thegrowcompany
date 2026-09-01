@@ -221,7 +221,7 @@ const TOP_CONTACT_HTML = `<style>
 
 <script>
 (function(){
-  var GAS_URL = 'https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec';
 
   function formatPhone(value) {
     var nums = value.replace(/[^0-9]/g, '');
@@ -5005,7 +5005,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
 <script>
 (function(){
 
-  var GAS_URL = 'https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec';
 
   /* 하이픈 자동 포맷 */
   function formatPhone(value) {

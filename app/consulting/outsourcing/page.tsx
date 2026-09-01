@@ -2029,7 +2029,7 @@ function toggleFaq(el) {
         <span class="tg-form-title">1회 무료 방문 진단 솔루션 신청하기</span>
       </div>
 
-      <form id="consultingForm" action="https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec" method="POST" target="hidden_iframe2">
+      <form id="consultingForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe2">
         <div class="tg-form-group">
           <label class="tg-label">이름을 입력해주세요. <span class="tg-required">*</span></label>
           <input type="text" name="name" class="tg-input" required />
@@ -2222,7 +2222,7 @@ const TOP_FORM_HTML = `<style>
 </style>
 
 <div id="wtTopForm">
-  <form id="consultingForm-top" action="https://script.google.com/macros/s/AKfycbyelFqoWSqeRWmjVGARFePbNqTtkTtkG9MtXZpfusvTSUxnE42SrjJgmKM4dQDVcI-QAg/exec" method="POST" target="hidden_iframe2_top">
+  <form id="consultingForm-top" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe2_top">
     <div class="tg-form-group">
       <label class="tg-label">이름을 입력해주세요. <span class="tg-required">*</span></label>
       <input type="text" name="name" class="tg-input" required />
