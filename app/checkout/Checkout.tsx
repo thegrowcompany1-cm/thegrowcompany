@@ -8,7 +8,8 @@
 //    → setAmount → renderPaymentMethods + renderAgreement → requestPayment
 //  · "구매조건 확인 및 결제진행 동의"는 위젯 약관(renderAgreement)으로 대체,
 //    "개인정보 수집 및 이용 동의"는 자체 체크박스 유지
-//  · 승인 처리(successUrl 도착 후 서버 승인 API)는 2단계
+//  · 승인(2단계)은 successUrl 도착 후 /checkout/success 가 서버 라우트
+//    (/api/payments/confirm)로 처리한다. 주문자 정보는 sessionStorage 로 넘긴다.
 //  · CSS 클래스 접두사 chk-
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -22,14 +23,12 @@ import {
   type WidgetPaymentMethodWidget,
   type WidgetAgreementWidget,
 } from "@tosspayments/tosspayments-sdk";
-import { supabase } from "@/lib/supabase";
-
-type Product = {
-  id: string;
-  slug: string;
-  name: string;
-  price: number;
-};
+import {
+  buildOrderId,
+  fetchProductBySlug,
+  saveCheckoutCustomer,
+  type Product,
+} from "@/lib/products";
 
 export const CHK_STYLE = `
 .chk{min-height:100vh;background:#f6f5f2;color:#161616;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;overflow-x:hidden}
@@ -97,14 +96,9 @@ export default function Checkout() {
       return;
     }
     (async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("id, slug, name, price")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .maybeSingle();
+      const found = await fetchProductBySlug(slug);
       if (cancelled) return;
-      setProduct(error ? null : (data as Product | null));
+      setProduct(found);
       setLoading(false);
     })();
     return () => {
@@ -193,7 +187,15 @@ export default function Checkout() {
       });
     }
 
-    const orderId = `TGC-${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
+    // 주문번호에 상품 슬러그를 심어 둔다 — 승인 라우트가 이 값으로 원래 가격을
+    // 조회해 금액을 검증한다.
+    const orderId = buildOrderId(product.slug);
+    // 주문자 정보는 URL 대신 sessionStorage 로 승인 단계까지 넘긴다.
+    saveCheckoutCustomer(orderId, {
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+    });
     try {
       await widgets.requestPayment({
         orderId,
