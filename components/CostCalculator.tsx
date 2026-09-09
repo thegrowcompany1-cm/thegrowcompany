@@ -327,12 +327,10 @@ export default function CostCalculator() {
     };
   }, [industry, grade, area, eqGrade, reformerCount, racks, rig, tools]);
 
-  // 결과 닫고 상단 창업 상담 폼으로 스크롤 (폼 자체는 건드리지 않음)
+  // 결과 닫고 하단 창업 상담 폼(#consulting-form)으로 스크롤 (폼 자체는 건드리지 않음)
   const goConsultForm = () => {
     setOpen(false);
-    const target =
-      document.querySelector("#consulting-form-top") ??
-      document.querySelector("#consulting-form");
+    const target = document.querySelector("#consulting-form");
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
