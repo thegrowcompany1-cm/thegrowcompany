@@ -898,9 +898,7 @@ export default function GxClass() {
               ))}
             </div>
             <p className="gx1-evidence-note">
-              실제 CRM 등록 기록 기준
-              <br />
-              회원 정보는 가림 처리
+              2026년 1~7월 실제 등록 기록 · 회원 정보는 가림 처리
             </p>
           </div>
         </div>
