@@ -47,15 +47,17 @@ const COURSES = [
     ],
     badge: "총 4시간 오프라인",
   },
-  {
-    // 대표 이미지 확정 전 — img 가 없으면 카드에 플레이스홀더 박스를 그린다
-    href: "/edu/gx-class",
-    alt: "그로우 에듀 그룹운동 비즈니스 클래스",
-    title: "그룹운동 비즈니스 클래스",
-    target: "[수강 대상]",
-    points: ["[핵심 내용1]", "[핵심 내용2]", "[핵심 내용3]"],
-    badge: "[강의 형태]",
-  },
+  // TODO: 카피 확정 후 복구 — 비공개 검수 중이라 허브 카드에서 숨김
+  //   복구 시 아래 그리드의 lg:grid-cols-3 도 함께 복구할 것
+  // {
+  //   // 대표 이미지 확정 전 — img 가 없으면 카드에 플레이스홀더 박스를 그린다
+  //   href: "/edu/gx-class",
+  //   alt: "그로우 에듀 그룹운동 비즈니스 클래스",
+  //   title: "그룹운동 비즈니스 클래스",
+  //   target: "[수강 대상]",
+  //   points: ["[핵심 내용1]", "[핵심 내용2]", "[핵심 내용3]"],
+  //   badge: "[강의 형태]",
+  // },
 ];
 
 const CURSOR_STYLE = `
@@ -208,7 +210,8 @@ export default function EduHub() {
         <h2 className="mb-8 text-center text-2xl font-black leading-snug sm:mb-12 sm:text-3xl">
           지금 상황에 맞는<br className="sm:hidden" /> 교육을 선택하세요.
         </h2>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {/* TODO: 카피 확정 후 복구 — 그룹운동 카드 복구 시 lg:grid-cols-3 추가 (카드 2개일 땐 2열 유지) */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {COURSES.map((c) => {
             const courseCls =
               "group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] transition-all duration-200 hover:-translate-y-1 hover:border-[#22B573] hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]";
