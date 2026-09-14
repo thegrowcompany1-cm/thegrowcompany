@@ -200,14 +200,6 @@ const REREG_LEVELS = [
   { lv: "Lv3", title: "구체 제안", desc: "그때 비로소 제안합니다" },
 ];
 
-// ── 15. FAQ — 카피 확정 전 플레이스홀더 ──────────────────────────────────────
-const FAQS = [
-  { q: "[질문1]", a: "[답변1]" },
-  { q: "[질문2]", a: "[답변2]" },
-  { q: "[질문3]", a: "[답변3]" },
-  { q: "[질문4]", a: "[답변4]" },
-];
-
 /** 카운트업 숫자 표기 — 소수 자릿수 고정 + 천 단위 콤마 */
 const fmtNum = (n: number, decimals: number) =>
   n.toLocaleString("ko-KR", {
@@ -549,9 +541,9 @@ const GX_STYLE = `
 @media(max-width:760px){.gx1-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.gx1-shot--wide{grid-column:1/-1}.gx1-shot--tall{aspect-ratio:4/5}}
 @media(max-width:640px){.gx1-declare{padding:24px 18px}.gx1-declare p{font-size:16px}.gx1-declare .gx1-declare-note{font-size:14px}}
 
-/* 15 희소성 + 클로징 (#contact) — 정원·마감 + 강의 정보 + FAQ + 결제 */
+/* 15 클로징 (#contact) — 강의 정보 → 희소성(정원·마감·인상 예고) → 결제 카드 */
 #contact{scroll-margin-top:96px}
-.gx1-scarcity{max-width:680px;margin:24px auto 0}
+.gx1-scarcity{max-width:680px;margin:40px auto 0}
 .gx1-scarce{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .gx1-scarce-tile{background:#fff;border:2px solid #fff;border-radius:22px;padding:28px 24px;text-align:center}
 .gx1-scarce-tile--hot{border-color:#e23b3b}
@@ -576,15 +568,7 @@ const GX_STYLE = `
 .gx1-info .gx1-price{justify-content:flex-start}
 .gx1-info .gx1-price-was{font-size:14px}
 .gx1-info .gx1-price-now{font-size:18px}
-.gx1-faq{display:flex;flex-direction:column;gap:10px}
-.gx1-faq-item{border:1px solid #262626;border-radius:14px;background:#141414;overflow:hidden}
-.gx1-faq-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:20px 22px;font-size:16px;font-weight:700;color:#fff}
-.gx1-faq-item summary::-webkit-details-marker{display:none}
-.gx1-faq-ic{flex:0 0 auto;font-size:24px;font-weight:400;color:var(--g);line-height:1;transition:transform .25s}
-.gx1-faq-item[open] .gx1-faq-ic{transform:rotate(45deg)}
-.gx1-faq-body{padding:0 22px 20px;font-size:15px;color:#bbb;line-height:1.75}
-.gx1-faq-body p{margin:0}
-.gx1-enroll-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:680px;margin:56px auto 0}
+.gx1-enroll-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:680px;margin:24px auto 0}
 .gx1-enroll-card{position:relative;background:#fff;border:1px solid #e6e6e6;border-radius:18px;padding:30px 24px 26px;text-align:center;color:#141414}
 .gx1-enroll-card--sale{border:2px solid var(--g)}
 .gx1-enroll-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#e23b3b;color:#fff;font-size:11px;font-weight:800;padding:5px 14px;border-radius:50px;white-space:nowrap}
@@ -1218,7 +1202,7 @@ export default function GxClass() {
         </div>
       </section>
 
-      {/* ── 15. 희소성 + 클로징 (#contact) — 정원·마감 + 강의 정보 + FAQ + 결제.
+      {/* ── 15. 클로징 (#contact) — 강의 정보 → 희소성 → 결제 카드.
           기존 CTA·외부 링크의 #contact 앵커가 이 섹션을 가리킨다. ── */}
       <section className="gx1-sec gx1-dark" id="contact">
         <div className="gx1-wrap gx1-narrow">
@@ -1247,22 +1231,23 @@ export default function GxClass() {
             </tbody>
           </table>
 
-          <h3 className="gx1-sub-t gx1-reveal">자주 묻는 질문</h3>
-          {/* <details> 네이티브 아코디언 — 스크립트·리스너 없이 동작 */}
-          <div className="gx1-faq">
-            {FAQS.map((f) => (
-              <details key={f.q} className="gx1-faq-item gx1-reveal">
-                <summary>
-                  <span>{f.q}</span>
-                  <span className="gx1-faq-ic" aria-hidden="true">
-                    +
-                  </span>
-                </summary>
-                <div className="gx1-faq-body">
-                  <p>{f.a}</p>
-                </div>
-              </details>
-            ))}
+          {/* 희소성 블록 — 정원 · 얼리버드 마감(EARLYBIRD_UNTIL 에서 자동 계산) · 가격 인상 예고 */}
+          <div className="gx1-scarcity gx1-reveal">
+            <div className="gx1-scarce">
+              <div className="gx1-scarce-tile">
+                <p className="gx1-scarce-label">정원</p>
+                <p className="gx1-scarce-value">{formatCapacity(CAPACITY)}</p>
+              </div>
+              <div className="gx1-scarce-tile gx1-scarce-tile--hot">
+                <p className="gx1-scarce-label">얼리버드 마감</p>
+                <p className="gx1-scarce-value">
+                  {formatDeadline(EARLYBIRD_UNTIL)}
+                </p>
+              </div>
+            </div>
+            <p className="gx1-price-notice">
+              다음 차수부터 수강료가 인상될 예정입니다.
+            </p>
           </div>
 
           <div className="gx1-enroll-cards gx1-stagger">
@@ -1295,25 +1280,6 @@ export default function GxClass() {
               </button>
             </div>
           </div>
-          {/* 희소성 블록 — 정원 · 얼리버드 마감(EARLYBIRD_UNTIL 에서 자동 계산) · 가격 인상 예고 */}
-          <div className="gx1-scarcity gx1-reveal">
-            <div className="gx1-scarce">
-              <div className="gx1-scarce-tile">
-                <p className="gx1-scarce-label">정원</p>
-                <p className="gx1-scarce-value">{formatCapacity(CAPACITY)}</p>
-              </div>
-              <div className="gx1-scarce-tile gx1-scarce-tile--hot">
-                <p className="gx1-scarce-label">얼리버드 마감</p>
-                <p className="gx1-scarce-value">
-                  {formatDeadline(EARLYBIRD_UNTIL)}
-                </p>
-              </div>
-            </div>
-            <p className="gx1-price-notice">
-              다음 차수부터 수강료가 인상될 예정입니다.
-            </p>
-          </div>
-
           <p className="gx1-enroll-note gx1-reveal">[환불 규정 안내]</p>
           <ul className="gx1-refund gx1-reveal">
             <li>
