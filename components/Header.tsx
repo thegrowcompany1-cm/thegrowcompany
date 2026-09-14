@@ -106,6 +106,7 @@ const navItems: NavItem[] = [
       { label: "창업 세미나", href: "/edu/startup-class" },
       // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
       { label: "정규 FC 세미나", href: "/edu/fc-class", fc: true },
+      { label: "그룹운동 비즈니스 클래스", href: "/edu/gx-class" },
     ],
   },
   {
@@ -227,7 +228,7 @@ export default function Header() {
                             "block px-4 py-2.5 text-[#CCCCCC] transition-colors hover:bg-white/5 hover:text-[#009519]";
                           const childInner = (
                             <>
-                              <span className="text-sm font-medium">{child.label}</span>
+                              <span className="whitespace-nowrap text-sm font-medium">{child.label}</span>
                               {child.sub && (
                                 <span className="mt-0.5 block text-xs text-[#777777]">{child.sub}</span>
                               )}
