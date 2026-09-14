@@ -376,14 +376,36 @@ const GX_STYLE = `
 .gx1-cause-body{max-width:640px;margin:0 auto;font-size:18px;line-height:1.85;color:#555}
 @media(max-width:640px){.gx1-cause-quote{font-size:26px}.gx1-cause-body{font-size:16px}}
 
-/* 4 악순환 */
-.gx1-cycle{position:relative;width:100%;max-width:440px;aspect-ratio:1/1;margin:0 auto}
-.gx1-cycle svg{position:absolute;inset:0;width:100%;height:100%}
+/* 4 악순환 — 기본은 정적 도식. 화면에 들어오면 is-live → 순환 연출, 화면 밖이면 is-paused.
+   입자 · 입자 색 · 노드 점등은 같은 주기(--gx1-t)로 동시에 시작·정지해 위치가 어긋나지 않는다.
+   원 궤도라서 궤도 전체를 회전시키는 것이 경로를 따라 이동하는 것과 같다. */
+.gx1-cycle{--gx1-t:7s;position:relative;width:100%;max-width:480px;aspect-ratio:1/1;margin:0 auto}
+.gx1-cycle svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.gx1-cycle-ring{position:absolute;left:27%;top:27%;width:46%;height:46%;border-radius:50%;border:2px dashed #fff;opacity:.08;pointer-events:none}
+.gx1-cycle-orbit{position:absolute;inset:0;pointer-events:none}
+.gx1-cycle-dot{position:absolute;left:50%;top:12.5%;width:3.2%;aspect-ratio:1/1;margin:-1.6% 0 0 -1.6%;border-radius:50%;background:#aaffd6;box-shadow:0 0 6px 2px rgba(34,181,115,.95),0 0 18px 5px rgba(34,181,115,.45);opacity:0}
+.gx1-cycle-flow{opacity:0}
 .gx1-cycle-node{position:absolute;width:23%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;background:#151515;border:2px solid var(--g);display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;font-size:16px;font-weight:800;line-height:1.25;color:#fff}
 .gx1-cycle-node--loss{border-color:#e23b3b;color:#ff8a8a}
 .gx1-cycle-again{position:absolute;left:17%;top:17%;transform:translate(-50%,-50%);font-size:13px;font-weight:800;color:#ff8a8a;white-space:nowrap}
 .gx1-cycle-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44%;text-align:center;font-size:18px;font-weight:900;line-height:1.4}
 .gx1-cycle-copy{margin-top:40px}
+.gx1-cycle.is-live .gx1-cycle-orbit{animation:gx1Orbit var(--gx1-t) linear infinite}
+.gx1-cycle.is-live .gx1-cycle-dot{opacity:1;animation:gx1Dot var(--gx1-t) linear infinite}
+.gx1-cycle.is-live .gx1-cycle-node{animation:gx1Node var(--gx1-t) ease-in-out infinite;animation-delay:calc(var(--gx1-t) * var(--gx1-p, 0) / 4)}
+.gx1-cycle.is-live .gx1-cycle-node--loss{animation-name:gx1NodeLoss}
+.gx1-cycle.is-live .gx1-cycle-flow{opacity:.55;animation:gx1FlowFwd 1.4s linear infinite}
+.gx1-cycle.is-live .gx1-cycle-arc--loss{animation:gx1FlowBack 1.6s linear infinite}
+.gx1-cycle.is-live .gx1-cycle-ring{animation:gx1Ring 20s linear infinite}
+.gx1-cycle.is-paused *{animation-play-state:paused!important}
+@keyframes gx1Orbit{to{transform:rotate(360deg)}}
+@keyframes gx1Ring{to{transform:rotate(360deg)}}
+@keyframes gx1Dot{0%,52%{background:#aaffd6;box-shadow:0 0 6px 2px rgba(34,181,115,.95),0 0 18px 5px rgba(34,181,115,.45)}70%,97%{background:#ffc2c2;box-shadow:0 0 6px 2px rgba(226,59,59,.95),0 0 18px 5px rgba(226,59,59,.45)}100%{background:#aaffd6;box-shadow:0 0 6px 2px rgba(34,181,115,.95),0 0 18px 5px rgba(34,181,115,.45)}}
+@keyframes gx1Node{0%,100%{scale:1.07;background:#15261d;box-shadow:0 0 18px rgba(34,181,115,.5)}9%,91%{scale:1;background:#151515;box-shadow:0 0 0 rgba(34,181,115,0)}}
+@keyframes gx1NodeLoss{0%,100%{scale:1.12;background:#2b1414;box-shadow:0 0 28px rgba(226,59,59,.7)}11%,89%{scale:1;background:#151515;box-shadow:0 0 0 rgba(226,59,59,0)}}
+@keyframes gx1FlowFwd{to{stroke-dashoffset:-32}}
+@keyframes gx1FlowBack{to{stroke-dashoffset:38}}
+@media(prefers-reduced-motion:reduce){.gx1-cycle.is-live *{animation:none!important}.gx1-cycle.is-live .gx1-cycle-dot,.gx1-cycle.is-live .gx1-cycle-flow{opacity:0}}
 @media(max-width:640px){.gx1-cycle-node{font-size:12px}.gx1-cycle-center{font-size:14px}.gx1-cycle-again{font-size:11px}.gx1-cycle-copy{margin-top:28px}}
 
 /* 5 왜 다들 못 하는가 — 대비 카드 */
@@ -667,11 +689,28 @@ export default function GxClass() {
     if (heroEl) heroIo.observe(heroEl);
     if (contactEl) reachIo.observe(contactEl);
 
+    // 4) 악순환 도식 — 처음 보일 때 순환 시작, 화면 밖이면 일시정지(배터리).
+    //    클래스만 토글하므로 스크립트가 없으면 정적 도식 그대로 보인다.
+    const cycleEl = root.querySelector("#gx1-cycle");
+    const cycleIo = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("is-live");
+          e.target.classList.remove("is-paused");
+        } else {
+          e.target.classList.add("is-paused");
+        }
+      });
+    });
+    if (cycleEl) cycleIo.observe(cycleEl);
+
     return () => {
       revealIo.disconnect();
       proofIo.disconnect();
       heroIo.disconnect();
       reachIo.disconnect();
+      cycleIo.disconnect();
+      cycleEl?.classList.remove("is-live", "is-paused");
       if (raf) cancelAnimationFrame(raf);
       root.classList.remove("gx1-anim");
     };
@@ -771,10 +810,13 @@ export default function GxClass() {
       <section className="gx1-sec gx1-dark">
         <div className="gx1-wrap">
           <div
+            id="gx1-cycle"
             className="gx1-cycle gx1-reveal"
             role="img"
             aria-label="광고, 신규 등록, 매출 발생, 회원 이탈을 거쳐 다시 광고로 돌아오는 악순환"
           >
+            {/* 중앙 뒤 옅은 회전 링 (장식) */}
+            <span className="gx1-cycle-ring" aria-hidden="true" />
             <svg viewBox="0 0 400 400" aria-hidden="true" focusable="false">
               <defs>
                 <marker
@@ -809,24 +851,43 @@ export default function GxClass() {
                 strokeWidth="2"
               />
               {CYCLE_ARCS.map((a) => (
-                <path
-                  key={a.d}
-                  d={a.d}
-                  fill="none"
-                  stroke={a.loss ? "#e23b3b" : "#22B573"}
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeDasharray={a.loss ? "10 9" : undefined}
-                  markerEnd={`url(#${a.loss ? "gx1-arr-loss" : "gx1-arr"})`}
-                />
+                <g key={a.d}>
+                  <path
+                    className={a.loss ? "gx1-cycle-arc--loss" : undefined}
+                    d={a.d}
+                    fill="none"
+                    stroke={a.loss ? "#e23b3b" : "#22B573"}
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray={a.loss ? "10 9" : undefined}
+                    markerEnd={`url(#${a.loss ? "gx1-arr-loss" : "gx1-arr"})`}
+                  />
+                  {/* 초록 구간 위를 흐르는 빛 (다시 광고 점선은 선 자체가 역방향으로 흐른다) */}
+                  {a.loss ? null : (
+                    <path
+                      className="gx1-cycle-flow"
+                      d={a.d}
+                      fill="none"
+                      stroke="#e9fff4"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeDasharray="3 13"
+                    />
+                  )}
+                </g>
               ))}
             </svg>
-            {CYCLE_NODES.map((n) => (
+            {/* 궤도를 도는 빛 입자 — 노드보다 아래에 깔려 글자를 가리지 않는다 */}
+            <span className="gx1-cycle-orbit" aria-hidden="true">
+              <span className="gx1-cycle-dot" />
+            </span>
+            {CYCLE_NODES.map((n, i) => (
               <div
                 key={n.label}
                 aria-hidden="true"
                 className={`gx1-cycle-node${n.loss ? " gx1-cycle-node--loss" : ""}`}
-                style={{ left: n.left, top: n.top }}
+                // --gx1-p: 순환 순서(0~3) — 입자가 도착하는 시점에 맞춰 점등을 지연
+                style={{ left: n.left, top: n.top, "--gx1-p": i } as React.CSSProperties}
               >
                 {n.label}
               </div>
