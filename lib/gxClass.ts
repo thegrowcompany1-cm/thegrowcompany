@@ -14,19 +14,23 @@ export const PENDING: Pending = "미정";
 
 /* ▼▼ 기수마다 이 상수만 수정 ▼▼ */
 /** 강의 일자 (예: "2026년 10월 18일 (토)") */
-export const CLASS_DATE: string | Pending = PENDING;
+export const CLASS_DATE: string | Pending = "2026년 10월 10일 (토)";
 /** 강의 시간 (예: "13:00 ~ 17:00 · 총 4시간") */
-export const CLASS_TIME: string | Pending = PENDING;
+export const CLASS_TIME: string | Pending = "총 4시간";
 /** 강의 장소 (예: "서울 강남구 ○○빌딩 5층") */
-export const CLASS_PLACE: string | Pending = PENDING;
+export const CLASS_PLACE: string | Pending = "하이서울 유스호스텔 (영등포)";
 /** 정원 (명) */
-export const CAPACITY: number | Pending = PENDING;
+export const CAPACITY: number | Pending = 20;
 /** 정상가 (원, VAT 포함) */
 export const PRICE_NORMAL: number | Pending = 209000;
 /** 얼리버드가 (원, VAT 포함) */
 export const PRICE_EARLYBIRD: number | Pending = 165000;
-/** 얼리버드 마감 시각 — 반드시 +09:00 오프셋 포함 ISO 문자열 */
-export const EARLYBIRD_UNTIL: string | Pending = PENDING;
+/**
+ * 얼리버드 만료 시각 — 반드시 +09:00 오프셋 포함 ISO 문자열.
+ * 이 시각 "직전"까지 얼리버드다. 2026-10-10T00:00 이면 10월 9일까지 노출, 10일 0시 만료.
+ * 화면의 마감일은 formatDeadline() 이 이 값에서 자동 계산한다 (하드코딩 금지).
+ */
+export const EARLYBIRD_UNTIL: string | Pending = "2026-10-10T00:00:00+09:00";
 /* ▲▲ 여기까지 ▲▲ */
 
 export const isPending = (v: unknown): v is Pending => v === PENDING;
@@ -50,11 +54,16 @@ export function formatSchedule(
   return parts.length ? parts.join(" · ") : PENDING;
 }
 
-/** 얼리버드 마감일만 — "10월 1일 (수)". 미정이면 "미정" (희소성 섹션용) */
+/**
+ * 얼리버드 마지막 날 — "10월 9일 (금)". 미정이면 "미정".
+ * until 은 만료 시각(그 시각부터 마감)이므로 1ms 전의 날짜가 신청 가능한 마지막 날이다.
+ * 예) "2026-10-10T00:00:00+09:00" → 10월 9일 (금)
+ */
 export function formatDeadline(until: string | Pending): string {
   if (isPending(until)) return PENDING;
-  const d = new Date(until);
-  if (Number.isNaN(d.getTime())) return until;
+  const expires = new Date(until).getTime();
+  if (Number.isNaN(expires)) return until;
+  const d = new Date(expires - 1);
   // 타임존 고정 — 서버/브라우저 렌더 결과를 같게 한다
   return new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",

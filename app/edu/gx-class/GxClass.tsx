@@ -12,7 +12,7 @@
 //  · 애니메이션 fail-safe: 기본은 전부 표시. 이펙트가 루트에 gx1-anim 을 붙인 뒤에만
 //    숨김 → 등장. 스크립트가 안 돌면 모든 섹션이 보인 상태로 남는다.
 //  · IntersectionObserver / rAF 는 언마운트 시 전부 정리, 전역 함수 없음
-//  · 결제 버튼(히어로 · 15 클로징 #contact · 하단 고정 바) → /checkout (fc-class 와 동일)
+//  · 결제: 15 클로징(#contact) 결제 카드 + 우하단 플로팅 버튼 → /checkout (fc-class 와 동일)
 //  · 카피 규칙: 물음표 금지 · 영문 eyebrow 금지 · 컨설팅→솔루션 · 컨설턴트→멘토
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -127,10 +127,20 @@ const PROOF_STATS = [
     basis: "도입 전 28% 대비 2.3배",
   },
 ];
-// 읽히려는 이미지가 아니라 "실제 데이터가 있다"는 신호 — 작게, 흐리게 보조로만 둔다
+// 이미 가림 처리된 실제 CRM 캡처 — 내용이 읽히는 크기로, 원본 비율 그대로(잘림 없음) 노출
 const PROOF_SHOTS = [
-  { src: IMAGES.proofNew, alt: "CRM 신규 등록 기록 캡처 (회원 이름 가림)" },
-  { src: IMAGES.proofRejoin, alt: "CRM 재등록 기록 캡처 (회원 이름 가림)" },
+  {
+    src: IMAGES.proofNew,
+    alt: "CRM 신규 등록 기록 캡처 (회원 이름 가림)",
+    caption: "신규 등록 기록",
+    ratio: "579 / 550",
+  },
+  {
+    src: IMAGES.proofRejoin,
+    alt: "CRM 재등록 기록 캡처 (회원 이름 가림)",
+    caption: "재등록 기록",
+    ratio: "445 / 585",
+  },
 ];
 
 // ── 9. 강사 서사 ─────────────────────────────────────────────────────────────
@@ -230,6 +240,7 @@ function EarlybirdPrice() {
       {rate !== null ? (
         <span className="gx1-price-rate">{rate}% 할인</span>
       ) : null}
+      <Vat price={PRICE_EARLYBIRD} />
       {until ? <span className="gx1-price-until">{until}까지</span> : null}
     </span>
   );
@@ -330,22 +341,23 @@ const GX_STYLE = `
 @media(prefers-reduced-motion:reduce){.gx1-pulse{animation:none}}
 @media(max-width:640px){.gx1-pay-btn{width:100%;min-width:0}}
 
-/* 1 히어로 */
-.gx1-hero{position:relative;min-height:calc(100vh - 96px);display:flex;align-items:center;background:radial-gradient(120% 80% at 50% 0%,rgba(34,181,115,.2) 0%,rgba(10,10,10,0) 60%),var(--dark);color:#fff;text-align:center;padding:72px 0}
-.gx1-hero-in{width:100%}
+/* 1 히어로 — 단체사진 배경 + 어두운 오버레이. 이미지가 실패해도 다크 배경이 남는다 */
+.gx1-hero{position:relative;isolation:isolate;overflow:hidden;min-height:calc(100vh - 96px);display:flex;align-items:center;background:var(--dark);color:#fff;text-align:center;padding:72px 0}
+.gx1-hero-bg{position:absolute;inset:0;z-index:-2}
+.gx1-hero-bg.is-broken img{visibility:hidden}
+.gx1-hero-ov{position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 80% at 50% 0%,rgba(34,181,115,.16) 0%,rgba(10,10,10,0) 60%),linear-gradient(180deg,rgba(10,10,10,.78) 0%,rgba(10,10,10,.84) 55%,rgba(10,10,10,.96) 100%)}
+.gx1-hero-in{position:relative;width:100%}
 .gx1-hero-kicker{display:inline-block;margin:0 0 20px;font-size:14px;font-weight:800;color:var(--g);background:rgba(34,181,115,.12);border:1px solid rgba(34,181,115,.35);border-radius:50px;padding:7px 16px}
 .gx1-hero-h1{font-size:54px;font-weight:900;line-height:1.3;margin:0 0 20px}
-.gx1-hero-sub{font-size:19px;line-height:1.7;color:#cfcfcf;margin:0 auto 40px;max-width:640px}
+.gx1-hero-sub{font-size:19px;line-height:1.7;color:#d6d6d6;margin:0 auto 40px;max-width:640px}
 .gx1-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:760px;margin:0 auto 32px}
-.gx1-stat{background:#141414;border:1px solid #232323;border-radius:16px;padding:22px 12px}
+.gx1-stat{background:rgba(20,20,20,.72);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px 12px}
 .gx1-stat b{display:block;font-size:32px;font-weight:900;color:var(--g);line-height:1.2}
-.gx1-stat span{display:block;margin-top:6px;font-size:14px;color:#aaa}
-.gx1-when{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 32px}
-.gx1-chip{font-size:14px;font-weight:700;color:#eee;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:50px;padding:8px 16px}
+.gx1-stat span{display:block;margin-top:6px;font-size:14px;color:#b5b5b5}
+.gx1-when{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0}
+.gx1-chip{font-size:14px;font-weight:700;color:#eee;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:50px;padding:8px 16px}
 .gx1-chip em{font-style:normal;color:var(--g);margin-right:6px}
-.gx1-hero-pay{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
-.gx1-hero .gx1-pay-btn:not(.gx1-pay-btn--sale){background:#fff;color:#161616}
-@media(max-width:640px){.gx1-hero{min-height:0;padding:56px 0 64px}.gx1-hero-kicker{font-size:12px}.gx1-hero-h1{font-size:32px}.gx1-hero-sub{font-size:16px}.gx1-stat{padding:16px 6px}.gx1-stat b{font-size:20px}.gx1-stat span{font-size:12px}.gx1-hero-pay{flex-direction:column}}
+@media(max-width:640px){.gx1-hero{min-height:0;padding:56px 0 64px}.gx1-hero-kicker{font-size:12px}.gx1-hero-h1{font-size:32px}.gx1-hero-sub{font-size:16px}.gx1-stat{padding:16px 6px}.gx1-stat b{font-size:20px}.gx1-stat span{font-size:12px}}
 @media(max-width:400px){.gx1-stat b{font-size:17px}}
 
 /* 2 고객 대사 — 말풍선 세로 스택 */
@@ -421,12 +433,16 @@ const GX_STYLE = `
 .gx1-proof-num{font-size:58px;font-weight:900;color:var(--g);line-height:1.1;margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
 .gx1-proof-num small{font-size:22px;font-weight:800;margin-left:3px}
 .gx1-proof-basis{font-size:13px;color:#8a8a8a;margin:18px 0 0;padding-top:14px;border-top:1px solid #232323;line-height:1.6}
-.gx1-evidence{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px auto 0}
-.gx1-evidence-shots{display:flex;gap:8px;flex:0 0 auto}
-.gx1-evidence-shot{width:84px;aspect-ratio:4/3;border-radius:8px;background:#fff;border:1px solid #2a2a2a;opacity:.7;filter:grayscale(.35)}
-.gx1-evidence-note{margin:0;font-size:13px;color:#8a8a8a;line-height:1.55}
+/* CRM 기록 — 가림 처리된 실제 캡처를 선명하게 (PC 2열·각 최대 420px / 모바일 세로 스택 전체폭) */
+.gx1-evidence{max-width:860px;margin:40px auto 0}
+.gx1-evidence-shots{display:grid;grid-template-columns:repeat(2,minmax(0,420px));justify-content:center;align-items:start;gap:20px}
+.gx1-evidence-fig{margin:0}
+.gx1-evidence-shot{width:100%;border-radius:14px;background:#fff;border:1px solid #2a2a2a}
+.gx1-evidence-fig figcaption{margin-top:10px;font-size:14px;font-weight:700;color:#d0d0d0;text-align:center}
+.gx1-evidence-note{margin:18px 0 0;font-size:13px;color:#8a8a8a;line-height:1.55;text-align:center}
 @media(max-width:900px){.gx1-proof{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.gx1-proof-num{font-size:46px}.gx1-proof-num small{font-size:19px}.gx1-evidence-shot{width:72px}}
+@media(max-width:760px){.gx1-evidence-shots{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){.gx1-proof-num{font-size:46px}.gx1-proof-num small{font-size:19px}}
 
 /* 9 강사 서사 */
 .gx1-inst{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:start;margin-top:48px}
@@ -513,13 +529,15 @@ const GX_STYLE = `
 
 /* 15 희소성 + 클로징 (#contact) — 정원·마감 + 강의 정보 + FAQ + 결제 */
 #contact{scroll-margin-top:96px}
-.gx1-scarce{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:40px auto 0}
+.gx1-scarcity{max-width:680px;margin:24px auto 0}
+.gx1-scarce{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .gx1-scarce-tile{background:#fff;border:2px solid #fff;border-radius:22px;padding:28px 24px;text-align:center}
 .gx1-scarce-tile--hot{border-color:#e23b3b}
 .gx1-scarce-label{margin:0 0 10px;font-size:15px;font-weight:800;color:#666}
-.gx1-scarce-value{margin:0;font-size:38px;font-weight:900;line-height:1.2;color:#141414}
+.gx1-scarce-value{margin:0;font-size:34px;font-weight:900;line-height:1.2;color:#141414}
 .gx1-scarce-tile--hot .gx1-scarce-value{color:#e23b3b}
 .gx1-sub-t{font-size:22px;font-weight:800;margin:56px 0 18px;text-align:center}
+.gx1-h2+.gx1-sub-t{margin-top:32px}
 .gx1-info{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid #eee;border-radius:16px;overflow:hidden}
 .gx1-info th,.gx1-info td{padding:18px 20px;text-align:left;font-size:16px;border-bottom:1px solid #f0f0f0;vertical-align:top}
 .gx1-info tr:last-child th,.gx1-info tr:last-child td{border-bottom:none}
@@ -532,6 +550,7 @@ const GX_STYLE = `
 .gx1-price-rate{align-self:center;font-size:12px;font-weight:800;line-height:1.4;color:#fff;background:#e23b3b;border-radius:50px;padding:3px 9px;white-space:nowrap}
 .gx1-price-until{flex-basis:100%;font-size:12px;font-weight:600;color:#9a9a9a}
 .gx1-vat{font-size:13px;color:#999;font-weight:600;margin-left:4px}
+.gx1-price .gx1-vat{margin-left:0;align-self:center}
 .gx1-info .gx1-price{justify-content:flex-start}
 .gx1-info .gx1-price-was{font-size:14px}
 .gx1-info .gx1-price-now{font-size:18px}
@@ -551,18 +570,20 @@ const GX_STYLE = `
 .gx1-enroll-card--sale .gx1-enroll-tag{color:var(--g)}
 .gx1-enroll-price{font-size:22px;font-weight:900;color:#161616;margin:0 0 18px;line-height:1.3}
 .gx1-enroll-card .gx1-pay-btn{width:100%;min-width:0}
+.gx1-price-notice{margin:12px 0 0;padding:14px 16px;border-radius:14px;background:rgba(226,59,59,.12);border:1px solid rgba(226,59,59,.4);color:#ffb4b4;font-size:15px;font-weight:800;line-height:1.5;text-align:center}
 .gx1-enroll-note{max-width:680px;margin:18px auto 0;font-size:12px;color:#9a9a9a;line-height:1.7;text-align:center}
+.gx1-refund{list-style:none;max-width:680px;margin:8px auto 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.gx1-refund li{position:relative;padding-left:12px;font-size:12px;color:#9a9a9a;line-height:1.7}
+.gx1-refund li::before{content:'·';position:absolute;left:0;top:0}
 @media(max-width:640px){.gx1-scarce{grid-template-columns:minmax(0,1fr)}.gx1-scarce-value{font-size:30px}.gx1-sub-t{font-size:19px;margin-top:44px}.gx1-info th,.gx1-info td{padding:14px;font-size:14px}.gx1-info th{width:84px}.gx1-enroll-cards{grid-template-columns:minmax(0,1fr)}.gx1-enroll-price{font-size:20px}}
 
-/* 하단 고정 CTA 바 — safe-area 대응 */
-.gx1-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--dark2);border-top:1px solid #222;padding:12px 16px calc(12px + env(safe-area-inset-bottom));transition:transform .3s ease}
-.gx1-bar.is-hidden{transform:translateY(140%)}
-.gx1-bar-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
-.gx1-bar-when{min-width:0;margin:0;font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gx1-bar-cta{flex:0 0 auto;border:none;background:var(--g);color:#fff;font-size:15px;font-weight:800;font-family:inherit;padding:13px 26px;border-radius:12px;white-space:nowrap;cursor:pointer}
-.gx1-barspacer{height:calc(76px + env(safe-area-inset-bottom));background:var(--dark)}
-@media(max-width:480px){.gx1-bar-when{font-size:13px}.gx1-bar-cta{padding:12px 18px;font-size:14px}}
-@media(prefers-reduced-motion:reduce){.gx1-bar{transition:none}}
+/* 우하단 플로팅 결제 버튼 — safe-area 대응, 그린 발광(2.5초 주기, 최대 24px) */
+.gx1-fab{position:fixed;right:calc(24px + env(safe-area-inset-right));bottom:calc(24px + env(safe-area-inset-bottom));z-index:60;display:inline-flex;align-items:center;justify-content:center;max-width:calc(100vw - 48px - env(safe-area-inset-left) - env(safe-area-inset-right));padding:16px 26px;border:none;border-radius:999px;background:var(--g);color:#fff;font-size:16px;font-weight:800;font-family:inherit;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 10px rgba(34,181,115,.35);transition:opacity .3s ease,transform .3s ease;animation:gx1Glow 2.5s ease-in-out infinite}
+.gx1-fab:hover{filter:brightness(1.05)}
+.gx1-fab.is-hidden{opacity:0;transform:translateY(16px) scale(.96);pointer-events:none}
+@keyframes gx1Glow{0%,100%{box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 10px rgba(34,181,115,.35)}50%{box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 24px rgba(34,181,115,.7)}}
+@media(max-width:480px){.gx1-fab{padding:14px 20px;font-size:15px}}
+@media(prefers-reduced-motion:reduce){.gx1-fab{animation:none;transition:none;box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 16px rgba(34,181,115,.5)}}
 `;
 
 export default function GxClass() {
@@ -570,9 +591,9 @@ export default function GxClass() {
   const rootRef = useRef<HTMLDivElement>(null);
   // 숫자 증명 — null 이면 최종값 표시(기본). 섹션 진입 시 0 부터 카운트업
   const [proofCounts, setProofCounts] = useState<number[] | null>(null);
-  // 하단 고정 바 — 히어로나 클로징(#contact)이 화면에 보이면 숨김.
+  // 우하단 플로팅 결제 버튼 — 히어로가 보이면 숨김, 스크롤하면 등장, 결제 섹션(#contact)에 닿으면 다시 숨김.
   // 본문이 아니라 결제 CTA 의 중복 진입점이라, 판정 전(첫 렌더)에는 숨겨서 히어로 위 깜빡임을 막는다.
-  const [barShown, setBarShown] = useState(false);
+  const [fabShown, setFabShown] = useState(false);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -618,24 +639,39 @@ export default function GxClass() {
     const proofEl = root.querySelector("#gx1-proof");
     if (proofEl) proofIo.observe(proofEl);
 
-    // 3) 하단 고정 바 — 히어로·클로징 중 하나라도 보이면 숨김
-    const onScreen = new Set<Element>();
-    const barIo = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) onScreen.add(e.target);
-        else onScreen.delete(e.target);
-      });
-      setBarShown(onScreen.size === 0);
-    });
+    // 3) 플로팅 버튼 노출 — 히어로가 보이는 동안 숨김, 결제 섹션에 "도달"하면 숨김.
+    //    결제 섹션을 지나 푸터로 내려가도(섹션이 화면 위로 사라져도) 계속 숨긴다.
     const heroEl = root.querySelector("#gx1-hero");
     const contactEl = root.querySelector("#contact");
-    if (heroEl) barIo.observe(heroEl);
-    if (contactEl) barIo.observe(contactEl);
+    let heroVisible = !!heroEl;
+    let contactReached = false;
+    const syncFab = () => setFabShown(!heroVisible && !contactReached);
+    const heroIo = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        heroVisible = e.isIntersecting;
+      });
+      syncFab();
+    });
+    // 판정 영역을 화면 위쪽으로 크게 늘려 "결제 섹션 상단이 화면 하단을 넘었는가" 하나의 경계만 본다.
+    // 섹션을 지나 푸터에 있다가 한 번에 위로 점프해도(섹션이 화면에 한 번도 안 걸려도)
+    // 이 경계는 반드시 넘으므로 콜백이 온다 — 가시성만 보면 점프 시 상태가 갱신되지 않는다.
+    const reachIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          contactReached = e.isIntersecting;
+        });
+        syncFab();
+      },
+      { rootMargin: "100000px 0px 0px 0px" },
+    );
+    if (heroEl) heroIo.observe(heroEl);
+    if (contactEl) reachIo.observe(contactEl);
 
     return () => {
       revealIo.disconnect();
       proofIo.disconnect();
-      barIo.disconnect();
+      heroIo.disconnect();
+      reachIo.disconnect();
       if (raf) cancelAnimationFrame(raf);
       root.classList.remove("gx1-anim");
     };
@@ -652,6 +688,22 @@ export default function GxClass() {
 
       {/* ── 1. 히어로 ── */}
       <section className="gx1-hero" id="gx1-hero">
+        {/* 배경 단체사진 — 로드 실패 시 이미지만 숨기고 다크 배경 유지 */}
+        <div className="gx1-hero-bg">
+          <Image
+            ref={markImage}
+            src={IMAGES.community}
+            alt=""
+            fill
+            preload
+            sizes="100vw"
+            style={{ objectFit: "cover", objectPosition: "center 60%" }}
+            onError={(e) =>
+              e.currentTarget.parentElement?.classList.add("is-broken")
+            }
+          />
+        </div>
+        <div className="gx1-hero-ov" aria-hidden="true" />
         <div className="gx1-wrap gx1-hero-in">
           <p className="gx1-hero-kicker">{CLASS_NAME}</p>
           <h1 className="gx1-hero-h1">
@@ -680,22 +732,6 @@ export default function GxClass() {
               <em>장소</em>
               {CLASS_PLACE}
             </span>
-          </div>
-          <div className="gx1-hero-pay">
-            <button
-              type="button"
-              className="gx1-pay-btn"
-              onClick={() => goCheckout(PRODUCT_NORMAL)}
-            >
-              정상가로 신청하기
-            </button>
-            <button
-              type="button"
-              className="gx1-pay-btn gx1-pay-btn--sale gx1-pulse"
-              onClick={() => goCheckout(PRODUCT_EARLY)}
-            >
-              얼리버드 할인가로 신청하기
-            </button>
           </div>
         </div>
       </section>
@@ -910,20 +946,26 @@ export default function GxClass() {
               </div>
             ))}
           </div>
-          <div className="gx1-evidence gx1-reveal">
-            <div className="gx1-evidence-shots">
+          <div className="gx1-evidence">
+            <div className="gx1-evidence-shots gx1-stagger">
               {PROOF_SHOTS.map((t) => (
-                <div key={t.src} className="gx1-evidence-shot gx1-media">
-                  <GxImg
-                    src={t.src}
-                    alt={t.alt}
-                    sizes="(max-width: 640px) 72px, 84px"
-                    position="left top"
-                  />
-                </div>
+                <figure key={t.src} className="gx1-evidence-fig gx1-reveal">
+                  <div
+                    className="gx1-evidence-shot gx1-media"
+                    style={{ aspectRatio: t.ratio }}
+                  >
+                    <GxImg
+                      src={t.src}
+                      alt={t.alt}
+                      sizes="(max-width: 760px) 100vw, 420px"
+                      position="center top"
+                    />
+                  </div>
+                  <figcaption>{t.caption}</figcaption>
+                </figure>
               ))}
             </div>
-            <p className="gx1-evidence-note">
+            <p className="gx1-evidence-note gx1-reveal">
               2026년 1~7월 실제 등록 기록 · 회원 정보는 가림 처리
             </p>
           </div>
@@ -972,7 +1014,7 @@ export default function GxClass() {
       {/* ── 10. 커리큘럼 1부 ── */}
       <section className="gx1-sec gx1-cream">
         <div className="gx1-wrap">
-          <span className="gx1-kicker gx1-reveal">커리큘럼 1부 · 50분</span>
+          <span className="gx1-kicker gx1-reveal">커리큘럼 1부</span>
           <h2 className="gx1-h2 gx1-reveal">
             신규 전환율,
             <br />
@@ -1015,7 +1057,7 @@ export default function GxClass() {
       {/* ── 12. 커리큘럼 2부 ── */}
       <section className="gx1-sec gx1-cream">
         <div className="gx1-wrap">
-          <span className="gx1-kicker gx1-reveal">커리큘럼 2부 · 50분</span>
+          <span className="gx1-kicker gx1-reveal">커리큘럼 2부</span>
           <h2 className="gx1-h2 gx1-reveal">
             1개 지점에서 월 평균 매출 <em>3,500만 원</em>을 만드는
             <br />
@@ -1120,20 +1162,6 @@ export default function GxClass() {
       <section className="gx1-sec gx1-dark" id="contact">
         <div className="gx1-wrap gx1-narrow">
           <h2 className="gx1-h2 gx1-reveal">강의 정보 및 신청</h2>
-
-          <div className="gx1-scarce gx1-stagger">
-            <div className="gx1-scarce-tile gx1-reveal">
-              <p className="gx1-scarce-label">정원</p>
-              <p className="gx1-scarce-value">{formatCapacity(CAPACITY)}</p>
-            </div>
-            <div className="gx1-scarce-tile gx1-scarce-tile--hot gx1-reveal">
-              <p className="gx1-scarce-label">얼리버드 마감</p>
-              <p className="gx1-scarce-value">
-                {formatDeadline(EARLYBIRD_UNTIL)}
-              </p>
-            </div>
-          </div>
-
           <h3 className="gx1-sub-t gx1-reveal">강의 정보</h3>
           <table className="gx1-info gx1-reveal">
             <tbody>
@@ -1153,7 +1181,6 @@ export default function GxClass() {
                 <th scope="row">가격</th>
                 <td>
                   <EarlybirdPrice />
-                  <Vat price={PRICE_EARLYBIRD} />
                 </td>
               </tr>
             </tbody>
@@ -1197,7 +1224,6 @@ export default function GxClass() {
               <p className="gx1-enroll-tag">얼리버드</p>
               <p className="gx1-enroll-price">
                 <EarlybirdPrice />
-                <Vat price={PRICE_EARLYBIRD} />
               </p>
               <button
                 type="button"
@@ -1208,26 +1234,48 @@ export default function GxClass() {
               </button>
             </div>
           </div>
+          {/* 희소성 블록 — 정원 · 얼리버드 마감(EARLYBIRD_UNTIL 에서 자동 계산) · 가격 인상 예고 */}
+          <div className="gx1-scarcity gx1-reveal">
+            <div className="gx1-scarce">
+              <div className="gx1-scarce-tile">
+                <p className="gx1-scarce-label">정원</p>
+                <p className="gx1-scarce-value">{formatCapacity(CAPACITY)}</p>
+              </div>
+              <div className="gx1-scarce-tile gx1-scarce-tile--hot">
+                <p className="gx1-scarce-label">얼리버드 마감</p>
+                <p className="gx1-scarce-value">
+                  {formatDeadline(EARLYBIRD_UNTIL)}
+                </p>
+              </div>
+            </div>
+            <p className="gx1-price-notice">
+              다음 차수부터 수강료가 인상될 예정입니다.
+            </p>
+          </div>
+
           <p className="gx1-enroll-note gx1-reveal">[환불 규정 안내]</p>
+          <ul className="gx1-refund gx1-reveal">
+            <li>
+              현재 신청문의가 많아 정원이 마감될 경우 100%환불조치 해드리고
+              있습니다.
+            </li>
+            <li>
+              강의 신청후 개인적 사유 환불의 경우 강의날 기준 5일전까지 100%
+              환불을 진행해드리고 있습니다.
+            </li>
+          </ul>
         </div>
       </section>
 
-      {/* ── 하단 고정 CTA 바 ── */}
-      <div className={`gx1-bar${barShown ? "" : " is-hidden"}`} inert={!barShown}>
-        <div className="gx1-bar-in">
-          <p className="gx1-bar-when">
-            {CLASS_NAME} · {SCHEDULE}
-          </p>
-          <button
-            type="button"
-            className="gx1-bar-cta"
-            onClick={() => goCheckout(PRODUCT_EARLY)}
-          >
-            얼리버드 신청하기
-          </button>
-        </div>
-      </div>
-      <div className="gx1-barspacer" aria-hidden="true" />
+      {/* ── 우하단 플로팅 결제 버튼 ── */}
+      <button
+        type="button"
+        className={`gx1-fab${fabShown ? "" : " is-hidden"}`}
+        inert={!fabShown}
+        onClick={() => goCheckout(PRODUCT_EARLY)}
+      >
+        얼리버드 할인가로 신청하기
+      </button>
     </div>
   );
 }
