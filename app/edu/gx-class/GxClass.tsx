@@ -8,17 +8,14 @@
 //  · 날짜·가격·정원·장소는 lib/gxClass.ts 상수만 수정
 //  · 애니메이션 fail-safe: 기본은 전부 표시. 이펙트가 루트에 gx1-anim 을 붙인 뒤에만
 //    숨김 → 등장. 스크립트가 안 돌면 모든 섹션이 보인 상태로 남는다.
-//  · IntersectionObserver / rAF / 타이머는 언마운트 시 전부 정리
+//  · IntersectionObserver / rAF 는 언마운트 시 전부 정리
+//  · 결제 버튼(히어로 · 결제 섹션 #contact · 하단 고정 바)은 fc-class 와 동일하게
+//    router.push 로 /checkout 이동. 상품 가격의 원본은 Supabase products 테이블이다.
 //  · 카피 규칙: 물음표 금지 · 영문 eyebrow 금지 · 컨설팅→솔루션 · 컨설턴트→멘토
 // ─────────────────────────────────────────────────────────────────────────────
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type FormEvent,
-  type MouseEvent,
-} from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CAPACITY,
   CLASS_DATE,
@@ -31,12 +28,12 @@ import {
   formatEarlybird,
   formatPrice,
   formatSchedule,
+  isPending,
 } from "@/lib/gxClass";
 
-// 신청 폼 source — 구글시트 Apps Script 가 이 값으로 시트를 구분한다.
-// (action / token / hidden_iframe / input name 은 아래 JSX 에 /consulting/startup 의
-//  startupForm 과 동일하게 박혀 있으며 절대 변경 금지)
-const FORM_SOURCE = "그룹운동비즈니스클래스_신청";
+// 결제 상품 슬러그 — Supabase products 테이블의 slug(is_active=true)와 일치해야 결제창이 뜬다
+const PRODUCT_NORMAL = "gx-class";
+const PRODUCT_EARLY = "gx-class-early";
 
 const SCHEDULE = formatSchedule(CLASS_DATE, CLASS_TIME);
 
@@ -200,9 +197,18 @@ const GX_STYLE = `
 .gx1-when{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 32px}
 .gx1-chip{font-size:14px;font-weight:700;color:#eee;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:50px;padding:8px 16px}
 .gx1-chip em{font-style:normal;color:var(--g);margin-right:6px}
-.gx1-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--g);color:#fff;font-size:17px;font-weight:800;padding:18px 40px;border-radius:14px;text-decoration:none;transition:opacity .2s,transform .2s}
-.gx1-cta:hover{opacity:.92;transform:translateY(-2px)}
-@media(max-width:640px){.gx1-hero{min-height:0;padding:56px 0 64px}.gx1-hero-h1{font-size:30px}.gx1-hero-sub{font-size:16px}.gx1-stat{padding:16px 6px}.gx1-stat b{font-size:20px}.gx1-stat span{font-size:12px}.gx1-cta{width:100%;padding:16px 20px}}
+.gx1-hero-pay{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+@media(max-width:640px){.gx1-hero{min-height:0;padding:56px 0 64px}.gx1-hero-h1{font-size:30px}.gx1-hero-sub{font-size:16px}.gx1-stat{padding:16px 6px}.gx1-stat b{font-size:20px}.gx1-stat span{font-size:12px}.gx1-hero-pay{flex-direction:column}}
+
+/* 결제 버튼 공통 — fc-class 결제 버튼 톤 (정상가 #161616 / 얼리버드 그린 + 펄스) */
+.gx1-pay-btn{display:inline-flex;align-items:center;justify-content:center;min-width:220px;height:56px;padding:0 28px;border:none;border-radius:12px;background:#161616;color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;transition:opacity .2s}
+.gx1-pay-btn:hover{opacity:.9}
+.gx1-pay-btn--sale{background:var(--g)}
+.gx1-hero .gx1-pay-btn:not(.gx1-pay-btn--sale){background:#fff;color:#161616}
+@keyframes gx1Pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.gx1-pulse{animation:gx1Pulse 2.2s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.gx1-pulse{animation:none}}
+@media(max-width:640px){.gx1-pay-btn{width:100%;min-width:0}}
 
 /* 2 문제 제기 — 두 갈래 → 합류 */
 .gx1-branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:44px}
@@ -348,46 +354,42 @@ const GX_STYLE = `
 .gx1-faq-body p{margin:0}
 @media(max-width:640px){.gx1-info th,.gx1-info td{padding:14px;font-size:14px}.gx1-info th{width:84px}}
 
-/* 13 신청 폼 */
+/* 13 결제 (#contact) — fc-class 결제 카드와 동일 톤 */
 #contact{scroll-margin-top:96px}
-.gx1-form-card{max-width:640px;margin:40px auto 0;background:#fff;color:#111;border-radius:24px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-.gx1-form-title{font-size:20px;font-weight:800;margin:0 0 24px;text-align:center}
-.gx1-fg{margin-bottom:22px}
-.gx1-label{display:block;margin-bottom:8px;font-size:15px;font-weight:700;color:#111}
-.gx1-desc{display:block;margin-top:2px;font-size:13px;font-weight:500;color:#888}
-.gx1-req{color:#ff6b6b;font-size:14px}
-.gx1-input{width:100%;padding:14px 16px;border:2px solid #e9ecef;border-radius:12px;font-size:15px;color:#111;background:#fff;font-family:inherit;transition:border-color .2s,box-shadow .2s}
-.gx1-input::placeholder{color:#999}
-.gx1-input:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 4px rgba(34,181,115,.12)}
-.gx1-phone-row{display:flex;align-items:center;gap:8px}
-.gx1-phone{flex:1 1 0;min-width:0;max-width:110px;text-align:center}
-.gx1-dash{flex:0 0 auto;color:#aaa}
-.gx1-radio{display:flex;align-items:center;gap:10px;font-size:15px;margin-bottom:10px;padding:12px 14px;background:#f8f9fa;border:2px solid transparent;border-radius:10px;cursor:pointer;color:#111;transition:background .2s,border-color .2s}
-.gx1-radio:hover{background:#eaf7f0;border-color:var(--g)}
-.gx1-radio input{flex:0 0 auto;width:18px;height:18px;margin:0;accent-color:var(--g)}
-.gx1-submit{display:block;width:100%;margin-top:30px;padding:18px 20px;border:none;border-radius:14px;background:var(--g);color:#fff;font-size:17px;font-weight:800;font-family:inherit;cursor:pointer;transition:opacity .2s}
-.gx1-submit:hover{opacity:.92}
-.gx1-form-notice{margin:24px 0 0;padding:18px;background:#f8f9fa;border-radius:12px;text-align:center;font-size:14px;color:#777;line-height:1.7}
-@media(max-width:640px){.gx1-form-card{padding:26px 20px;border-radius:20px}}
+.gx1-enroll-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:680px;margin:40px auto 0}
+.gx1-enroll-card{position:relative;background:#fff;border:1px solid #e6e6e6;border-radius:18px;padding:30px 24px 26px;text-align:center;color:#141414}
+.gx1-enroll-card--sale{border:2px solid var(--g)}
+.gx1-enroll-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#e23b3b;color:#fff;font-size:11px;font-weight:800;padding:5px 14px;border-radius:50px;white-space:nowrap}
+.gx1-enroll-tag{font-size:13px;font-weight:700;color:#888;margin:0 0 10px}
+.gx1-enroll-card--sale .gx1-enroll-tag{color:var(--g)}
+.gx1-enroll-price{font-size:22px;font-weight:900;color:#161616;margin:0 0 18px;line-height:1.3}
+.gx1-enroll-price span{font-size:13px;color:#999;font-weight:600;margin-left:4px}
+.gx1-enroll-card .gx1-pay-btn{width:100%;min-width:0}
+.gx1-enroll-note{max-width:680px;margin:18px auto 0;font-size:12px;color:#9a9a9a;line-height:1.7;text-align:center}
+@media(max-width:640px){.gx1-enroll-cards{grid-template-columns:minmax(0,1fr)}.gx1-enroll-price{font-size:20px}}
 
 /* 14 하단 고정 CTA 바 — safe-area 대응 */
 .gx1-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--dark2);border-top:1px solid #222;padding:12px 16px calc(12px + env(safe-area-inset-bottom));transition:transform .3s ease}
 .gx1-bar.is-hidden{transform:translateY(140%)}
 .gx1-bar-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .gx1-bar-when{min-width:0;margin:0;font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gx1-bar-cta{flex:0 0 auto;background:var(--g);color:#fff;font-size:15px;font-weight:800;padding:13px 26px;border-radius:12px;text-decoration:none;white-space:nowrap}
-.gx1-barspacer{height:calc(76px + env(safe-area-inset-bottom))}
+.gx1-bar-cta{flex:0 0 auto;border:none;background:var(--g);color:#fff;font-size:15px;font-weight:800;font-family:inherit;padding:13px 26px;border-radius:12px;white-space:nowrap;cursor:pointer}
+.gx1-barspacer{height:calc(76px + env(safe-area-inset-bottom));background:var(--dark)}
 @media(max-width:480px){.gx1-bar-when{font-size:13px}.gx1-bar-cta{padding:12px 18px;font-size:14px}}
 @media(prefers-reduced-motion:reduce){.gx1-bar{transition:none}}
 `;
 
+/** 가격이 확정된 경우에만 (VAT포함) 표기 */
+function Vat({ price }: { price: unknown }) {
+  return isPending(price) ? null : <span>(VAT포함)</span>;
+}
+
 export default function GxClass() {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
-  // 접수 알림 타이머 — 언마운트 시 정리
-  const submitTimers = useRef<number[]>([]);
   // 숫자 증명 — null 이면 최종값 표시(기본). 섹션 진입 시 0 부터 카운트업
   const [proofCounts, setProofCounts] = useState<number[] | null>(null);
-  // 하단 고정 바 — 히어로나 신청 폼이 화면에 보이면 숨김.
+  // 하단 고정 바 — 히어로나 결제 섹션(#contact)이 화면에 보이면 숨김.
   // 본문이 아니라 히어로·폼 CTA 의 중복 진입점이라, 판정 전(첫 렌더)에는 숨겨서 히어로 위 깜빡임을 막는다.
   const [barShown, setBarShown] = useState(false);
 
@@ -449,70 +451,18 @@ export default function GxClass() {
     if (heroEl) barIo.observe(heroEl);
     if (contactEl) barIo.observe(contactEl);
 
-    const timers = submitTimers.current;
     return () => {
       revealIo.disconnect();
       proofIo.disconnect();
       barIo.disconnect();
       if (raf) cancelAnimationFrame(raf);
-      timers.forEach((t) => window.clearTimeout(t));
       root.classList.remove("gx1-anim");
     };
   }, []);
 
-  // CTA → 신청 폼. 점프로 건너뛴 섹션이 투명으로 남지 않게 먼저 전부 표시한다.
-  const goContact = (e: MouseEvent<HTMLAnchorElement>) => {
-    const target = document.getElementById("contact");
-    if (!target) return; // 없으면 기본 앵커 동작
-    e.preventDefault();
-    rootRef.current
-      ?.querySelectorAll(".gx1-reveal")
-      .forEach((el) => el.classList.add("gx1-in"));
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  // 연락처 6칸(본 번호 3 + 확인 3) — 숫자만 남기고, 자릿수를 채우면 이 폼 안의 다음 칸으로
-  const onPhoneInput = (e: FormEvent<HTMLInputElement>) => {
-    const el = e.currentTarget;
-    const digits = el.value.replace(/\D/g, "");
-    if (digits !== el.value) el.value = digits;
-    if (digits.length < el.maxLength || !el.form) return;
-    const inputs = Array.from(
-      el.form.querySelectorAll<HTMLInputElement>(".gx1-phone"),
-    );
-    inputs[inputs.indexOf(el) + 1]?.focus();
-  };
-
-  // 제출 — 기존 세미나·솔루션 폼과 동일 검증 후 네이티브 POST(hidden_iframe) 진행
-  const onFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    const form = e.currentTarget;
-    const val = (name: string) =>
-      (form.elements.namedItem(name) as HTMLInputElement | null)?.value ?? "";
-
-    if (
-      val("phone1") !== val("phoneCheck1") ||
-      val("phone2") !== val("phoneCheck2") ||
-      val("phone3") !== val("phoneCheck3")
-    ) {
-      e.preventDefault();
-      alert("연락처가 일치하지 않습니다. 다시 확인해주세요.");
-      return;
-    }
-
-    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
-    const w = window as unknown as { gtag?: (...args: unknown[]) => void };
-    if (typeof w.gtag === "function") {
-      w.gtag("event", "form_submit", { form_source: FORM_SOURCE });
-    }
-    // 메타 픽셀 Lead — 이 경로에 픽셀이 매핑된 경우에만 전송된다
-    window.__tgcFbTrack?.("Lead", { content_name: FORM_SOURCE });
-
-    submitTimers.current.push(
-      window.setTimeout(() => {
-        alert("정상적으로 접수되었습니다. 감사합니다 :)");
-        form.reset();
-      }, 500),
-    );
+  // 결제 → 체크아웃 (fc-class 와 동일)
+  const goCheckout = (product: string) => {
+    router.push(`/checkout?product=${product}`);
   };
 
   return (
@@ -542,9 +492,22 @@ export default function GxClass() {
               {CLASS_PLACE}
             </span>
           </div>
-          <a href="#contact" className="gx1-cta" onClick={goContact}>
-            [CTA 문구]
-          </a>
+          <div className="gx1-hero-pay">
+            <button
+              type="button"
+              className="gx1-pay-btn"
+              onClick={() => goCheckout(PRODUCT_NORMAL)}
+            >
+              [정상가 결제 버튼]
+            </button>
+            <button
+              type="button"
+              className="gx1-pay-btn gx1-pay-btn--sale gx1-pulse"
+              onClick={() => goCheckout(PRODUCT_EARLY)}
+            >
+              [얼리버드 결제 버튼]
+            </button>
+          </div>
         </div>
       </section>
 
@@ -849,138 +812,44 @@ export default function GxClass() {
         </div>
       </section>
 
-      {/* ── 13. 신청 폼 (#contact) ──
-          action / method / target(hidden_iframe) / token / input name 은
-          /consulting/startup 의 startupForm 과 동일 — Apps Script 라우팅에 물려 있어 절대 변경 금지.
-          source 만 이 페이지 전용 값. */}
-      <section className="gx1-sec gx1-dark2" id="contact">
+      {/* ── 13. 결제 (#contact) — 강의정보 바로 아래.
+          기존 CTA·외부 링크의 #contact 앵커가 이 섹션을 가리킨다. ── */}
+      <section className="gx1-sec gx1-dark" id="contact">
         <div className="gx1-wrap">
-          <h2 className="gx1-h2 gx1-reveal">[신청 폼 헤드라인]</h2>
+          <h2 className="gx1-h2 gx1-reveal">[결제 섹션 헤드라인]</h2>
           <p className="gx1-lead gx1-reveal">[서브카피]</p>
-
-          <div className="gx1-form-card">
-            <p className="gx1-form-title">[폼 제목]</p>
-
-            <form
-              id="gxClassForm"
-              action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec"
-              method="POST"
-              target="hidden_iframe"
-              onSubmit={onFormSubmit}
-            >
-              <div className="gx1-fg">
-                <label className="gx1-label" htmlFor="gx1-industry">
-                  [업종 질문 라벨] <span className="gx1-req">*</span>
-                </label>
-                <select
-                  id="gx1-industry"
-                  name="industry"
-                  className="gx1-input"
-                  required
-                  defaultValue=""
-                >
-                  <option value="">(선택)</option>
-                  <option value="헬스장">헬스장</option>
-                  <option value="필라테스">필라테스</option>
-                  <option value="PT 스튜디오">PT 스튜디오</option>
-                  <option value="요가">요가</option>
-                  <option value="기타">기타</option>
-                </select>
-              </div>
-
-              <div className="gx1-fg">
-                <label className="gx1-label" htmlFor="gx1-area">
-                  [지역 질문 라벨]
-                  <small className="gx1-desc">[지역 질문 보조 설명]</small>
-                </label>
-                <input
-                  id="gx1-area"
-                  type="text"
-                  name="area"
-                  className="gx1-input"
-                  placeholder="[입력 예시]"
-                />
-              </div>
-
-              <div className="gx1-fg">
-                <label className="gx1-label" htmlFor="gx1-name">
-                  이름을 입력해주세요. <span className="gx1-req">*</span>
-                </label>
-                <input
-                  id="gx1-name"
-                  type="text"
-                  name="name"
-                  className="gx1-input"
-                  required
-                />
-              </div>
-
-              <div className="gx1-fg">
-                <span className="gx1-label">
-                  연락처를 입력해주세요. <span className="gx1-req">*</span>
-                </span>
-                <div className="gx1-phone-row">
-                  <input onInput={onPhoneInput} type="text" inputMode="numeric" name="phone1" className="gx1-input gx1-phone" maxLength={3} required aria-label="연락처 앞자리" />
-                  <span className="gx1-dash">-</span>
-                  <input onInput={onPhoneInput} type="text" inputMode="numeric" name="phone2" className="gx1-input gx1-phone" maxLength={4} required aria-label="연락처 가운데자리" />
-                  <span className="gx1-dash">-</span>
-                  <input onInput={onPhoneInput} type="text" inputMode="numeric" name="phone3" className="gx1-input gx1-phone" maxLength={4} required aria-label="연락처 끝자리" />
-                </div>
-              </div>
-
-              <div className="gx1-fg">
-                <span className="gx1-label">
-                  연락처를 입력해주세요(중복확인). <span className="gx1-req">*</span>
-                </span>
-                <div className="gx1-phone-row">
-                  <input onInput={onPhoneInput} type="text" inputMode="numeric" name="phoneCheck1" className="gx1-input gx1-phone" maxLength={3} required aria-label="연락처 확인 앞자리" />
-                  <span className="gx1-dash">-</span>
-                  <input onInput={onPhoneInput} type="text" inputMode="numeric" name="phoneCheck2" className="gx1-input gx1-phone" maxLength={4} required aria-label="연락처 확인 가운데자리" />
-                  <span className="gx1-dash">-</span>
-                  <input onInput={onPhoneInput} type="text" inputMode="numeric" name="phoneCheck3" className="gx1-input gx1-phone" maxLength={4} required aria-label="연락처 확인 끝자리" />
-                </div>
-              </div>
-
-              <div className="gx1-fg">
-                <span className="gx1-label">
-                  신청 경로를 알려주세요. <span className="gx1-req">*</span>
-                </span>
-                <label className="gx1-radio">
-                  <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
-                  <span>네이버 검색 (창업, 창업솔루션 등)</span>
-                </label>
-                <label className="gx1-radio">
-                  <input type="radio" name="route" value="인스타/페이스북 광고" />
-                  <span>인스타/페이스북 광고</span>
-                </label>
-                <label className="gx1-radio">
-                  <input type="radio" name="route" value="네이버 블로그" />
-                  <span>네이버 블로그</span>
-                </label>
-                <label className="gx1-radio">
-                  <input type="radio" name="route" value="지인 소개/아카데미 수강생" />
-                  <span>지인 소개 / 아카데미 수강생</span>
-                </label>
-                <label className="gx1-radio">
-                  <input type="radio" name="route" value="기타" />
-                  <span>기타</span>
-                </label>
-              </div>
-
-              {/* 페이지 구분 */}
-              <input type="hidden" name="source" value={FORM_SOURCE} />
-              {/* 보안 토큰 */}
-              <input type="hidden" name="token" value="grow2026secure" />
-
-              <button type="submit" className="gx1-submit">
-                [제출 버튼 문구]
+          <div className="gx1-enroll-cards gx1-stagger">
+            <div className="gx1-enroll-card gx1-reveal">
+              <p className="gx1-enroll-tag">정상가</p>
+              <p className="gx1-enroll-price">
+                {formatPrice(PRICE_NORMAL)}
+                <Vat price={PRICE_NORMAL} />
+              </p>
+              <button
+                type="button"
+                className="gx1-pay-btn"
+                onClick={() => goCheckout(PRODUCT_NORMAL)}
+              >
+                [정상가 결제 버튼]
               </button>
-            </form>
-
-            <iframe name="hidden_iframe" style={{ display: "none" }} />
-
-            <p className="gx1-form-notice">[신청 후 안내 문구]</p>
+            </div>
+            <div className="gx1-enroll-card gx1-enroll-card--sale gx1-reveal">
+              <span className="gx1-enroll-badge">[할인 배지]</span>
+              <p className="gx1-enroll-tag">얼리버드</p>
+              <p className="gx1-enroll-price">
+                {formatEarlybird(PRICE_EARLYBIRD, EARLYBIRD_UNTIL)}
+                <Vat price={PRICE_EARLYBIRD} />
+              </p>
+              <button
+                type="button"
+                className="gx1-pay-btn gx1-pay-btn--sale gx1-pulse"
+                onClick={() => goCheckout(PRODUCT_EARLY)}
+              >
+                [얼리버드 결제 버튼]
+              </button>
+            </div>
           </div>
+          <p className="gx1-enroll-note gx1-reveal">[환불 규정 안내]</p>
         </div>
       </section>
 
@@ -988,9 +857,13 @@ export default function GxClass() {
       <div className={`gx1-bar${barShown ? "" : " is-hidden"}`} inert={!barShown}>
         <div className="gx1-bar-in">
           <p className="gx1-bar-when">{SCHEDULE}</p>
-          <a href="#contact" className="gx1-bar-cta" onClick={goContact}>
-            [신청 버튼]
-          </a>
+          <button
+            type="button"
+            className="gx1-bar-cta"
+            onClick={() => goCheckout(PRODUCT_EARLY)}
+          >
+            [얼리버드 결제 버튼]
+          </button>
         </div>
       </div>
       <div className="gx1-barspacer" aria-hidden="true" />
