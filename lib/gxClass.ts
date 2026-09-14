@@ -50,6 +50,20 @@ export function formatSchedule(
   return parts.length ? parts.join(" · ") : PENDING;
 }
 
+/** 얼리버드 마감일만 — "10월 1일 (수)". 미정이면 "미정" (희소성 섹션용) */
+export function formatDeadline(until: string | Pending): string {
+  if (isPending(until)) return PENDING;
+  const d = new Date(until);
+  if (Number.isNaN(d.getTime())) return until;
+  // 타임존 고정 — 서버/브라우저 렌더 결과를 같게 한다
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  }).format(d);
+}
+
 /** 얼리버드가 + 마감일 — "190,000원 (10월 1일까지)". 마감 미정이면 가격만 */
 export function formatEarlybird(
   price: number | Pending,
