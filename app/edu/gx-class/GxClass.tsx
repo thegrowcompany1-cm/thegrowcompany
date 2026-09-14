@@ -128,17 +128,10 @@ const PROOF_STATS = [
     basis: "재등록 3단계 도입 전후",
   },
 ];
+// 읽히려는 이미지가 아니라 "실제 데이터가 있다"는 신호 — 작게, 흐리게 보조로만 둔다
 const PROOF_SHOTS = [
-  {
-    src: IMAGES.proofNew,
-    alt: "CRM 신규 등록 기록 캡처 (회원 이름 가림)",
-    caption: "CRM 등록 기록 · 신규",
-  },
-  {
-    src: IMAGES.proofRejoin,
-    alt: "CRM 재등록 기록 캡처 (회원 이름 가림)",
-    caption: "CRM 등록 기록 · 재등록",
-  },
+  { src: IMAGES.proofNew, alt: "CRM 신규 등록 기록 캡처 (회원 이름 가림)" },
+  { src: IMAGES.proofRejoin, alt: "CRM 재등록 기록 캡처 (회원 이름 가림)" },
 ];
 
 // ── 9. 강사 서사 ─────────────────────────────────────────────────────────────
@@ -406,20 +399,20 @@ const GX_STYLE = `
 .gx1-axis+.gx1-axis::before{content:'×';position:absolute;left:-14px;top:50%;transform:translate(-50%,-50%);font-size:24px;font-weight:900;color:var(--g)}
 @media(max-width:760px){.gx1-axes{grid-template-columns:minmax(0,1fr);gap:30px}.gx1-axis+.gx1-axis::before{left:50%;top:-15px}}
 
-/* 8 증거 */
+/* 8 증거 — 숫자 카드가 주인공, CRM 캡처는 "실제 데이터가 있다"는 작은 보조 신호 */
 .gx1-proof{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:48px}
-.gx1-proof-card{background:#141414;border:1px solid #232323;border-radius:20px;padding:34px 20px 26px;text-align:center}
-.gx1-proof-label{font-size:15px;font-weight:700;color:#bbb;margin:0 0 12px}
-.gx1-proof-num{font-size:46px;font-weight:900;color:var(--g);line-height:1.15;margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
-.gx1-proof-num small{font-size:19px;font-weight:800;margin-left:3px}
-.gx1-proof-pre{font-size:22px;font-weight:800;color:#7a7a7a;margin-right:8px}
-.gx1-proof-basis{font-size:13px;color:#8a8a8a;margin:16px 0 0;padding-top:14px;border-top:1px solid #232323;line-height:1.6}
-.gx1-thumbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:560px;margin:28px auto 0}
-.gx1-thumb{margin:0}
-.gx1-thumb-box{aspect-ratio:4/3;border-radius:14px;background:#fff;border:1px solid #2a2a2a}
-.gx1-thumb figcaption{margin-top:8px;font-size:13px;color:#999;text-align:center}
+.gx1-proof-card{background:#141414;border:1px solid #232323;border-radius:22px;padding:42px 20px 28px;text-align:center}
+.gx1-proof-label{font-size:16px;font-weight:700;color:#bbb;margin:0 0 14px}
+.gx1-proof-num{font-size:58px;font-weight:900;color:var(--g);line-height:1.1;margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gx1-proof-num small{font-size:22px;font-weight:800;margin-left:3px}
+.gx1-proof-pre{font-size:26px;font-weight:800;color:#7a7a7a;margin-right:8px}
+.gx1-proof-basis{font-size:13px;color:#8a8a8a;margin:18px 0 0;padding-top:14px;border-top:1px solid #232323;line-height:1.6}
+.gx1-evidence{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px auto 0}
+.gx1-evidence-shots{display:flex;gap:8px;flex:0 0 auto}
+.gx1-evidence-shot{width:84px;aspect-ratio:4/3;border-radius:8px;background:#fff;border:1px solid #2a2a2a;opacity:.7;filter:grayscale(.35)}
+.gx1-evidence-note{margin:0;font-size:13px;color:#8a8a8a;line-height:1.55}
 @media(max-width:900px){.gx1-proof{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.gx1-proof-num{font-size:40px}}
+@media(max-width:640px){.gx1-proof-num{font-size:46px}.gx1-proof-num small{font-size:19px}.gx1-proof-pre{font-size:22px}.gx1-evidence-shot{width:72px}}
 
 /* 9 강사 서사 */
 .gx1-inst{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:start;margin-top:48px}
@@ -891,20 +884,24 @@ export default function GxClass() {
               </div>
             ))}
           </div>
-          <div className="gx1-thumbs gx1-stagger">
-            {PROOF_SHOTS.map((t) => (
-              <figure key={t.src} className="gx1-thumb gx1-reveal">
-                <div className="gx1-thumb-box gx1-media">
+          <div className="gx1-evidence gx1-reveal">
+            <div className="gx1-evidence-shots">
+              {PROOF_SHOTS.map((t) => (
+                <div key={t.src} className="gx1-evidence-shot gx1-media">
                   <GxImg
                     src={t.src}
                     alt={t.alt}
-                    sizes="(max-width: 640px) 45vw, 272px"
+                    sizes="(max-width: 640px) 72px, 84px"
                     position="left top"
                   />
                 </div>
-                <figcaption>{t.caption}</figcaption>
-              </figure>
-            ))}
+              ))}
+            </div>
+            <p className="gx1-evidence-note">
+              실제 CRM 등록 기록 기준
+              <br />
+              회원 정보는 가림 처리
+            </p>
           </div>
         </div>
       </section>
@@ -1174,7 +1171,7 @@ export default function GxClass() {
               </button>
             </div>
             <div className="gx1-enroll-card gx1-enroll-card--sale gx1-reveal">
-              <span className="gx1-enroll-badge">[할인 배지]</span>
+              <span className="gx1-enroll-badge">선착순 마감</span>
               <p className="gx1-enroll-tag">얼리버드</p>
               <p className="gx1-enroll-price">
                 <EarlybirdPrice />
