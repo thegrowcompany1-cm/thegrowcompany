@@ -26,9 +26,9 @@ import {
   EARLYBIRD_UNTIL,
   PRICE_EARLYBIRD,
   PRICE_NORMAL,
+  discountRate,
   formatCapacity,
   formatDeadline,
-  formatEarlybird,
   formatPrice,
   formatSchedule,
   isPending,
@@ -207,7 +207,32 @@ const fmtNum = (n: number, decimals: number) =>
 
 /** 가격이 확정된 경우에만 (VAT포함) 표기 */
 function Vat({ price }: { price: unknown }) {
-  return isPending(price) ? null : <span>(VAT포함)</span>;
+  return isPending(price) ? null : <span className="gx1-vat">(VAT포함)</span>;
+}
+
+/**
+ * 얼리버드 가격 표기 — 정가 취소선 + 얼리버드가 강조 + 할인율 (페이지 전체 공통).
+ * 가격이 미정이면 취소선·할인율 없이 얼리버드가("미정")만, 마감일은 확정된 경우에만 붙인다.
+ */
+function EarlybirdPrice() {
+  const rate = discountRate(PRICE_NORMAL, PRICE_EARLYBIRD);
+  const until = isPending(EARLYBIRD_UNTIL)
+    ? null
+    : formatDeadline(EARLYBIRD_UNTIL);
+  return (
+    <span className="gx1-price">
+      {rate !== null ? (
+        <s className="gx1-price-was" aria-label={`정가 ${formatPrice(PRICE_NORMAL)}`}>
+          {formatPrice(PRICE_NORMAL)}
+        </s>
+      ) : null}
+      <b className="gx1-price-now">{formatPrice(PRICE_EARLYBIRD)}</b>
+      {rate !== null ? (
+        <span className="gx1-price-rate">{rate}% 할인</span>
+      ) : null}
+      {until ? <span className="gx1-price-until">{until}까지</span> : null}
+    </span>
+  );
 }
 
 /**
@@ -498,8 +523,16 @@ const GX_STYLE = `
 .gx1-info tr:last-child th,.gx1-info tr:last-child td{border-bottom:none}
 .gx1-info th{width:120px;background:var(--cream);font-weight:800;color:#333;white-space:nowrap}
 .gx1-info td{font-weight:600;color:#141414;line-height:1.6}
-.gx1-price-line{display:block}
-.gx1-price-line em{font-style:normal;color:var(--g);font-weight:800;margin-right:8px}
+/* 얼리버드 가격 표기 공통 — 정가 취소선 + 얼리버드 강조 + 할인율 */
+.gx1-price{display:inline-flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:2px 8px}
+.gx1-price-was{font-size:.68em;font-weight:700;color:#9a9a9a}
+.gx1-price-now{font-weight:900;color:var(--g)}
+.gx1-price-rate{align-self:center;font-size:12px;font-weight:800;line-height:1.4;color:#fff;background:#e23b3b;border-radius:50px;padding:3px 9px;white-space:nowrap}
+.gx1-price-until{flex-basis:100%;font-size:12px;font-weight:600;color:#9a9a9a}
+.gx1-vat{font-size:13px;color:#999;font-weight:600;margin-left:4px}
+.gx1-info .gx1-price{justify-content:flex-start}
+.gx1-info .gx1-price-was{font-size:14px}
+.gx1-info .gx1-price-now{font-size:18px}
 .gx1-faq-t{font-size:22px;font-weight:800;margin:56px 0 18px;text-align:center}
 .gx1-faq{display:flex;flex-direction:column;gap:10px}
 .gx1-faq-item{border:1px solid #262626;border-radius:14px;background:#141414;overflow:hidden}
@@ -516,7 +549,6 @@ const GX_STYLE = `
 .gx1-enroll-tag{font-size:13px;font-weight:700;color:#888;margin:0 0 10px}
 .gx1-enroll-card--sale .gx1-enroll-tag{color:var(--g)}
 .gx1-enroll-price{font-size:22px;font-weight:900;color:#161616;margin:0 0 18px;line-height:1.3}
-.gx1-enroll-price span{font-size:13px;color:#999;font-weight:600;margin-left:4px}
 .gx1-enroll-card .gx1-pay-btn{width:100%;min-width:0}
 .gx1-enroll-note{max-width:680px;margin:18px auto 0;font-size:12px;color:#9a9a9a;line-height:1.7;text-align:center}
 @media(max-width:640px){.gx1-info th,.gx1-info td{padding:14px;font-size:14px}.gx1-info th{width:84px}.gx1-enroll-cards{grid-template-columns:minmax(0,1fr)}.gx1-enroll-price{font-size:20px}}
@@ -1101,14 +1133,8 @@ export default function GxClass() {
               <tr>
                 <th scope="row">가격</th>
                 <td>
-                  <span className="gx1-price-line">
-                    <em>정상가</em>
-                    {formatPrice(PRICE_NORMAL)}
-                  </span>
-                  <span className="gx1-price-line">
-                    <em>얼리버드</em>
-                    {formatEarlybird(PRICE_EARLYBIRD, EARLYBIRD_UNTIL)}
-                  </span>
+                  <EarlybirdPrice />
+                  <Vat price={PRICE_EARLYBIRD} />
                 </td>
               </tr>
             </tbody>
@@ -1151,7 +1177,7 @@ export default function GxClass() {
               <span className="gx1-enroll-badge">[할인 배지]</span>
               <p className="gx1-enroll-tag">얼리버드</p>
               <p className="gx1-enroll-price">
-                {formatEarlybird(PRICE_EARLYBIRD, EARLYBIRD_UNTIL)}
+                <EarlybirdPrice />
                 <Vat price={PRICE_EARLYBIRD} />
               </p>
               <button

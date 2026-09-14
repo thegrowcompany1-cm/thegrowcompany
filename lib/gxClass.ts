@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 그룹운동 비즈니스 클래스 — 기수마다 바뀌는 값은 이 파일 상단 상수만 수정한다.
 //
-// 확정 전에는 전부 "미정" 이다. 타입은 확정 후 형태로 고정해 두었으니 값만 바꾸면
+// 확정 전인 값은 "미정" 이다. 타입은 확정 후 형태로 고정해 두었으니 값만 바꾸면
 // 되고, 화면 표기(원·명·날짜 포맷)는 아래 format* 함수가 처리한다.
 //   CLASS_DATE / CLASS_TIME / CLASS_PLACE → 문자열
 //   CAPACITY / PRICE_NORMAL / PRICE_EARLYBIRD → 숫자 (예: 30, 290000)
@@ -22,9 +22,9 @@ export const CLASS_PLACE: string | Pending = PENDING;
 /** 정원 (명) */
 export const CAPACITY: number | Pending = PENDING;
 /** 정상가 (원, VAT 포함) */
-export const PRICE_NORMAL: number | Pending = PENDING;
+export const PRICE_NORMAL: number | Pending = 209000;
 /** 얼리버드가 (원, VAT 포함) */
-export const PRICE_EARLYBIRD: number | Pending = PENDING;
+export const PRICE_EARLYBIRD: number | Pending = 165000;
 /** 얼리버드 마감 시각 — 반드시 +09:00 오프셋 포함 ISO 문자열 */
 export const EARLYBIRD_UNTIL: string | Pending = PENDING;
 /* ▲▲ 여기까지 ▲▲ */
@@ -64,20 +64,16 @@ export function formatDeadline(until: string | Pending): string {
   }).format(d);
 }
 
-/** 얼리버드가 + 마감일 — "190,000원 (10월 1일까지)". 마감 미정이면 가격만 */
-export function formatEarlybird(
-  price: number | Pending,
-  until: string | Pending,
-): string {
-  const p = formatPrice(price);
-  if (isPending(until)) return p;
-  const d = new Date(until);
-  if (Number.isNaN(d.getTime())) return p;
-  // 타임존을 고정해 서버/브라우저 렌더 결과가 같게 한다 (하이드레이션 불일치 방지)
-  const day = new Intl.DateTimeFormat("ko-KR", {
-    timeZone: "Asia/Seoul",
-    month: "long",
-    day: "numeric",
-  }).format(d);
-  return `${p} (${day}까지)`;
+/**
+ * 얼리버드 할인율(%) — 소수점 버림 (209,000 → 165,000 = 21.05% → 21).
+ * 반올림하면 실제보다 크게 표기될 수 있어 버린다.
+ * 둘 중 하나라도 미정이거나, 얼리버드가 정가보다 싸지 않으면 null.
+ */
+export function discountRate(
+  normal: number | Pending,
+  early: number | Pending,
+): number | null {
+  if (isPending(normal) || isPending(early)) return null;
+  if (normal <= 0 || early >= normal) return null;
+  return Math.floor(((normal - early) / normal) * 100);
 }
