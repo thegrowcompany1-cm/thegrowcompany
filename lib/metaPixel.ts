@@ -17,6 +17,7 @@
  */
 export const PIXEL_MAP: Record<string, string> = {
   "/consulting/startup": "1556215626187598", // 창업 솔루션
+  "/edu/gx-class": "1112480951354351", // 그룹운동 비즈니스 클래스
 
   // 아래는 픽셀 발급 후 주석을 풀고 ID 를 채우면 바로 적용된다.
   // "/consulting/outsourcing": "",  // 매장 위탁 — 픽셀 발급 후 입력
