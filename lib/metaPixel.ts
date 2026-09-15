@@ -18,6 +18,10 @@
 export const PIXEL_MAP: Record<string, string> = {
   "/consulting/startup": "1556215626187598", // 창업 솔루션
   "/edu/gx-class": "1112480951354351", // 그룹운동 비즈니스 클래스
+  // 결제 흐름 — prefix 매칭이라 /checkout/success, /checkout/fail 도 이 픽셀을 탄다.
+  // 현재 광고 집행 상품이 gx-class 뿐이라 단순 매핑.
+  // 창업·FC 광고 시 product 슬러그별 분기 필요
+  "/checkout": "1112480951354351",
 
   // 아래는 픽셀 발급 후 주석을 풀고 ID 를 채우면 바로 적용된다.
   // "/consulting/outsourcing": "",  // 매장 위탁 — 픽셀 발급 후 입력

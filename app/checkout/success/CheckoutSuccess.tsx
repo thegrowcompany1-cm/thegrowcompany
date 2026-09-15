@@ -143,6 +143,51 @@ export default function CheckoutSuccess() {
     })();
   }, [paymentKey, orderId, amount]);
 
+  // 구매 전환 — 서버 승인이 성공(done)했을 때만 보낸다. 실패 화면에서는 절대 보내지 않는다.
+  // 매출이 부풀지 않도록 주문당 1회:
+  //  · useRef      — StrictMode 이중 실행 · 재렌더 가드
+  //  · localStorage — 새로고침 가드. 새로고침하면 승인 라우트가 토스의 멱등 응답으로
+  //                   다시 성공해 done 이 또 오는데, useRef 는 새로고침에서 초기화된다.
+  //  · eventID / transaction_id = 주문번호 — 메타·GA4 쪽 중복 제거 키
+  const purchasedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (phase.kind !== "done") return;
+    const { payment } = phase;
+    if (purchasedRef.current === payment.orderId) return;
+    purchasedRef.current = payment.orderId;
+
+    const sentKey = `tgc-purchase-sent:${payment.orderId}`;
+    try {
+      if (window.localStorage.getItem(sentKey)) return;
+      window.localStorage.setItem(sentKey, "1");
+    } catch {
+      // 저장소를 쓸 수 없는 환경 — useRef 가드와 eventID 중복 제거에 맡긴다
+    }
+
+    if (typeof window.__tgcFbTrack === "function") {
+      window.__tgcFbTrack(
+        "Purchase",
+        {
+          content_name: payment.orderName,
+          content_ids: [payment.productSlug],
+          value: payment.amount,
+          currency: "KRW",
+        },
+        { eventID: payment.orderId },
+      );
+    }
+
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
+      .gtag;
+    if (typeof gtag === "function") {
+      gtag("event", "purchase", {
+        transaction_id: payment.orderId,
+        value: payment.amount,
+        currency: "KRW",
+      });
+    }
+  }, [phase]);
+
   if (missingParams) {
     return (
       <FailScreen

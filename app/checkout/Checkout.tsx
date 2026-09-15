@@ -153,6 +153,22 @@ export default function Checkout() {
     };
   }, [product]);
 
+  // 메타 픽셀 InitiateCheckout — 상품 로드가 끝나면 상품당 1회 (StrictMode 이중 실행·재렌더 가드)
+  const initiatedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!product) return;
+    if (initiatedRef.current === product.slug) return;
+    initiatedRef.current = product.slug;
+    if (typeof window.__tgcFbTrack === "function") {
+      window.__tgcFbTrack("InitiateCheckout", {
+        content_name: product.name,
+        content_ids: [product.slug],
+        value: product.price,
+        currency: "KRW",
+      });
+    }
+  }, [product]);
+
   const handlePay = async () => {
     if (!product) return;
 
@@ -204,6 +220,15 @@ export default function Checkout() {
     if (typeof gtag === "function") {
       gtag("event", "begin_checkout", {
         item_name: product.name,
+        value: product.price,
+        currency: "KRW",
+      });
+    }
+    // 메타 픽셀 AddPaymentInfo — GA4 begin_checkout 과 같은 시점
+    if (typeof window.__tgcFbTrack === "function") {
+      window.__tgcFbTrack("AddPaymentInfo", {
+        content_name: product.name,
+        content_ids: [product.slug],
         value: product.price,
         currency: "KRW",
       });

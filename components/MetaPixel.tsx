@@ -29,10 +29,21 @@ declare global {
     _fbq?: unknown;
     /** 현재 페이지에 매핑된 픽셀 ID (없으면 undefined) */
     __tgcPixelId?: string;
-    /** 표준 이벤트 전송 — 현재 페이지 픽셀로만 보낸다 */
-    __tgcFbTrack?: (event: string, params?: Record<string, unknown>) => void;
+    /**
+     * 표준 이벤트 전송 — 현재 페이지 픽셀로만 보낸다.
+     * options.eventID 는 메타의 중복 제거 키 (예: Purchase 에 주문번호).
+     */
+    __tgcFbTrack?: (
+      event: string,
+      params?: Record<string, unknown>,
+      options?: { eventID?: string },
+    ) => void;
     /** 커스텀 이벤트 전송 — 현재 페이지 픽셀로만 보낸다 */
-    __tgcFbTrackCustom?: (event: string, params?: Record<string, unknown>) => void;
+    __tgcFbTrackCustom?: (
+      event: string,
+      params?: Record<string, unknown>,
+      options?: { eventID?: string },
+    ) => void;
   }
 }
 
@@ -52,6 +63,10 @@ export default function MetaPixel() {
   // 이미 init 한 픽셀 / 이미 PageView 를 보낸 (픽셀+경로)
   const initedRef = useRef<Set<string>>(new Set());
   const lastViewRef = useRef<string | null>(null);
+  // 픽셀 준비(부트스트랩 실행 + init) 전에 들어온 이벤트. init 직후 같은 픽셀로 보낸다.
+  // 광고에서 결제 페이지로 바로 들어오면 상품 로드가 부트스트랩보다 빨리 끝날 수 있어
+  // 그대로 두면 InitiateCheckout 이 조용히 버려진다.
+  const pendingRef = useRef<unknown[][]>([]);
 
   const applyPixel = useCallback(() => {
     if (!pixelId) return;
@@ -60,6 +75,15 @@ export default function MetaPixel() {
     if (!initedRef.current.has(pixelId)) {
       window.fbq("init", pixelId);
       initedRef.current.add(pixelId);
+    }
+
+    // 준비 전에 쌓인 이벤트 전송 — 다른 픽셀용으로 쌓인 것은 버린다 (중복·오전송 방지)
+    if (pendingRef.current.length) {
+      const queued = pendingRef.current;
+      pendingRef.current = [];
+      queued.forEach((args) => {
+        if (args[1] === pixelId) window.fbq?.(...args);
+      });
     }
 
     const viewKey = `${pixelId}|${pathname}`;
@@ -77,10 +101,22 @@ export default function MetaPixel() {
 
     const send =
       (method: "trackSingle" | "trackSingleCustom") =>
-      (event: string, params?: Record<string, unknown>) => {
+      (
+        event: string,
+        params?: Record<string, unknown>,
+        options?: { eventID?: string },
+      ) => {
         if (!pixelId) return;
-        if (typeof window.fbq !== "function") return;
-        window.fbq(method, pixelId, event, params ?? {});
+        const args: unknown[] = [method, pixelId, event, params ?? {}];
+        // fbq 의 네 번째 인자 — 같은 eventID 는 메타가 한 번으로 친다
+        if (options?.eventID) args.push({ eventID: options.eventID });
+
+        // 아직 준비 전이면 보관했다가 init 직후 전송 (무한히 쌓이지 않게 상한)
+        if (typeof window.fbq !== "function" || !initedRef.current.has(pixelId)) {
+          if (pendingRef.current.length < 20) pendingRef.current.push(args);
+          return;
+        }
+        window.fbq(...args);
       };
 
     window.__tgcFbTrack = send("trackSingle");

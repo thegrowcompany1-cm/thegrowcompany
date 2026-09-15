@@ -16,7 +16,7 @@ export const PENDING: Pending = "미정";
 /** 강의 일자 (예: "2026년 10월 18일 (토)") */
 export const CLASS_DATE: string | Pending = "2026년 10월 10일 (토)";
 /** 강의 시간 (예: "13:00 ~ 17:00 · 총 4시간") */
-export const CLASS_TIME: string | Pending = "총 4시간";
+export const CLASS_TIME: string | Pending = "10:00 ~ 14:00 (총 4시간)";
 /** 강의 장소 (예: "서울 강남구 ○○빌딩 5층") */
 export const CLASS_PLACE: string | Pending = "하이서울 유스호스텔 (영등포)";
 /** 정원 (명) */
