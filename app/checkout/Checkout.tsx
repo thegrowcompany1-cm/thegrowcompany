@@ -29,6 +29,7 @@ import {
   saveCheckoutCustomer,
   type Product,
 } from "@/lib/products";
+import { EMAIL_RE, formatPhone } from "@/lib/authStyles";
 
 export const CHK_STYLE = `
 .chk{min-height:100vh;background:#f6f5f2;color:#161616;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;overflow-x:hidden}
@@ -154,16 +155,37 @@ export default function Checkout() {
 
   const handlePay = async () => {
     if (!product) return;
-    if (!name.trim()) {
+
+    // 이름 — 공백만 입력 방지 + 최소 2자
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       alert("주문자 이름을 입력해주세요.");
       return;
     }
-    if (!phone.trim()) {
+    if (trimmedName.length < 2) {
+      alert("이름을 2자 이상 입력해주세요.");
+      return;
+    }
+
+    // 연락처 — 숫자만 세어 10~11자리가 아니면 결제 중단
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (!phoneDigits) {
       alert("연락처를 입력해주세요.");
       return;
     }
-    if (!email.trim()) {
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+      alert("연락처를 정확히 입력해주세요.");
+      return;
+    }
+
+    // 이메일 — @ 와 점이 들어간 도메인 형식
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
       alert("이메일을 입력해주세요.");
+      return;
+    }
+    if (!EMAIL_RE.test(trimmedEmail)) {
+      alert("이메일 형식을 확인해주세요.");
       return;
     }
     if (!agreePrivacy) {
@@ -192,17 +214,17 @@ export default function Checkout() {
     const orderId = buildOrderId(product.slug);
     // 주문자 정보는 URL 대신 sessionStorage 로 승인 단계까지 넘긴다.
     saveCheckoutCustomer(orderId, {
-      name: name.trim(),
-      phone: phone.trim(),
-      email: email.trim(),
+      name: trimmedName,
+      phone: formatPhone(phoneDigits),
+      email: trimmedEmail,
     });
     try {
       await widgets.requestPayment({
         orderId,
         orderName: product.name,
-        customerName: name.trim(),
-        customerEmail: email.trim(),
-        customerMobilePhone: phone.replace(/\D/g, ""),
+        customerName: trimmedName,
+        customerEmail: trimmedEmail,
+        customerMobilePhone: phoneDigits,
         successUrl: `${window.location.origin}/checkout/success`,
         failUrl: `${window.location.origin}/checkout/fail`,
       });
@@ -288,8 +310,11 @@ export default function Checkout() {
                   id="chk-phone"
                   className="chk-input"
                   type="tel"
+                  inputMode="numeric"
+                  maxLength={13}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  // 숫자만 남기고 010-1234-5678 형식으로 자동 하이픈
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
                   placeholder="010-0000-0000"
                   autoComplete="tel"
                 />
