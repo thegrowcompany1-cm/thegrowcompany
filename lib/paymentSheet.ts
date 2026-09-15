@@ -9,7 +9,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const PAYMENT_SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbye3TnjHVmpD1lrlEZf0HKOMhmNDM3b2DVjULi7vxoIHa1Na3E7FxRpCmtGw9xZrCzN/exec";
+  "https://script.google.com/macros/s/AKfycbxmo4P7VOk4fGsLY6ZOHQL819Eoe7un_KboLj6BHY6JUuxM0dsFWC2UyMdc0YP0EAk/exec";
 
 export const PAYMENT_SHEET_TOKEN = "grow2026pay";
 
