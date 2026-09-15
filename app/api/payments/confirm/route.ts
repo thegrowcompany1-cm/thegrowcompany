@@ -15,6 +15,7 @@
 
 import { NextResponse } from "next/server";
 import { fetchProductBySlug, parseOrderIdSlug } from "@/lib/products";
+import { sendPaymentToSheet } from "@/lib/paymentSheet";
 
 // Buffer(Basic 인증 헤더) 사용 — Node 런타임 고정
 export const runtime = "nodejs";
@@ -163,7 +164,10 @@ export async function POST(request: Request) {
     customerEmail: str(body.customer?.email, 120),
   };
 
-  // TODO: 시트 기록 (Apps Script POST) — payment 를 "결제내역" 시트로 전송
+  // 결제내역 시트 기록 — 토스 승인 성공을 확인한 뒤에만 여기 도달한다.
+  // sendPaymentToSheet 는 실패·타임아웃(5초)이어도 throw 하지 않고 로그만 남기므로
+  // 승인 응답은 항상 성공으로 나간다. 서버리스에서 응답 뒤 요청이 끊기지 않도록 await 로 마친다.
+  await sendPaymentToSheet(payment);
 
   return NextResponse.json({ ok: true, payment });
 }
