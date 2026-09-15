@@ -106,8 +106,7 @@ const navItems: NavItem[] = [
       { label: "창업 세미나", href: "/edu/startup-class" },
       // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
       { label: "정규 FC 세미나", href: "/edu/fc-class", fc: true },
-      // TODO: 카피 확정 후 복구 — 비공개 검수 중이라 PC 드롭다운·모바일 아코디언에서 숨김
-      // { label: "그룹운동 비즈니스 클래스", href: "/edu/gx-class" },
+      { label: "그룹운동 비즈니스 클래스", href: "/edu/gx-class" },
     ],
   },
   {

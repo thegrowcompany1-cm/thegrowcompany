@@ -275,6 +275,7 @@ function GxImg({
         src={src}
         alt={alt}
         fill
+        draggable={false}
         sizes={sizes}
         style={{ objectFit: "cover", objectPosition: position }}
         onLoad={(e) =>
@@ -289,7 +290,11 @@ function GxImg({
 }
 
 const GX_STYLE = `
-.gx1{--g:#22B573;--dark:#0A0A0A;--dark2:#0d0d0d;--cream:#FBF8EC;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;color:#141414;background:#fff;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere}
+.gx1{--g:#22B573;--dark:#0A0A0A;--dark2:#0d0d0d;--cream:#FBF8EC;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;color:#141414;background:#fff;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+/* 선택·복사 방지 예외 — 결제 버튼 · 플로팅 버튼 · 전화번호 링크 · 입력 요소 */
+.gx1 .gx1-pay-btn,.gx1 .gx1-fab,.gx1 a[href^="tel:"],.gx1 input,.gx1 textarea,.gx1 select,.gx1 [contenteditable="true"]{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
+/* 이미지 보호 — 드래그·길게 눌러 저장 차단 (클릭 대상 이미지가 없어 pointer-events 를 꺼도 된다) */
+.gx1 img{-webkit-user-drag:none;pointer-events:none}
 .gx1 *{box-sizing:border-box}
 .gx1-wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .gx1-narrow{max-width:820px}
@@ -700,6 +705,44 @@ export default function GxClass() {
     };
   }, []);
 
+  // 텍스트 선택·복사 방지 — document 가 아니라 루트에만 등록한다.
+  // 페이지를 떠나면 루트와 함께 사라지고, 언마운트 시 리스너도 전부 제거한다.
+  // 결제 버튼 · 플로팅 버튼 · 전화번호 링크 · 입력 요소는 예외. 클릭·스크롤·터치는 막지 않는다.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const ALLOW =
+      '.gx1-pay-btn, .gx1-fab, a[href^="tel:"], input, textarea, select, [contenteditable="true"]';
+    const allowed = (t: EventTarget | null) =>
+      t instanceof Element && t.closest(ALLOW) !== null;
+
+    const block = (e: Event) => {
+      if (!allowed(e.target)) e.preventDefault();
+    };
+
+    // Ctrl(맥은 Cmd)+C/X/A/S/U, Ctrl+Shift+I, F12
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (allowed(e.target)) return;
+      const key = e.key.toLowerCase();
+      const mod = e.ctrlKey || e.metaKey;
+      const blocked =
+        e.key === "F12" ||
+        (mod && e.shiftKey && key === "i") ||
+        (mod && !e.shiftKey && ["c", "x", "a", "s", "u"].includes(key));
+      if (blocked) e.preventDefault();
+    };
+
+    const EVENTS = ["contextmenu", "copy", "cut", "dragstart", "selectstart"];
+    EVENTS.forEach((type) => root.addEventListener(type, block));
+    root.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      EVENTS.forEach((type) => root.removeEventListener(type, block));
+      root.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
   // 결제 → 체크아웃 (fc-class 와 동일)
   const goCheckout = (product: string) => {
     router.push(`/checkout?product=${product}`);
@@ -718,6 +761,7 @@ export default function GxClass() {
             src={IMAGES.community}
             alt=""
             fill
+            draggable={false}
             preload
             sizes="100vw"
             style={{ objectFit: "cover", objectPosition: "center 60%" }}
@@ -736,7 +780,7 @@ export default function GxClass() {
           </h1>
           <p className="gx1-hero-sub">
             그룹운동에서 신규 전환과 재등록을
-            <br className="gx1-br-m" /> 시스템으로 만드는 100분
+            <br className="gx1-br-m" /> 시스템으로 만드는 4시간 특강
           </p>
           <div className="gx1-stats">
             {HERO_STATS.map((s) => (

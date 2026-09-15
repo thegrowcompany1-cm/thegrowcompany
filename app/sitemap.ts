@@ -17,6 +17,7 @@ const ROUTES = [
   "/info/free",
   "/edu/fc-class",
   "/edu/startup-class",
+  "/edu/gx-class",
   "/legal/terms",
   "/legal/privacy",
 ];
