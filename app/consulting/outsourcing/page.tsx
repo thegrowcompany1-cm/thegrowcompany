@@ -16,6 +16,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import FcLink from "@/components/FcLink";
@@ -117,6 +118,160 @@ function RelatedServiceCard({
         </p>
       </div>
     </CardWrap>
+  );
+}
+
+// ─── 위탁 후기 영상 (단독 1개, 슬라이더 아님) ────────────────────────────────
+//  · 원본 video-raw/reviewwt.mp4 → ffmpeg 720p(세로 720x1280) CRF28 + AAC 96k
+//  · 클릭 전에는 poster 만 보여주고 preload="none" (모바일 데이터 절약)
+//  · DETAIL_HTML 은 통째로 dangerouslySetInnerHTML 로 들어가므로, 그 안의
+//    마운트 지점 div 에 React 포털로 꽂아 넣는다. 그래야 IntersectionObserver
+//    해제 같은 정리를 React 언마운트 시점에 제대로 할 수 있다.
+const WT_VID = {
+  src: "/reviews/review-wt.mp4",
+  poster: "/reviews/review-wt.jpg",
+};
+
+// 세로 9:16 영상이라 PC 에서 폭 720px 을 그대로 주면 높이가 1280px 이 되어
+// 화면을 넘긴다. 바깥 단은 다른 섹션과 같은 800px 로 두고, 영상 프레임만
+// 360px(높이 640px)로 제한한다. 모바일은 좌우 여백 없이 전체폭.
+const WT_VID_CSS = `
+.wt-vid-section{max-width:800px;margin:0 auto;padding:0 20px 70px;background:#fff;text-align:center}
+.wt-vid-lead{font-size:21px;font-weight:800;color:#222;line-height:1.5;margin:0 0 20px;word-break:keep-all}
+.wt-vid-frame{position:relative;width:100%;max-width:360px;aspect-ratio:9/16;margin:0 auto;border-radius:16px;overflow:hidden;background:#1a1a1a}
+.wt-vid-player{width:100%;height:100%;object-fit:cover;display:block}
+.wt-vid-cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;padding:0;cursor:pointer;transition:background .2s}
+.wt-vid-cover:hover{background:rgba(0,0,0,.32)}
+.wt-vid-play{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(34,181,115,.92);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.wt-vid-sub{font-size:16px;font-weight:700;color:#444;line-height:1.6;margin:22px 0 24px;word-break:keep-all}
+.wt-vid-cta{display:inline-block;background:#22B573;color:#fff;padding:16px 44px;border-radius:8px;font-size:17px;font-weight:700;border:none;cursor:pointer;transition:background .3s}
+.wt-vid-cta:hover{background:#1a9c5e}
+.wt-vid-teaser-wrap{max-width:800px;margin:0 auto;padding:28px 20px 0;background:#f9f9f9}
+.wt-vid-teaser{display:flex;align-items:center;gap:14px;width:100%;max-width:420px;margin:0 auto;padding:12px 16px;border:1px solid #e5e5e5;border-radius:12px;background:#fff;cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s}
+.wt-vid-teaser:hover{border-color:#22B573;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.wt-vid-teaser-thumb{width:54px;height:96px;object-fit:cover;border-radius:8px;flex-shrink:0;display:block}
+.wt-vid-teaser-text{display:flex;flex-direction:column;gap:6px;min-width:0}
+.wt-vid-teaser-quote{font-size:15px;font-weight:700;color:#222;line-height:1.5;word-break:keep-all}
+.wt-vid-teaser-hint{font-size:13px;color:#22B573;font-weight:600}
+@media (max-width:600px){
+  .wt-vid-section{padding:0 0 50px}
+  .wt-vid-lead{font-size:18px;padding:0 16px}
+  .wt-vid-frame{max-width:none;border-radius:0}
+  .wt-vid-sub{font-size:15px;padding:0 16px}
+  .wt-vid-teaser-wrap{padding:24px 16px 0}
+}
+`;
+
+// DETAIL_HTML 내부 요소로 부드럽게 스크롤 (상단 고정 헤더 높이 80px 보정)
+function wtScrollTo(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const y = el.getBoundingClientRect().top + window.scrollY - 80;
+  window.scrollTo({ top: y, behavior: "smooth" });
+}
+
+function WtReviewVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  // 한 번 재생하면 네이티브 controls 로 넘기고 커버는 다시 띄우지 않는다.
+  const [started, setStarted] = useState(false);
+
+  // 영상이 화면 밖으로 벗어나면 자동 일시정지 (언마운트 시 옵저버 해제)
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting && !el.paused) el.pause();
+        }
+      },
+      { threshold: 0 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const handlePlay = () => {
+    const el = videoRef.current;
+    if (!el) return;
+    setStarted(true);
+    void el.play().catch(() => {
+      // 브라우저가 재생을 막은 경우 — 네이티브 controls 로 다시 시도할 수 있다.
+    });
+  };
+
+  return (
+    <section className="wt-vid-section" id="wt-vid-section">
+      <style>{WT_VID_CSS}</style>
+
+      {/* TODO: 확정 전 임시 카피 — 대표님 확인 후 교체 */}
+      <p className="wt-vid-lead">처음엔 저도 맡기는 게 제일 무서웠습니다</p>
+
+      <div className="wt-vid-frame">
+        <video
+          ref={videoRef}
+          className="wt-vid-player"
+          src={WT_VID.src}
+          poster={WT_VID.poster}
+          preload="none"
+          playsInline
+          controls={started}
+        />
+        {!started && (
+          <button
+            type="button"
+            className="wt-vid-cover"
+            onClick={handlePlay}
+            aria-label="위탁 후기 영상 재생"
+          >
+            <span className="wt-vid-play">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </button>
+        )}
+      </div>
+
+      {/* TODO: 확정 전 임시 카피 — 대표님 확인 후 교체 */}
+      <p className="wt-vid-sub">걱정했던 일은 일어나지 않았습니다</p>
+
+      <button
+        type="button"
+        className="wt-vid-cta"
+        onClick={() => wtScrollTo("consulting-form-wt")}
+      >
+        우리 매장 운영 상담받기
+      </button>
+    </section>
+  );
+}
+
+// 폼 직전 재노출 — 작은 포스터 썸네일 + 인용 한 줄, 클릭 시 상단 영상으로 스크롤
+function WtReviewTeaser() {
+  return (
+    <div className="wt-vid-teaser-wrap">
+      <button
+        type="button"
+        className="wt-vid-teaser"
+        onClick={() => wtScrollTo("wt-vid-section")}
+      >
+        <Image
+          src={WT_VID.poster}
+          alt=""
+          width={54}
+          height={96}
+          className="wt-vid-teaser-thumb"
+        />
+        <span className="wt-vid-teaser-text">
+          {/* TODO: 확정 전 임시 카피 — 위 영상 카피와 함께 교체 */}
+          <span className="wt-vid-teaser-quote">
+            걱정했던 일은 일어나지 않았습니다
+          </span>
+          <span className="wt-vid-teaser-hint">후기 영상 다시 보기</span>
+        </span>
+      </button>
+    </div>
   );
 }
 
@@ -456,6 +611,9 @@ const DETAIL_HTML = `<style>
     더그로우가 <strong>직접 매장에 가서</strong> 해결해드립니다.
   </div>
 </div>
+
+<!-- 위탁 후기 영상 마운트 지점 — React 포털(WtReviewVideo)이 여기에 렌더된다 -->
+<div id="wt-vid-mount"></div>
 
 <style>
   .evidence-section {
@@ -2013,6 +2171,9 @@ function toggleFaq(el) {
   }
 </style>
 
+<!-- 폼 직전 후기 영상 재노출 마운트 지점 — React 포털(WtReviewTeaser) -->
+<div id="wt-vid-teaser-mount"></div>
+
 <div class="cta-section" id="consulting-form-wt">
   <div class="cta-inner">
     <h2 class="cta-title">
@@ -2201,6 +2362,22 @@ export default function OutsourcingConsultingPage() {
   // 상세정보 HTML 컨테이너 ref
   const detailRef = useRef<HTMLDivElement>(null);
 
+  // DETAIL_HTML 안에 심어둔 마운트 지점 — 후기 영상/재노출 썸네일을 포털로 꽂는다.
+  const [vidSlot, setVidSlot] = useState<HTMLElement | null>(null);
+  const [teaserSlot, setTeaserSlot] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const root = detailRef.current;
+    if (!root) return;
+    setVidSlot(root.querySelector<HTMLElement>("#wt-vid-mount"));
+    setTeaserSlot(root.querySelector<HTMLElement>("#wt-vid-teaser-mount"));
+    return () => {
+      setVidSlot(null);
+      setTeaserSlot(null);
+    };
+  }, [mounted]);
+
   // 마운트 후에만 상세정보 HTML 을 삽입한다.
   useEffect(() => {
     setMounted(true);
@@ -2339,6 +2516,10 @@ export default function OutsourcingConsultingPage() {
           <div ref={detailRef} suppressHydrationWarning />
         )}
       </section>
+
+      {/* 후기 영상 — DETAIL_HTML 내부 마운트 지점에 포털로 렌더 */}
+      {vidSlot ? createPortal(<WtReviewVideo />, vidSlot) : null}
+      {teaserSlot ? createPortal(<WtReviewTeaser />, teaserSlot) : null}
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}
       <section className="w-full bg-[#f8f9fa]">
