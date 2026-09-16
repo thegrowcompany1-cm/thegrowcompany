@@ -323,6 +323,10 @@ function WtBottomCtaBar({ mounted }: { mounted: boolean }) {
     return () => io.disconnect();
   }, [mounted]);
 
+  // 서버에서는 아무것도 내보내지 않는다. 이 페이지의 상세 영역과 마찬가지로
+  // 클라이언트 전용으로 두어, SSR 된 <style> 이 하이드레이션에 끼어들 여지를 없앤다.
+  if (!mounted) return null;
+
   return (
     <>
       <style>{WT_CTA_CSS}</style>
@@ -376,14 +380,20 @@ const DETAIL_HTML = `<style>
     overflow: hidden;
   }
 
-  /* 페이드 + 슬라이드업 기본 세팅 */
+  /* 페이드 + 슬라이드업 기본 세팅
+     기본 표시 원칙: 아무것도 안 하면 그냥 보인다. 숨김은 스크립트가
+     .hero-section 에 .is-anim 을 붙였을 때만 걸린다. 예전에는 여기서 바로
+     opacity:0 을 줘서, 스크립트가 한 번이라도 어긋나면(주입 실패, 노드 교체로
+     옵저버 미발화 등) 히어로 전체가 빈 흰 화면으로 남았다. */
   .hero-animate {
-    opacity: 0;
-    transform: translateY(40px);
     transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .hero-animate.visible {
+  .hero-section.is-anim .hero-animate {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  .hero-section.is-anim .hero-animate.visible {
     opacity: 1;
     transform: translateY(0);
   }
@@ -415,13 +425,16 @@ const DETAIL_HTML = `<style>
     position: absolute;
     bottom: 2px;
     left: 0;
-    width: 0;
+    width: 100%;
     height: 6px;
     background: rgba(34, 181, 115, 0.2);
     border-radius: 3px;
     transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s;
   }
-  .hero-animate.visible .highlight::after {
+  .hero-section.is-anim .hero-title .highlight::after {
+    width: 0;
+  }
+  .hero-section.is-anim .hero-animate.visible .highlight::after {
     width: 100%;
   }
 
@@ -435,13 +448,16 @@ const DETAIL_HTML = `<style>
 
   /* 구분선 애니메이션 */
   .hero-divider {
-    width: 0;
+    width: 120px;
     height: 2px;
     background: linear-gradient(90deg, transparent, #22B573, transparent);
     margin: 0 auto 48px;
     transition: width 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
   }
-  .hero-divider.visible {
+  .hero-section.is-anim .hero-divider {
+    width: 0;
+  }
+  .hero-section.is-anim .hero-divider.visible {
     width: 120px;
   }
 
@@ -453,11 +469,13 @@ const DETAIL_HTML = `<style>
   }
   .stat-item {
     text-align: center;
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
-  .stat-item.visible {
+  .hero-section.is-anim .stat-item {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  .hero-section.is-anim .stat-item.visible {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
@@ -475,14 +493,17 @@ const DETAIL_HTML = `<style>
   }
   /* 숫자 아래 작은 악센트 바 */
   .stat-bar {
-    width: 0;
+    width: 40px;
     height: 3px;
     background: #22B573;
     border-radius: 2px;
     margin: 10px auto 0;
     transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .stat-item.visible .stat-bar {
+  .hero-section.is-anim .stat-bar {
+    width: 0;
+  }
+  .hero-section.is-anim .stat-item.visible .stat-bar {
     width: 40px;
   }
 
@@ -515,17 +536,17 @@ const DETAIL_HTML = `<style>
 
   <div class="hero-stats">
     <div class="stat-item" id="stat1">
-      <div class="stat-number"><span class="count-up" data-target="750">0</span>+</div>
+      <div class="stat-number"><span class="count-up" data-target="750">750</span>+</div>
       <div class="stat-label">매장 운영 경험</div>
       <div class="stat-bar"></div>
     </div>
     <div class="stat-item" id="stat2">
-      <div class="stat-number"><span class="count-up" data-target="540">0</span>+</div>
+      <div class="stat-number"><span class="count-up" data-target="540">540</span>+</div>
       <div class="stat-label">현장 상주 실적</div>
       <div class="stat-bar"></div>
     </div>
     <div class="stat-item" id="stat3">
-      <div class="stat-number"><span class="count-up" data-target="130">0</span>%</div>
+      <div class="stat-number"><span class="count-up" data-target="130">130</span>%</div>
       <div class="stat-label">평균 매출 상승률</div>
       <div class="stat-bar"></div>
     </div>
@@ -534,14 +555,21 @@ const DETAIL_HTML = `<style>
 
 <script>
 (function() {
-  // 카운트업
-  var countElements = document.querySelectorAll('.count-up');
+  // 히어로가 없으면 조용히 끝낸다. (기본 표시 상태 그대로 둔다)
+  var hero = document.querySelector('.hero-section');
+  if (!hero) return;
+
+  // 카운트업 — 마크업에는 최종 숫자가 들어있고, 애니메이션을 시작할 때만 0부터 센다.
+  var countElements = hero.querySelectorAll('.count-up');
   var hasAnimated = false;
+
   function animateCount(el) {
-    var target = parseInt(el.getAttribute('data-target'));
+    var target = parseInt(el.getAttribute('data-target'), 10);
+    if (!target) return;
     var duration = 2000;
     var step = target / (duration / 16);
     var current = 0;
+    el.textContent = '0';
     var timer = setInterval(function() {
       current += step;
       if (current >= target) { el.textContent = target; clearInterval(timer); }
@@ -549,37 +577,38 @@ const DETAIL_HTML = `<style>
     }, 16);
   }
 
+  // 요소가 사라졌어도 터지지 않게 전부 널 가드
+  function show(id, delay) {
+    setTimeout(function() {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('visible');
+    }, delay);
+  }
+
   // 등장 애니메이션 (시간차)
   function triggerAnimations() {
     if (hasAnimated) return;
     hasAnimated = true;
 
-    // 타이틀
-    document.getElementById('heroTitle').classList.add('visible');
+    show('heroTitle', 0);
+    show('heroDivider', 300);
+    show('heroSubtitle', 400);
+    show('stat1', 700);
+    show('stat2', 900);
 
-    // 구분선
     setTimeout(function() {
-      document.getElementById('heroDivider').classList.add('visible');
-    }, 300);
-
-    // 서브타이틀
-    setTimeout(function() {
-      document.getElementById('heroSubtitle').classList.add('visible');
-    }, 400);
-
-    // 숫자들 시간차
-    setTimeout(function() {
-      document.getElementById('stat1').classList.add('visible');
-    }, 700);
-    setTimeout(function() {
-      document.getElementById('stat2').classList.add('visible');
-    }, 900);
-    setTimeout(function() {
-      document.getElementById('stat3').classList.add('visible');
-      // 숫자 카운트업 시작
+      var el = document.getElementById('stat3');
+      if (el) el.classList.add('visible');
       countElements.forEach(function(el) { animateCount(el); });
     }, 1100);
   }
+
+  // 여기서부터 애니메이션 모드. 이 줄 위에서 무슨 일이 생겨도 히어로는 그냥 보인다.
+  hero.classList.add('is-anim');
+
+  // 안전장치를 옵저버보다 먼저 건다. 옵저버가 안 울리거나 생성에 실패해도
+  // 1.5초 뒤에는 무조건 보이게 된다.
+  setTimeout(triggerAnimations, 1500);
 
   // IntersectionObserver로 화면에 보이면 시작
   var observer = new IntersectionObserver(function(entries) {
@@ -591,7 +620,7 @@ const DETAIL_HTML = `<style>
     });
   }, { threshold: 0.3 });
 
-  observer.observe(document.querySelector('.hero-section'));
+  observer.observe(hero);
 })();
 </script>
 
