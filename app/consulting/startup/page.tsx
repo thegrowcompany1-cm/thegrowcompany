@@ -15,7 +15,6 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import FcLink from "@/components/FcLink";
-import StickyCtaBar from "@/components/StickyCtaBar";
 import CostCalculator from "@/components/CostCalculator";
 import { SITE_URL } from "@/lib/site";
 
@@ -3916,10 +3915,10 @@ export default function StartupConsultingPage() {
         </div>
       </section>
 
-      {/* 하단 고정 CTA 바 — 하단 CTA 상담폼(#consulting-form)으로 스크롤 */}
-      <StickyCtaBar targetSelector="#consulting-form" />
-
-      {/* 창업비용 계산기 팝업 (플로팅 버튼 + 패널) */}
+      {/* 창업비용 계산기 팝업 (하단 고정 트리거 바 + 패널)
+          하단 고정 CTA 바(StickyCtaBar)는 이 계산기 바가 같은 자리를 상시 덮고
+          있어 화면에 뜬 적이 없다. 푸터 가림 보정용 스페이서까지 계산기가 직접
+          깔도록 옮기고 제거했다. */}
       <CostCalculator />
     </div>
   );

@@ -3,8 +3,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 창업비용 계산기 팝업 패널
 //  · 하단 전체 폭 고정 바(트리거) → PC: 우측 슬라이드 패널(420px) / 모바일: 바텀시트(88vh)
-//  · 하단 바는 페이지의 StickyCtaBar(z-50)보다 위(z-60)에 놓여 같은 자리를 대체하며,
-//    StickyCtaBar 가 깔아둔 60px 스페이서가 푸터 가림을 동일하게 보정한다
+//  · 하단 바는 fixed(z-60) 라 문서 흐름에서 빠진다. 푸터를 가리지 않도록 같은
+//    높이(60px + safe-area)의 스페이서를 이 컴포넌트가 직접 깔며, 마운트 전
+//    (SSR)에도 스페이서만은 렌더한다.
+//    예전에는 페이지의 StickyCtaBar(z-50)가 깔아둔 스페이서에 얹혀 있었다.
+//    그 바는 이 바가 같은 자리를 상시 덮고 있어 화면에 뜬 적이 없어 제거했다.
 //  · 패널이 열려 있는 동안 하단 바는 숨김(닫으면 다시 표시)
 //  · 5단계 플로우: 업종 → 전용면적 → 인테리어 등급 → 기구 구성 → 결과
 //  · 단가는 아래 PRICING 객체에서만 수정 (단위: 만원)
@@ -360,13 +363,26 @@ export default function CostCalculator() {
   const nextDisabled =
     (step === 1 && !industry) || (step === 3 && grade === null);
 
-  if (!mounted) return null;
+  // 하단 고정 바가 푸터를 가리지 않도록 바 높이만큼 흐름에 여백을 확보한다.
+  // 클래스가 아니라 인라인 스타일인 이유: 마운트 전에는 아래 CALC_STYLE <style>
+  // 이 렌더되지 않아, 클래스에 기대면 서버 출력에서 높이가 0 이 된다.
+  const bottomSpacer = (
+    <div
+      aria-hidden="true"
+      style={{ height: "calc(60px + env(safe-area-inset-bottom))" }}
+    />
+  );
+
+  // 마운트 전에도 스페이서는 내보낸다 (하이드레이션 전 푸터 가림 방지)
+  if (!mounted) return bottomSpacer;
 
   const r = PRICING.rangeRate;
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CALC_STYLE }} />
+
+      {bottomSpacer}
 
       {/* 하단 전체 폭 고정 바 (트리거) — 패널 열림 동안 숨김 */}
       <button
