@@ -204,8 +204,7 @@ function WtReviewVideo() {
     <section className="wt-vid-section" id="wt-vid-section">
       <style>{WT_VID_CSS}</style>
 
-      {/* TODO: 확정 전 임시 카피 — 대표님 확인 후 교체 */}
-      <p className="wt-vid-lead">처음엔 저도 맡기는 게 제일 무서웠습니다</p>
+      <p className="wt-vid-lead">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</p>
 
       <div className="wt-vid-frame">
         <video
@@ -233,15 +232,14 @@ function WtReviewVideo() {
         )}
       </div>
 
-      {/* TODO: 확정 전 임시 카피 — 대표님 확인 후 교체 */}
-      <p className="wt-vid-sub">걱정했던 일은 일어나지 않았습니다</p>
+      <p className="wt-vid-sub">직접 맡겨본 대표님이 달라진 점을 이야기합니다</p>
 
       <button
         type="button"
         className="wt-vid-cta"
         onClick={() => wtScrollTo("consulting-form-wt")}
       >
-        우리 매장 운영 상담받기
+        우리 매장 무료 진단받기
       </button>
     </section>
   );
@@ -264,15 +262,99 @@ function WtReviewTeaser() {
           className="wt-vid-teaser-thumb"
         />
         <span className="wt-vid-teaser-text">
-          {/* TODO: 확정 전 임시 카피 — 위 영상 카피와 함께 교체 */}
           <span className="wt-vid-teaser-quote">
-            걱정했던 일은 일어나지 않았습니다
+            저도 처음엔 남에게 맡기는 게 제일 불안했습니다
           </span>
           <span className="wt-vid-teaser-hint">후기 영상 다시 보기</span>
         </span>
       </button>
     </div>
   );
+}
+
+// ─── 전환용 CTA (중간 2개 + 모바일 하단 고정 바) ─────────────────────────────
+//  · 중간 CTA 버튼은 기존 .wt-vid-cta 스타일을 그대로 재사용한다.
+//  · 하단 고정 바는 768px 이하에서만 뜨고, 폼이 화면에 들어오면 스스로 내려간다.
+//  · 바가 푸터를 가리지 않도록 모바일에서만 body 에 바 높이만큼 padding 을 준다.
+const WT_CTA_CSS = `
+.wt-cta-mid{max-width:800px;margin:0 auto;padding:0 20px 60px;background:#fff;text-align:center}
+.wt-cta-mid--gray{background:#f8f9fa}
+.wt-cta-bar{display:none}
+@media (max-width:768px){
+  body{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+  .wt-cta-mid{padding:0 16px 44px}
+  .wt-cta-bar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;box-sizing:border-box;width:100%;background:#009519;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -2px 12px rgba(0,0,0,.15);transition:transform .25s ease,opacity .25s ease}
+  .wt-cta-bar--off{transform:translateY(110%);opacity:0;pointer-events:none}
+  .wt-cta-bar-btn{display:block;box-sizing:border-box;width:100%;padding:15px 16px;border:none;border-radius:8px;background:#fff;color:#009519;font-size:16px;font-weight:800;line-height:1.3;cursor:pointer}
+}
+`;
+
+// 중간 CTA — 밝은 섹션 뒤에는 light, 회색 섹션 뒤에는 gray 로 배경을 맞춘다.
+function WtMidCta({ tone = "light" }: { tone?: "light" | "gray" }) {
+  return (
+    <div className={tone === "gray" ? "wt-cta-mid wt-cta-mid--gray" : "wt-cta-mid"}>
+      <button
+        type="button"
+        className="wt-vid-cta"
+        onClick={() => wtScrollTo("consulting-form-wt")}
+      >
+        우리 매장 무료 진단받기
+      </button>
+    </div>
+  );
+}
+
+// 모바일 하단 고정 CTA 바 — 상담 폼이 보이는 동안에는 숨는다.
+function WtBottomCtaBar({ mounted }: { mounted: boolean }) {
+  const [formVisible, setFormVisible] = useState(false);
+
+  useEffect(() => {
+    // 폼은 DETAIL_HTML 안에 있으므로 그게 DOM 에 붙은 뒤에야 관찰할 수 있다.
+    if (!mounted) return;
+    const target = document.getElementById("consulting-form-wt");
+    if (!target) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) setFormVisible(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+    io.observe(target);
+    return () => io.disconnect();
+  }, [mounted]);
+
+  return (
+    <>
+      <style>{WT_CTA_CSS}</style>
+      <div className={formVisible ? "wt-cta-bar wt-cta-bar--off" : "wt-cta-bar"}>
+        <button
+          type="button"
+          className="wt-cta-bar-btn"
+          tabIndex={formVisible ? -1 : 0}
+          onClick={() => wtScrollTo("consulting-form-wt")}
+        >
+          우리 매장 무료 진단받기
+        </button>
+      </div>
+    </>
+  );
+}
+
+// DETAIL_HTML 안에 심어둔 마운트 지점을 찾아 포털 대상으로 돌려준다.
+function useDetailSlot(
+  mounted: boolean,
+  ref: React.RefObject<HTMLDivElement | null>,
+  id: string,
+) {
+  const [el, setEl] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!mounted) return;
+    const root = ref.current;
+    if (!root) return;
+    setEl(root.querySelector<HTMLElement>(`#${id}`));
+    return () => setEl(null);
+  }, [mounted, ref, id]);
+  return el;
 }
 
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
@@ -790,6 +872,9 @@ const DETAIL_HTML = `<style>
     </div>
   </div>
 </div>
+
+<!-- 중간 CTA 1 — React 포털(WtMidCta) -->
+<div id="wt-cta-mid-1"></div>
 
 <script>
 (function() {
@@ -1570,6 +1655,9 @@ const DETAIL_HTML = `<style>
     지속적으로 함께합니다.
   </div>
 </div>
+
+<!-- 중간 CTA 2 — React 포털(WtMidCta) -->
+<div id="wt-cta-mid-2"></div>
 
 <script>
 (function() {
@@ -2362,21 +2450,11 @@ export default function OutsourcingConsultingPage() {
   // 상세정보 HTML 컨테이너 ref
   const detailRef = useRef<HTMLDivElement>(null);
 
-  // DETAIL_HTML 안에 심어둔 마운트 지점 — 후기 영상/재노출 썸네일을 포털로 꽂는다.
-  const [vidSlot, setVidSlot] = useState<HTMLElement | null>(null);
-  const [teaserSlot, setTeaserSlot] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!mounted) return;
-    const root = detailRef.current;
-    if (!root) return;
-    setVidSlot(root.querySelector<HTMLElement>("#wt-vid-mount"));
-    setTeaserSlot(root.querySelector<HTMLElement>("#wt-vid-teaser-mount"));
-    return () => {
-      setVidSlot(null);
-      setTeaserSlot(null);
-    };
-  }, [mounted]);
+  // DETAIL_HTML 안에 심어둔 마운트 지점들 — 영상/썸네일/중간 CTA 를 포털로 꽂는다.
+  const vidSlot = useDetailSlot(mounted, detailRef, "wt-vid-mount");
+  const teaserSlot = useDetailSlot(mounted, detailRef, "wt-vid-teaser-mount");
+  const midCta1Slot = useDetailSlot(mounted, detailRef, "wt-cta-mid-1");
+  const midCta2Slot = useDetailSlot(mounted, detailRef, "wt-cta-mid-2");
 
   // 마운트 후에만 상세정보 HTML 을 삽입한다.
   useEffect(() => {
@@ -2517,9 +2595,16 @@ export default function OutsourcingConsultingPage() {
         )}
       </section>
 
-      {/* 후기 영상 — DETAIL_HTML 내부 마운트 지점에 포털로 렌더 */}
+      {/* 후기 영상·중간 CTA — DETAIL_HTML 내부 마운트 지점에 포털로 렌더 */}
       {vidSlot ? createPortal(<WtReviewVideo />, vidSlot) : null}
       {teaserSlot ? createPortal(<WtReviewTeaser />, teaserSlot) : null}
+      {midCta1Slot ? createPortal(<WtMidCta />, midCta1Slot) : null}
+      {midCta2Slot
+        ? createPortal(<WtMidCta tone="gray" />, midCta2Slot)
+        : null}
+
+      {/* 모바일 하단 고정 CTA 바 */}
+      <WtBottomCtaBar mounted={mounted} />
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}
       <section className="w-full bg-[#f8f9fa]">
