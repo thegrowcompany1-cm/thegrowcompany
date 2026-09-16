@@ -16,10 +16,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import FcLink from "@/components/FcLink";
+import StickyCtaBar from "@/components/StickyCtaBar";
 import { SITE_URL } from "@/lib/site";
 
 // 매장 위탁운영 Service 구조화 데이터
@@ -121,245 +121,130 @@ function RelatedServiceCard({
   );
 }
 
-// ─── 위탁 후기 영상 (단독 1개, 슬라이더 아님) ────────────────────────────────
+// ─── 위탁 후기 영상 · CTA 블록 (DETAIL_HTML 에 문자열로 들어간다) ─────────────
 //  · 원본 video-raw/reviewwt.mp4 → ffmpeg 720p(세로 720x1280) CRF28 + AAC 96k
 //  · 클릭 전에는 poster 만 보여주고 preload="none" (모바일 데이터 절약)
-//  · DETAIL_HTML 은 통째로 dangerouslySetInnerHTML 로 들어가므로, 그 안의
-//    마운트 지점 div 에 React 포털로 꽂아 넣는다. 그래야 IntersectionObserver
-//    해제 같은 정리를 React 언마운트 시점에 제대로 할 수 있다.
-const WT_VID = {
-  src: "/reviews/review-wt.mp4",
-  poster: "/reviews/review-wt.jpg",
-};
+//
+//  · 예전에는 DETAIL_HTML 안에 마운트용 div 를 두고 React 포털로 꽂았는데 실제
+//    브라우저에서 영상이 뜨지 않았다. innerHTML 로 주입된 DOM 위에 React 트리를
+//    얹는 구조라 주입·정리 타이밍에 취약하다. 그래서 startup 페이지에서 이미
+//    검증된 방식(HTML 문자열 주입 + <script> 재실행)으로 통일했다.
+//
+//  · 세로 9:16 영상이라 PC 에서 폭을 720px 주면 높이가 1280px 이 되어 화면을
+//    넘긴다. 바깥 단은 다른 섹션과 같은 800px 로 두고 영상 프레임만
+//    360px(높이 640px)로 제한한다. 모바일은 좌우 여백 없이 전체폭.
+//
+//  · 기본 표시 원칙: 스크립트가 실행되지 않아도 poster·카피·버튼은 그대로
+//    보인다. 스크립트는 재생 / 화면 이탈 시 일시정지 / 스크롤만 얹는다.
+const WT_VIDEO_HTML = `<style>
+  .wt-vid-sec{max-width:800px;margin:0 auto;padding:0 20px 70px;background:#fff;text-align:center}
+  .wt-vid-lead{font-size:21px;font-weight:800;color:#222;line-height:1.5;margin:0 0 20px;word-break:keep-all}
+  .wt-vid-frame{position:relative;width:100%;max-width:360px;aspect-ratio:9/16;margin:0 auto;border-radius:16px;overflow:hidden;background:#1a1a1a}
+  .wt-vid-player{width:100%;height:100%;object-fit:cover;display:block}
+  .wt-vid-cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;padding:0;cursor:pointer;transition:background .2s}
+  .wt-vid-cover:hover{background:rgba(0,0,0,.32)}
+  .wt-vid-play{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(34,181,115,.92);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .wt-vid-sub{font-size:16px;font-weight:700;color:#444;line-height:1.6;margin:22px 0 24px;word-break:keep-all}
+  .wt-vid-cta{display:inline-block;background:#22B573;color:#fff;padding:16px 44px;border-radius:8px;font-size:17px;font-weight:700;border:none;cursor:pointer;transition:background .3s}
+  .wt-vid-cta:hover{background:#1a9c5e}
 
-// 세로 9:16 영상이라 PC 에서 폭 720px 을 그대로 주면 높이가 1280px 이 되어
-// 화면을 넘긴다. 바깥 단은 다른 섹션과 같은 800px 로 두고, 영상 프레임만
-// 360px(높이 640px)로 제한한다. 모바일은 좌우 여백 없이 전체폭.
-const WT_VID_CSS = `
-.wt-vid-section{max-width:800px;margin:0 auto;padding:0 20px 70px;background:#fff;text-align:center}
-.wt-vid-lead{font-size:21px;font-weight:800;color:#222;line-height:1.5;margin:0 0 20px;word-break:keep-all}
-.wt-vid-frame{position:relative;width:100%;max-width:360px;aspect-ratio:9/16;margin:0 auto;border-radius:16px;overflow:hidden;background:#1a1a1a}
-.wt-vid-player{width:100%;height:100%;object-fit:cover;display:block}
-.wt-vid-cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;padding:0;cursor:pointer;transition:background .2s}
-.wt-vid-cover:hover{background:rgba(0,0,0,.32)}
-.wt-vid-play{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(34,181,115,.92);box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.wt-vid-sub{font-size:16px;font-weight:700;color:#444;line-height:1.6;margin:22px 0 24px;word-break:keep-all}
-.wt-vid-cta{display:inline-block;background:#22B573;color:#fff;padding:16px 44px;border-radius:8px;font-size:17px;font-weight:700;border:none;cursor:pointer;transition:background .3s}
-.wt-vid-cta:hover{background:#1a9c5e}
-.wt-vid-teaser-wrap{max-width:800px;margin:0 auto;padding:28px 20px 0;background:#f9f9f9}
-.wt-vid-teaser{display:flex;align-items:center;gap:14px;width:100%;max-width:420px;margin:0 auto;padding:12px 16px;border:1px solid #e5e5e5;border-radius:12px;background:#fff;cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s}
-.wt-vid-teaser:hover{border-color:#22B573;box-shadow:0 4px 16px rgba(0,0,0,.06)}
-.wt-vid-teaser-thumb{width:54px;height:96px;object-fit:cover;border-radius:8px;flex-shrink:0;display:block}
-.wt-vid-teaser-text{display:flex;flex-direction:column;gap:6px;min-width:0}
-.wt-vid-teaser-quote{font-size:15px;font-weight:700;color:#222;line-height:1.5;word-break:keep-all}
-.wt-vid-teaser-hint{font-size:13px;color:#22B573;font-weight:600}
-@media (max-width:600px){
-  .wt-vid-section{padding:0 0 50px}
-  .wt-vid-lead{font-size:18px;padding:0 16px}
-  .wt-vid-frame{max-width:none;border-radius:0}
-  .wt-vid-sub{font-size:15px;padding:0 16px}
-  .wt-vid-teaser-wrap{padding:24px 16px 0}
-}
-`;
+  .wt-cta-mid{max-width:800px;margin:0 auto;padding:0 20px 60px;background:#fff;text-align:center}
+  .wt-cta-mid--gray{background:#f8f9fa}
 
-// DETAIL_HTML 내부 요소로 부드럽게 스크롤 (상단 고정 헤더 높이 80px 보정)
-function wtScrollTo(id: string) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const y = el.getBoundingClientRect().top + window.scrollY - 80;
-  window.scrollTo({ top: y, behavior: "smooth" });
-}
+  .wt-teaser-wrap{max-width:800px;margin:0 auto;padding:28px 20px 0;background:#f9f9f9}
+  .wt-teaser{display:flex;align-items:center;gap:14px;width:100%;max-width:420px;margin:0 auto;padding:12px 16px;border:1px solid #e5e5e5;border-radius:12px;background:#fff;cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s}
+  .wt-teaser:hover{border-color:#22B573;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  .wt-teaser-thumb{width:54px;height:96px;object-fit:cover;border-radius:8px;flex-shrink:0;display:block}
+  .wt-teaser-text{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .wt-teaser-quote{font-size:15px;font-weight:700;color:#222;line-height:1.5;word-break:keep-all}
+  .wt-teaser-hint{font-size:13px;color:#22B573;font-weight:600}
 
-function WtReviewVideo() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  // 한 번 재생하면 네이티브 controls 로 넘기고 커버는 다시 띄우지 않는다.
-  const [started, setStarted] = useState(false);
+  @media (max-width: 600px) {
+    .wt-vid-sec{padding:0 0 50px}
+    .wt-vid-lead{font-size:18px;padding:0 16px}
+    .wt-vid-frame{max-width:none;border-radius:0}
+    .wt-vid-sub{font-size:15px;padding:0 16px}
+    .wt-cta-mid{padding:0 16px 44px}
+    .wt-teaser-wrap{padding:24px 16px 0}
+  }
+</style>
 
-  // 영상이 화면 밖으로 벗어나면 자동 일시정지 (언마운트 시 옵저버 해제)
-  useEffect(() => {
-    const el = videoRef.current;
+<div class="wt-vid-sec" id="wt-vid-sec">
+  <p class="wt-vid-lead">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</p>
+
+  <div class="wt-vid-frame">
+    <video id="wtVidPlayer" class="wt-vid-player" src="/reviews/review-wt.mp4" poster="/reviews/review-wt.jpg" preload="none" playsinline></video>
+    <button type="button" class="wt-vid-cover" id="wtVidCover" aria-label="위탁 후기 영상 재생">
+      <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+    </button>
+  </div>
+
+  <p class="wt-vid-sub">직접 맡겨본 대표님이 달라진 점을 이야기합니다</p>
+
+  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">우리 매장 무료 진단받기</button>
+</div>
+
+<script>
+(function () {
+  /* 인라인 onclick 에서 부르는 스크롤 (상단 고정 헤더 80px 보정) */
+  function wtScrollTo(id) {
+    var el = document.getElementById(id);
     if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting && !el.paused) el.pause();
-        }
-      },
-      { threshold: 0 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    var y = el.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+  window.wtScrollToForm = function () { wtScrollTo('consulting-form-wt'); };
+  window.wtScrollToVideo = function () { wtScrollTo('wt-vid-sec'); };
 
-  const handlePlay = () => {
-    const el = videoRef.current;
-    if (!el) return;
-    setStarted(true);
-    void el.play().catch(() => {
-      // 브라우저가 재생을 막은 경우 — 네이티브 controls 로 다시 시도할 수 있다.
-    });
+  var video = document.getElementById('wtVidPlayer');
+  var cover = document.getElementById('wtVidCover');
+  if (!video || !cover) return;
+
+  /* 재생 중 화면 밖으로 벗어나면 자동 일시정지 */
+  var io = null;
+  if (typeof IntersectionObserver === 'function') {
+    io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting && !video.paused) video.pause();
+      });
+    }, { threshold: 0 });
+    io.observe(video);
+  }
+
+  cover.addEventListener('click', function () {
+    cover.style.display = 'none';
+    video.controls = true;
+    var p = video.play();
+    if (p && typeof p.catch === 'function') { p.catch(function () {}); }
+  });
+
+  /* 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 교체 — delete 금지) */
+  window.__wtVidStop = function () {
+    if (io) { io.disconnect(); io = null; }
+    if (video && !video.paused) video.pause();
   };
+})();
+</script>`;
 
-  return (
-    <section className="wt-vid-section" id="wt-vid-section">
-      <style>{WT_VID_CSS}</style>
+// 중간 CTA — 뒤따르는 섹션 배경색에 맞춰 밝은 톤 / 회색 톤 두 벌
+const WT_MID_CTA_HTML = `<div class="wt-cta-mid">
+  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">우리 매장 무료 진단받기</button>
+</div>`;
 
-      <p className="wt-vid-lead">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</p>
+const WT_MID_CTA_GRAY_HTML = `<div class="wt-cta-mid wt-cta-mid--gray">
+  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">우리 매장 무료 진단받기</button>
+</div>`;
 
-      <div className="wt-vid-frame">
-        <video
-          ref={videoRef}
-          className="wt-vid-player"
-          src={WT_VID.src}
-          poster={WT_VID.poster}
-          preload="none"
-          playsInline
-          controls={started}
-        />
-        {!started && (
-          <button
-            type="button"
-            className="wt-vid-cover"
-            onClick={handlePlay}
-            aria-label="위탁 후기 영상 재생"
-          >
-            <span className="wt-vid-play">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </span>
-          </button>
-        )}
-      </div>
-
-      <p className="wt-vid-sub">직접 맡겨본 대표님이 달라진 점을 이야기합니다</p>
-
-      <button
-        type="button"
-        className="wt-vid-cta"
-        onClick={() => wtScrollTo("consulting-form-wt")}
-      >
-        우리 매장 무료 진단받기
-      </button>
-    </section>
-  );
-}
-
-// 폼 직전 재노출 — 작은 포스터 썸네일 + 인용 한 줄, 클릭 시 상단 영상으로 스크롤
-function WtReviewTeaser() {
-  return (
-    <div className="wt-vid-teaser-wrap">
-      <button
-        type="button"
-        className="wt-vid-teaser"
-        onClick={() => wtScrollTo("wt-vid-section")}
-      >
-        <Image
-          src={WT_VID.poster}
-          alt=""
-          width={54}
-          height={96}
-          className="wt-vid-teaser-thumb"
-        />
-        <span className="wt-vid-teaser-text">
-          <span className="wt-vid-teaser-quote">
-            저도 처음엔 남에게 맡기는 게 제일 불안했습니다
-          </span>
-          <span className="wt-vid-teaser-hint">후기 영상 다시 보기</span>
-        </span>
-      </button>
-    </div>
-  );
-}
-
-// ─── 전환용 CTA (중간 2개 + 모바일 하단 고정 바) ─────────────────────────────
-//  · 중간 CTA 버튼은 기존 .wt-vid-cta 스타일을 그대로 재사용한다.
-//  · 하단 고정 바는 768px 이하에서만 뜨고, 폼이 화면에 들어오면 스스로 내려간다.
-//  · 바가 푸터를 가리지 않도록 모바일에서만 body 에 바 높이만큼 padding 을 준다.
-const WT_CTA_CSS = `
-.wt-cta-mid{max-width:800px;margin:0 auto;padding:0 20px 60px;background:#fff;text-align:center}
-.wt-cta-mid--gray{background:#f8f9fa}
-.wt-cta-bar{display:none}
-@media (max-width:768px){
-  body{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
-  .wt-cta-mid{padding:0 16px 44px}
-  .wt-cta-bar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;box-sizing:border-box;width:100%;background:#009519;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -2px 12px rgba(0,0,0,.15);transition:transform .25s ease,opacity .25s ease}
-  .wt-cta-bar--off{transform:translateY(110%);opacity:0;pointer-events:none}
-  .wt-cta-bar-btn{display:block;box-sizing:border-box;width:100%;padding:15px 16px;border:none;border-radius:8px;background:#fff;color:#009519;font-size:16px;font-weight:800;line-height:1.3;cursor:pointer}
-}
-`;
-
-// 중간 CTA — 밝은 섹션 뒤에는 light, 회색 섹션 뒤에는 gray 로 배경을 맞춘다.
-function WtMidCta({ tone = "light" }: { tone?: "light" | "gray" }) {
-  return (
-    <div className={tone === "gray" ? "wt-cta-mid wt-cta-mid--gray" : "wt-cta-mid"}>
-      <button
-        type="button"
-        className="wt-vid-cta"
-        onClick={() => wtScrollTo("consulting-form-wt")}
-      >
-        우리 매장 무료 진단받기
-      </button>
-    </div>
-  );
-}
-
-// 모바일 하단 고정 CTA 바 — 상담 폼이 보이는 동안에는 숨는다.
-function WtBottomCtaBar({ mounted }: { mounted: boolean }) {
-  const [formVisible, setFormVisible] = useState(false);
-
-  useEffect(() => {
-    // 폼은 DETAIL_HTML 안에 있으므로 그게 DOM 에 붙은 뒤에야 관찰할 수 있다.
-    if (!mounted) return;
-    const target = document.getElementById("consulting-form-wt");
-    if (!target) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) setFormVisible(entry.isIntersecting);
-      },
-      { threshold: 0 },
-    );
-    io.observe(target);
-    return () => io.disconnect();
-  }, [mounted]);
-
-  // 서버에서는 아무것도 내보내지 않는다. 이 페이지의 상세 영역과 마찬가지로
-  // 클라이언트 전용으로 두어, SSR 된 <style> 이 하이드레이션에 끼어들 여지를 없앤다.
-  if (!mounted) return null;
-
-  return (
-    <>
-      <style>{WT_CTA_CSS}</style>
-      <div className={formVisible ? "wt-cta-bar wt-cta-bar--off" : "wt-cta-bar"}>
-        <button
-          type="button"
-          className="wt-cta-bar-btn"
-          tabIndex={formVisible ? -1 : 0}
-          onClick={() => wtScrollTo("consulting-form-wt")}
-        >
-          우리 매장 무료 진단받기
-        </button>
-      </div>
-    </>
-  );
-}
-
-// DETAIL_HTML 안에 심어둔 마운트 지점을 찾아 포털 대상으로 돌려준다.
-function useDetailSlot(
-  mounted: boolean,
-  ref: React.RefObject<HTMLDivElement | null>,
-  id: string,
-) {
-  const [el, setEl] = useState<HTMLElement | null>(null);
-  useEffect(() => {
-    if (!mounted) return;
-    const root = ref.current;
-    if (!root) return;
-    setEl(root.querySelector<HTMLElement>(`#${id}`));
-    return () => setEl(null);
-  }, [mounted, ref, id]);
-  return el;
-}
+// 폼 직전 재노출 — 포스터 썸네일 + 인용 한 줄, 누르면 위 영상으로 스크롤
+const WT_TEASER_HTML = `<div class="wt-teaser-wrap">
+  <button type="button" class="wt-teaser" onclick="wtScrollToVideo()">
+    <img class="wt-teaser-thumb" src="/reviews/review-wt.jpg" alt="">
+    <span class="wt-teaser-text">
+      <span class="wt-teaser-quote">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</span>
+      <span class="wt-teaser-hint">후기 영상 다시 보기</span>
+    </span>
+  </button>
+</div>`;
 
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
 // 아임웹용 위탁 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 그대로 붙여넣으세요.
@@ -723,8 +608,7 @@ const DETAIL_HTML = `<style>
   </div>
 </div>
 
-<!-- 위탁 후기 영상 마운트 지점 — React 포털(WtReviewVideo)이 여기에 렌더된다 -->
-<div id="wt-vid-mount"></div>
+${WT_VIDEO_HTML}
 
 <style>
   .evidence-section {
@@ -902,8 +786,7 @@ const DETAIL_HTML = `<style>
   </div>
 </div>
 
-<!-- 중간 CTA 1 — React 포털(WtMidCta) -->
-<div id="wt-cta-mid-1"></div>
+${WT_MID_CTA_HTML}
 
 <script>
 (function() {
@@ -1685,8 +1568,7 @@ const DETAIL_HTML = `<style>
   </div>
 </div>
 
-<!-- 중간 CTA 2 — React 포털(WtMidCta) -->
-<div id="wt-cta-mid-2"></div>
+${WT_MID_CTA_GRAY_HTML}
 
 <script>
 (function() {
@@ -2288,8 +2170,7 @@ function toggleFaq(el) {
   }
 </style>
 
-<!-- 폼 직전 후기 영상 재노출 마운트 지점 — React 포털(WtReviewTeaser) -->
-<div id="wt-vid-teaser-mount"></div>
+${WT_TEASER_HTML}
 
 <div class="cta-section" id="consulting-form-wt">
   <div class="cta-inner">
@@ -2479,12 +2360,6 @@ export default function OutsourcingConsultingPage() {
   // 상세정보 HTML 컨테이너 ref
   const detailRef = useRef<HTMLDivElement>(null);
 
-  // DETAIL_HTML 안에 심어둔 마운트 지점들 — 영상/썸네일/중간 CTA 를 포털로 꽂는다.
-  const vidSlot = useDetailSlot(mounted, detailRef, "wt-vid-mount");
-  const teaserSlot = useDetailSlot(mounted, detailRef, "wt-vid-teaser-mount");
-  const midCta1Slot = useDetailSlot(mounted, detailRef, "wt-cta-mid-1");
-  const midCta2Slot = useDetailSlot(mounted, detailRef, "wt-cta-mid-2");
-
   // 마운트 후에만 상세정보 HTML 을 삽입한다.
   useEffect(() => {
     setMounted(true);
@@ -2563,8 +2438,17 @@ export default function OutsourcingConsultingPage() {
         "moveRevSlide",
         "acSlide",
         "scrollToForm",
+        "wtScrollToForm",
+        "wtScrollToVideo",
       ];
       const w = window as unknown as Record<string, unknown>;
+
+      // 후기 영상 정리 — IntersectionObserver 해제 + 재생 중지.
+      // 호출한 뒤 no-op 으로 바꾼다 (delete 금지: 남아 있는 핸들러가 터진다)
+      const stopVid = w["__wtVidStop"];
+      if (typeof stopVid === "function") (stopVid as () => void)();
+      w["__wtVidStop"] = () => {};
+
       globals.forEach((fn) => {
         try {
           delete w[fn];
@@ -2624,16 +2508,18 @@ export default function OutsourcingConsultingPage() {
         )}
       </section>
 
-      {/* 후기 영상·중간 CTA — DETAIL_HTML 내부 마운트 지점에 포털로 렌더 */}
-      {vidSlot ? createPortal(<WtReviewVideo />, vidSlot) : null}
-      {teaserSlot ? createPortal(<WtReviewTeaser />, teaserSlot) : null}
-      {midCta1Slot ? createPortal(<WtMidCta />, midCta1Slot) : null}
-      {midCta2Slot
-        ? createPortal(<WtMidCta tone="gray" />, midCta2Slot)
-        : null}
-
-      {/* 모바일 하단 고정 CTA 바 */}
-      <WtBottomCtaBar mounted={mounted} />
+      {/* 모바일 하단 고정 CTA 바 (768px 미만에서만 노출).
+          mounted 로 감싸는 이유: StickyCtaBar 는 마운트 시점에 한 번만
+          targetSelector 를 찾는다. DETAIL_HTML 이 붙기 전에 마운트되면 폼을
+          못 찾아 옵저버가 아예 안 걸린다. */}
+      {mounted ? (
+        <div className="md:hidden">
+          <StickyCtaBar
+            label="우리 매장 무료 진단받기"
+            targetSelector="#consulting-form-wt"
+          />
+        </div>
+      ) : null}
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}
       <section className="w-full bg-[#f8f9fa]">
