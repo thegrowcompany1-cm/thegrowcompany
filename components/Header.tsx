@@ -252,7 +252,7 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Right: 인증 + SNS + CTA */}
+          {/* Right: 인증 + SNS */}
           <div className="hidden xl:flex items-center gap-2 2xl:gap-3">
             <AuthNav variant="desktop" />
             <span className="h-4 w-px bg-white/15" aria-hidden="true" />
@@ -273,12 +273,6 @@ export default function Header() {
               className="p-1 text-[#CCCCCC] hover:text-[#009519] transition-colors rounded-lg hover:bg-white/10 2xl:p-1.5"
             >
               <YoutubeIcon className="w-6 h-6" />
-            </a>
-            <a
-              href="tel:15514476"
-              className="ml-0.5 whitespace-nowrap px-4 py-2 bg-[#009519] hover:bg-[#007a14] text-white text-sm font-bold rounded-full transition-colors 2xl:px-5"
-            >
-              무료 상담
             </a>
           </div>
 
@@ -463,9 +457,6 @@ export default function Header() {
             >
               <YoutubeIcon className="w-5 h-5" />
               YouTube
-            </a>
-            <a href="tel:15514476" className="ml-auto px-4 py-2 bg-[#009519] text-white text-sm font-bold rounded-full">
-              무료 상담
             </a>
           </div>
         </div>
