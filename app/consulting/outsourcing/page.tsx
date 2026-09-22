@@ -137,9 +137,13 @@ function RelatedServiceCard({
 //  · 기본 표시 원칙: 스크립트가 실행되지 않아도 poster·카피·버튼은 그대로
 //    보인다. 스크립트는 재생 / 화면 이탈 시 일시정지 / 스크롤만 얹는다.
 const WT_VIDEO_HTML = `<style>
-  .wt-vid-sec{max-width:800px;margin:0 auto;padding:0 20px 70px;background:#fff;text-align:center}
+  .wt-vid-sec{max-width:800px;margin:0 auto;padding:0 20px 70px;background:#fff;text-align:center;overflow-x:hidden}
   .wt-vid-lead{font-size:21px;font-weight:800;color:#222;line-height:1.5;margin:0 0 20px;word-break:keep-all}
-  .wt-vid-frame{position:relative;width:100%;max-width:360px;aspect-ratio:9/16;margin:0 auto;border-radius:16px;overflow:hidden;background:#1a1a1a}
+  /* PC: 두 영상 가로 나란히 중앙 정렬. max-width 로 좁은 화면에서 자동 축소되어
+     640px 대 뷰포트에서도 가로로 넘치지 않는다. */
+  .wt-vid-row{display:flex;gap:16px;justify-content:center;align-items:flex-start;max-width:100%}
+  .wt-vid-item{flex:0 1 320px;width:320px;max-width:calc(50% - 8px)}
+  .wt-vid-frame{position:relative;width:100%;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#1a1a1a}
   .wt-vid-player{width:100%;height:100%;object-fit:cover;display:block}
   .wt-vid-cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;padding:0;cursor:pointer;transition:background .2s}
   .wt-vid-cover:hover{background:rgba(0,0,0,.32)}
@@ -162,7 +166,13 @@ const WT_VIDEO_HTML = `<style>
   @media (max-width: 600px) {
     .wt-vid-sec{padding:0 0 50px}
     .wt-vid-lead{font-size:18px;padding:0 16px}
-    .wt-vid-frame{max-width:none;border-radius:0}
+    /* 모바일: 한 번에 1개 + 다음 영상이 살짝 보이게 가로 스와이프.
+       스크롤은 이 줄(.wt-vid-row) 안에서만 일어나므로 페이지 가로 스크롤로
+       번지지 않는다. 바깥 .wt-vid-sec 의 overflow-x:hidden 이 이중 안전장치. */
+    .wt-vid-row{justify-content:flex-start;gap:12px;padding:0 16px 4px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .wt-vid-row::-webkit-scrollbar{display:none}
+    .wt-vid-item{flex:0 0 78%;width:78%;max-width:none;scroll-snap-align:center}
+    .wt-vid-frame{border-radius:14px}
     .wt-vid-sub{font-size:15px;padding:0 16px}
     .wt-cta-mid{padding:0 16px 44px}
     .wt-teaser-wrap{padding:24px 16px 0}
@@ -172,11 +182,23 @@ const WT_VIDEO_HTML = `<style>
 <div class="wt-vid-sec" id="wt-vid-sec">
   <p class="wt-vid-lead">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</p>
 
-  <div class="wt-vid-frame">
-    <video id="wtVidPlayer" class="wt-vid-player" src="/reviews/review-wt.mp4" poster="/reviews/review-wt.jpg" preload="none" playsinline></video>
-    <button type="button" class="wt-vid-cover" id="wtVidCover" aria-label="위탁 후기 영상 재생">
-      <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-    </button>
+  <div class="wt-vid-row">
+    <div class="wt-vid-item">
+      <div class="wt-vid-frame">
+        <video class="wt-vid-player" src="/reviews/review-wt.mp4" poster="/reviews/review-wt.jpg" preload="none" playsinline></video>
+        <button type="button" class="wt-vid-cover" aria-label="위탁 후기 영상 1 재생">
+          <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+      </div>
+    </div>
+    <div class="wt-vid-item">
+      <div class="wt-vid-frame">
+        <video class="wt-vid-player" src="/reviews/review-wt2.mp4" poster="/reviews/review-wt2.jpg" preload="none" playsinline></video>
+        <button type="button" class="wt-vid-cover" aria-label="위탁 후기 영상 2 재생">
+          <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <p class="wt-vid-sub">직접 맡겨본 대표님이 달라진 점을 이야기합니다</p>
@@ -196,32 +218,54 @@ const WT_VIDEO_HTML = `<style>
   window.wtScrollToForm = function () { wtScrollTo('consulting-form-wt'); };
   window.wtScrollToVideo = function () { wtScrollTo('wt-vid-sec'); };
 
-  var video = document.getElementById('wtVidPlayer');
-  var cover = document.getElementById('wtVidCover');
-  if (!video || !cover) return;
+  var sec = document.getElementById('wt-vid-sec');
+  if (!sec) return;
+  var frames = sec.querySelectorAll('.wt-vid-frame');
+  if (!frames.length) return;
 
-  /* 재생 중 화면 밖으로 벗어나면 자동 일시정지 */
+  var videos = [];
+
+  /* 동시 재생 금지 — 하나가 재생되면 나머지는 멈춘다 */
+  function pauseOthers(current) {
+    videos.forEach(function (v) {
+      if (v !== current && !v.paused) v.pause();
+    });
+  }
+
+  Array.prototype.forEach.call(frames, function (frame) {
+    var video = frame.querySelector('.wt-vid-player');
+    var cover = frame.querySelector('.wt-vid-cover');
+    if (!video || !cover) return;
+    videos.push(video);
+
+    cover.addEventListener('click', function () {
+      pauseOthers(video);
+      cover.style.display = 'none';
+      video.controls = true;
+      var p = video.play();
+      if (p && typeof p.catch === 'function') { p.catch(function () {}); }
+    });
+
+    /* 네이티브 컨트롤로 재생을 시작한 경우도 잡는다 */
+    video.addEventListener('play', function () { pauseOthers(video); });
+  });
+
+  /* 화면 밖으로 벗어나면 자동 일시정지.
+     모바일에서 옆으로 스와이프해 넘어간 영상도 여기서 멈춘다. */
   var io = null;
   if (typeof IntersectionObserver === 'function') {
     io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (!entry.isIntersecting && !video.paused) video.pause();
+        if (!entry.isIntersecting && !entry.target.paused) entry.target.pause();
       });
     }, { threshold: 0 });
-    io.observe(video);
+    videos.forEach(function (v) { io.observe(v); });
   }
-
-  cover.addEventListener('click', function () {
-    cover.style.display = 'none';
-    video.controls = true;
-    var p = video.play();
-    if (p && typeof p.catch === 'function') { p.catch(function () {}); }
-  });
 
   /* 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 교체 — delete 금지) */
   window.__wtVidStop = function () {
     if (io) { io.disconnect(); io = null; }
-    if (video && !video.paused) video.pause();
+    videos.forEach(function (v) { if (!v.paused) v.pause(); });
   };
 })();
 </script>`;
@@ -679,18 +723,25 @@ ${WT_VIDEO_HTML}
     position: relative;
     overflow: hidden;
     border-radius: 12px;
-    max-width: 500px;
+    max-width: 420px;
     margin: 0 auto;
   }
   .slide-track {
     display: flex;
+    align-items: flex-start;
     transition: transform 0.4s ease;
   }
   .slide-item {
     min-width: 100%;
+    display: flex;
+    justify-content: center;
   }
+  /* 카톡 캡처는 세로로 길고 비율이 제각각이다. 폭을 100% 로 고정하면
+     원본보다 확대되거나 잘리므로, 비율 그대로 자연 크기까지만 보여준다. */
   .slide-item img {
-    width: 100%;
+    width: auto;
+    max-width: 100%;
+    height: auto;
     border-radius: 12px;
     display: block;
   }
@@ -764,17 +815,38 @@ ${WT_VIDEO_HTML}
   </div>
 
   <div class="evidence-slide-area">
-    <p class="evidence-slide-title">📊 실제 매출 인증 후기</p>
+    <p class="evidence-slide-title">💬 대표님들이 직접 보내주신 카톡 후기</p>
     <div class="slide-container" id="evidenceSlider">
       <div class="slide-track" id="evidenceTrack">
         <div class="slide-item">
-          <img src="https://cdn.imweb.me/thumbnail/20241211/c12f8d2b7c711.jpg" alt="매출 인증 후기 1">
+          <img src="/wt/wtkakaoreview1.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 1">
         </div>
         <div class="slide-item">
-          <img src="https://cdn.imweb.me/thumbnail/20241211/da658e75f3899.jpg" alt="매출 인증 후기 2">
+          <img src="/wt/wtkakaoreview2.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 2">
         </div>
         <div class="slide-item">
-          <img src="https://cdn.imweb.me/thumbnail/20241211/5b0f94542ab80.jpg" alt="매출 인증 후기 3">
+          <img src="/wt/wtkakaoreview3.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 3">
+        </div>
+        <div class="slide-item">
+          <img src="/wt/wtkakaoreview4.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 4">
+        </div>
+        <div class="slide-item">
+          <img src="/wt/wtkakaoreview5.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 5">
+        </div>
+        <div class="slide-item">
+          <img src="/wt/wtkakaoreview6.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 6">
+        </div>
+        <div class="slide-item">
+          <img src="/wt/wtkakaoreview7.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 7">
+        </div>
+        <div class="slide-item">
+          <img src="/wt/wtkakaoreview8.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 8">
+        </div>
+        <div class="slide-item">
+          <img src="/wt/wtkakaoreview9.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 9">
+        </div>
+        <div class="slide-item">
+          <img src="/wt/wtkakaoreview10.png" loading="lazy" alt="더그로우 위탁운영 카카오톡 후기 10">
         </div>
       </div>
     </div>
