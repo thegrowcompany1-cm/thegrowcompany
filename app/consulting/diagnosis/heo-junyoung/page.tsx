@@ -783,14 +783,14 @@ const DETAIL_HTML = `<div class="hjy">
   </div>
   <div class="hjy-mq" id="hjyRankMarquee">
     <div class="hjy-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/7555d085677f2.png" alt="허준영 멘토 상위노출 사례 1">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/ab6c3a9f7007f.png" alt="허준영 멘토 상위노출 사례 2">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/17751ea0cb81e.png" alt="허준영 멘토 상위노출 사례 3">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/993bfd5741d22.jpg" alt="허준영 멘토 상위노출 사례 4">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/7555d085677f2.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/ab6c3a9f7007f.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/17751ea0cb81e.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250911/993bfd5741d22.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/7555d085677f2.png" alt="허준영 멘토 상위노출 사례 1">
+      <img src="/legacy/diagnosis-heo-junyoung/ab6c3a9f7007f.png" alt="허준영 멘토 상위노출 사례 2">
+      <img src="/legacy/diagnosis-heo-junyoung/17751ea0cb81e.png" alt="허준영 멘토 상위노출 사례 3">
+      <img src="/legacy/diagnosis-heo-junyoung/993bfd5741d22.jpg" alt="허준영 멘토 상위노출 사례 4">
+      <img src="/legacy/diagnosis-heo-junyoung/7555d085677f2.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/ab6c3a9f7007f.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/17751ea0cb81e.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/993bfd5741d22.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>
@@ -812,42 +812,42 @@ const DETAIL_HTML = `<div class="hjy">
       </button>
       <div class="hjy-web-rotor" id="hjyWebRotor">
         <a class="hjy-web-card" href="https://pilateslean.co.kr" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.imweb.me/thumbnail/20260210/93f98b61c2c1a.png" alt="필라테스 린">
+          <img src="/legacy/diagnosis-heo-junyoung/93f98b61c2c1a.png" alt="필라테스 린">
           <div class="hjy-web-overlay">
             <span class="hjy-web-overlay-name">필라테스 린</span>
             <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
           </div>
         </a>
         <a class="hjy-web-card" href="https://chaeumofficial.com" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.imweb.me/thumbnail/20260210/152c69f74e0c0.png" alt="채움">
+          <img src="/legacy/diagnosis-heo-junyoung/152c69f74e0c0.png" alt="채움">
           <div class="hjy-web-overlay">
             <span class="hjy-web-overlay-name">채움</span>
             <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
           </div>
         </a>
         <a class="hjy-web-card" href="https://growinterior.co.kr" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.imweb.me/thumbnail/20260210/12ffb4b4c6c58.png" alt="그로우 인테리어">
+          <img src="/legacy/diagnosis-heo-junyoung/12ffb4b4c6c58.png" alt="그로우 인테리어">
           <div class="hjy-web-overlay">
             <span class="hjy-web-overlay-name">그로우 인테리어</span>
             <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
           </div>
         </a>
         <a class="hjy-web-card" href="https://fitness-demo-topaz.vercel.app/" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.imweb.me/thumbnail/20260210/048066d8b3030.png" alt="파워짐">
+          <img src="/legacy/diagnosis-heo-junyoung/048066d8b3030.png" alt="파워짐">
           <div class="hjy-web-overlay">
             <span class="hjy-web-overlay-name">파워짐</span>
             <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
           </div>
         </a>
         <a class="hjy-web-card" href="https://pilates-demo.vercel.app/" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.imweb.me/thumbnail/20260210/1c752a7dc6aa8.png" alt="소울 필라테스">
+          <img src="/legacy/diagnosis-heo-junyoung/1c752a7dc6aa8.png" alt="소울 필라테스">
           <div class="hjy-web-overlay">
             <span class="hjy-web-overlay-name">소울 필라테스</span>
             <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
           </div>
         </a>
         <a class="hjy-web-card" href="https://thebenefit.co.kr/" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.imweb.me/thumbnail/20260210/bc4c1227c16a0.png" alt="더배내핏">
+          <img src="/legacy/diagnosis-heo-junyoung/bc4c1227c16a0.png" alt="더배내핏">
           <div class="hjy-web-overlay">
             <span class="hjy-web-overlay-name">더배내핏</span>
             <span class="hjy-web-overlay-link">Visit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
@@ -930,18 +930,18 @@ const DETAIL_HTML = `<div class="hjy">
   </div>
   <div class="hjy-mq" id="hjyReviewMarquee">
     <div class="hjy-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/ceddd35ebfc47.png" alt="허준영 멘토 고객 후기 1">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/d5ef8194aae01.png" alt="허준영 멘토 고객 후기 2">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/f1c64153b5faf.png" alt="허준영 멘토 고객 후기 3">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/3a275f9fb2f61.png" alt="허준영 멘토 고객 후기 4">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/77e4db3112261.png" alt="허준영 멘토 고객 후기 5">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/07fd3d27b83d7.png" alt="허준영 멘토 고객 후기 6">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/ceddd35ebfc47.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/d5ef8194aae01.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/f1c64153b5faf.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/3a275f9fb2f61.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/77e4db3112261.png" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20250728/07fd3d27b83d7.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/ceddd35ebfc47.png" alt="허준영 멘토 고객 후기 1">
+      <img src="/legacy/diagnosis-heo-junyoung/d5ef8194aae01.png" alt="허준영 멘토 고객 후기 2">
+      <img src="/legacy/diagnosis-heo-junyoung/f1c64153b5faf.png" alt="허준영 멘토 고객 후기 3">
+      <img src="/legacy/diagnosis-heo-junyoung/3a275f9fb2f61.png" alt="허준영 멘토 고객 후기 4">
+      <img src="/legacy/diagnosis-heo-junyoung/77e4db3112261.png" alt="허준영 멘토 고객 후기 5">
+      <img src="/legacy/diagnosis-heo-junyoung/07fd3d27b83d7.png" alt="허준영 멘토 고객 후기 6">
+      <img src="/legacy/diagnosis-heo-junyoung/ceddd35ebfc47.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/d5ef8194aae01.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/f1c64153b5faf.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/3a275f9fb2f61.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/77e4db3112261.png" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/07fd3d27b83d7.png" alt="" aria-hidden="true">
     </div>
   </div>
   <div class="hjy-inner" style="margin-top:52px">
@@ -949,18 +949,18 @@ const DETAIL_HTML = `<div class="hjy">
   </div>
   <div class="hjy-mq" id="hjyLectureMarquee">
     <div class="hjy-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/8e4d9dcb6ba10.jpg" alt="허준영 멘토 강의 현장 1">
-      <img src="https://cdn.imweb.me/thumbnail/20251024/82df487ecc05e.jpg" alt="허준영 멘토 강의 현장 2">
-      <img src="https://cdn.imweb.me/thumbnail/20251024/21fbb1985dcd7.jpg" alt="허준영 멘토 강의 현장 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/d7505685c11bd.jpg" alt="허준영 멘토 강의 현장 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/d3366bea96bbb.jpg" alt="허준영 멘토 강의 현장 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/cadc3e3228271.jpg" alt="허준영 멘토 강의 현장 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/8e4d9dcb6ba10.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20251024/82df487ecc05e.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20251024/21fbb1985dcd7.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/d7505685c11bd.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/d3366bea96bbb.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260129/cadc3e3228271.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/8e4d9dcb6ba10.jpg" alt="허준영 멘토 강의 현장 1">
+      <img src="/legacy/diagnosis-heo-junyoung/82df487ecc05e.jpg" alt="허준영 멘토 강의 현장 2">
+      <img src="/legacy/diagnosis-heo-junyoung/21fbb1985dcd7.jpg" alt="허준영 멘토 강의 현장 3">
+      <img src="/legacy/diagnosis-heo-junyoung/d7505685c11bd.jpg" alt="허준영 멘토 강의 현장 4">
+      <img src="/legacy/diagnosis-heo-junyoung/d3366bea96bbb.jpg" alt="허준영 멘토 강의 현장 5">
+      <img src="/legacy/diagnosis-heo-junyoung/cadc3e3228271.jpg" alt="허준영 멘토 강의 현장 6">
+      <img src="/legacy/diagnosis-heo-junyoung/8e4d9dcb6ba10.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/82df487ecc05e.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/21fbb1985dcd7.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/d7505685c11bd.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/d3366bea96bbb.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-heo-junyoung/cadc3e3228271.jpg" alt="" aria-hidden="true">
     </div>
   </div>
   <div class="hjy-inner" style="margin-top:56px">

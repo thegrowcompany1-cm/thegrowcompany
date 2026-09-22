@@ -345,7 +345,7 @@ const HERO_SECTION_HTML = `<style>
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('https://cdn.imweb.me/thumbnail/20250526/954205d44af9d.png') center/cover;
+  background: url('/legacy/startup/954205d44af9d.png') center/cover;
   opacity: 0.15;
 }
 
@@ -714,13 +714,13 @@ const DETAIL_HTML = `
 </style>
   <div class="gw-gallery">
     <div class="gw-gfl"></div><div class="gw-gfr"></div>
-    <div class="gw-row gw-l"><img src="https://cdn.imweb.me/thumbnail/20260224/7febfcc8985e2.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/147fe84156057.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/0c832ab248ce4.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/971ea42cfd8a8.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/16d3196b68f2e.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/e8eb94b6d52ff.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/050b276ee45d7.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/7febfcc8985e2.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/147fe84156057.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/0c832ab248ce4.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/971ea42cfd8a8.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/16d3196b68f2e.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/e8eb94b6d52ff.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/050b276ee45d7.png" alt="시공사례"></div>
-    <div class="gw-row gw-r"><img src="https://cdn.imweb.me/thumbnail/20260224/7fddde5b80282.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/bdffa96015f92.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/429d83e687190.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/994f3e4444876.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/4a9b8cbefcace.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/d62ab4ed1c51e.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/bcb8f87ab7f88.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/7fddde5b80282.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/bdffa96015f92.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/429d83e687190.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/994f3e4444876.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/4a9b8cbefcace.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/d62ab4ed1c51e.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/bcb8f87ab7f88.png" alt="시공사례"></div>
-    <div class="gw-row gw-l"><img src="https://cdn.imweb.me/thumbnail/20260224/dded8e6197f60.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/24150a19c2437.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/05fdbed8a415e.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/5a7016f66c8e7.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/5b6b3c8c692a6.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/c0ad9289bb4b3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/a5225411385cf.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/dded8e6197f60.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/24150a19c2437.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/05fdbed8a415e.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/5a7016f66c8e7.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/5b6b3c8c692a6.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/c0ad9289bb4b3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/a5225411385cf.png" alt="시공사례"></div>
-    <div class="gw-row gw-r"><img src="https://cdn.imweb.me/thumbnail/20260224/e7ec9b6e8f936.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/d918cd70d9c08.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/48a5270a28abe.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/7855e31a685e9.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/e75529ae4fab7.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/425d8005700dd.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/bf3bf2aea61a1.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/e7ec9b6e8f936.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/d918cd70d9c08.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/48a5270a28abe.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/7855e31a685e9.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/e75529ae4fab7.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/425d8005700dd.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/bf3bf2aea61a1.png" alt="시공사례"></div>
-    <div class="gw-row gw-l"><img src="https://cdn.imweb.me/thumbnail/20260224/b02205ae2e7da.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/543e8bd02106a.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/35a5086c05f11.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/e49fbb8f83360.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ee0af39a17497.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/31d7a26b1bcf3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/4e18b37fda8fc.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/b02205ae2e7da.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/543e8bd02106a.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/35a5086c05f11.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/e49fbb8f83360.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ee0af39a17497.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/31d7a26b1bcf3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/4e18b37fda8fc.png" alt="시공사례"></div>
-    <div class="gw-row gw-r"><img src="https://cdn.imweb.me/thumbnail/20260224/8ff784baa524b.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ce858defec5b3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/13ef060b46ff4.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ed2606eb9f936.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/6542da8356ba3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/88d10aeb9e1fd.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/500c88fe40f06.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/8ff784baa524b.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ce858defec5b3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/13ef060b46ff4.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ed2606eb9f936.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/6542da8356ba3.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/88d10aeb9e1fd.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/500c88fe40f06.png" alt="시공사례"></div>
-    <div class="gw-row gw-l"><img src="https://cdn.imweb.me/thumbnail/20260224/fe2ba70d48273.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ba9e88035d811.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/5985b8b2d6a41.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/31adc48935f10.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/7febfcc8985e2.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/147fe84156057.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/0c832ab248ce4.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/fe2ba70d48273.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/ba9e88035d811.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/5985b8b2d6a41.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/31adc48935f10.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/7febfcc8985e2.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/147fe84156057.png" alt="시공사례"><img src="https://cdn.imweb.me/thumbnail/20260224/0c832ab248ce4.png" alt="시공사례"></div>
+    <div class="gw-row gw-l"><img src="/legacy/startup/7febfcc8985e2.png" alt="시공사례"><img src="/legacy/startup/147fe84156057.png" alt="시공사례"><img src="/legacy/startup/0c832ab248ce4.png" alt="시공사례"><img src="/legacy/startup/971ea42cfd8a8.png" alt="시공사례"><img src="/legacy/startup/16d3196b68f2e.png" alt="시공사례"><img src="/legacy/startup/e8eb94b6d52ff.png" alt="시공사례"><img src="/legacy/startup/050b276ee45d7.png" alt="시공사례"><img src="/legacy/startup/7febfcc8985e2.png" alt="시공사례"><img src="/legacy/startup/147fe84156057.png" alt="시공사례"><img src="/legacy/startup/0c832ab248ce4.png" alt="시공사례"><img src="/legacy/startup/971ea42cfd8a8.png" alt="시공사례"><img src="/legacy/startup/16d3196b68f2e.png" alt="시공사례"><img src="/legacy/startup/e8eb94b6d52ff.png" alt="시공사례"><img src="/legacy/startup/050b276ee45d7.png" alt="시공사례"></div>
+    <div class="gw-row gw-r"><img src="/legacy/startup/7fddde5b80282.png" alt="시공사례"><img src="/legacy/startup/bdffa96015f92.png" alt="시공사례"><img src="/legacy/startup/429d83e687190.png" alt="시공사례"><img src="/legacy/startup/994f3e4444876.png" alt="시공사례"><img src="/legacy/startup/4a9b8cbefcace.png" alt="시공사례"><img src="/legacy/startup/d62ab4ed1c51e.png" alt="시공사례"><img src="/legacy/startup/bcb8f87ab7f88.png" alt="시공사례"><img src="/legacy/startup/7fddde5b80282.png" alt="시공사례"><img src="/legacy/startup/bdffa96015f92.png" alt="시공사례"><img src="/legacy/startup/429d83e687190.png" alt="시공사례"><img src="/legacy/startup/994f3e4444876.png" alt="시공사례"><img src="/legacy/startup/4a9b8cbefcace.png" alt="시공사례"><img src="/legacy/startup/d62ab4ed1c51e.png" alt="시공사례"><img src="/legacy/startup/bcb8f87ab7f88.png" alt="시공사례"></div>
+    <div class="gw-row gw-l"><img src="/legacy/startup/dded8e6197f60.png" alt="시공사례"><img src="/legacy/startup/24150a19c2437.png" alt="시공사례"><img src="/legacy/startup/05fdbed8a415e.png" alt="시공사례"><img src="/legacy/startup/5a7016f66c8e7.png" alt="시공사례"><img src="/legacy/startup/5b6b3c8c692a6.png" alt="시공사례"><img src="/legacy/startup/c0ad9289bb4b3.png" alt="시공사례"><img src="/legacy/startup/a5225411385cf.png" alt="시공사례"><img src="/legacy/startup/dded8e6197f60.png" alt="시공사례"><img src="/legacy/startup/24150a19c2437.png" alt="시공사례"><img src="/legacy/startup/05fdbed8a415e.png" alt="시공사례"><img src="/legacy/startup/5a7016f66c8e7.png" alt="시공사례"><img src="/legacy/startup/5b6b3c8c692a6.png" alt="시공사례"><img src="/legacy/startup/c0ad9289bb4b3.png" alt="시공사례"><img src="/legacy/startup/a5225411385cf.png" alt="시공사례"></div>
+    <div class="gw-row gw-r"><img src="/legacy/startup/e7ec9b6e8f936.png" alt="시공사례"><img src="/legacy/startup/d918cd70d9c08.png" alt="시공사례"><img src="/legacy/startup/48a5270a28abe.png" alt="시공사례"><img src="/legacy/startup/7855e31a685e9.png" alt="시공사례"><img src="/legacy/startup/e75529ae4fab7.png" alt="시공사례"><img src="/legacy/startup/425d8005700dd.png" alt="시공사례"><img src="/legacy/startup/bf3bf2aea61a1.png" alt="시공사례"><img src="/legacy/startup/e7ec9b6e8f936.png" alt="시공사례"><img src="/legacy/startup/d918cd70d9c08.png" alt="시공사례"><img src="/legacy/startup/48a5270a28abe.png" alt="시공사례"><img src="/legacy/startup/7855e31a685e9.png" alt="시공사례"><img src="/legacy/startup/e75529ae4fab7.png" alt="시공사례"><img src="/legacy/startup/425d8005700dd.png" alt="시공사례"><img src="/legacy/startup/bf3bf2aea61a1.png" alt="시공사례"></div>
+    <div class="gw-row gw-l"><img src="/legacy/startup/b02205ae2e7da.png" alt="시공사례"><img src="/legacy/startup/543e8bd02106a.png" alt="시공사례"><img src="/legacy/startup/35a5086c05f11.png" alt="시공사례"><img src="/legacy/startup/e49fbb8f83360.png" alt="시공사례"><img src="/legacy/startup/ee0af39a17497.png" alt="시공사례"><img src="/legacy/startup/31d7a26b1bcf3.png" alt="시공사례"><img src="/legacy/startup/4e18b37fda8fc.png" alt="시공사례"><img src="/legacy/startup/b02205ae2e7da.png" alt="시공사례"><img src="/legacy/startup/543e8bd02106a.png" alt="시공사례"><img src="/legacy/startup/35a5086c05f11.png" alt="시공사례"><img src="/legacy/startup/e49fbb8f83360.png" alt="시공사례"><img src="/legacy/startup/ee0af39a17497.png" alt="시공사례"><img src="/legacy/startup/31d7a26b1bcf3.png" alt="시공사례"><img src="/legacy/startup/4e18b37fda8fc.png" alt="시공사례"></div>
+    <div class="gw-row gw-r"><img src="/legacy/startup/8ff784baa524b.png" alt="시공사례"><img src="/legacy/startup/ce858defec5b3.png" alt="시공사례"><img src="/legacy/startup/13ef060b46ff4.png" alt="시공사례"><img src="/legacy/startup/ed2606eb9f936.png" alt="시공사례"><img src="/legacy/startup/6542da8356ba3.png" alt="시공사례"><img src="/legacy/startup/88d10aeb9e1fd.png" alt="시공사례"><img src="/legacy/startup/500c88fe40f06.png" alt="시공사례"><img src="/legacy/startup/8ff784baa524b.png" alt="시공사례"><img src="/legacy/startup/ce858defec5b3.png" alt="시공사례"><img src="/legacy/startup/13ef060b46ff4.png" alt="시공사례"><img src="/legacy/startup/ed2606eb9f936.png" alt="시공사례"><img src="/legacy/startup/6542da8356ba3.png" alt="시공사례"><img src="/legacy/startup/88d10aeb9e1fd.png" alt="시공사례"><img src="/legacy/startup/500c88fe40f06.png" alt="시공사례"></div>
+    <div class="gw-row gw-l"><img src="/legacy/startup/fe2ba70d48273.png" alt="시공사례"><img src="/legacy/startup/ba9e88035d811.png" alt="시공사례"><img src="/legacy/startup/5985b8b2d6a41.png" alt="시공사례"><img src="/legacy/startup/31adc48935f10.png" alt="시공사례"><img src="/legacy/startup/7febfcc8985e2.png" alt="시공사례"><img src="/legacy/startup/147fe84156057.png" alt="시공사례"><img src="/legacy/startup/0c832ab248ce4.png" alt="시공사례"><img src="/legacy/startup/fe2ba70d48273.png" alt="시공사례"><img src="/legacy/startup/ba9e88035d811.png" alt="시공사례"><img src="/legacy/startup/5985b8b2d6a41.png" alt="시공사례"><img src="/legacy/startup/31adc48935f10.png" alt="시공사례"><img src="/legacy/startup/7febfcc8985e2.png" alt="시공사례"><img src="/legacy/startup/147fe84156057.png" alt="시공사례"><img src="/legacy/startup/0c832ab248ce4.png" alt="시공사례"></div>
   </div>
 </div>
 
@@ -767,7 +767,7 @@ const DETAIL_HTML = `
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('https://cdn.imweb.me/thumbnail/20250324/842da7b3d40fb.jpg') center/cover;
+  background: url('/legacy/startup/842da7b3d40fb.jpg') center/cover;
   opacity: 0.2;
   transition: opacity 0.5s ease;
 }
@@ -1676,10 +1676,10 @@ const DETAIL_HTML = `
             대표님과 함께 직접 발로 뛰며<br> "사람이 오는 자리"를 찾습니다.
           </p>
           <div class="tgc-process-images">
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241213/3fe6ca005fb28.jpg" alt="입지선정"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241213/6aeda0e2f50ad.jpg" alt="입지선정"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241213/badee82e80f1a.jpg" alt="입지선정"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241210/a6e88ac28e29b.png" alt="상권분석"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/3fe6ca005fb28.jpg" alt="입지선정"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/6aeda0e2f50ad.jpg" alt="입지선정"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/badee82e80f1a.jpg" alt="입지선정"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/a6e88ac28e29b.png" alt="상권분석"></div>
           </div>
           <div class="tgc-process-keypoints">
             <span class="tgc-process-keypoint">
@@ -1710,11 +1710,11 @@ const DETAIL_HTML = `
             전속 인테리어 팀이 250건 이상의 <br>시공 경험으로 진행합니다.
           </p>
           <div class="tgc-process-images">
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/640d2ed2ca7b9.jpg" alt="공실체크"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/cea8d7cee6be9.jpg" alt="공실체크"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/3a1f8666a4fb7.png" alt="인테리어"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/74d515a717030.png" alt="인테리어"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/0b1ee7ed0fd10.png" alt="인테리어"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/640d2ed2ca7b9.jpg" alt="공실체크"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/cea8d7cee6be9.jpg" alt="공실체크"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/3a1f8666a4fb7.png" alt="인테리어"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/74d515a717030.png" alt="인테리어"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/0b1ee7ed0fd10.png" alt="인테리어"></div>
           </div>
           <div class="tgc-process-keypoints">
             <span class="tgc-process-keypoint">
@@ -1745,10 +1745,10 @@ const DETAIL_HTML = `
             오픈 전 매출을 만들어 안정적인 <br>시작을 돕습니다.
           </p>
           <div class="tgc-process-images">
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241213/482325a2e8663.jpg" alt="프리세일"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241213/843a99b2d1a79.jpg" alt="프리세일"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241213/f959517e5bef7.jpg" alt="프리세일"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20241213/b1a51a9fa48e8.jpg" alt="프리세일"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/482325a2e8663.jpg" alt="프리세일"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/843a99b2d1a79.jpg" alt="프리세일"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/f959517e5bef7.jpg" alt="프리세일"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/b1a51a9fa48e8.jpg" alt="프리세일"></div>
           </div>
           <div class="tgc-process-keypoints">
             <span class="tgc-process-keypoint">
@@ -1779,11 +1779,11 @@ const DETAIL_HTML = `
             12년간 누적된 운영 노하우와 시스템을 <br>그대로 전수합니다.
           </p>
           <div class="tgc-process-images">
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/57d1714abddb9.jpg" alt="교육"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/f37752fb9163d.jpg" alt="교육"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250521/500f95efeaef2.png" alt="운영시스템"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250521/8ae1bcb22d1ee.png" alt="운영시스템"></div>
-            <div class="tgc-process-img"><img src="https://cdn.imweb.me/thumbnail/20250324/3909d6c9fed57.jpg" alt="교육"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/57d1714abddb9.jpg" alt="교육"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/f37752fb9163d.jpg" alt="교육"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/500f95efeaef2.png" alt="운영시스템"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/8ae1bcb22d1ee.png" alt="운영시스템"></div>
+            <div class="tgc-process-img"><img src="/legacy/startup/3909d6c9fed57.jpg" alt="교육"></div>
           </div>
           <div class="tgc-process-keypoints">
             <span class="tgc-process-keypoint">
@@ -2362,21 +2362,21 @@ const DETAIL_HTML = `
       <h4 class="tgc-kakao-title">실시간 카톡 후기</h4>
       <div class="tgc-kakao-slider">
         <div class="tgc-kakao-item"><img src="/after/after%201%20.jpg" alt="카톡후기"></div>
-        <div class="tgc-kakao-item"><img src="https://cdn.imweb.me/thumbnail/20250410/15074ccf15f4f.png" alt="카톡후기"></div>
-        <div class="tgc-kakao-item"><img src="https://cdn.imweb.me/thumbnail/20250410/6c472bc288fca.png" alt="카톡후기"></div>
-        <div class="tgc-kakao-item"><img src="https://cdn.imweb.me/thumbnail/20250410/c9a26f224753e.jpg" alt="카톡후기"></div>
-        <div class="tgc-kakao-item"><img src="https://cdn.imweb.me/thumbnail/20250410/5f9b6a71b84af.jpg" alt="카톡후기"></div>
-        <div class="tgc-kakao-item"><img src="https://cdn.imweb.me/thumbnail/20250410/a0aa9f04ac114.png" alt="카톡후기"></div>
+        <div class="tgc-kakao-item"><img src="/legacy/startup/15074ccf15f4f.png" alt="카톡후기"></div>
+        <div class="tgc-kakao-item"><img src="/legacy/startup/6c472bc288fca.png" alt="카톡후기"></div>
+        <div class="tgc-kakao-item"><img src="/legacy/startup/c9a26f224753e.jpg" alt="카톡후기"></div>
+        <div class="tgc-kakao-item"><img src="/legacy/startup/5f9b6a71b84af.jpg" alt="카톡후기"></div>
+        <div class="tgc-kakao-item"><img src="/legacy/startup/a0aa9f04ac114.png" alt="카톡후기"></div>
       </div>
     </div>
     
     <!-- 대표 소개 -->
     <div class="tgc-ceo-section tgc-fade-up" id="ceoSection">
       <div class="tgc-ceo-images" id="ceoImages">
-        <div class="tgc-ceo-img"><img src="https://cdn.imweb.me/thumbnail/20250324/842da7b3d40fb.jpg" alt="대표"></div>
-        <div class="tgc-ceo-img"><img src="https://cdn.imweb.me/thumbnail/20250324/57d1714abddb9.jpg" alt="대표"></div>
-        <div class="tgc-ceo-img"><img src="https://cdn.imweb.me/thumbnail/20250324/f37752fb9163d.jpg" alt="대표"></div>
-        <div class="tgc-ceo-img"><img src="https://cdn.imweb.me/thumbnail/20250324/3909d6c9fed57.jpg" alt="대표"></div>
+        <div class="tgc-ceo-img"><img src="/legacy/startup/842da7b3d40fb.jpg" alt="대표"></div>
+        <div class="tgc-ceo-img"><img src="/legacy/startup/57d1714abddb9.jpg" alt="대표"></div>
+        <div class="tgc-ceo-img"><img src="/legacy/startup/f37752fb9163d.jpg" alt="대표"></div>
+        <div class="tgc-ceo-img"><img src="/legacy/startup/3909d6c9fed57.jpg" alt="대표"></div>
       </div>
       <div class="tgc-ceo-content">
         <span class="tgc-ceo-badge">더그로우컴퍼니 대표</span>

@@ -716,16 +716,16 @@ const DETAIL_HTML_2 = `<div class="kjk">
     <h2 class="kjk-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
   </div>
   <div class="kjk-strip">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/e93ca9ff08f57.jpg" alt="김재강 멘토 실시간 카톡 후기 1">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/916c4041aee53.jpg" alt="김재강 멘토 실시간 카톡 후기 2">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/d9aad9fd0bfd0.jpg" alt="김재강 멘토 실시간 카톡 후기 3">
-    <img src="https://cdn.imweb.me/thumbnail/20260311/36b12b4672c0d.png" alt="김재강 멘토 실시간 카톡 후기 4">
-    <img src="https://cdn.imweb.me/thumbnail/20260312/9e8faf83a4069.jpg" alt="김재강 멘토 실시간 카톡 후기 5">
-    <img src="https://cdn.imweb.me/thumbnail/20260312/b04ef0ea34d4b.jpg" alt="김재강 멘토 실시간 카톡 후기 6">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/6ab322c87ee75.jpg" alt="김재강 멘토 실시간 카톡 후기 7">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/36ab76ce44623.jpg" alt="김재강 멘토 실시간 카톡 후기 8">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/a139d97449a27.jpg" alt="김재강 멘토 실시간 카톡 후기 9">
-    <img src="https://cdn.imweb.me/thumbnail/20260225/6c5b4f8faba0b.jpg" alt="김재강 멘토 실시간 카톡 후기 10">
+    <img src="/legacy/diagnosis-kim-jaegang/e93ca9ff08f57.jpg" alt="김재강 멘토 실시간 카톡 후기 1">
+    <img src="/legacy/diagnosis-kim-jaegang/916c4041aee53.jpg" alt="김재강 멘토 실시간 카톡 후기 2">
+    <img src="/legacy/diagnosis-kim-jaegang/d9aad9fd0bfd0.jpg" alt="김재강 멘토 실시간 카톡 후기 3">
+    <img src="/legacy/diagnosis-kim-jaegang/36b12b4672c0d.png" alt="김재강 멘토 실시간 카톡 후기 4">
+    <img src="/legacy/diagnosis-kim-jaegang/9e8faf83a4069.jpg" alt="김재강 멘토 실시간 카톡 후기 5">
+    <img src="/legacy/diagnosis-kim-jaegang/b04ef0ea34d4b.jpg" alt="김재강 멘토 실시간 카톡 후기 6">
+    <img src="/legacy/diagnosis-kim-jaegang/6ab322c87ee75.jpg" alt="김재강 멘토 실시간 카톡 후기 7">
+    <img src="/legacy/diagnosis-kim-jaegang/36ab76ce44623.jpg" alt="김재강 멘토 실시간 카톡 후기 8">
+    <img src="/legacy/diagnosis-kim-jaegang/a139d97449a27.jpg" alt="김재강 멘토 실시간 카톡 후기 9">
+    <img src="/legacy/diagnosis-kim-jaegang/6c5b4f8faba0b.jpg" alt="김재강 멘토 실시간 카톡 후기 10">
   </div>
 </section>
 
@@ -737,22 +737,22 @@ const DETAIL_HTML_2 = `<div class="kjk">
   </div>
   <div class="kjk-mq" id="kjkCertMarquee">
     <div class="kjk-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/07206486c31ee.jpg" alt="김재강 멘토 회원 매출 인증 사진 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/c39bde9d80ca8.jpg" alt="김재강 멘토 회원 매출 인증 사진 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/6205ff8de0c6c.jpg" alt="김재강 멘토 회원 매출 인증 사진 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/92e7b7e705ba3.jpg" alt="김재강 멘토 회원 매출 인증 사진 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/fc284d3b69261.jpg" alt="김재강 멘토 회원 매출 인증 사진 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/1c1186df37343.jpg" alt="김재강 멘토 회원 매출 인증 사진 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/e813e7b6e3237.jpg" alt="김재강 멘토 회원 매출 인증 사진 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260224/e62ff81508acf.jpg" alt="김재강 멘토 회원 매출 인증 사진 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/07206486c31ee.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/c39bde9d80ca8.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/6205ff8de0c6c.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/92e7b7e705ba3.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/fc284d3b69261.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/1c1186df37343.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/e813e7b6e3237.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260224/e62ff81508acf.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/07206486c31ee.jpg" alt="김재강 멘토 회원 매출 인증 사진 1">
+      <img src="/legacy/diagnosis-kim-jaegang/c39bde9d80ca8.jpg" alt="김재강 멘토 회원 매출 인증 사진 2">
+      <img src="/legacy/diagnosis-kim-jaegang/6205ff8de0c6c.jpg" alt="김재강 멘토 회원 매출 인증 사진 3">
+      <img src="/legacy/diagnosis-kim-jaegang/92e7b7e705ba3.jpg" alt="김재강 멘토 회원 매출 인증 사진 4">
+      <img src="/legacy/diagnosis-kim-jaegang/fc284d3b69261.jpg" alt="김재강 멘토 회원 매출 인증 사진 5">
+      <img src="/legacy/diagnosis-kim-jaegang/1c1186df37343.jpg" alt="김재강 멘토 회원 매출 인증 사진 6">
+      <img src="/legacy/diagnosis-kim-jaegang/e813e7b6e3237.jpg" alt="김재강 멘토 회원 매출 인증 사진 7">
+      <img src="/legacy/diagnosis-kim-jaegang/e62ff81508acf.jpg" alt="김재강 멘토 회원 매출 인증 사진 8">
+      <img src="/legacy/diagnosis-kim-jaegang/07206486c31ee.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/c39bde9d80ca8.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/6205ff8de0c6c.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/92e7b7e705ba3.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/fc284d3b69261.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/1c1186df37343.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/e813e7b6e3237.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/e62ff81508acf.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>
@@ -765,26 +765,26 @@ const DETAIL_HTML_2 = `<div class="kjk">
   </div>
   <div class="kjk-mq" id="kjkSeminarMarquee">
     <div class="kjk-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/0beb9f453dc77.jpg" alt="김재강 멘토 강연 현장 사진 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/fe5d6209a54a9.jpg" alt="김재강 멘토 강연 현장 사진 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/42259675f4f0b.jpg" alt="김재강 멘토 강연 현장 사진 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/9e172a0003d05.jpg" alt="김재강 멘토 강연 현장 사진 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/82c1ee03de2f5.jpg" alt="김재강 멘토 강연 현장 사진 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/0beb9f453dc77.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/fe5d6209a54a9.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/42259675f4f0b.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/9e172a0003d05.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/82c1ee03de2f5.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/0beb9f453dc77.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/fe5d6209a54a9.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/42259675f4f0b.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/9e172a0003d05.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/82c1ee03de2f5.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260223/0beb9f453dc77.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/fe5d6209a54a9.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/42259675f4f0b.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/9e172a0003d05.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260220/82c1ee03de2f5.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/0beb9f453dc77.jpg" alt="김재강 멘토 강연 현장 사진 1">
+      <img src="/legacy/diagnosis-kim-jaegang/fe5d6209a54a9.jpg" alt="김재강 멘토 강연 현장 사진 2">
+      <img src="/legacy/diagnosis-kim-jaegang/42259675f4f0b.jpg" alt="김재강 멘토 강연 현장 사진 3">
+      <img src="/legacy/diagnosis-kim-jaegang/9e172a0003d05.jpg" alt="김재강 멘토 강연 현장 사진 4">
+      <img src="/legacy/diagnosis-kim-jaegang/82c1ee03de2f5.jpg" alt="김재강 멘토 강연 현장 사진 5">
+      <img src="/legacy/diagnosis-kim-jaegang/0beb9f453dc77.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/fe5d6209a54a9.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/42259675f4f0b.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/9e172a0003d05.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/82c1ee03de2f5.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/0beb9f453dc77.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/fe5d6209a54a9.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/42259675f4f0b.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/9e172a0003d05.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/82c1ee03de2f5.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/0beb9f453dc77.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/fe5d6209a54a9.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/42259675f4f0b.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/9e172a0003d05.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-jaegang/82c1ee03de2f5.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>
@@ -928,34 +928,34 @@ const LOGO_HTML = `<style>
     {
       id: 'kjkLogoRow1', direction: -1, speed: 0.5,
       logos: [
-        'https://cdn.imweb.me/thumbnail/20260223/7841a3371cc29.png',
-        'https://cdn.imweb.me/thumbnail/20260223/3945899095a5b.png',
-        'https://cdn.imweb.me/thumbnail/20260223/0a41b156648cf.png',
-        'https://cdn.imweb.me/thumbnail/20260223/ba9d2fadf5832.png',
-        'https://cdn.imweb.me/thumbnail/20260223/c4174f387fe6b.png',
-        'https://cdn.imweb.me/thumbnail/20260223/e13a8a36924c8.png'
+        '/legacy/shared/7841a3371cc29.png',
+        '/legacy/shared/3945899095a5b.png',
+        '/legacy/shared/0a41b156648cf.png',
+        '/legacy/shared/ba9d2fadf5832.png',
+        '/legacy/shared/c4174f387fe6b.png',
+        '/legacy/shared/e13a8a36924c8.png'
       ]
     },
     {
       id: 'kjkLogoRow2', direction: 1, speed: 0.4,
       logos: [
-        'https://cdn.imweb.me/thumbnail/20260223/1cdfdc0ac2452.png',
-        'https://cdn.imweb.me/thumbnail/20260223/e7f1f1c277127.png',
-        'https://cdn.imweb.me/thumbnail/20260223/bb90b7eaef3d7.png',
-        'https://cdn.imweb.me/thumbnail/20260223/d3ae7ae970f2a.png',
-        'https://cdn.imweb.me/thumbnail/20260223/827c64d3f3db9.png',
-        'https://cdn.imweb.me/thumbnail/20260223/cccdfd0f52cb0.png'
+        '/legacy/shared/1cdfdc0ac2452.png',
+        '/legacy/shared/e7f1f1c277127.png',
+        '/legacy/shared/bb90b7eaef3d7.png',
+        '/legacy/shared/d3ae7ae970f2a.png',
+        '/legacy/shared/827c64d3f3db9.png',
+        '/legacy/shared/cccdfd0f52cb0.png'
       ]
     },
     {
       id: 'kjkLogoRow3', direction: -1, speed: 0.55,
       logos: [
-        'https://cdn.imweb.me/thumbnail/20260223/7749e65c1c4eb.png',
-        'https://cdn.imweb.me/thumbnail/20260223/ae249b50f1585.png',
-        'https://cdn.imweb.me/thumbnail/20260223/bd91df10a076b.png',
-        'https://cdn.imweb.me/thumbnail/20260223/49528417a6225.png',
-        'https://cdn.imweb.me/thumbnail/20260223/82d6d15032feb.png',
-        'https://cdn.imweb.me/thumbnail/20260223/5f15997a2500b.png'
+        '/legacy/shared/7749e65c1c4eb.png',
+        '/legacy/shared/ae249b50f1585.png',
+        '/legacy/shared/bd91df10a076b.png',
+        '/legacy/shared/49528417a6225.png',
+        '/legacy/shared/82d6d15032feb.png',
+        '/legacy/shared/5f15997a2500b.png'
       ]
     }
   ];

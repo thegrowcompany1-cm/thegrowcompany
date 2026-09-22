@@ -355,7 +355,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
 
   .wo-hero-wrap {
     /* 색상/사이즈 변수 - 여기서 조정 */
-    --wo-hero-bg-image: url('https://cdn.imweb.me/thumbnail/20260513/4c3820f8a0b35.png'); /* ← 아임웹 업로드 후 URL 교체 */
+    --wo-hero-bg-image: url('/legacy/community/4c3820f8a0b35.png'); /* ← 아임웹 업로드 후 URL 교체 */
     --wo-hero-dark: #0A1220;
     --wo-hero-accent: #D4A574; /* 차분한 골드 - 품격 강조 */
     --wo-hero-text: #FFFFFF;
@@ -775,10 +775,10 @@ const DETAIL_HTML = `<!-- ============================================ -->
 <style>
   .wo-types {
     /* === 이미지 URL 여기서 교체 === */
-    --wo-types-img-apt:    url('https://cdn.imweb.me/thumbnail/20260513/837b72cda206d.png'); /* 아파트 */
-    --wo-types-img-pub:    url('https://cdn.imweb.me/thumbnail/20260513/4091425bf2bf7.png'); /* 공공기관 */
-    --wo-types-img-corp:   url('https://cdn.imweb.me/thumbnail/20260513/0ff52097117d9.png'); /* 기업 */
-    --wo-types-img-hotel:  url('https://cdn.imweb.me/thumbnail/20260513/425b5e9b225b2.png'); /* 호텔 */
+    --wo-types-img-apt:    url('/legacy/community/837b72cda206d.png'); /* 아파트 */
+    --wo-types-img-pub:    url('/legacy/community/4091425bf2bf7.png'); /* 공공기관 */
+    --wo-types-img-corp:   url('/legacy/community/0ff52097117d9.png'); /* 기업 */
+    --wo-types-img-hotel:  url('/legacy/community/425b5e9b225b2.png'); /* 호텔 */
 
     /* === 색상 토큰 === */
     --wo-types-bg: #FAFAF7;

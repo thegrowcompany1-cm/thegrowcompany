@@ -410,7 +410,7 @@ const DETAIL_HTML = `<div class="fc1">
 
 <!-- 1. 히어로 -->
 <section class="fc1-hero">
-  <img class="fc1-hero-bg" src="https://cdn.imweb.me/thumbnail/20251024/6b0de22aa5b3b.jpg" alt="정규 FC 클래스 강의 현장 배경">
+  <img class="fc1-hero-bg" src="/legacy/fc-class/6b0de22aa5b3b.jpg" alt="정규 FC 클래스 강의 현장 배경">
   <div class="fc1-hero-ov"></div>
   <div class="fc1-hero-in">
     <p class="fc1-hero-sub fc1-fu fc1-d1">— 정규 FC 클래스 —</p>
@@ -489,7 +489,7 @@ const DETAIL_HTML = `<div class="fc1">
     <p class="fc1-sub fc1-reveal">지식만 있는 강사가 아닙니다. 직접 매장을 운영하고, 수백 개 센터를 성장시킨 사람들입니다.</p>
     <div class="fc1-inst-cards">
       <div class="fc1-inst-card fc1-reveal">
-        <div class="fc1-inst-photo"><img src="https://cdn.imweb.me/thumbnail/20260626/f7d9b54bd7ce2.jpg" alt="김재강 대표"></div>
+        <div class="fc1-inst-photo"><img src="/legacy/fc-class/f7d9b54bd7ce2.jpg" alt="김재강 대표"></div>
         <div class="fc1-inst-body">
           <div class="fc1-inst-tags"><span class="fc1-inst-tag">창업</span><span class="fc1-inst-tag">운영</span><span class="fc1-inst-tag">솔루션</span></div>
           <p class="fc1-inst-role">(주)더그로우컴퍼니 대표</p>
@@ -514,7 +514,7 @@ const DETAIL_HTML = `<div class="fc1">
         </div>
       </div>
       <div class="fc1-inst-card fc1-reveal">
-        <div class="fc1-inst-photo"><img src="https://cdn.imweb.me/thumbnail/20260626/35741b5450704.jpg" alt="허준영 본부장"></div>
+        <div class="fc1-inst-photo"><img src="/legacy/fc-class/35741b5450704.jpg" alt="허준영 본부장"></div>
         <div class="fc1-inst-body">
           <div class="fc1-inst-tags"><span class="fc1-inst-tag">마케팅</span><span class="fc1-inst-tag">광고</span><span class="fc1-inst-tag">SEO</span></div>
           <p class="fc1-inst-role">더그로우컴퍼니 CMO</p>
@@ -611,13 +611,13 @@ const DETAIL_HTML = `<div class="fc1">
   <div class="fc1-rev-track-wrap fc1-reveal">
     <button class="fc1-rev-arrow fc1-rev-prev" type="button" id="fc1RevPrev" aria-label="이전 후기">‹</button>
     <div class="fc1-rev-track" id="fc1RevTrack">
-      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/7bdff84defd65.png" alt="그로우 아카데미 수강생 후기 1"></div>
-      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/7ddbfdb241ca0.png" alt="그로우 아카데미 수강생 후기 2"></div>
-      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/9faf7a0adff13.png" alt="그로우 아카데미 수강생 후기 3"></div>
-      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/773e59e57c3c0.png" alt="그로우 아카데미 수강생 후기 4"></div>
-      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/aa64c88162fac.png" alt="그로우 아카데미 수강생 후기 5"></div>
-      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/e386f601997ac.png" alt="그로우 아카데미 수강생 후기 6"></div>
-      <div class="fc1-rev-card"><img src="https://cdn.imweb.me/thumbnail/20260131/2a8a2a6ccc4bb.png" alt="그로우 아카데미 수강생 후기 7"></div>
+      <div class="fc1-rev-card"><img src="/legacy/fc-class/7bdff84defd65.png" alt="그로우 아카데미 수강생 후기 1"></div>
+      <div class="fc1-rev-card"><img src="/legacy/fc-class/7ddbfdb241ca0.png" alt="그로우 아카데미 수강생 후기 2"></div>
+      <div class="fc1-rev-card"><img src="/legacy/fc-class/9faf7a0adff13.png" alt="그로우 아카데미 수강생 후기 3"></div>
+      <div class="fc1-rev-card"><img src="/legacy/fc-class/773e59e57c3c0.png" alt="그로우 아카데미 수강생 후기 4"></div>
+      <div class="fc1-rev-card"><img src="/legacy/fc-class/aa64c88162fac.png" alt="그로우 아카데미 수강생 후기 5"></div>
+      <div class="fc1-rev-card"><img src="/legacy/fc-class/e386f601997ac.png" alt="그로우 아카데미 수강생 후기 6"></div>
+      <div class="fc1-rev-card"><img src="/legacy/fc-class/2a8a2a6ccc4bb.png" alt="그로우 아카데미 수강생 후기 7"></div>
     </div>
     <button class="fc1-rev-arrow fc1-rev-next" type="button" id="fc1RevNext" aria-label="다음 후기">›</button>
   </div>
@@ -632,11 +632,11 @@ const DETAIL_HTML = `<div class="fc1">
     <h2 class="fc1-h2 fc1-reveal">수강 후 네이버 플레이스<br><span class="fc1-hl">유입 증가 사례</span></h2>
     <h3 class="fc1-res-sub fc1-reveal">실제 네이버 플레이스 통계 화면</h3>
     <div class="fc1-res-grid fc1-reveal">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/a0b0c87b1eefc.png" alt="네이버 플레이스 유입 통계 화면 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/7000a625263a4.png" alt="네이버 플레이스 유입 통계 화면 2">
+      <img src="/legacy/fc-class/a0b0c87b1eefc.png" alt="네이버 플레이스 유입 통계 화면 1">
+      <img src="/legacy/fc-class/7000a625263a4.png" alt="네이버 플레이스 유입 통계 화면 2">
     </div>
     <h3 class="fc1-res-sub fc1-reveal">플레이스 상위노출 사례</h3>
-    <img class="fc1-res-big fc1-reveal-scale" src="https://cdn.imweb.me/thumbnail/20260131/7c7d9cddb406a.png" alt="네이버 플레이스 상위노출 사례">
+    <img class="fc1-res-big fc1-reveal-scale" src="/legacy/fc-class/7c7d9cddb406a.png" alt="네이버 플레이스 상위노출 사례">
   </div>
 </section>
 
@@ -648,28 +648,28 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
   <div class="fc1-gal-mq">
     <div class="fc1-gal-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/2c27053d77aa7.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/585cf1ee7e5d1.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/c51e290737724.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/d71d22f9eea53.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/2f1084024ac28.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/c8b4857c6a396.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/4b9ce2fb80778.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/626df956ffc13.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/2c27053d77aa7.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/585cf1ee7e5d1.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/c51e290737724.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/d71d22f9eea53.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/2f1084024ac28.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/c8b4857c6a396.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/4b9ce2fb80778.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260131/626df956ffc13.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/shared/2c27053d77aa7.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 1">
+      <img src="/legacy/fc-class/585cf1ee7e5d1.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 2">
+      <img src="/legacy/fc-class/c51e290737724.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 3">
+      <img src="/legacy/fc-class/d71d22f9eea53.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 4">
+      <img src="/legacy/fc-class/2f1084024ac28.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 5">
+      <img src="/legacy/fc-class/c8b4857c6a396.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 6">
+      <img src="/legacy/fc-class/4b9ce2fb80778.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 7">
+      <img src="/legacy/fc-class/626df956ffc13.jpg" alt="그로우 아카데미 FC 클래스 교육 현장 8">
+      <img src="/legacy/shared/2c27053d77aa7.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/fc-class/585cf1ee7e5d1.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/fc-class/c51e290737724.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/fc-class/d71d22f9eea53.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/fc-class/2f1084024ac28.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/fc-class/c8b4857c6a396.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/fc-class/4b9ce2fb80778.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/fc-class/626df956ffc13.jpg" alt="" aria-hidden="true">
     </div>
   </div>
   <div class="fc1-wrap">
     <div class="fc1-gal-gifs">
-      <img class="fc1-reveal" src="https://cdn.imweb.me/thumbnail/20260131/333c1f7a7b929.gif" alt="그로우 아카데미 FC 클래스 교육 현장 움짤 1">
-      <img class="fc1-reveal" src="https://cdn.imweb.me/thumbnail/20260131/55301cde907fd.gif" alt="그로우 아카데미 FC 클래스 교육 현장 움짤 2">
+      <img class="fc1-reveal" src="/legacy/fc-class/333c1f7a7b929.gif" alt="그로우 아카데미 FC 클래스 교육 현장 움짤 1">
+      <img class="fc1-reveal" src="/legacy/fc-class/55301cde907fd.gif" alt="그로우 아카데미 FC 클래스 교육 현장 움짤 2">
     </div>
     <p class="fc1-gal-msg fc1-reveal">트레이너와 필라테스 강사를 위한 교육은 많습니다.<br>하지만 센터를 잘 운영하는 방법을 알려주는 교육은 그동안 없었습니다.</p>
     <div class="fc1-gal-count fc1-reveal">지금까지 함께한 대표님 <b>500명+</b></div>
@@ -685,14 +685,14 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
   <div class="fc1-3d" id="fc13d">
     <div class="fc1-3d-stage" id="fc13dStage">
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/325e18f723c82.png" alt="1:1 피드백 후기 1"></div>
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/ed309d98793f3.png" alt="1:1 피드백 후기 2"></div>
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/3b97350afcf9e.png" alt="1:1 피드백 후기 3"></div>
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/37e5750039353.png" alt="1:1 피드백 후기 4"></div>
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/5af1f4acdd9c9.png" alt="1:1 피드백 후기 5"></div>
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/7c6032aac5f02.png" alt="1:1 피드백 후기 6"></div>
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/69b9f91524388.png" alt="1:1 피드백 후기 7"></div>
-      <div class="fc1-3d-card"><img src="https://cdn.imweb.me/thumbnail/20260331/3c46f72203a26.png" alt="1:1 피드백 후기 8"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/325e18f723c82.png" alt="1:1 피드백 후기 1"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/ed309d98793f3.png" alt="1:1 피드백 후기 2"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/3b97350afcf9e.png" alt="1:1 피드백 후기 3"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/37e5750039353.png" alt="1:1 피드백 후기 4"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/5af1f4acdd9c9.png" alt="1:1 피드백 후기 5"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/7c6032aac5f02.png" alt="1:1 피드백 후기 6"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/69b9f91524388.png" alt="1:1 피드백 후기 7"></div>
+      <div class="fc1-3d-card"><img src="/legacy/fc-class/3c46f72203a26.png" alt="1:1 피드백 후기 8"></div>
     </div>
   </div>
 </section>

@@ -691,32 +691,32 @@ const DETAIL_HTML = `<div class="hbn">
   </div>
   <div class="hbn-mq" id="hbnLectureMarquee">
     <div class="hbn-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/bd4e478ad71f0.jpg" alt="황봉남 멘토 현장 기록 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/1cb2029e978ba.jpg" alt="황봉남 멘토 현장 기록 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/9fbbe601c5177.jpg" alt="황봉남 멘토 현장 기록 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/c396446783205.jpg" alt="황봉남 멘토 현장 기록 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/8fac3547be40c.jpg" alt="황봉남 멘토 현장 기록 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/f04c5607f96aa.jpg" alt="황봉남 멘토 현장 기록 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/661eed89397cd.jpg" alt="황봉남 멘토 현장 기록 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/b909e9f5af176.jpg" alt="황봉남 멘토 현장 기록 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/327b17c75bcc6.jpg" alt="황봉남 멘토 현장 기록 9">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/f10244845d35b.jpg" alt="황봉남 멘토 현장 기록 10">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/de6905c98e19c.jpg" alt="황봉남 멘토 현장 기록 11">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/56d9bcb6230a7.jpg" alt="황봉남 멘토 현장 기록 12">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/456372ee5d93c.jpg" alt="황봉남 멘토 현장 기록 13">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/bd4e478ad71f0.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/1cb2029e978ba.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/9fbbe601c5177.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/c396446783205.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/8fac3547be40c.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/f04c5607f96aa.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/661eed89397cd.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/b909e9f5af176.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/327b17c75bcc6.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/f10244845d35b.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/de6905c98e19c.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/56d9bcb6230a7.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260210/456372ee5d93c.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/bd4e478ad71f0.jpg" alt="황봉남 멘토 현장 기록 1">
+      <img src="/legacy/diagnosis-hwang-bongnam/1cb2029e978ba.jpg" alt="황봉남 멘토 현장 기록 2">
+      <img src="/legacy/diagnosis-hwang-bongnam/9fbbe601c5177.jpg" alt="황봉남 멘토 현장 기록 3">
+      <img src="/legacy/diagnosis-hwang-bongnam/c396446783205.jpg" alt="황봉남 멘토 현장 기록 4">
+      <img src="/legacy/diagnosis-hwang-bongnam/8fac3547be40c.jpg" alt="황봉남 멘토 현장 기록 5">
+      <img src="/legacy/diagnosis-hwang-bongnam/f04c5607f96aa.jpg" alt="황봉남 멘토 현장 기록 6">
+      <img src="/legacy/diagnosis-hwang-bongnam/661eed89397cd.jpg" alt="황봉남 멘토 현장 기록 7">
+      <img src="/legacy/diagnosis-hwang-bongnam/b909e9f5af176.jpg" alt="황봉남 멘토 현장 기록 8">
+      <img src="/legacy/diagnosis-hwang-bongnam/327b17c75bcc6.jpg" alt="황봉남 멘토 현장 기록 9">
+      <img src="/legacy/diagnosis-hwang-bongnam/f10244845d35b.jpg" alt="황봉남 멘토 현장 기록 10">
+      <img src="/legacy/diagnosis-hwang-bongnam/de6905c98e19c.jpg" alt="황봉남 멘토 현장 기록 11">
+      <img src="/legacy/diagnosis-hwang-bongnam/56d9bcb6230a7.jpg" alt="황봉남 멘토 현장 기록 12">
+      <img src="/legacy/diagnosis-hwang-bongnam/456372ee5d93c.jpg" alt="황봉남 멘토 현장 기록 13">
+      <img src="/legacy/diagnosis-hwang-bongnam/bd4e478ad71f0.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/1cb2029e978ba.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/9fbbe601c5177.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/c396446783205.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/8fac3547be40c.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/f04c5607f96aa.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/661eed89397cd.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/b909e9f5af176.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/327b17c75bcc6.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/f10244845d35b.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/de6905c98e19c.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/56d9bcb6230a7.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-hwang-bongnam/456372ee5d93c.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>

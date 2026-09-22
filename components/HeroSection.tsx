@@ -11,24 +11,24 @@ const sourceALogos = Array.from({ length: FITNESS_LOGO_COUNT }, (_, i) =>
 
 // Source B — logo set from the user-provided "아임웹 위젯 코드 - 로고 슬라이더 v4"
 const sourceBLogos = [
-  "https://cdn.imweb.me/thumbnail/20260223/7841a3371cc29.png",
-  "https://cdn.imweb.me/thumbnail/20260223/3945899095a5b.png",
-  "https://cdn.imweb.me/thumbnail/20260223/0a41b156648cf.png",
-  "https://cdn.imweb.me/thumbnail/20260223/ba9d2fadf5832.png",
-  "https://cdn.imweb.me/thumbnail/20260223/c4174f387fe6b.png",
-  "https://cdn.imweb.me/thumbnail/20260223/e13a8a36924c8.png",
-  "https://cdn.imweb.me/thumbnail/20260223/1cdfdc0ac2452.png",
-  "https://cdn.imweb.me/thumbnail/20260223/e7f1f1c277127.png",
-  "https://cdn.imweb.me/thumbnail/20260223/bb90b7eaef3d7.png",
-  "https://cdn.imweb.me/thumbnail/20260223/d3ae7ae970f2a.png",
-  "https://cdn.imweb.me/thumbnail/20260223/827c64d3f3db9.png",
-  "https://cdn.imweb.me/thumbnail/20260223/cccdfd0f52cb0.png",
-  "https://cdn.imweb.me/thumbnail/20260223/7749e65c1c4eb.png",
-  "https://cdn.imweb.me/thumbnail/20260223/ae249b50f1585.png",
-  "https://cdn.imweb.me/thumbnail/20260223/bd91df10a076b.png",
-  "https://cdn.imweb.me/thumbnail/20260223/49528417a6225.png",
-  "https://cdn.imweb.me/thumbnail/20260223/82d6d15032feb.png",
-  "https://cdn.imweb.me/thumbnail/20260223/5f15997a2500b.png",
+  "/legacy/shared/7841a3371cc29.png",
+  "/legacy/shared/3945899095a5b.png",
+  "/legacy/shared/0a41b156648cf.png",
+  "/legacy/shared/ba9d2fadf5832.png",
+  "/legacy/shared/c4174f387fe6b.png",
+  "/legacy/shared/e13a8a36924c8.png",
+  "/legacy/shared/1cdfdc0ac2452.png",
+  "/legacy/shared/e7f1f1c277127.png",
+  "/legacy/shared/bb90b7eaef3d7.png",
+  "/legacy/shared/d3ae7ae970f2a.png",
+  "/legacy/shared/827c64d3f3db9.png",
+  "/legacy/shared/cccdfd0f52cb0.png",
+  "/legacy/shared/7749e65c1c4eb.png",
+  "/legacy/shared/ae249b50f1585.png",
+  "/legacy/shared/bd91df10a076b.png",
+  "/legacy/shared/49528417a6225.png",
+  "/legacy/shared/82d6d15032feb.png",
+  "/legacy/shared/5f15997a2500b.png",
 ];
 
 type LogoItem = { src: string; source: "A" | "B" };
@@ -152,7 +152,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://cdn.imweb.me/thumbnail/20250925/e6b9c1091f721.png"
+          src="/legacy/shared/e6b9c1091f721.png"
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover object-center"

@@ -1168,9 +1168,9 @@ ${WT_MID_CTA_HTML}
   </div>
 
   <div class="system-images">
-    <img src="https://cdn.imweb.me/thumbnail/20250521/ec22279ad0f18.png" alt="그로우업 시스템 1">
-    <img src="https://cdn.imweb.me/thumbnail/20250521/ac7e57d4e6ed1.png" alt="그로우업 시스템 2">
-    <img src="https://cdn.imweb.me/thumbnail/20250521/8b7863bb913a8.png" alt="그로우업 시스템 3">
+    <img src="/legacy/outsourcing/ec22279ad0f18.png" alt="그로우업 시스템 1">
+    <img src="/legacy/outsourcing/ac7e57d4e6ed1.png" alt="그로우업 시스템 2">
+    <img src="/legacy/outsourcing/8b7863bb913a8.png" alt="그로우업 시스템 3">
   </div>
 
   <div class="system-bottom">
@@ -1645,23 +1645,23 @@ ${WT_MID_CTA_GRAY_HTML}
 <script>
 (function() {
   var opsImages = [
-    'https://cdn.imweb.me/thumbnail/20260301/3f0ff1ac29f5b.png',
-    'https://cdn.imweb.me/thumbnail/20260301/b6463a6460eaa.png',
-    'https://cdn.imweb.me/thumbnail/20260301/fdb0e426a5697.png',
-    'https://cdn.imweb.me/thumbnail/20260301/202a5a4a1b15f.png',
-    'https://cdn.imweb.me/thumbnail/20260301/fdecb5489a623.png',
-    'https://cdn.imweb.me/thumbnail/20260301/49fbd159eb995.png'
+    '/legacy/outsourcing/3f0ff1ac29f5b.png',
+    '/legacy/outsourcing/b6463a6460eaa.png',
+    '/legacy/outsourcing/fdb0e426a5697.png',
+    '/legacy/outsourcing/202a5a4a1b15f.png',
+    '/legacy/outsourcing/fdecb5489a623.png',
+    '/legacy/outsourcing/49fbd159eb995.png'
   ];
 
   var mktImages = [
-    'https://cdn.imweb.me/thumbnail/20260301/0bf50ac06ca1e.png',
-    'https://cdn.imweb.me/thumbnail/20260301/83c118c7daad9.png',
-    'https://cdn.imweb.me/thumbnail/20260301/8cc4e3fa743bf.png',
-    'https://cdn.imweb.me/thumbnail/20260301/36ad0318d45b1.png',
-    'https://cdn.imweb.me/thumbnail/20260301/3ffcbe2ed4627.png',
-    'https://cdn.imweb.me/thumbnail/20260301/01666bae2fbc7.png',
-    'https://cdn.imweb.me/thumbnail/20260301/c1976a1fc2340.png',
-    'https://cdn.imweb.me/thumbnail/20260301/f9f82be36cf48.png',
+    '/legacy/outsourcing/0bf50ac06ca1e.png',
+    '/legacy/outsourcing/83c118c7daad9.png',
+    '/legacy/outsourcing/8cc4e3fa743bf.png',
+    '/legacy/outsourcing/36ad0318d45b1.png',
+    '/legacy/outsourcing/3ffcbe2ed4627.png',
+    '/legacy/outsourcing/01666bae2fbc7.png',
+    '/legacy/outsourcing/c1976a1fc2340.png',
+    '/legacy/outsourcing/f9f82be36cf48.png',
     'CTA'
   ];
 
@@ -1851,16 +1851,16 @@ ${WT_MID_CTA_GRAY_HTML}
   <div class="review-slider" id="reviewSlider">
     <div class="review-track" id="reviewTrack">
       <div class="review-slide">
-        <img src="https://cdn.imweb.me/thumbnail/20241211/da76e27aabd5f.png" alt="운영 후기 1">
+        <img src="/legacy/outsourcing/da76e27aabd5f.png" alt="운영 후기 1">
       </div>
       <div class="review-slide">
-        <img src="https://cdn.imweb.me/thumbnail/20241211/98f696e86a7a4.png" alt="운영 후기 2">
+        <img src="/legacy/outsourcing/98f696e86a7a4.png" alt="운영 후기 2">
       </div>
       <div class="review-slide">
-        <img src="https://cdn.imweb.me/thumbnail/20241211/5529d2d36575b.png" alt="운영 후기 3">
+        <img src="/legacy/outsourcing/5529d2d36575b.png" alt="운영 후기 3">
       </div>
       <div class="review-slide">
-        <img src="https://cdn.imweb.me/thumbnail/20241211/eb6f67a7b56f0.jpg" alt="운영 후기 4">
+        <img src="/legacy/outsourcing/eb6f67a7b56f0.jpg" alt="운영 후기 4">
       </div>
     </div>
   </div>

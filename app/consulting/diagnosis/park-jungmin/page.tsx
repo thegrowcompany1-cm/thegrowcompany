@@ -694,11 +694,11 @@ const DETAIL_HTML = `<div class="pjm">
     <h2 class="pjm-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
   </div>
   <div class="pjm-strip">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/a35547dd7150f.jpg" alt="박정민 멘토 카톡 후기 1">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/832ff981ca6a8.jpg" alt="박정민 멘토 카톡 후기 2">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/c2b91999b556d.jpg" alt="박정민 멘토 카톡 후기 3">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/5587dcdc52258.jpg" alt="박정민 멘토 카톡 후기 4">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/fc8dfdf3c46e4.jpg" alt="박정민 멘토 카톡 후기 5">
+    <img src="/legacy/diagnosis-park-jungmin/a35547dd7150f.jpg" alt="박정민 멘토 카톡 후기 1">
+    <img src="/legacy/diagnosis-park-jungmin/832ff981ca6a8.jpg" alt="박정민 멘토 카톡 후기 2">
+    <img src="/legacy/diagnosis-park-jungmin/c2b91999b556d.jpg" alt="박정민 멘토 카톡 후기 3">
+    <img src="/legacy/diagnosis-park-jungmin/5587dcdc52258.jpg" alt="박정민 멘토 카톡 후기 4">
+    <img src="/legacy/diagnosis-park-jungmin/fc8dfdf3c46e4.jpg" alt="박정민 멘토 카톡 후기 5">
   </div>
 </section>
 
@@ -709,26 +709,26 @@ const DETAIL_HTML = `<div class="pjm">
   </div>
   <div class="pjm-mq" id="pjmLectureMarquee">
     <div class="pjm-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/651aebcb6e3d2.jpg" alt="박정민 멘토 인증사진 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/1ff121508799f.jpg" alt="박정민 멘토 인증사진 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/a5c120d0df47a.jpg" alt="박정민 멘토 인증사진 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/01b4be01917af.jpg" alt="박정민 멘토 인증사진 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/e197bb53093c6.jpg" alt="박정민 멘토 인증사진 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/48324e8f3ccfb.jpg" alt="박정민 멘토 인증사진 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/7c3d82ae44ab6.jpg" alt="박정민 멘토 인증사진 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/29ff7811ade8b.jpg" alt="박정민 멘토 인증사진 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/3c4c887afabd0.jpg" alt="박정민 멘토 인증사진 9">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/12139033734c4.jpg" alt="박정민 멘토 인증사진 10">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/651aebcb6e3d2.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/1ff121508799f.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/a5c120d0df47a.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/01b4be01917af.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/e197bb53093c6.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/48324e8f3ccfb.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/7c3d82ae44ab6.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/29ff7811ade8b.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/3c4c887afabd0.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260305/12139033734c4.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/651aebcb6e3d2.jpg" alt="박정민 멘토 인증사진 1">
+      <img src="/legacy/diagnosis-park-jungmin/1ff121508799f.jpg" alt="박정민 멘토 인증사진 2">
+      <img src="/legacy/diagnosis-park-jungmin/a5c120d0df47a.jpg" alt="박정민 멘토 인증사진 3">
+      <img src="/legacy/diagnosis-park-jungmin/01b4be01917af.jpg" alt="박정민 멘토 인증사진 4">
+      <img src="/legacy/diagnosis-park-jungmin/e197bb53093c6.jpg" alt="박정민 멘토 인증사진 5">
+      <img src="/legacy/diagnosis-park-jungmin/48324e8f3ccfb.jpg" alt="박정민 멘토 인증사진 6">
+      <img src="/legacy/diagnosis-park-jungmin/7c3d82ae44ab6.jpg" alt="박정민 멘토 인증사진 7">
+      <img src="/legacy/diagnosis-park-jungmin/29ff7811ade8b.jpg" alt="박정민 멘토 인증사진 8">
+      <img src="/legacy/diagnosis-park-jungmin/3c4c887afabd0.jpg" alt="박정민 멘토 인증사진 9">
+      <img src="/legacy/diagnosis-park-jungmin/12139033734c4.jpg" alt="박정민 멘토 인증사진 10">
+      <img src="/legacy/diagnosis-park-jungmin/651aebcb6e3d2.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/1ff121508799f.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/a5c120d0df47a.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/01b4be01917af.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/e197bb53093c6.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/48324e8f3ccfb.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/7c3d82ae44ab6.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/29ff7811ade8b.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/3c4c887afabd0.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-park-jungmin/12139033734c4.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>

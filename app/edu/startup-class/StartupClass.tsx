@@ -183,7 +183,7 @@ const DETAIL_HTML = `<div class="sm1">
 <section class="sm1-sec sm1-dark">
   <div class="sm1-wrap">
     <h2 class="sm1-h2">45일 프리세일,<br>이 <em>숫자가 증거</em>입니다.</h2>
-    <img class="sm1-evi-img" src="https://cdn.imweb.me/thumbnail/20250326/b88bdce183157.png" alt="더그로우 창업 프리세일 매출 사례 — 1.7억, 2.6억, 1.83억">
+    <img class="sm1-evi-img" src="/legacy/startup-class/b88bdce183157.png" alt="더그로우 창업 프리세일 매출 사례 — 1.7억, 2.6억, 1.83억">
     <p class="sm1-evi-cap">입지 분석과 프리세일 설계가 만든 실제 결과입니다.</p>
   </div>
 </section>
@@ -222,7 +222,7 @@ const DETAIL_HTML = `<div class="sm1">
         </div>
       </div>
     </div>
-    <img class="sm1-curr-img" src="https://cdn.imweb.me/thumbnail/20241212/bdfa2dbaa07b9.png" alt="부동산 입지선정과 200개 창업 성공 100가지 노하우 체크리스트">
+    <img class="sm1-curr-img" src="/legacy/startup-class/bdfa2dbaa07b9.png" alt="부동산 입지선정과 200개 창업 성공 100가지 노하우 체크리스트">
   </div>
 </section>
 
@@ -233,20 +233,20 @@ const DETAIL_HTML = `<div class="sm1">
   </div>
   <div class="sm1-mq" id="sm1LectureMarquee">
     <div class="sm1-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/0d6bba5c56ae3.jpg" alt="더그로우 창업 세미나 현장 1">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/c8ac4e26b3b29.jpg" alt="더그로우 창업 세미나 현장 2">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/d983430471a18.jpg" alt="더그로우 창업 세미나 현장 3">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/2041b752c6153.jpg" alt="더그로우 창업 세미나 현장 4">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/a11c958761af6.jpg" alt="더그로우 창업 세미나 현장 5">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/577699bfe5a3e.jpg" alt="더그로우 창업 세미나 현장 6">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/14ef0952b9b0d.jpg" alt="더그로우 창업 세미나 현장 7">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/0d6bba5c56ae3.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/c8ac4e26b3b29.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/d983430471a18.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/2041b752c6153.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/a11c958761af6.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/577699bfe5a3e.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20241212/14ef0952b9b0d.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/startup-class/0d6bba5c56ae3.jpg" alt="더그로우 창업 세미나 현장 1">
+      <img src="/legacy/startup-class/c8ac4e26b3b29.jpg" alt="더그로우 창업 세미나 현장 2">
+      <img src="/legacy/startup-class/d983430471a18.jpg" alt="더그로우 창업 세미나 현장 3">
+      <img src="/legacy/startup-class/2041b752c6153.jpg" alt="더그로우 창업 세미나 현장 4">
+      <img src="/legacy/startup-class/a11c958761af6.jpg" alt="더그로우 창업 세미나 현장 5">
+      <img src="/legacy/startup-class/577699bfe5a3e.jpg" alt="더그로우 창업 세미나 현장 6">
+      <img src="/legacy/startup-class/14ef0952b9b0d.jpg" alt="더그로우 창업 세미나 현장 7">
+      <img src="/legacy/startup-class/0d6bba5c56ae3.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/startup-class/c8ac4e26b3b29.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/startup-class/d983430471a18.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/startup-class/2041b752c6153.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/startup-class/a11c958761af6.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/startup-class/577699bfe5a3e.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/startup-class/14ef0952b9b0d.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>

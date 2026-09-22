@@ -36,7 +36,7 @@ const COURSES = [
     // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
     href: "/edu/fc-class",
     fc: true,
-    img: "https://cdn.imweb.me/thumbnail/20260131/2c27053d77aa7.jpg",
+    img: "/legacy/shared/2c27053d77aa7.jpg",
     alt: "그로우 에듀 정규 FC 클래스 교육 현장",
     title: "정규 FC 클래스",
     target: "운영 중인 센터의 대표님과 실무자",

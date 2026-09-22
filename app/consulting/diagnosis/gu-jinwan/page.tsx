@@ -715,16 +715,16 @@ const DETAIL_HTML = `<div class="gjw">
     <h2 class="gjw-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
   </div>
   <div class="gjw-strip">
-    <img src="https://cdn.imweb.me/thumbnail/20260219/499f15574e611.jpg" alt="구진완 멘토 카톡 후기 1">
-    <img src="https://cdn.imweb.me/thumbnail/20260219/86da1e1f996da.png" alt="구진완 멘토 카톡 후기 2">
-    <img src="https://cdn.imweb.me/thumbnail/20260219/4053262a9069e.jpg" alt="구진완 멘토 카톡 후기 3">
-    <img src="https://cdn.imweb.me/thumbnail/20260305/29db790b59c4f.jpg" alt="구진완 멘토 카톡 후기 4">
-    <img src="https://cdn.imweb.me/thumbnail/20260305/f871ed09cc67e.jpg" alt="구진완 멘토 카톡 후기 5">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/7bd8e5cc0bedd.jpg" alt="구진완 멘토 카톡 후기 6">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/f6533b0fc9f8b.jpg" alt="구진완 멘토 카톡 후기 7">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/d603444f0c8c8.png" alt="구진완 멘토 카톡 후기 8">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/29afb387277f8.jpg" alt="구진완 멘토 카톡 후기 9">
-    <img src="https://cdn.imweb.me/thumbnail/20260306/0cd8a1f2ed12c.png" alt="구진완 멘토 카톡 후기 10">
+    <img src="/legacy/diagnosis-gu-jinwan/499f15574e611.jpg" alt="구진완 멘토 카톡 후기 1">
+    <img src="/legacy/diagnosis-gu-jinwan/86da1e1f996da.png" alt="구진완 멘토 카톡 후기 2">
+    <img src="/legacy/diagnosis-gu-jinwan/4053262a9069e.jpg" alt="구진완 멘토 카톡 후기 3">
+    <img src="/legacy/diagnosis-gu-jinwan/29db790b59c4f.jpg" alt="구진완 멘토 카톡 후기 4">
+    <img src="/legacy/diagnosis-gu-jinwan/f871ed09cc67e.jpg" alt="구진완 멘토 카톡 후기 5">
+    <img src="/legacy/diagnosis-gu-jinwan/7bd8e5cc0bedd.jpg" alt="구진완 멘토 카톡 후기 6">
+    <img src="/legacy/diagnosis-gu-jinwan/f6533b0fc9f8b.jpg" alt="구진완 멘토 카톡 후기 7">
+    <img src="/legacy/diagnosis-gu-jinwan/d603444f0c8c8.png" alt="구진완 멘토 카톡 후기 8">
+    <img src="/legacy/diagnosis-gu-jinwan/29afb387277f8.jpg" alt="구진완 멘토 카톡 후기 9">
+    <img src="/legacy/diagnosis-gu-jinwan/0cd8a1f2ed12c.png" alt="구진완 멘토 카톡 후기 10">
   </div>
 </section>
 
@@ -735,28 +735,28 @@ const DETAIL_HTML = `<div class="gjw">
   </div>
   <div class="gjw-mq" id="gjwLectureMarquee">
     <div class="gjw-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/52a13480199df.jpg" alt="구진완 멘토 인증사진 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/ff209d8ca7a9b.jpg" alt="구진완 멘토 인증사진 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3eed6529afda6.jpg" alt="구진완 멘토 인증사진 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/71a22de08b880.jpg" alt="구진완 멘토 인증사진 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/8ee3f4ec9659c.jpg" alt="구진완 멘토 인증사진 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/e90d64c3f8402.jpg" alt="구진완 멘토 인증사진 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3fce2398d905f.jpg" alt="구진완 멘토 인증사진 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/f3b82bac654b5.jpg" alt="구진완 멘토 인증사진 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3fa992edaac11.jpg" alt="구진완 멘토 인증사진 9">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/bb03b9f3e5239.jpg" alt="구진완 멘토 인증사진 10">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/e04d0f740d180.jpg" alt="구진완 멘토 인증사진 11">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/52a13480199df.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/ff209d8ca7a9b.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3eed6529afda6.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/71a22de08b880.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/8ee3f4ec9659c.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/e90d64c3f8402.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3fce2398d905f.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/f3b82bac654b5.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/3fa992edaac11.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/bb03b9f3e5239.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260128/e04d0f740d180.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/52a13480199df.jpg" alt="구진완 멘토 인증사진 1">
+      <img src="/legacy/diagnosis-gu-jinwan/ff209d8ca7a9b.jpg" alt="구진완 멘토 인증사진 2">
+      <img src="/legacy/diagnosis-gu-jinwan/3eed6529afda6.jpg" alt="구진완 멘토 인증사진 3">
+      <img src="/legacy/diagnosis-gu-jinwan/71a22de08b880.jpg" alt="구진완 멘토 인증사진 4">
+      <img src="/legacy/diagnosis-gu-jinwan/8ee3f4ec9659c.jpg" alt="구진완 멘토 인증사진 5">
+      <img src="/legacy/diagnosis-gu-jinwan/e90d64c3f8402.jpg" alt="구진완 멘토 인증사진 6">
+      <img src="/legacy/diagnosis-gu-jinwan/3fce2398d905f.jpg" alt="구진완 멘토 인증사진 7">
+      <img src="/legacy/diagnosis-gu-jinwan/f3b82bac654b5.jpg" alt="구진완 멘토 인증사진 8">
+      <img src="/legacy/diagnosis-gu-jinwan/3fa992edaac11.jpg" alt="구진완 멘토 인증사진 9">
+      <img src="/legacy/diagnosis-gu-jinwan/bb03b9f3e5239.jpg" alt="구진완 멘토 인증사진 10">
+      <img src="/legacy/diagnosis-gu-jinwan/e04d0f740d180.jpg" alt="구진완 멘토 인증사진 11">
+      <img src="/legacy/diagnosis-gu-jinwan/52a13480199df.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/ff209d8ca7a9b.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/3eed6529afda6.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/71a22de08b880.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/8ee3f4ec9659c.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/e90d64c3f8402.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/3fce2398d905f.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/f3b82bac654b5.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/3fa992edaac11.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/bb03b9f3e5239.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-gu-jinwan/e04d0f740d180.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>

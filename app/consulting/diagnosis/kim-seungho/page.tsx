@@ -692,34 +692,34 @@ const DETAIL_HTML = `<div class="ksh">
   </div>
   <div class="ksh-mq" id="kshLectureMarquee">
     <div class="ksh-mq-track">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/3c63360d5f46a.jpg" alt="김승호 멘토 강의 현장 1">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/54d5e7f52a0cc.jpg" alt="김승호 멘토 강의 현장 2">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/41963b4f780fd.jpg" alt="김승호 멘토 강의 현장 3">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/432c811868679.jpg" alt="김승호 멘토 강의 현장 4">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/f23eaab2c50b9.jpg" alt="김승호 멘토 강의 현장 5">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/f1035b4839f0b.jpg" alt="김승호 멘토 강의 현장 6">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/8910d775f9399.jpg" alt="김승호 멘토 강의 현장 7">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/dac556b3cf632.jpg" alt="김승호 멘토 강의 현장 8">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/9bb6b7067e3cd.jpg" alt="김승호 멘토 강의 현장 9">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/a369b5e42e0bd.jpg" alt="김승호 멘토 강의 현장 10">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/666b676e8b498.jpg" alt="김승호 멘토 강의 현장 11">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/8d28f598b0b35.jpg" alt="김승호 멘토 강의 현장 12">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/f44e755fd4529.jpg" alt="김승호 멘토 강의 현장 13">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/e1fd36de1bcb8.jpg" alt="김승호 멘토 강의 현장 14">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/3c63360d5f46a.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/54d5e7f52a0cc.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/41963b4f780fd.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/432c811868679.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/f23eaab2c50b9.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/f1035b4839f0b.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/8910d775f9399.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/dac556b3cf632.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/9bb6b7067e3cd.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/a369b5e42e0bd.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/666b676e8b498.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/8d28f598b0b35.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/f44e755fd4529.jpg" alt="" aria-hidden="true">
-      <img src="https://cdn.imweb.me/thumbnail/20260209/e1fd36de1bcb8.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/3c63360d5f46a.jpg" alt="김승호 멘토 강의 현장 1">
+      <img src="/legacy/diagnosis-kim-seungho/54d5e7f52a0cc.jpg" alt="김승호 멘토 강의 현장 2">
+      <img src="/legacy/diagnosis-kim-seungho/41963b4f780fd.jpg" alt="김승호 멘토 강의 현장 3">
+      <img src="/legacy/diagnosis-kim-seungho/432c811868679.jpg" alt="김승호 멘토 강의 현장 4">
+      <img src="/legacy/diagnosis-kim-seungho/f23eaab2c50b9.jpg" alt="김승호 멘토 강의 현장 5">
+      <img src="/legacy/diagnosis-kim-seungho/f1035b4839f0b.jpg" alt="김승호 멘토 강의 현장 6">
+      <img src="/legacy/diagnosis-kim-seungho/8910d775f9399.jpg" alt="김승호 멘토 강의 현장 7">
+      <img src="/legacy/diagnosis-kim-seungho/dac556b3cf632.jpg" alt="김승호 멘토 강의 현장 8">
+      <img src="/legacy/diagnosis-kim-seungho/9bb6b7067e3cd.jpg" alt="김승호 멘토 강의 현장 9">
+      <img src="/legacy/diagnosis-kim-seungho/a369b5e42e0bd.jpg" alt="김승호 멘토 강의 현장 10">
+      <img src="/legacy/diagnosis-kim-seungho/666b676e8b498.jpg" alt="김승호 멘토 강의 현장 11">
+      <img src="/legacy/diagnosis-kim-seungho/8d28f598b0b35.jpg" alt="김승호 멘토 강의 현장 12">
+      <img src="/legacy/diagnosis-kim-seungho/f44e755fd4529.jpg" alt="김승호 멘토 강의 현장 13">
+      <img src="/legacy/diagnosis-kim-seungho/e1fd36de1bcb8.jpg" alt="김승호 멘토 강의 현장 14">
+      <img src="/legacy/diagnosis-kim-seungho/3c63360d5f46a.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/54d5e7f52a0cc.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/41963b4f780fd.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/432c811868679.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/f23eaab2c50b9.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/f1035b4839f0b.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/8910d775f9399.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/dac556b3cf632.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/9bb6b7067e3cd.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/a369b5e42e0bd.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/666b676e8b498.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/8d28f598b0b35.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/f44e755fd4529.jpg" alt="" aria-hidden="true">
+      <img src="/legacy/diagnosis-kim-seungho/e1fd36de1bcb8.jpg" alt="" aria-hidden="true">
     </div>
   </div>
 </section>
