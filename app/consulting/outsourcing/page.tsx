@@ -725,11 +725,17 @@ ${WT_VIDEO_HTML}
     border-radius: 12px;
     max-width: 420px;
     margin: 0 auto;
+    /* 세로 스크롤은 브라우저에 맡기고 가로 제스처만 스크립트가 가져간다 */
+    touch-action: pan-y;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
   }
+  .slide-container:active { cursor: grabbing; }
   .slide-track {
     display: flex;
     align-items: flex-start;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s ease;
   }
   .slide-item {
     min-width: 100%;
@@ -744,6 +750,9 @@ ${WT_VIDEO_HTML}
     height: auto;
     border-radius: 12px;
     display: block;
+    /* 드래그할 때 브라우저 기본 이미지 끌기가 끼어들지 않게 */
+    -webkit-user-drag: none;
+    user-select: none;
   }
   .slide-nav {
     display: flex;
@@ -861,27 +870,185 @@ ${WT_VIDEO_HTML}
 ${WT_MID_CTA_HTML}
 
 <script>
-(function() {
-  let evIdx = 0;
-  const track = document.getElementById('evidenceTrack');
-  const items = track.querySelectorAll('.slide-item');
-  const dotsC = document.getElementById('evidenceDots');
-  items.forEach((_, i) => {
-    const d = document.createElement('div');
+/* 카톡 후기 슬라이더 — 자동 재생 + 터치/마우스 스와이프.
+   버튼(moveEvSlide)과 dots 동작은 그대로 두고 조작 수단만 늘렸다.
+   정리는 __evSliderStop 전역 훅을 React cleanup 에서 호출한다. 자동 재생
+   타이머는 스크립트 실행이 끝난 뒤에도 다시 생기므로(hover 해제, 화면 진입),
+   injectContainer 의 interval 추적만으로는 부족해 이 훅이 반드시 필요하다. */
+(function () {
+  var slider = document.getElementById('evidenceSlider');
+  var track = document.getElementById('evidenceTrack');
+  var dotsC = document.getElementById('evidenceDots');
+  if (!slider || !track || !dotsC) return;
+
+  var items = track.querySelectorAll('.slide-item');
+  var total = items.length;
+  if (!total) return;
+
+  var EASE = 'transform 0.5s ease';
+  var AUTO_MS = 4000;
+  var THRESHOLD = 0.2;  /* 카드 폭의 20% 이상 끌면 다음/이전으로 확정 */
+
+  var idx = 0;
+  var timer = null;
+  var onScreen = false;
+  var hovered = false;
+  var dragging = false;
+  var startX = 0, startY = 0, moveX = 0, axis = null;
+
+  var reduce = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
+  for (var i = 0; i < total; i++) {
+    var d = document.createElement('div');
     d.className = 'slide-dot' + (i === 0 ? ' active' : '');
     dotsC.appendChild(d);
-  });
-  function updateEv() {
-    track.style.transform = 'translateX(-' + (evIdx * 100) + '%)';
-    dotsC.querySelectorAll('.slide-dot').forEach((d, i) => {
-      d.className = 'slide-dot' + (i === evIdx ? ' active' : '');
-    });
   }
-  window.moveEvSlide = function(dir) {
-    evIdx = (evIdx + dir + items.length) % items.length;
-    updateEv();
+  var dots = dotsC.querySelectorAll('.slide-dot');
+
+  function render(animate) {
+    track.style.transition = animate ? EASE : 'none';
+    track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+    for (var j = 0; j < dots.length; j++) {
+      dots[j].className = 'slide-dot' + (j === idx ? ' active' : '');
+    }
   }
-  setInterval(() => { window.moveEvSlide(1); }, 4000);
+
+  function go(dir) {
+    idx = (idx + dir + total) % total;
+    render(true);
+  }
+
+  /* 자동 재생 — 화면에 보이고, hover 아니고, 드래그 중 아니고,
+     동작 줄이기 설정이 아닐 때만 돈다 */
+  function stopTimer() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+  function startTimer() {
+    stopTimer();
+    if (reduce || !onScreen || hovered || dragging) return;
+    timer = setInterval(function () { go(1); }, AUTO_MS);
+  }
+
+  /* 버튼이 부르는 전역 — 시그니처 유지, 누르면 타이머 리셋 후 재개 */
+  window.moveEvSlide = function (dir) {
+    go(dir);
+    startTimer();
+  };
+
+  function dragStart(x, y) {
+    dragging = true;
+    axis = null;
+    moveX = 0;
+    startX = x;
+    startY = y;
+    stopTimer();
+    track.style.transition = 'none';
+  }
+
+  /* 가로로 판정됐을 때만 true 를 돌려준다 (그때만 preventDefault) */
+  function dragMove(x, y) {
+    if (!dragging) return false;
+    var mx = x - startX;
+    var my = y - startY;
+    if (axis === null) {
+      if (Math.abs(mx) < 6 && Math.abs(my) < 6) return false;
+      axis = Math.abs(mx) > Math.abs(my) ? 'x' : 'y';
+    }
+    if (axis !== 'x') return false;
+    moveX = mx;
+    var pct = (moveX / (slider.clientWidth || 1)) * 100;
+    track.style.transform = 'translateX(' + (-idx * 100 + pct) + '%)';
+    return true;
+  }
+
+  function dragEnd() {
+    if (!dragging) return;
+    dragging = false;
+    var moved = Math.abs(moveX);
+    var w = slider.clientWidth || 1;
+    if (axis === 'x' && moved > w * THRESHOLD) {
+      go(moveX < 0 ? 1 : -1);
+    } else {
+      render(true);  /* 기준 미만이면 원위치 */
+    }
+    moveX = 0;
+    axis = null;
+    startTimer();
+  }
+
+  /* 모바일 — 터치 */
+  function onTouchStart(e) {
+    if (e.touches.length !== 1) return;
+    dragStart(e.touches[0].clientX, e.touches[0].clientY);
+  }
+  function onTouchMove(e) {
+    if (!dragging || e.touches.length !== 1) return;
+    var t = e.touches[0];
+    if (dragMove(t.clientX, t.clientY) && e.cancelable) e.preventDefault();
+  }
+  function onTouchEnd() { dragEnd(); }
+
+  /* PC — 마우스만 (터치는 위에서 처리하므로 중복 방지) */
+  function onPointerDown(e) {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    dragStart(e.clientX, e.clientY);
+    e.preventDefault();
+  }
+  function onPointerMove(e) {
+    if (e.pointerType !== 'mouse') return;
+    dragMove(e.clientX, e.clientY);
+  }
+  function onPointerUp(e) {
+    if (e.pointerType !== 'mouse') return;
+    dragEnd();
+  }
+
+  function onEnter() { hovered = true; stopTimer(); }
+  function onLeave() { hovered = false; startTimer(); }
+
+  slider.addEventListener('touchstart', onTouchStart, { passive: true });
+  slider.addEventListener('touchmove', onTouchMove, { passive: false });
+  slider.addEventListener('touchend', onTouchEnd);
+  slider.addEventListener('touchcancel', onTouchEnd);
+  slider.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+  slider.addEventListener('mouseenter', onEnter);
+  slider.addEventListener('mouseleave', onLeave);
+
+  /* 화면 밖이면 자동 재생 정지 */
+  var io = null;
+  if (typeof IntersectionObserver === 'function') {
+    io = new IntersectionObserver(function (entries) {
+      onScreen = entries[0].isIntersecting;
+      startTimer();
+    }, { threshold: 0 });
+    io.observe(slider);
+  } else {
+    onScreen = true;
+    startTimer();
+  }
+
+  render(false);
+
+  /* 언마운트 정리 (React cleanup 에서 호출 후 no-op 교체 — delete 금지) */
+  window.__evSliderStop = function () {
+    stopTimer();
+    if (io) { io.disconnect(); io = null; }
+    slider.removeEventListener('touchstart', onTouchStart);
+    slider.removeEventListener('touchmove', onTouchMove);
+    slider.removeEventListener('touchend', onTouchEnd);
+    slider.removeEventListener('touchcancel', onTouchEnd);
+    slider.removeEventListener('pointerdown', onPointerDown);
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+    window.removeEventListener('pointercancel', onPointerUp);
+    slider.removeEventListener('mouseenter', onEnter);
+    slider.removeEventListener('mouseleave', onLeave);
+  };
 })();
 </script>
 
@@ -2506,7 +2673,7 @@ export default function OutsourcingConsultingPage() {
         "toggleCheck",
         "updateCheckResult",
         "animateCount",
-        "moveEvSlide",
+        // moveEvSlide 는 delete 하지 않는다 — 아래에서 no-op 으로 교체한다
         "moveRevSlide",
         "acSlide",
         "scrollToForm",
@@ -2520,6 +2687,15 @@ export default function OutsourcingConsultingPage() {
       const stopVid = w["__wtVidStop"];
       if (typeof stopVid === "function") (stopVid as () => void)();
       w["__wtVidStop"] = () => {};
+
+      // 카톡 후기 슬라이더 정리 — 자동재생 타이머 + 스와이프 리스너 + 옵저버.
+      // 이 타이머는 스크립트 실행이 끝난 뒤에도 다시 생기므로(hover 해제, 화면
+      // 진입) 아래 interval 추적만으로는 잡히지 않아 이 훅이 꼭 필요하다.
+      const stopSlider = w["__evSliderStop"];
+      if (typeof stopSlider === "function") (stopSlider as () => void)();
+      w["__evSliderStop"] = () => {};
+      // 인라인 onclick="moveEvSlide(...)" 이 남아 있을 수 있어 no-op 으로 둔다
+      w["moveEvSlide"] = () => {};
 
       globals.forEach((fn) => {
         try {
