@@ -198,6 +198,11 @@ export default function HeroSection() {
                           fill
                           className="object-contain"
                           sizes="302px"
+                          /* 배경 장식이라 302px 고정 + grayscale + opacity 로 깔린다.
+                             최적화 이득이 거의 없는데 고유 로고가 37장이라 변환
+                             건수만 잡아먹고, 한도를 넘으면 402 로 전부 안 뜬다.
+                             정적 파일로 직접 서빙한다. */
+                          unoptimized
                         />
                       </div>
                     </div>
