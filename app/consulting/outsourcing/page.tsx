@@ -2523,7 +2523,19 @@ ${WT_TEASER_HTML}
 </div>
 
 <script>
-  document.getElementById('consultingForm').addEventListener('submit', function (e) {
+/* 이 블록은 IIFE 로 감싼다. 주입 스크립트는 document.body 에 붙어 전역
+   스코프에서 실행되므로, 최상위 const 를 쓰면 재주입(언마운트 후 재마운트,
+   개발 모드 StrictMode 이중 실행) 때 "Identifier has already been declared"
+   SyntaxError 가 나고 블록 전체가 파싱 단계에서 죽는다. */
+(function () {
+  var form = document.getElementById('consultingForm');
+  if (!form) return;
+
+  /* 재주입 시 리스너가 중복으로 붙어 Lead 이벤트와 알림이 두 번 나가는 것을 막는다 */
+  if (form.dataset.wtBound === '1') return;
+  form.dataset.wtBound = '1';
+
+  form.addEventListener('submit', function (e) {
     const phone1 = this.querySelector('[name="phone1"]').value.trim();
     const phone2 = this.querySelector('[name="phone2"]').value.trim();
     const phone3 = this.querySelector('[name="phone3"]').value.trim();
@@ -2562,9 +2574,9 @@ ${WT_TEASER_HTML}
     }, 500);
   });
 
-  // 전화 3칸 자동이동 + 숫자만 입력 (상단에도 동일 구조 폼(-top)이 있으므로 이 폼 안에서만 조회)
-  const wtPhoneInputs = document.getElementById('consultingForm').querySelectorAll('.tg-phone');
-  wtPhoneInputs.forEach((input, index) => {
+  // 전화 3칸 자동이동 + 숫자만 입력 (이 폼 안에서만 조회)
+  var wtPhoneInputs = form.querySelectorAll('.tg-phone');
+  wtPhoneInputs.forEach(function (input, index) {
     input.addEventListener('input', function () {
       if (this.value.length >= this.maxLength && index < wtPhoneInputs.length - 1) {
         wtPhoneInputs[index + 1].focus();
@@ -2577,6 +2589,7 @@ ${WT_TEASER_HTML}
       }
     });
   });
+})();
 </script>`;
 
 export default function OutsourcingConsultingPage() {
