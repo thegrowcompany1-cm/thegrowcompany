@@ -774,6 +774,7 @@ ${WT_VIDEO_HTML}
     border-radius: 50%;
     background: #ddd;
     transition: background 0.3s;
+    cursor: pointer;
   }
   .slide-dot.active { background: #22B573; }
   @media (max-width: 600px) {
@@ -864,6 +865,13 @@ ${WT_MID_CTA_HTML}
    타이머는 스크립트 실행이 끝난 뒤에도 다시 생기므로(hover 해제, 화면 진입),
    injectContainer 의 interval 추적만으로는 부족해 이 훅이 반드시 필요하다. */
 (function () {
+  /* 재주입 대비 — 이전 인스턴스를 먼저 완전히 정리한다.
+     이 줄이 없으면 이전 IIFE 의 setInterval 이 살아남는다. 그 타이머는 자기
+     클로저의 idx 로 transform 을 계속 덮어쓰는데, __evSliderStop 은 새
+     인스턴스 것으로 교체돼 버려 영영 멈출 수 없다. 두 주체가 같은 트랙을
+     놓고 싸우면서 화살표 한 번에 엉뚱한 칸(-800% 등)으로 튀게 된다. */
+  if (typeof window.__evSliderStop === 'function') window.__evSliderStop();
+
   var slider = document.getElementById('evidenceSlider');
   var track = document.getElementById('evidenceTrack');
   var dotsC = document.getElementById('evidenceDots');
@@ -888,9 +896,13 @@ ${WT_MID_CTA_HTML}
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false;
 
+  dotsC.innerHTML = '';  /* 재주입 시 dots 가 겹쳐 쌓이지 않게 비우고 새로 만든다 */
   for (var i = 0; i < total; i++) {
     var d = document.createElement('div');
     d.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('role', 'button');
+    d.setAttribute('tabindex', '0');
+    d.setAttribute('aria-label', (i + 1) + '번째 후기로 이동');
     dotsC.appendChild(d);
   }
   var dots = dotsC.querySelectorAll('.slide-dot');
@@ -905,6 +917,12 @@ ${WT_MID_CTA_HTML}
 
   function go(dir) {
     idx = (idx + dir + total) % total;
+    render(true);
+  }
+
+  /* dots 클릭용 — 해당 인덱스로 바로 이동 */
+  function goTo(n) {
+    idx = ((n % total) + total) % total;
     render(true);
   }
 
@@ -996,6 +1014,18 @@ ${WT_MID_CTA_HTML}
   function onEnter() { hovered = true; stopTimer(); }
   function onLeave() { hovered = false; startTimer(); }
 
+  function onDotClick(e) {
+    var n = Array.prototype.indexOf.call(dots, e.currentTarget);
+    if (n < 0) return;
+    goTo(n);
+    startTimer();
+  }
+  function onDotKey(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    onDotClick(e);
+  }
+
   slider.addEventListener('touchstart', onTouchStart, { passive: true });
   slider.addEventListener('touchmove', onTouchMove, { passive: false });
   slider.addEventListener('touchend', onTouchEnd);
@@ -1006,6 +1036,10 @@ ${WT_MID_CTA_HTML}
   window.addEventListener('pointercancel', onPointerUp);
   slider.addEventListener('mouseenter', onEnter);
   slider.addEventListener('mouseleave', onLeave);
+  for (var k = 0; k < dots.length; k++) {
+    dots[k].addEventListener('click', onDotClick);
+    dots[k].addEventListener('keydown', onDotKey);
+  }
 
   /* 화면 밖이면 자동 재생 정지 */
   var io = null;
@@ -1036,6 +1070,10 @@ ${WT_MID_CTA_HTML}
     window.removeEventListener('pointercancel', onPointerUp);
     slider.removeEventListener('mouseenter', onEnter);
     slider.removeEventListener('mouseleave', onLeave);
+    for (var q = 0; q < dots.length; q++) {
+      dots[q].removeEventListener('click', onDotClick);
+      dots[q].removeEventListener('keydown', onDotKey);
+    }
   };
 })();
 </script>
