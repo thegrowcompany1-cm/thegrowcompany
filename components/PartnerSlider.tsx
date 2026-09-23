@@ -68,6 +68,10 @@ function LogoItem({ item }: { item: TrackItem }) {
           fill
           className="object-contain p-1"
           sizes="128px"
+          /* 히어로 마퀴와 같은 장식용 로고 띠다. 128px 고정 폭이라 최적화
+             이득이 거의 없는데, 고유 로고 22장이 변환 건수를 잡아먹어
+             한도를 넘기면 402 로 전부 안 뜬다. 정적 파일로 직접 서빙한다. */
+          unoptimized
         />
       </div>
     </div>
