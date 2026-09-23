@@ -15,7 +15,6 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import FcLink from "@/components/FcLink";
 import { SITE_URL } from "@/lib/site";
 
 // 시설 위탁운영 Service 구조화 데이터
@@ -58,9 +57,7 @@ const RELATED_SERVICES = [
   {
     title: "그로우 에듀",
     desc: "피트니스 실무 교육 프로그램",
-    // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
     href: "/edu/fc-class",
-    fc: true,
     img: "/edu/edufc.jpg", // 정규 FC 세미나 (피트니스 실무 교육)
   },
 ];
@@ -76,17 +73,8 @@ function RelatedServiceCard({
   const cardCls =
     "group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-[#009519] hover:shadow-lg";
 
-  const CardWrap = ({ children }: { children: React.ReactNode }) =>
-    "fc" in service && service.fc ? (
-      <FcLink className={cardCls}>{children}</FcLink>
-    ) : (
-      <Link href={service.href} className={cardCls}>
-        {children}
-      </Link>
-    );
-
   return (
-    <CardWrap>
+    <Link href={service.href} className={cardCls}>
       {/* 상단 정사각형 이미지 영역 */}
       <div className="relative aspect-square w-full overflow-hidden bg-[#ececec]">
         {!imgError ? (
@@ -113,7 +101,7 @@ function RelatedServiceCard({
           {service.desc}
         </p>
       </div>
-    </CardWrap>
+    </Link>
   );
 }
 

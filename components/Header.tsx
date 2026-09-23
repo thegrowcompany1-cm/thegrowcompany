@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import AuthNav from "./AuthNav";
-import FcLink from "./FcLink";
 
 // SNS 링크
 const INSTAGRAM_URL =
@@ -53,8 +52,6 @@ type NavChild = {
   label: string;
   href: string;
   sub?: string;
-  /** 기간 한정 외부 링크로 처리할 항목 (FcLink 가 시각을 보고 판정) */
-  fc?: boolean;
 };
 type NavItem = {
   label: string;
@@ -104,8 +101,7 @@ const navItems: NavItem[] = [
     external: false,
     children: [
       { label: "창업 세미나", href: "/edu/startup-class" },
-      // 부산 기수 종료(2026-09-12) 후 자동으로 /edu/fc-class 복귀
-      { label: "정규 FC 세미나", href: "/edu/fc-class", fc: true },
+      { label: "정규 FC 세미나", href: "/edu/fc-class" },
       { label: "그룹운동 비즈니스 클래스", href: "/edu/gx-class" },
     ],
   },
@@ -234,11 +230,7 @@ export default function Header() {
                               )}
                             </>
                           );
-                          return child.fc ? (
-                            <FcLink key={child.href} className={childCls}>
-                              {childInner}
-                            </FcLink>
-                          ) : (
+                          return (
                             <Link key={child.href} href={child.href} className={childCls}>
                               {childInner}
                             </Link>
@@ -408,15 +400,7 @@ export default function Header() {
                             )}
                           </>
                         );
-                        return child.fc ? (
-                          <FcLink
-                            key={child.href}
-                            className={mCls}
-                            onClick={() => setMobileOpen(false)}
-                          >
-                            {mInner}
-                          </FcLink>
-                        ) : (
+                        return (
                           <Link
                             key={child.href}
                             href={child.href}
