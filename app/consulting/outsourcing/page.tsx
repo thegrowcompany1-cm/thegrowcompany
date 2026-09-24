@@ -191,7 +191,7 @@ const WT_VIDEO_HTML = `<style>
 
   <p class="wt-vid-sub">직접 맡겨본 대표님이 달라진 점을 이야기합니다</p>
 
-  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">우리 매장 무료 진단받기</button>
+  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">정보 받아보기</button>
 </div>
 
 <script>
@@ -260,11 +260,11 @@ const WT_VIDEO_HTML = `<style>
 
 // 중간 CTA — 뒤따르는 섹션 배경색에 맞춰 밝은 톤 / 회색 톤 두 벌
 const WT_MID_CTA_HTML = `<div class="wt-cta-mid">
-  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">우리 매장 무료 진단받기</button>
+  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">정보 받아보기</button>
 </div>`;
 
 const WT_MID_CTA_GRAY_HTML = `<div class="wt-cta-mid wt-cta-mid--gray">
-  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">우리 매장 무료 진단받기</button>
+  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">정보 받아보기</button>
 </div>`;
 
 // 폼 직전 재노출 — 포스터 썸네일 + 인용 한 줄, 누르면 위 영상으로 스크롤
@@ -1523,7 +1523,7 @@ ${WT_MID_CTA_HTML}
     이 시스템을 기반으로 <span class="green">함께 운영</span>합니다.
   </div>
 
-  <button class="process-cta" onclick="scrollToForm()">무료 진단 신청하기</button>
+  <button class="process-cta" onclick="scrollToForm()">정보 받아보기</button>
 </div>
 
 <script>
@@ -2549,7 +2549,7 @@ ${WT_TEASER_HTML}
         <input type="hidden" name="token" value="grow2026secure">
 
         <div class="tg-form-actions">
-          <button type="submit" class="tg-submit-btn">무료 진단 신청하기</button>
+          <button type="submit" class="tg-submit-btn">정보 받아보기</button>
         </div>
 
         <p class="form-notice">* 신청 후 1-2일 내 연락드립니다.</p>
@@ -2802,7 +2802,7 @@ export default function OutsourcingConsultingPage() {
       {mounted ? (
         <div className="md:hidden">
           <StickyCtaBar
-            label="우리 매장 무료 진단받기"
+            label="정보 받아보기"
             targetSelector="#consulting-form-wt"
           />
         </div>

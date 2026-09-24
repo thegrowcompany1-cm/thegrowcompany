@@ -3613,7 +3613,7 @@ function toggleFaq(element) {
           <input type="hidden" name="token" value="grow2026secure">
 
           <div class="tg-form-actions">
-            <button type="submit" class="tg-submit-btn">무료 상담 신청하기</button>
+            <button type="submit" class="tg-submit-btn">정보 받아보기</button>
           </div>
         </form>
 

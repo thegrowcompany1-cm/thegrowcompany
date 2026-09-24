@@ -201,7 +201,7 @@ const TOP_CONTACT_HTML = `<style>
     </div>
 
     <button type="button" class="wo-top-submit" id="wo-submit-btn-top">
-      위탁 제안서 받기
+      정보 받아보기
       <span>→</span>
     </button>
   </div>
@@ -315,7 +315,7 @@ const TOP_CONTACT_HTML = `<style>
       })
       .finally(function() {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '위탁 제안서 받기 <span>→</span>';
+        submitBtn.innerHTML = '정보 받아보기 <span>→</span>';
       });
 
     });
@@ -729,7 +729,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
 
     <div class="wo-hero-cta">
       <a href="#contact-top" class="wo-hero-btn">
-        위탁 제안서 받기
+        정보 받아보기
         <span class="wo-hero-btn-arrow">→</span>
       </a>
     </div>
@@ -4479,7 +4479,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
         </p>
       </div>
       <a href="#contact-top" class="wo-faq-foot-btn">
-        문의하기
+        정보 받아보기
         <span>→</span>
       </a>
     </div>
@@ -4978,7 +4978,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
           </div>
 
           <button type="button" class="wo-contact-submit" id="wo-submit-btn">
-            위탁 제안서 받기
+            정보 받아보기
             <span class="wo-contact-submit-arrow">→</span>
           </button>
 
@@ -5106,7 +5106,7 @@ const DETAIL_HTML = `<!-- ============================================ -->
       })
       .finally(function() {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '위탁 제안서 받기 <span class="wo-contact-submit-arrow">→</span>';
+        submitBtn.innerHTML = '정보 받아보기 <span class="wo-contact-submit-arrow">→</span>';
       });
 
     });

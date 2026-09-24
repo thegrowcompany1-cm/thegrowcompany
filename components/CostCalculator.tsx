@@ -748,7 +748,7 @@ export default function CostCalculator() {
                 </div>
 
                 <button type="button" className="calc-cta" onClick={goConsultForm}>
-                  내 상권 기준 정확한 견적 받기
+                  정보 받아보기
                 </button>
 
                 <p className="calc-note">
