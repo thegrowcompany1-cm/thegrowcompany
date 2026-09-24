@@ -3526,7 +3526,7 @@ function toggleFaq(element) {
       <div class="tg-form-wrap">
         <div class="tg-form-header">
           <span class="tg-form-icon">💬</span>
-          <span class="tg-form-title">창업 지원 상담 신청(무료)</span>
+          <span class="tg-form-title">창업 정보 받아보기</span>
         </div>
 
         <form id="startupForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe">

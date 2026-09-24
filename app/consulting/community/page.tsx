@@ -144,7 +144,7 @@ const TOP_CONTACT_HTML = `<style>
 
 <div class="wo-top-card">
   <p class="wo-top-eyebrow">FREE CONSULTING</p>
-  <h3 class="wo-top-title">시설 위탁운영 상담 신청 (무료)</h3>
+  <h3 class="wo-top-title">시설 위탁운영 정보 받아보기</h3>
   <p class="wo-top-sub">시설 정보를 입력해주시면 빠르게 회신드립니다.</p>
 
   <div id="woCommunityForm-top" class="wo-top-form">

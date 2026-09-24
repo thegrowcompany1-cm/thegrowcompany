@@ -2450,7 +2450,7 @@ ${WT_TEASER_HTML}
 
     <div class="tg-form-wrap">
       <div class="tg-form-header">
-        <span class="tg-form-title">1회 무료 방문 진단 솔루션 신청하기</span>
+        <span class="tg-form-title">매장 운영 정보 받아보기</span>
       </div>
 
       <form id="consultingForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe2">
