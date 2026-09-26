@@ -604,14 +604,14 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         };
         iframe.addEventListener('load', onLoad);
 
-        // 8초 안에 load 가 오지 않으면 실패로 보고 버튼을 돌려준다.
+        // 15초 안에 load 가 오지 않으면 실패로 보고 버튼을 돌려준다.
         timer = setTimeout(function(){
           if (done) return;
           done = true;
           iframe.removeEventListener('load', onLoad);
           alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
           restoreForm();
-        }, 8000);
+        }, 15000);
 
         form.submit();
       } catch (err) {
