@@ -130,7 +130,12 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     <h2>진단 솔루션 상담 신청(무료)</h2>
   </div>
 
-  <form id="consultForm" class="consult-form">
+  <!-- 전송은 네이티브 폼 POST + 숨김 iframe 방식이다. action/method/target 과
+       source·token hidden 을 마크업에 직접 둬서, 아래 주입 스핑립트가 죽어도
+       브라우저가 폼을 그대로 전송한다 (리드 유실 방지 폴백). -->
+  <form id="consultForm" class="consult-form"
+        action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec"
+        method="POST" target="diag_iframe_top">
     <div class="form-group">
       <label class="form-label">이름 <span class="required">*</span></label>
       <input type="text" name="name" id="name" required>
@@ -256,10 +261,32 @@ const FORM_HTML = `<div class="consult-form-wrapper">
       </div>
     </div>
 
+    <!-- 페이지 구분 · 보안 토큰 — 스핑립트 상황과 무관하게 항상 전송된다 -->
+    <input type="hidden" name="source" value="진단상담">
+    <input type="hidden" name="token" value="grow2026secure">
+
+    <!-- 전송용 조립 필드 — 제출 핸들러가 검증 통과 후 값을 넣고 disabled 를 란다.
+         기본이 disabled 인 이유: 스핑립트가 죽은 폴백 경로에서 보내지지 않아야
+         화면 입력칸(phone1~3 / phoneConfirm1~3 / 체크박스)의 값이 살아남는다.
+         (반대로 항상 enabled 이면 폴백에서 빈 industry 가 먼저 전송되어 값을 덮어버린다) -->
+    <input type="hidden" name="phone" class="diag-h-phone" value="" disabled>
+    <input type="hidden" name="phoneCheck1" class="diag-h-pc1" value="" disabled>
+    <input type="hidden" name="phoneCheck2" class="diag-h-pc2" value="" disabled>
+    <input type="hidden" name="phoneCheck3" class="diag-h-pc3" value="" disabled>
+    <input type="hidden" name="industry" class="diag-h-industry" value="" disabled>
+    <input type="hidden" name="route" class="diag-h-route" value="" disabled>
+    <input type="hidden" name="consultField" class="diag-h-cfield" value="" disabled>
+
     <div class="form-submit">
       <button type="submit" id="submitBtn">작성</button>
     </div>
   </form>
+
+  <!-- 전송 대상 iframe. 화면에 전혀 자리를 차지하지 않도록 display:none · 0×0.
+       src="about:blank" 은 초기 load 이벤트를 주입 시점에 발생시켜,
+       제출 직전에 붙이는 1회용 load 리스너가 오지 않게 한다. -->
+  <iframe name="diag_iframe_top" class="diag-iframe" title="진단 상담 신슭 전송" src="about:blank"
+          style="display:none;width:0;height:0;border:0"></iframe>
 </div>
 
 <style>
@@ -439,8 +466,8 @@ const FORM_HTML = `<div class="consult-form-wrapper">
 
 <script>
 (function(){
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec';
-  var SECRET_TOKEN = 'grow2026secure';
+  // 전송 URL·token·source 는 모두 마크업의 form[action] / hidden input 으로 옮겼다.
+  // 이 스핑립트가 한 줄도 실행되지 않아도 및에 발생하는 상황을 막기 위해 마크업에 둔다.
 
   // 폼 스코프(각 .consult-form-wrapper) 기준으로 동작 — id 하드코딩 없이 초기화.
   // 상단/하단 두 개의 폼이 있어도 각자 정상 동작하며, id 접미사(-bottom)와 무관.
@@ -476,70 +503,125 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     });
 
     var submitBtn = q('.form-submit button');
+    var iframe = wrapper.querySelector('.diag-iframe');
+
+    // 전송용 조립 hidden (기본 disabled — 마크업 주석 참고)
+    var hid = {
+      phone:        q('.diag-h-phone'),
+      phoneCheck1:  q('.diag-h-pc1'),
+      phoneCheck2:  q('.diag-h-pc2'),
+      phoneCheck3:  q('.diag-h-pc3'),
+      industry:     q('.diag-h-industry'),
+      route:        q('.diag-h-route'),
+      consultField: q('.diag-h-cfield')
+    };
+
+    function setHidDisabled(flag){
+      for (var k in hid){ if (hid[k]) hid[k].disabled = flag; }
+    }
+
+    // industry / route / consultField 는 체크박스와 조립 hidden 의 name 이 같다.
+    // 정상 경로에서는 체크박스를 disabled 로 빼서 조립값만 전송되게 한다.
+    // (체크박스를 그대로 두면 같은 name 이 여러 번 전송되어 값 형식이 달라진다)
+    function setBoxesDisabled(flag){
+      var boxes = qa('.industry-checkbox, .route-checkbox, .consultField-checkbox');
+      for (var b = 0; b < boxes.length; b++){ boxes[b].disabled = flag; }
+    }
+
+    // 전송이 끝나면(성공·실패 무관) 화면을 다시 쓸 수 있는 상태로 되돌린다.
+    // form.reset() 은 disabled 를 건드리지 않으므로 여기서 직접 복구해야 한다.
+    function restoreForm(){
+      setBoxesDisabled(false);
+      setHidDisabled(true);
+      if (etcInput) etcInput.disabled = !(etcCheckbox && etcCheckbox.checked);
+      if (submitBtn){ submitBtn.disabled = false; submitBtn.textContent = '작성'; }
+    }
 
     form.addEventListener('submit', function(e){
       e.preventDefault();
 
-      var phone = val('[name="phone1"]') + val('[name="phone2"]') + val('[name="phone3"]');
-      var phoneConfirm = val('[name="phoneConfirm1"]') + val('[name="phoneConfirm2"]') + val('[name="phoneConfirm3"]');
-      if (phone !== phoneConfirm){ alert('연락처가 일치하지 않습니다. 다시 확인해주세요.'); return; }
+      var done = false;
+      var timer = null;
+      var onLoad = null;
 
-      var selectedIndustry = qa('.industry-checkbox:checked');
-      if (selectedIndustry.length === 0){ alert('업종을 선택해주세요.'); return; }
-      var selectedRoute = qa('.route-checkbox:checked');
-      if (selectedRoute.length === 0){ alert('신청 경로를 선택해주세요.'); return; }
-      var selectedConsultField = qa('.consultField-checkbox:checked');
-      if (selectedConsultField.length === 0){ alert('원하시는 솔루션 분야를 선택해주세요.'); return; }
-      var selectedConsultant = q('.consultant-radio:checked');
-      if (!selectedConsultant){ alert('도움받고 싶은 멘토를 선택해주세요.'); return; }
+      try {
+        // 번호 일치 — 창업 폼과 같은 칸별 비교.
+        // 이어붙여 비교하면 010|1234|5678 과 0101|234|5678 이 같다고 판정되던 문제가 있었다.
+        var p1 = val('[name="phone1"]'), p2 = val('[name="phone2"]'), p3 = val('[name="phone3"]');
+        var c1 = val('[name="phoneConfirm1"]'), c2 = val('[name="phoneConfirm2"]'), c3 = val('[name="phoneConfirm3"]');
+        if (p1 !== c1 || p2 !== c2 || p3 !== c3){ alert('연락처가 일치하지 않습니다. 다시 확인해주세요.'); return; }
 
-      if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = '전송중...'; }
+        var selectedIndustry = qa('.industry-checkbox:checked');
+        if (selectedIndustry.length === 0){ alert('업종을 선택해주세요.'); return; }
+        var selectedRoute = qa('.route-checkbox:checked');
+        if (selectedRoute.length === 0){ alert('신청 경로를 선택해주세요.'); return; }
+        var selectedConsultField = qa('.consultField-checkbox:checked');
+        if (selectedConsultField.length === 0){ alert('원하시는 솔루션 분야를 선택해주세요.'); return; }
+        var selectedConsultant = q('.consultant-radio:checked');
+        if (!selectedConsultant){ alert('도움받고 싶은 멘토를 선택해주세요.'); return; }
 
-      var industryValues = Array.prototype.map.call(selectedIndustry, function(cb){ return cb.value; });
-      if (etcCheckbox && etcCheckbox.checked && etcInput && etcInput.value.trim()){
-        industryValues = industryValues.filter(function(v){ return v !== '기타'; });
-        industryValues.push('기타 - ' + etcInput.value.trim());
-      }
-
-      var params = new URLSearchParams();
-      params.append('source', '진단상담');
-      params.append('token', SECRET_TOKEN);
-      params.append('name', val('[name="name"]'));
-      params.append('phone', val('[name="phone1"]') + '-' + val('[name="phone2"]') + '-' + val('[name="phone3"]'));
-      params.append('phoneCheck1', val('[name="phoneConfirm1"]'));
-      params.append('phoneCheck2', val('[name="phoneConfirm2"]'));
-      params.append('phoneCheck3', val('[name="phoneConfirm3"]'));
-      params.append('industry', industryValues.join(', '));
-      params.append('area', val('[name="area"]'));
-      params.append('route', Array.prototype.map.call(selectedRoute, function(cb){ return cb.value; }).join(', '));
-      params.append('consultField', Array.prototype.map.call(selectedConsultField, function(cb){ return cb.value; }).join(', '));
-      params.append('consultant', selectedConsultant.value);
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      })
-      .then(function(){
-        /* GA4 전환 이벤트 (gtag 미로드 시 조용히 무시) */
-        if (typeof window.gtag === 'function') {
-          window.gtag('event', 'form_submit', { form_source: '진단상담' });
+        var industryValues = Array.prototype.map.call(selectedIndustry, function(cb){ return cb.value; });
+        if (etcCheckbox && etcCheckbox.checked && etcInput && etcInput.value.trim()){
+          industryValues = industryValues.filter(function(v){ return v !== '기타'; });
+          industryValues.push('기타 - ' + etcInput.value.trim());
         }
-        /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
-        if (typeof window.__tgcFbTrack === 'function') {
-          window.__tgcFbTrack('Lead', { content_name: '진단상담' });
-        }
-        alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
-        form.reset();
-        if (etcInput) etcInput.disabled = true;
-      })
-      .catch(function(){
+
+        // 조립 hidden 채우기 — 값 형식은 기존 fetch 페이로드와 동일하게 유지한다.
+        if (hid.phone)        hid.phone.value = p1 + '-' + p2 + '-' + p3;
+        if (hid.phoneCheck1)  hid.phoneCheck1.value = c1;
+        if (hid.phoneCheck2)  hid.phoneCheck2.value = c2;
+        if (hid.phoneCheck3)  hid.phoneCheck3.value = c3;
+        if (hid.industry)     hid.industry.value = industryValues.join(', ');
+        if (hid.route)        hid.route.value = Array.prototype.map.call(selectedRoute, function(cb){ return cb.value; }).join(', ');
+        if (hid.consultField) hid.consultField.value = Array.prototype.map.call(selectedConsultField, function(cb){ return cb.value; }).join(', ');
+
+        setHidDisabled(false);
+        setBoxesDisabled(true);
+
+        if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = '전송중...'; }
+
+        if (!iframe) throw new Error('diag iframe not found');
+
+        // 성공 판정은 iframe 의 load 1회. 응답 본문은 교차 출처라 읽을 수 없으므로
+        // "요청이 완료되어 응답 문서가 로드됨" 까지만 확인한다.
+        onLoad = function(){
+          if (done) return;
+          done = true;
+          if (timer) clearTimeout(timer);
+          iframe.removeEventListener('load', onLoad);
+
+          /* GA4 전환 이벤트 (gtag 미로드 시 조용히 무시) */
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'form_submit', { form_source: '진단상담' });
+          }
+          /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
+          if (typeof window.__tgcFbTrack === 'function') {
+            window.__tgcFbTrack('Lead', { content_name: '진단상담' });
+          }
+          alert('진단 솔루션 상담 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
+          form.reset();
+          restoreForm();
+        };
+        iframe.addEventListener('load', onLoad);
+
+        // 8초 안에 load 가 오지 않으면 실패로 보고 버튼을 돌려준다.
+        timer = setTimeout(function(){
+          if (done) return;
+          done = true;
+          iframe.removeEventListener('load', onLoad);
+          alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+          restoreForm();
+        }, 8000);
+
+        form.submit();
+      } catch (err) {
+        // 예외로 전송이 끊긴 경우 — 리스너·타이머를 걷고 버튼을 되돌린다.
+        done = true;
+        if (timer) clearTimeout(timer);
+        if (iframe && onLoad) iframe.removeEventListener('load', onLoad);
         alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
-      })
-      .finally(function(){
-        if (submitBtn){ submitBtn.disabled = false; submitBtn.textContent = '작성'; }
-      });
+        restoreForm();
+      }
     });
   }
 
@@ -550,7 +632,11 @@ const FORM_HTML = `<div class="consult-form-wrapper">
 
 // 하단 상담폼: 상단과 동일하되 마크업의 모든 id 에 -bottom 접미사를 붙여 중복 방지.
 // (폼 스크립트는 id 가 아닌 폼 스코프/클래스/name 기준이라 접미사와 무관하게 동작)
-const FORM_HTML_BOTTOM = FORM_HTML.replace(/id="([\w-]+)"/g, 'id="$1-bottom"');
+const FORM_HTML_BOTTOM = FORM_HTML
+  .replace(/id="([\w-]+)"/g, 'id="$1-bottom"')
+  // iframe 이름과 form[target] 은 id 가 아니어서 위 치환에 걸리지 않는다.
+  // 상단/하단 폼이 서로 다른 iframe 을 쓰도록 따로 바꾼다.
+  .replace(/diag_iframe_top/g, "diag_iframe_bottom");
 
 // ─── 김재강 진단 랜딩 상세 HTML (kjk- 접두사) ───────────────────────────────
 // 다크 배경 랜딩 + 인증사진 슬라이더(<script> 포함).
