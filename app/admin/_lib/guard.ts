@@ -33,8 +33,21 @@ export type AdminContext = {
 /**
  * 로그인 + profiles.role === 'admin' 을 확인한다.
  * 하나라도 어긋나면 notFound() 로 렌더를 중단한다(반환하지 않는다).
+ *
+ * 페이지(서버 컴포넌트)에서 쓴다. 라우트 핸들러는 getAdminContext() 를 쓰고
+ * null 일 때 404 Response 를 직접 돌려준다 — 결과(404)는 같다.
  */
 export async function requireAdmin(): Promise<AdminContext> {
+  const ctx = await getAdminContext();
+  if (!ctx) notFound();
+  return ctx;
+}
+
+/**
+ * 같은 검사를 하되 실패하면 null 을 돌려준다.
+ * 라우트 핸들러용 — 응답 형태를 호출부가 직접 정할 수 있게 한다.
+ */
+export async function getAdminContext(): Promise<AdminContext | null> {
   const session = await createSessionClient();
 
   const {
@@ -42,7 +55,7 @@ export async function requireAdmin(): Promise<AdminContext> {
     error: authErr,
   } = await session.auth.getUser();
 
-  if (authErr || !user) notFound();
+  if (authErr || !user) return null;
 
   const { data: profile, error: roleErr } = await session
     .from("profiles")
@@ -52,8 +65,8 @@ export async function requireAdmin(): Promise<AdminContext> {
 
   // 조회가 실패한 경우(컬럼 없음·RLS 거부 등)도 권한 없음으로 본다 — fail closed.
   // 스키마가 달라서 에러가 났는데 통과시키면 권한 검사가 통째로 무력해진다.
-  if (roleErr || !profile) notFound();
-  if ((profile as { role?: unknown }).role !== ADMIN_ROLE) notFound();
+  if (roleErr || !profile) return null;
+  if ((profile as { role?: unknown }).role !== ADMIN_ROLE) return null;
 
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -71,8 +84,9 @@ export async function requireAdmin(): Promise<AdminContext> {
 
   // 폴백 — 요청자 세션으로 조회한다. 이미 관리자임을 확인한 뒤이고,
   // 세션 클라이언트는 anon 키 + RLS 라 권한이 늘어나지 않는다.
-  // profiles 는 SELECT 정책이 공개라 읽히지만, orders 처럼 RLS 가 막힌 테이블은
-  // 빈 결과가 돌아올 수 있다. 그래서 화면에 키가 없다는 경고를 띄운다.
+  // profiles 는 SELECT 정책이 공개라 읽히지만, auth.users(이메일·가입방식·
+  // 마지막 로그인)는 service role 이 있어야만 읽을 수 있다. 그래서 키가 없으면
+  // 그 열들이 빈 채로 나오고, 화면에 경고를 띄운다.
   return {
     userId: user.id,
     email: user.email ?? "",

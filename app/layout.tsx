@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MetaPixel from "@/components/MetaPixel";
+import ScrollDepthTracker from "@/components/ScrollDepthTracker";
 import { SITE_URL, SITE_NAME, OG_IMAGE } from "@/lib/site";
 
 const notoSansKR = Noto_Sans_KR({
@@ -121,6 +122,9 @@ export default function RootLayout({
         {/* 페이지별 메타 픽셀 — 경로 판정은 컴포넌트가 하므로 여기 한 번만 둔다.
             픽셀 추가는 lib/metaPixel.ts 의 PIXEL_MAP 만 고치면 된다. */}
         <MetaPixel />
+        {/* GA4 스크롤 깊이·체류 이벤트 — gtag 가 로드된 경우에만 동작한다.
+            GoogleAnalytics 와 MetaPixel 은 손대지 않는다. */}
+        <ScrollDepthTracker />
       </body>
       {/* GA4 (gtag.js) — 측정 ID 가 설정된 경우에만 로드 */}
       {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
