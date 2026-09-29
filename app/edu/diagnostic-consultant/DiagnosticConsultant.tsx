@@ -418,10 +418,12 @@ const FAQ: { q: string; a: string }[] = [
 const JOB_OPTIONS = ["센터 대표", "관리자·실장", "FC", "트레이너·강사", "기타"];
 const CAREER_OPTIONS = ["3년 미만", "3~5년", "5~10년", "10년 이상"];
 
-/* 기존 상담 폼(위탁/창업)과 동일한 Apps Script 엔드포인트를 그대로 재사용한다.
-   두 기존 폼 파일은 수정하지 않고 값만 참조했다. */
+/* 그로우 에듀DB(Apps Script 웹앱). 문의 CRM 과는 다른 엔드포인트다.
+   주의: 이 URL 은 lib/paymentSheet.ts 의 PAYMENT_SHEET_URL 과 동일한 웹앱이다.
+   결제내역은 token=grow2026pay, 이 지원폼은 token=grow2026secure 로 보낸다.
+   웹앱 쪽에서 두 토큰을 모두 받아들이는지 확인이 필요하다. 결제 코드는 건드리지 않았다. */
 const FORM_ACTION =
-  "https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec";
+  "https://script.google.com/macros/s/AKfycbxmo4P7VOk4fGsLY6ZOHQL819Eoe7un_KboLj6BHY6JUuxM0dsFWC2UyMdc0YP0EAk/exec";
 const FORM_TOKEN = "grow2026secure";
 const FORM_SOURCE = "진단컨설턴트양성과정_지원";
 // 이 페이지 전용 iframe 이름 — 다른 페이지의 hidden_iframe / hidden_iframe2 와 분리
@@ -1244,9 +1246,8 @@ const DETAIL_HTML = `<div class="dcc">
         <div class="dcc-fg">
           <label class="dcc-label" for="dcc-phone">연락처 <span class="dcc-req">*</span></label>
           <input class="dcc-input" id="dcc-phone" type="tel" name="phone" inputmode="numeric" maxlength="13" placeholder="010-0000-0000" autocomplete="tel" required />
-          <!-- 기존 시트의 3분할 연락처 칸도 함께 채워 보낸다.
-               (진단상담 폼은 하이픈 포함 단일 phone, 위탁/창업 폼은 phone1~3 을 보낸다.
-                어느 쪽 열이 있든 번호가 남도록 양쪽을 모두 채운다.) -->
+          <!-- 하이픈 포함 단일 phone 과 3분할 phone1~3 을 함께 보낸다.
+               시트 열 구성이 어느 쪽이든 번호가 남도록 한 것이다. -->
           <input type="hidden" name="phone1" value="" />
           <input type="hidden" name="phone2" value="" />
           <input type="hidden" name="phone3" value="" />

@@ -103,6 +103,7 @@ const navItems: NavItem[] = [
       { label: "창업 세미나", href: "/edu/startup-class" },
       { label: "정규 FC 세미나", href: "/edu/fc-class" },
       { label: "그룹운동 비즈니스 클래스", href: "/edu/gx-class" },
+      { label: "진단 컨설턴트 양성과정", href: "/edu/diagnostic-consultant" },
     ],
   },
   {

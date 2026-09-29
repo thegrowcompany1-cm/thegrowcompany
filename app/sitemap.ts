@@ -18,6 +18,7 @@ const ROUTES = [
   "/edu/fc-class",
   "/edu/startup-class",
   "/edu/gx-class",
+  "/edu/diagnostic-consultant",
   "/legal/terms",
   "/legal/privacy",
 ];

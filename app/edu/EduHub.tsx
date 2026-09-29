@@ -58,6 +58,20 @@ const COURSES = [
     ],
     badge: "총 4시간 특강",
   },
+  {
+    // 카드 문구는 /edu/diagnostic-consultant 페이지의 확정 카피에서 가져왔다
+    href: "/edu/diagnostic-consultant",
+    img: "/edu/dcc/field.jpg",
+    alt: "진단 컨설턴트 양성과정 현장실습",
+    title: "진단 컨설턴트 양성과정 1기",
+    target: "9회 과정 · 최대 10명 선발 · 11월 1일 개강",
+    points: [
+      "전문교육 5회 + 과제발표 3회 + 현장실습 1회",
+      "1인 1매장 현장실습과 진단 리포트 작성",
+      "수료 후 인증 평가를 거쳐 활동 후보",
+    ],
+    badge: "총 9회 · 약 3개월",
+  },
 ];
 
 const CURSOR_STYLE = `
