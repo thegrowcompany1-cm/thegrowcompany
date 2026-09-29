@@ -760,6 +760,8 @@ const DETAIL_HTML = `<div class="dcc">
 /* 케이스 자료는 가로로 넓은 캡처라 잘라내지 않고 전체를 보여준다 */
 .dcc-case-thumb{background:#0A0A0A;border:1px solid var(--bd)}
 .dcc-case-thumb img{object-fit:contain}
+/* 홀수 장일 때 마지막 칸 — 두 열을 다 쓴다. 비율(2/1)은 마크업에서 인라인으로 준다 */
+.dcc-case-thumb--wide{grid-column:1 / -1}
 
 /* 04-2 같은 틀, 다른 처방 */
 .dcc-frame{background:#121614;border:1px solid var(--bd);border-radius:18px;padding:20px 18px;margin:0 0 14px}
@@ -917,7 +919,22 @@ const DETAIL_HTML = `<div class="dcc">
         <div class="dcc-tags">${c.actions.map((a) => `<span class="dcc-tag">${a}</span>`).join("")}</div>
         <div class="dcc-case-imgs${c.images.length > 1 ? " is-multi" : ""}">
           ${c.images
-            .map((src, i) => imgBox(src, `${caseLabel(c)} 진행 자료 ${i + 1}`, "4/3", "dcc-case-thumb", true))
+            .map((src, i) => {
+              // 자료가 홀수 장이면 2열 그리드에서 마지막 칸이 혼자 남는다. 전체 폭으로 펴고
+              // 비율도 넓게 준다 (두 사례 모두 마지막 자료가 가로로 넓은 캡처라 잘 맞는다).
+              // 1장짜리는 이미 전체 폭이라 그대로 둔다.
+              const wide =
+                c.images.length > 1 &&
+                c.images.length % 2 === 1 &&
+                i === c.images.length - 1;
+              return imgBox(
+                src,
+                `${caseLabel(c)} 진행 자료 ${i + 1}`,
+                wide ? "2/1" : "4/3",
+                wide ? "dcc-case-thumb dcc-case-thumb--wide" : "dcc-case-thumb",
+                true,
+              );
+            })
             .join("")}
         </div>
       </div>`,
