@@ -5,8 +5,7 @@
 //    이미 가공된 표시용 문자열뿐이다. SUPABASE_SERVICE_ROLE_KEY 는 이 파일과
 //    _lib/guard.ts 밖으로 나가지 않는다.
 //  · 접근 제어는 requireAdmin() 한 줄. 권한이 없으면 notFound() 로 404 다.
-//  · orders 테이블의 컬럼 구성을 코드에서 확인할 수 없어(스키마 미확인) 런타임에
-//    한 행을 읽어 키를 보고 날짜·금액 컬럼을 고른다. 스키마는 건드리지 않는다.
+//  · orders 는 확정된 컬럼으로 고정 쿼리를 쏜다. 스키마는 건드리지 않는다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -45,22 +44,25 @@ type ProfileRow = {
   role: string | null;
 };
 
-type OrderRow = Record<string, unknown>;
+type OrderRow = {
+  created_at: string | null;
+  paid_at: string | null;
+  amount: number | null;
+  status: string | null;
+  canceled_at: string | null;
+  product_name: string | null;
+  buyer_name: string | null;
+  buyer_phone: string | null;
+};
 
-/** orders 에서 날짜로 쓸 만한 컬럼 후보 (앞에 있을수록 우선) */
-const ORDER_DATE_KEYS = ["created_at", "approved_at", "paid_at", "ordered_at", "inserted_at"];
-/** orders 에서 금액으로 쓸 만한 컬럼 후보 */
-const ORDER_AMOUNT_KEYS = ["amount", "total_amount", "paid_amount", "price", "total"];
-/** 최근 주문 표에 우선 노출할 컬럼 */
-const ORDER_SHOW_KEYS = [
-  "order_id",
-  "order_name",
-  "product_slug",
-  "customer_name",
-  "customer_phone",
-  "method",
-  "status",
-];
+const ORDER_COLS =
+  "created_at, paid_at, amount, status, canceled_at, product_name, buyer_name, buyer_phone";
+
+/** 매출로 잡는 주문 — 결제완료이면서 취소되지 않은 건 */
+const PAID_STATUS = "PAID";
+
+/** 취소 여부는 status 가 아니라 canceled_at 으로 판단한다 */
+const isCanceled = (o: OrderRow) => o.canceled_at !== null && o.canceled_at !== undefined;
 
 export default async function AdminPage() {
   const { email, db, usingServiceRole } = await requireAdmin();
@@ -124,45 +126,36 @@ export default async function AdminPage() {
   const recent = (recentRes.data ?? []) as ProfileRow[];
 
   // ── 주문 ─────────────────────────────────────────────────────────────────
-  // 컬럼 구성을 모르므로 한 행을 읽어 키를 확인한 뒤 날짜·금액 컬럼을 고른다.
-  const probeRes = await db.from("orders").select("*").limit(1);
-  const ordersAvailable = !probeRes.error;
-  note("주문 테이블", probeRes.error?.message);
+  // 총 건수는 취소분까지 포함한 전체, 총액은 결제완료(PAID) + 미취소 건만 합산한다.
+  // PostgREST 로는 SUM 을 못 쓰므로 amount 만 읽어와 JS 에서 더한다 (SCAN_LIMIT 상한).
+  const [orderCountRes, paidCountRes, recentOrderRes, amountRes] = await Promise.all([
+    db.from("orders").select("*", { count: "exact", head: true }),
+    db
+      .from("orders")
+      .select("*", { count: "exact", head: true })
+      .eq("status", PAID_STATUS)
+      .is("canceled_at", null),
+    db.from("orders").select(ORDER_COLS).order("created_at", { ascending: false }).limit(10),
+    db
+      .from("orders")
+      .select("amount")
+      .eq("status", PAID_STATUS)
+      .is("canceled_at", null)
+      .limit(SCAN_LIMIT),
+  ]);
 
-  let orderCount = 0;
-  let orderSum: number | null = null;
-  let orderSumCapped = false;
-  let recentOrders: OrderRow[] = [];
-  let orderColumns: string[] = [];
-  let orderDateKey: string | null = null;
+  const ordersAvailable = !orderCountRes.error;
+  note("주문 건수", orderCountRes.error?.message);
+  note("결제완료 건수", paidCountRes.error?.message);
+  note("최근 주문", recentOrderRes.error?.message);
+  note("주문 합계", amountRes.error?.message);
 
-  if (ordersAvailable) {
-    const countRes = await db.from("orders").select("*", { count: "exact", head: true });
-    note("주문 건수", countRes.error?.message);
-    orderCount = countRes.count ?? 0;
-
-    const sample = (probeRes.data ?? [])[0] as OrderRow | undefined;
-    const keys = sample ? Object.keys(sample) : [];
-    orderDateKey = ORDER_DATE_KEYS.find((k) => keys.includes(k)) ?? null;
-    const amountKey = ORDER_AMOUNT_KEYS.find((k) => keys.includes(k)) ?? null;
-    orderColumns = ORDER_SHOW_KEYS.filter((k) => keys.includes(k)).slice(0, 5);
-
-    if (orderCount > 0) {
-      let listQuery = db.from("orders").select("*").limit(10);
-      if (orderDateKey) listQuery = listQuery.order(orderDateKey, { ascending: false });
-      const listRes = await listQuery;
-      note("최근 주문", listRes.error?.message);
-      recentOrders = (listRes.data ?? []) as OrderRow[];
-
-      if (amountKey) {
-        const sumRes = await db.from("orders").select(amountKey).limit(SCAN_LIMIT);
-        note("주문 합계", sumRes.error?.message);
-        const rows = (sumRes.data ?? []) as Record<string, unknown>[];
-        orderSumCapped = rows.length >= SCAN_LIMIT;
-        orderSum = rows.reduce((acc, r) => acc + (Number(r[amountKey]) || 0), 0);
-      }
-    }
-  }
+  const orderCount = orderCountRes.count ?? 0;
+  const paidCount = paidCountRes.count ?? 0;
+  const recentOrders = (recentOrderRes.data ?? []) as OrderRow[];
+  const amountRows = (amountRes.data ?? []) as { amount: number | null }[];
+  const orderSumCapped = amountRows.length >= SCAN_LIMIT;
+  const orderSum = amountRows.reduce((acc, r) => acc + (Number(r.amount) || 0), 0);
 
   const card = "rounded-2xl border border-white/10 bg-[#141414] p-5";
   const th = "whitespace-nowrap px-3 py-2.5 text-left text-[12px] font-bold text-gray-400";
@@ -318,49 +311,73 @@ export default async function AdminPage() {
                 <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-4">
                   <p className="text-[12px] font-bold text-gray-400">총액</p>
                   <p className="mt-1.5 text-2xl font-black" style={{ color: GREEN }}>
-                    {orderSum === null ? "-" : won(orderSum)}
+                    {won(orderSum)}
                   </p>
                 </div>
               </div>
-              {orderSum === null && (
-                <p className="mt-2 text-[12px] text-gray-500">
-                  금액 컬럼을 찾지 못해 총액을 계산하지 않았습니다.
-                </p>
-              )}
+              <p className="mt-2 text-[12px] text-gray-500">
+                총액은 결제완료({PAID_STATUS}) 이면서 취소되지 않은 {num(paidCount)}건 기준입니다.
+                총 건수는 취소분을 포함한 전체입니다.
+              </p>
               {orderSumCapped && (
-                <p className="mt-2 text-[12px] text-gray-500">
-                  총액은 최근 {num(SCAN_LIMIT)}건까지만 합산한 값입니다.
+                <p className="mt-1 text-[12px] text-gray-500">
+                  합산은 최근 {num(SCAN_LIMIT)}건까지만 반영했습니다.
                 </p>
               )}
 
               <h3 className="mt-6 mb-3 text-sm font-bold text-gray-300">최근 10건</h3>
               <div className="-mx-2 overflow-x-auto px-2">
-                <table className="w-full min-w-[560px] border-collapse">
+                <table className="w-full min-w-[720px] border-collapse">
                   <thead>
                     <tr className="border-b border-white/10">
-                      {orderDateKey && <th className={th}>{orderDateKey}</th>}
-                      {orderColumns.map((c) => (
-                        <th key={c} className={th}>
-                          {c}
-                        </th>
-                      ))}
+                      <th className={th}>주문일시</th>
+                      <th className={th}>결제일시</th>
+                      <th className={th}>상품명</th>
+                      <th className={th}>구매자</th>
+                      <th className={th}>연락처</th>
+                      <th className={`${th} text-right`}>금액</th>
+                      <th className={th}>상태</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {recentOrders.map((o, i) => (
-                      <tr key={i} className="border-b border-white/5">
-                        {orderDateKey && (
+                    {recentOrders.map((o, i) => {
+                      const canceled = isCanceled(o);
+                      return (
+                        <tr key={`${o.created_at}-${i}`} className="border-b border-white/5">
                           <td className={`${td} font-mono text-gray-400`}>
-                            {kstDateTime(o[orderDateKey] as string)}
+                            {kstDateTime(o.created_at)}
                           </td>
-                        )}
-                        {orderColumns.map((c) => (
-                          <td key={c} className={td}>
-                            {o[c] === null || o[c] === undefined ? "-" : String(o[c])}
+                          <td className={`${td} font-mono text-gray-400`}>
+                            {kstDateTime(o.paid_at)}
                           </td>
-                        ))}
-                      </tr>
-                    ))}
+                          <td className={td}>{o.product_name?.trim() || "-"}</td>
+                          <td className={td}>{o.buyer_name?.trim() || "-"}</td>
+                          <td className={td}>
+                            <PhoneCell
+                              masked={maskPhone(o.buyer_phone)}
+                              full={formatPhone(o.buyer_phone)}
+                            />
+                          </td>
+                          <td className={`${td} text-right font-mono`}>
+                            {o.amount === null ? "-" : won(Number(o.amount))}
+                          </td>
+                          <td className={td}>
+                            <span
+                              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+                              style={
+                                canceled
+                                  ? { backgroundColor: "rgba(239,68,68,.18)", color: "#FCA5A5" }
+                                  : o.status === PAID_STATUS
+                                    ? { backgroundColor: GREEN, color: "#fff" }
+                                    : { backgroundColor: "rgba(255,255,255,.08)", color: "#9CA3AF" }
+                              }
+                            >
+                              {canceled ? "취소" : o.status?.trim() || "-"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
