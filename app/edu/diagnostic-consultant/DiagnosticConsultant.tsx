@@ -109,10 +109,11 @@ const DCC_CASES: DccCase[] = [
       "대표·실장 주간 업무 설계",
       "주간 실행계획 O/X 관리",
     ],
-    // 2026-09-29 ls 기준 public/edu/dcc/ 에 case01-02.png 만 있다.
-    // 나머지 두 칸은 빈 값이라 "이미지 준비 중" 플레이스홀더로 렌더된다.
-    // 파일을 넣으면 아래 빈 문자열에 경로만 채우면 된다.
-    images: ["", "/edu/dcc/case01-02.png", ""],
+    images: [
+      "/edu/dcc/case01-01.png",
+      "/edu/dcc/case01-02.png",
+      "/edu/dcc/case01-03.png",
+    ],
   },
   {
     anon: "평택 필라테스 B센터",
