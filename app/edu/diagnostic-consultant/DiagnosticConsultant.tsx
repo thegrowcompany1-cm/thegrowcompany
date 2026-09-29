@@ -23,7 +23,7 @@ import { useEffect, useRef, useState } from "react";
    · 확장자는 실제 파일과 정확히 일치시켜야 한다 (후기는 .jpg, 산출물은 .png). */
 const DCC_IMG = {
   hero: "", // 히어로 배경 (현장/강의 사진)
-  field: "", // 현장실습 사진
+  field: "/edu/dcc/field.jpg", // 현장실습 사진
   faculty: {
     kimSeungho: "/consultants/kim-seungho.jpg",
     kimJaegang: "/consultants/kim-jaegang.jpg",
@@ -36,11 +36,13 @@ const DCC_IMG = {
     "/edu/dcc/output-02.png",
     "/edu/dcc/output-03.png",
   ],
-  // 고객사 대표·관리자가 보내온 메시지 캡처
+  // 고객사 대표·관리자가 보내온 메시지 캡처.
+  // ?v=N 은 캐시 무효화용이다. 파일명을 그대로 두고 내용만 덮어쓰면 브라우저가
+  // 구버전을 캐시에서 꺼내 쓴다. 이미지를 다시 교체할 때는 이 숫자를 올린다.
   reviews: [
-    "/edu/dcc/review-01.jpg",
-    "/edu/dcc/review-02.jpg",
-    "/edu/dcc/review-03.jpg",
+    "/edu/dcc/review-01.jpg?v=2",
+    "/edu/dcc/review-02.jpg?v=2",
+    "/edu/dcc/review-03.jpg?v=2",
   ],
 };
 
@@ -52,7 +54,7 @@ const OUTPUT_CAPTIONS = [
 ];
 
 // 라이트박스 확대에서 제외할 이미지. 매출추이 그래프는 썸네일로만 보여준다.
-const DCC_NO_ZOOM = ["/edu/dcc/case02-03.png"];
+const DCC_NO_ZOOM = ["/edu/dcc/case02-03.png", "/edu/dcc/field.jpg"];
 
 /* ▼▼ 기수 변경 시 이 상수만 수정 ▼▼ */
 const DCC = {
@@ -721,6 +723,9 @@ const DETAIL_HTML = `<div class="dcc">
 .dcc-dark .dcc-fig-cap{color:#A9B8B1}
 .dcc-out-img img{object-position:top left}
 
+/* 09 현장실습 사진 — 인물이 가운데 위쪽에 오도록 */
+.dcc-field-img img{object-position:center 30%}
+
 /* 08 강사진 사진 — 얼굴이 잘리지 않게 위쪽 기준 */
 .dcc-fac-img img{object-position:center top}
 
@@ -1068,7 +1073,7 @@ const DETAIL_HTML = `<div class="dcc">
       <span class="dcc-flow-step">진단</span>
     </div>
     <p class="dcc-lead dcc-rv">최대 ${DCC.capacity}명의 교육생을 가능한 한 1인 1매장으로 배치합니다. 직원처럼 일하는 것이 아니라 고객·영업·수업·CRM·운영 흐름을 관찰하고 질문하는 실습입니다.</p>
-    <div class="dcc-rv">${imgBox(DCC_IMG.field, "현장실습 진행 모습", "16/9")}</div>
+    <div class="dcc-rv">${imgBox(DCC_IMG.field, "현장실습 진행 모습", "16/9", "dcc-field-img")}</div>
     <div class="dcc-obs">
       ${OBSERVE.map(
         (o) =>
