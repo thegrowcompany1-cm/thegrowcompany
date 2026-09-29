@@ -775,16 +775,29 @@ const DETAIL_HTML = `<div class="dcc">
 .dcc-rev{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;max-width:100%}
 .dcc-rev::-webkit-scrollbar{display:none}
 .dcc-rev-item{flex:0 0 80%;scroll-snap-align:center;background:#121614;border:1px solid rgba(34,181,115,.18);border-radius:16px;overflow:hidden;min-width:0}
+/* 메시지 캡처가 세로로 길어(비율 약 0.42) 카드가 화면을 다 먹는다. 위쪽만 잘라 보여주고
+   나머지는 라이트박스에서 원본으로 본다. 이미지 높이가 auto 라 실제 클립은 이 박스의
+   max-height + overflow 가 맡는다 (object-position 은 높이가 고정될 때를 대비한 보험). */
+.dcc-rev-clip{position:relative;max-height:440px;overflow:hidden}
+@media(min-width:820px){.dcc-rev-clip{max-height:520px}}
+.dcc-rev-clip img{object-position:top}
+.dcc-rev-fade{position:absolute;left:0;right:0;bottom:0;height:80px;background:linear-gradient(180deg,rgba(18,22,20,0) 0%,#121614 100%);pointer-events:none}
+.dcc-rev-more{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:2;background:rgba(34,181,115,.16);border:1px solid rgba(34,181,115,.34);color:#8FD9B6;font-size:12.5px;font-weight:800;padding:7px 14px;border-radius:999px;white-space:nowrap;pointer-events:none}
 @media(min-width:820px){
   .dcc-rev{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible;scroll-snap-type:none;padding-bottom:0}
   .dcc-rev-item{flex:none}
 }
 
 /* 공용 라이트박스 */
-.dcc-lb{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);padding:28px 16px}
+/* 세로로 긴 캡처를 원본 크기로 보려면 높이를 제한하지 않고 컨테이너가 스크롤돼야 한다.
+   높이에 맞춰 축소하면 카톡 메시지 글자가 읽히지 않는다. */
+.dcc-lb{position:fixed;inset:0;z-index:70;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:rgba(0,0,0,.88);padding:28px 16px}
 .dcc-lb[hidden]{display:none}
-.dcc-lb-img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:8px}
-.dcc-lb-close{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:18px;line-height:1;cursor:pointer}
+/* 짧은 이미지는 가운데, 긴 이미지는 위에서부터 — min-height 100% + flex 로 둘 다 만족한다 */
+.dcc-lb-inner{min-height:100%;display:flex;align-items:center;justify-content:center}
+.dcc-lb-img{max-width:100%;width:auto;height:auto;border-radius:8px}
+/* 스크롤해도 닫기 버튼은 제자리 — .dcc-lb 에 transform 이 없어 fixed 가 뷰포트 기준으로 잡힌다 */
+.dcc-lb-close{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:2;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:18px;line-height:1;cursor:pointer}
 
 /* 하단 고정 바 */
 .dcc-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:center;background:var(--g);color:#fff;font-size:16px;font-weight:800;text-decoration:none;padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.18);transition:transform .3s ease}
@@ -1096,10 +1109,20 @@ const DETAIL_HTML = `<div class="dcc">
     <p class="dcc-lead dcc-rv">현재 THE GROW 진단 컨설턴트가 관리하고 있는 고객사에서 보내온 메시지입니다. 개인정보 보호를 위해 일부 정보는 가렸습니다.</p>
     <div class="dcc-rev dcc-rv">
       ${DCC_IMG.reviews
-        .map(
-          (src, i) =>
-            `<div class="dcc-rev-item">${imgAuto(src, `고객사에서 보내온 메시지 ${i + 1}`, "", true)}</div>`,
-        )
+        .map((src, i) => {
+          const alt = `고객사에서 보내온 메시지 ${i + 1}`;
+          const z = canZoom(src);
+          return `<div class="dcc-rev-item${z ? " dcc-zoom" : ""}"${z ? zoomAttrs(src, alt) : ""}>
+        <div class="dcc-rev-clip">
+          ${imgAuto(src, alt)}
+          ${
+            z
+              ? `<span class="dcc-rev-fade" aria-hidden="true"></span><span class="dcc-rev-more">전체 메시지 보기</span>`
+              : ""
+          }
+        </div>
+      </div>`;
+        })
         .join("")}
     </div>
   </div>
@@ -1267,7 +1290,9 @@ const DETAIL_HTML = `<div class="dcc">
      바꿔버리면 화면 전체를 덮지 못한다. -->
 <div class="dcc-lb" id="dccLightbox" hidden>
   <button type="button" class="dcc-lb-close" aria-label="닫기">✕</button>
-  <img class="dcc-lb-img" alt="" />
+  <div class="dcc-lb-inner">
+    <img class="dcc-lb-img" alt="" />
+  </div>
 </div>
 
 <script>
@@ -1410,6 +1435,7 @@ const DETAIL_HTML = `<div class="dcc">
       lbImg.setAttribute('src', src);
       lbImg.setAttribute('alt', alt || '');
       lb.removeAttribute('hidden');
+      lb.scrollTop = 0; // 직전에 스크롤해 둔 위치가 남아 잘린 채로 열리는 것을 막는다
       lbPrevOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
     };
