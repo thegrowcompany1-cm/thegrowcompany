@@ -16,18 +16,43 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/* ▼▼ 이미지 슬롯 — 준비되는 대로 public/edu/dcc/ 하위 경로를 채우면 된다 ▼▼ */
+/* ▼▼ 이미지 슬롯 ▼▼
+   · 강사진 사진은 기존 진단 멘토 페이지가 쓰는 public/consultants 파일을 경로로만
+     참조한다 (복사하지 않음). 그쪽 사진을 교체하면 이 페이지도 같이 바뀐다.
+   · 나머지는 public/edu/dcc/ 하위. 빈 문자열이면 플레이스홀더가 렌더된다.
+   · 확장자는 실제 파일과 정확히 일치시켜야 한다 (후기는 .jpg, 산출물은 .png). */
 const DCC_IMG = {
   hero: "", // 히어로 배경 (현장/강의 사진)
   field: "", // 현장실습 사진
   faculty: {
-    kimSeungho: "",
-    kimJaegang: "",
-    heoJunyoung: "",
-    parkJungmin: "",
+    kimSeungho: "/consultants/kim-seungho.jpg",
+    kimJaegang: "/consultants/kim-jaegang.jpg",
+    heoJunyoung: "/consultants/heo-junyoung.jpg",
+    parkJungmin: "/consultants/park-jungmin.png",
   },
-  output: [] as string[], // 실제 산출물 캡처 (진단표, 대시보드, 필드 리포트 등)
+  // 실제 산출물 캡처 — 아래 OUTPUT_CAPTIONS 와 순서를 맞춘다
+  output: [
+    "/edu/dcc/output-01.png",
+    "/edu/dcc/output-02.png",
+    "/edu/dcc/output-03.png",
+  ],
+  // 고객사 대표·관리자가 보내온 메시지 캡처
+  reviews: [
+    "/edu/dcc/review-01.jpg",
+    "/edu/dcc/review-02.jpg",
+    "/edu/dcc/review-03.jpg",
+  ],
 };
+
+// 04 약속 섹션 산출물 캡션 — DCC_IMG.output 과 같은 순서
+const OUTPUT_CAPTIONS = [
+  "매일 운영 체크리스트",
+  "요일별 주간업무",
+  "월간 핵심행동 캘린더",
+];
+
+// 라이트박스 확대에서 제외할 이미지. 매출추이 그래프는 썸네일로만 보여준다.
+const DCC_NO_ZOOM = ["/edu/dcc/case02-03.png"];
 
 /* ▼▼ 기수 변경 시 이 상수만 수정 ▼▼ */
 const DCC = {
@@ -44,6 +69,114 @@ const DCC = {
 /* ▲▲ 여기까지 ▲▲ */
 
 const won = (n: number) => n.toLocaleString("ko-KR") + "원";
+
+// ── 04-2 진행 사례 ───────────────────────────────────────────────────────────
+// 업체 실명 공개 동의를 받으면 true 로 바꾼다. false 면 익명 표기만 화면에 나간다.
+//
+// 주의: 이 플래그는 "무엇을 렌더할지"만 정한다. 아래 name 값은 플래그와 무관하게
+// 클라이언트 번들에 그대로 포함되므로, 소스를 열어보면 실명을 확인할 수 있다.
+// 실명이 외부에 드러나서는 안 되는 단계라면 동의 전까지 name 을 빈 문자열로 두어야 한다.
+const DCC_CASE_SHOW_NAME = false;
+
+type DccCase = {
+  anon: string;
+  name: string;
+  start: string;
+  headline: string;
+  before: { label: string; value: number };
+  after: { label: string; value: number };
+  extra: string;
+  actions: string[];
+  images: string[];
+};
+
+const DCC_CASES: DccCase[] = [
+  {
+    anon: "의정부 필라테스 A센터",
+    name: "필라테스 림 탑석역점",
+    start: "2026.08.12",
+    headline: "동일기간 매출 약 +34.7%",
+    before: { label: "8/1~8/11 매출", value: 10669700 },
+    after: { label: "9/1~9/11 매출", value: 14373780 },
+    extra: "9/23 기준 8월 전체 매출의 약 78.4% 도달",
+    actions: [
+      "가격·상품 구조 재설계",
+      "문의→예약→방문→상담→등록 흐름 점검",
+      "신규·재등록·휴면 DB 관리",
+      "상담 프로세스",
+      "네이버 플레이스·예약",
+      "블로그·체험단·Meta",
+      "대표·실장 주간 업무 설계",
+      "주간 실행계획 O/X 관리",
+    ],
+    // case01-01.png 은 아직 public/edu/dcc/ 에 없다. 파일을 넣으면 경로만 채우면 된다.
+    images: [""],
+  },
+  {
+    anon: "평택 필라테스 B센터",
+    name: "유얼스 필라테스&발레핏",
+    start: "2026.08.13",
+    headline: "9/23 기준 8월 전체 매출의 약 92.3% 도달",
+    before: { label: "8월 마감 매출", value: 24221600 },
+    after: { label: "9/23 누적 매출", value: 22348300 },
+    extra: "",
+    actions: [
+      "매출 데이터 분석",
+      "문의→등록 흐름 점검",
+      "휴면·만기회원 DB 관리",
+      "상담 프로세스 개선",
+      "상품·프로모션 기획",
+      "플레이스·온라인 유입 개선",
+      "관리자 주간 업무 설계",
+      "주간 실행계획 O/X 관리",
+    ],
+    images: [
+      "/edu/dcc/case02-01.png",
+      "/edu/dcc/case02-02.png",
+      "/edu/dcc/case02-03.png",
+    ],
+  },
+];
+
+const caseLabel = (c: DccCase) => (DCC_CASE_SHOW_NAME ? c.name : c.anon);
+
+// 진단 흐름 칩
+const DCC_CASE_FLOW = [
+  "현황 데이터 확보",
+  "진단 가설",
+  "병목 확인",
+  "실행계획",
+  "실행",
+  "지표 추적",
+  "동일조건 비교",
+  "운영 구조화",
+  "재진단",
+];
+
+// 같은 틀, 다른 처방 — 두 고객사의 처방 차이
+const DCC_FRAME_ROWS = [
+  {
+    k: "인력 구조",
+    a: "오전 부원장·오후 실장 2인 교대, 인수인계 1시간",
+    b: "매니저 1인 운영, 12시 오픈 기준",
+  },
+  {
+    k: "가격 처방",
+    a: "3·6·9 차등할인 + 당일 결정 추가 혜택",
+    b: "24·48·70회 구조, 48회 중심 추천",
+  },
+  {
+    k: "추가 관리",
+    a: "가격 재설계 · 재등록 관리",
+    b: "월간 핵심행동 캘린더 · 블로그 키워드 순위 추적",
+  },
+];
+
+// 면책문구 — 생략·접기 금지
+const DCC_CASE_DISCLAIMER =
+  "진단컨설팅 시작 이후 운영지표와 실행구조를 변경했고, 그 이후 관찰된 매출 변화입니다. " +
+  "매출에는 시즌·프로모션 등 외부 요인이 함께 작용할 수 있으며, 컨설팅 단독 효과나 동일한 결과를 보장하지 않습니다. " +
+  "두 사례 모두 컨설팅 진행 중입니다.";
 
 // ── 07 커리큘럼 ──────────────────────────────────────────────────────────────
 // tone: present(과제·최종발표) / field(현장실습) → 그린 배지
@@ -290,13 +423,31 @@ const FORM_SOURCE = "진단컨설턴트양성과정_지원";
 const FORM_TARGET = "dcc_hidden_iframe";
 
 // ── HTML 조각 헬퍼 ───────────────────────────────────────────────────────────
-// 이미지 경로가 비어 있으면 비율을 유지한 회색 플레이스홀더를 렌더한다.
-const imgBox = (src: string, alt: string, ratio: string, cls = "") => {
-  const klass = ["dcc-imgbox", cls].filter(Boolean).join(" ");
+// 라이트박스로 확대할 수 있는 이미지인지. 빈 슬롯과 제외 목록은 확대하지 않는다.
+const canZoom = (src: string) => !!src && DCC_NO_ZOOM.indexOf(src) < 0;
+
+// 확대 가능한 박스에 붙는 속성. data-zoom 이 있는 요소만 스크립트가 라이트박스로 연다.
+const zoomAttrs = (src: string, alt: string) =>
+  ` data-zoom="${src}" tabindex="0" role="button" aria-label="${alt} 크게 보기"`;
+
+// 비율 고정 박스. 경로가 비어 있으면 비율을 유지한 회색 플레이스홀더를 렌더한다.
+const imgBox = (src: string, alt: string, ratio: string, cls = "", zoom = false) => {
+  const z = zoom && canZoom(src);
+  const klass = ["dcc-imgbox", cls, z ? "dcc-zoom" : ""].filter(Boolean).join(" ");
   if (!src) {
-    return `<div class="${klass} dcc-ph" style="aspect-ratio:${ratio}"><span>이미지 준비 중</span></div>`;
+    return `<div class="dcc-imgbox${cls ? ` ${cls}` : ""} dcc-ph" style="aspect-ratio:${ratio}"><span>이미지 준비 중</span></div>`;
   }
-  return `<div class="${klass}" style="aspect-ratio:${ratio}"><img src="${src}" alt="${alt}" loading="lazy" decoding="async" /></div>`;
+  return `<div class="${klass}" style="aspect-ratio:${ratio}"${z ? zoomAttrs(src, alt) : ""}><img src="${src}" alt="${alt}" loading="lazy" decoding="async" /></div>`;
+};
+
+// 높이를 이미지 비율에 맡기는 박스 (세로로 긴 메시지 캡처용)
+const imgAuto = (src: string, alt: string, cls = "", zoom = false) => {
+  const z = zoom && canZoom(src);
+  if (!src) {
+    return `<div class="dcc-imgbox${cls ? ` ${cls}` : ""} dcc-ph" style="aspect-ratio:3/4"><span>이미지 준비 중</span></div>`;
+  }
+  const klass = ["dcc-imgauto", cls, z ? "dcc-zoom" : ""].filter(Boolean).join(" ");
+  return `<div class="${klass}"${z ? zoomAttrs(src, alt) : ""}><img src="${src}" alt="${alt}" loading="lazy" decoding="async" /></div>`;
 };
 
 const facultyPhoto = (key: string) =>
@@ -375,11 +526,10 @@ const DETAIL_HTML = `<div class="dcc">
 @media(min-width:768px){.dcc-h2{font-size:32px}.dcc-lead{font-size:16px}}
 
 /* 01 히어로 */
-.dcc-hero{position:relative;overflow:hidden;background:#0A0A0A;color:#fff;padding:64px 0 60px}
+.dcc-hero{position:relative;overflow:hidden;background:#0A0A0A;color:#fff;padding:76px 0 60px}
 .dcc-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.3}
 .dcc-hero-ov{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%,rgba(34,181,115,.20) 0%,rgba(10,10,10,0) 62%),linear-gradient(180deg,rgba(10,10,10,.55) 0%,rgba(10,10,10,.94) 100%)}
 .dcc-hero-in{position:relative;z-index:2;text-align:center}
-.dcc-hero-tag{font-size:13px;font-weight:700;color:#8FD9B6;margin:0 0 16px}
 .dcc-h1{font-size:28px;line-height:1.38;font-weight:900;margin:0 0 16px}
 .dcc-h1 em{font-style:normal;display:block;color:var(--g)}
 .dcc-hero-sub{font-size:15px;line-height:1.72;color:#C8D3CD;margin:0 auto 28px;max-width:540px}
@@ -562,6 +712,80 @@ const DETAIL_HTML = `<div class="dcc">
 .dcc-done{text-align:center;padding:44px 16px;font-size:15px;line-height:1.78;color:#C8D3CD}
 .dcc-done b{display:block;font-size:19px;font-weight:800;color:var(--g);margin:0 0 10px}
 
+/* 04 약속 — 산출물 3칸 (캡션 + 위쪽 왼쪽 기준 크롭) */
+.dcc-fig{margin:0;min-width:0}
+.dcc-fig-cap{margin:8px 0 0;font-size:12.5px;line-height:1.5;font-weight:700;text-align:center;color:#3F4F47;word-break:keep-all}
+.dcc-dark .dcc-fig-cap{color:#A9B8B1}
+.dcc-out-img img{object-position:top left}
+
+/* 08 강사진 사진 — 얼굴이 잘리지 않게 위쪽 기준 */
+.dcc-fac-img img{object-position:center top}
+
+/* 확대 가능 표시 (확대 제외 이미지는 이 클래스가 붙지 않아 기본 커서) */
+.dcc-zoom{cursor:zoom-in}
+.dcc-zoom:focus-visible{outline:2px solid var(--g);outline-offset:3px}
+.dcc-imgauto{width:100%;max-width:100%}
+.dcc-imgauto img{display:block;width:100%;height:auto}
+
+/* 다크 섹션용 변형 */
+.dcc-chips--dark .dcc-chip{background:#121614;border-color:var(--bd);color:#8FD9B6}
+.dcc-disc--dark{background:rgba(255,255,255,.04);color:#96A49D}
+.dcc-h3{font-size:20px;font-weight:800;text-align:center;line-height:1.45;margin:40px 0 16px}
+.dcc-h3 em{font-style:normal;display:block;color:var(--g)}
+@media(min-width:768px){.dcc-h3{font-size:24px}}
+
+/* 04-2 진행 사례 */
+.dcc-cases{display:grid;gap:14px;margin:0 0 4px}
+@media(min-width:820px){.dcc-cases{grid-template-columns:1fr 1fr}}
+.dcc-case{background:#121614;border:1px solid var(--bd);border-radius:18px;padding:20px 18px;min-width:0}
+.dcc-case-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 4px}
+.dcc-case-name{font-size:16px;font-weight:800;margin:0;word-break:keep-all}
+.dcc-case-live{font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;background:var(--g);color:#fff;white-space:nowrap}
+.dcc-case-start{font-size:12.5px;color:#8A968F;margin:0 0 14px}
+.dcc-case-head{font-size:19px;font-weight:900;color:var(--g);line-height:1.4;margin:0 0 14px;word-break:keep-all}
+.dcc-ba{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin:0 0 12px}
+.dcc-ba-cell{background:#0A0A0A;border:1px solid var(--bd);border-radius:12px;padding:12px 8px;text-align:center;min-width:0}
+.dcc-ba-k{font-size:11.5px;color:#8A968F;margin:0 0 5px;word-break:keep-all}
+.dcc-ba-v{font-size:14.5px;font-weight:800;color:#E4EBE7;margin:0;word-break:break-all}
+.dcc-ba-ar{color:var(--g);font-size:16px;font-weight:900}
+.dcc-case-extra{font-size:12.5px;line-height:1.65;color:#A9B8B1;margin:0 0 14px;word-break:keep-all}
+.dcc-case-sub{font-size:12px;font-weight:800;color:var(--g);margin:0 0 8px}
+.dcc-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.dcc-tag{background:rgba(34,181,115,.10);border:1px solid var(--bd);color:#C8D3CD;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;word-break:keep-all}
+.dcc-case-imgs{display:grid;grid-template-columns:1fr;gap:8px}
+@media(min-width:480px){.dcc-case-imgs.is-multi{grid-template-columns:1fr 1fr}}
+/* 케이스 자료는 가로로 넓은 캡처라 잘라내지 않고 전체를 보여준다 */
+.dcc-case-thumb{background:#0A0A0A;border:1px solid var(--bd)}
+.dcc-case-thumb img{object-fit:contain}
+
+/* 04-2 같은 틀, 다른 처방 */
+.dcc-frame{background:#121614;border:1px solid var(--bd);border-radius:18px;padding:20px 18px;margin:0 0 14px}
+.dcc-frame-t{font-size:15px;font-weight:800;color:var(--g);margin:0 0 6px}
+.dcc-frame-d{font-size:13.5px;line-height:1.7;color:#B7C4BD;margin:0 0 14px;word-break:keep-all}
+.dcc-cmp-rows{display:grid;gap:12px}
+.dcc-cmp-row{background:#121614;border:1px solid var(--bd);border-radius:16px;padding:16px 18px;min-width:0}
+.dcc-cmp-k{font-size:12px;font-weight:800;color:var(--g);margin:0 0 10px}
+.dcc-cmp-ab{display:grid;gap:10px}
+@media(min-width:720px){.dcc-cmp-ab{grid-template-columns:1fr 1fr}}
+.dcc-cmp-cell{background:#0A0A0A;border:1px solid var(--bd);border-radius:12px;padding:12px 14px;min-width:0}
+.dcc-cmp-who{font-size:11.5px;font-weight:800;color:#8FD9B6;margin:0 0 5px;word-break:keep-all}
+.dcc-cmp-v{font-size:13px;line-height:1.65;color:#D3DCD7;margin:0;word-break:keep-all}
+
+/* 11-2 고객사 메시지 — 모바일은 이 컨테이너만 가로 스와이프. 페이지는 넘치지 않는다 */
+.dcc-rev{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;max-width:100%}
+.dcc-rev::-webkit-scrollbar{display:none}
+.dcc-rev-item{flex:0 0 80%;scroll-snap-align:center;background:#121614;border:1px solid rgba(34,181,115,.18);border-radius:16px;overflow:hidden;min-width:0}
+@media(min-width:820px){
+  .dcc-rev{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible;scroll-snap-type:none;padding-bottom:0}
+  .dcc-rev-item{flex:none}
+}
+
+/* 공용 라이트박스 */
+.dcc-lb{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);padding:28px 16px}
+.dcc-lb[hidden]{display:none}
+.dcc-lb-img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:8px}
+.dcc-lb-close{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:18px;line-height:1;cursor:pointer}
+
 /* 하단 고정 바 */
 .dcc-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:center;background:var(--g);color:#fff;font-size:16px;font-weight:800;text-decoration:none;padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.18);transition:transform .3s ease}
 .dcc-bar.is-hidden{transform:translateY(120%)}
@@ -573,7 +797,6 @@ const DETAIL_HTML = `<div class="dcc">
   ${DCC_IMG.hero ? `<img class="dcc-hero-bg" src="${DCC_IMG.hero}" alt="" aria-hidden="true" />` : ""}
   <div class="dcc-hero-ov"></div>
   <div class="dcc-wrap dcc-hero-in">
-    <p class="dcc-hero-tag dcc-rv">GROW EDU × 더그로우</p>
     <h1 class="dcc-h1 dcc-rv">관리자의 관리자,<em>THE GROW 진단 컨설턴트로.</em></h1>
     <p class="dcc-hero-sub dcc-rv">배우고, 진단하고, 현장에서 검증하는 현장형 컨설턴트 양성과정 1기</p>
     <div class="dcc-stats dcc-rv">
@@ -632,9 +855,88 @@ const DETAIL_HTML = `<div class="dcc">
     </div>
     <p class="dcc-lead dcc-rv" style="margin-bottom:0">9회가 끝나면 이 매장이 지금 어떤 상태이고 무엇부터 바꿔야 하는지, 데이터와 현장 근거로 설명할 수 있게 됩니다.</p>
     <div class="dcc-outputs dcc-rv">
-      ${OUTPUT_SLOTS.map((src, i) => imgBox(src, `진단 과정 산출물 예시 ${i + 1}`, "4/3")).join("")}
+      ${OUTPUT_SLOTS.map(
+        (src, i) => `<figure class="dcc-fig">
+        ${imgBox(src, OUTPUT_CAPTIONS[i] || `진단 과정 산출물 ${i + 1}`, "4/3", "dcc-out-img", true)}
+        <figcaption class="dcc-fig-cap">${OUTPUT_CAPTIONS[i] || ""}</figcaption>
+      </figure>`,
+      ).join("")}
     </div>
     <span class="dcc-pill-black dcc-rv">포트폴리오로 남는 실전형 과정</span>
+  </div>
+</section>
+
+<!-- ── 04-2 진행 사례 ─────────────────────────────────────────────────────── -->
+<section class="dcc-sec dcc-dark">
+  <div class="dcc-wrap">
+    <h2 class="dcc-h2 dcc-rv">배운 방법은,<em>지금 실제 고객사에서 돌아가고 있습니다.</em></h2>
+    <p class="dcc-lead dcc-rv">THE GROW 진단 컨설턴트가 현재 관리 중인 고객사의 진행 사례입니다.</p>
+
+    <div class="dcc-chips dcc-chips--dark dcc-rv">
+      ${DCC_CASE_FLOW.map((f) => `<span class="dcc-chip">${f}</span>`).join("")}
+    </div>
+
+    <div class="dcc-cases">
+      ${DCC_CASES.map(
+        (c) => `<div class="dcc-case dcc-rv">
+        <div class="dcc-case-top">
+          <p class="dcc-case-name">${caseLabel(c)}</p>
+          <span class="dcc-case-live">진행 중</span>
+        </div>
+        <p class="dcc-case-start">진단컨설팅 시작 ${c.start}</p>
+        <p class="dcc-case-head">${c.headline}</p>
+        <div class="dcc-ba">
+          <div class="dcc-ba-cell">
+            <p class="dcc-ba-k">${c.before.label}</p>
+            <p class="dcc-ba-v">${won(c.before.value)}</p>
+          </div>
+          <span class="dcc-ba-ar" aria-hidden="true">→</span>
+          <div class="dcc-ba-cell">
+            <p class="dcc-ba-k">${c.after.label}</p>
+            <p class="dcc-ba-v">${won(c.after.value)}</p>
+          </div>
+        </div>
+        ${c.extra ? `<p class="dcc-case-extra">${c.extra}</p>` : ""}
+        <p class="dcc-case-sub">실제로 바꾼 것</p>
+        <div class="dcc-tags">${c.actions.map((a) => `<span class="dcc-tag">${a}</span>`).join("")}</div>
+        <div class="dcc-case-imgs${c.images.length > 1 ? " is-multi" : ""}">
+          ${c.images
+            .map((src, i) => imgBox(src, `${caseLabel(c)} 진행 자료 ${i + 1}`, "4/3", "dcc-case-thumb", true))
+            .join("")}
+        </div>
+      </div>`,
+      ).join("")}
+    </div>
+
+    <h3 class="dcc-h3 dcc-rv">표준 운영 프레임은 같고,<em>처방은 매장마다 다릅니다.</em></h3>
+
+    <div class="dcc-frame dcc-rv">
+      <p class="dcc-frame-t">THE GROW 표준 운영 프레임</p>
+      <p class="dcc-frame-d">매일 상시업무 · 요일별 집중업무 · 주간 실행계획 O/X</p>
+      ${imgBox(DCC_IMG.output[1] || "", "THE GROW 표준 운영 프레임 — 요일별 주간업무", "4/3", "dcc-out-img", true)}
+    </div>
+
+    <div class="dcc-cmp-rows">
+      ${DCC_FRAME_ROWS.map(
+        (r) => `<div class="dcc-cmp-row dcc-rv">
+        <p class="dcc-cmp-k">${r.k}</p>
+        <div class="dcc-cmp-ab">
+          <div class="dcc-cmp-cell">
+            <p class="dcc-cmp-who">${caseLabel(DCC_CASES[0])}</p>
+            <p class="dcc-cmp-v">${r.a}</p>
+          </div>
+          <div class="dcc-cmp-cell">
+            <p class="dcc-cmp-who">${caseLabel(DCC_CASES[1])}</p>
+            <p class="dcc-cmp-v">${r.b}</p>
+          </div>
+        </div>
+      </div>`,
+      ).join("")}
+    </div>
+
+    <p class="dcc-foot dcc-rv">7회차에서 이 표준 프레임과 매장별 적용 방법을 직접 배웁니다.</p>
+
+    <p class="dcc-disc dcc-disc--dark dcc-rv">${DCC_CASE_DISCLAIMER}</p>
   </div>
 </section>
 
@@ -784,6 +1086,22 @@ const DETAIL_HTML = `<div class="dcc">
       </div>
     </div>
     <p class="dcc-foot dcc-rv">고객사를 많이 맡는 것보다, 성과와 유지·재계약률을 높이는 전문직 커리어입니다.</p>
+  </div>
+</section>
+
+<!-- ── 11-2 고객사 메시지 ─────────────────────────────────────────────────── -->
+<section class="dcc-sec dcc-dark" style="padding-top:0">
+  <div class="dcc-wrap">
+    <h2 class="dcc-h2 dcc-rv">THE GROW 컨설턴트가 관리 중인<em>고객사 대표·관리자의 실제 메시지</em></h2>
+    <p class="dcc-lead dcc-rv">현재 THE GROW 진단 컨설턴트가 관리하고 있는 고객사에서 보내온 메시지입니다. 개인정보 보호를 위해 일부 정보는 가렸습니다.</p>
+    <div class="dcc-rev dcc-rv">
+      ${DCC_IMG.reviews
+        .map(
+          (src, i) =>
+            `<div class="dcc-rev-item">${imgAuto(src, `고객사에서 보내온 메시지 ${i + 1}`, "", true)}</div>`,
+        )
+        .join("")}
+    </div>
   </div>
 </section>
 
@@ -944,6 +1262,14 @@ const DETAIL_HTML = `<div class="dcc">
 <a class="dcc-bar dcc-jump" id="dccBar" href="#apply">1기 지원하기 · 최대 ${DCC.capacity}명</a>
 <div class="dcc-barspacer"></div>
 
+<!-- 공용 이미지 라이트박스 — 04 산출물 / 04-2 진행 사례 / 11-2 메시지가 함께 쓴다.
+     .dcc-rv 밖에 둔다. 리빌 애니메이션의 transform 이 position:fixed 의 기준을
+     바꿔버리면 화면 전체를 덮지 못한다. -->
+<div class="dcc-lb" id="dccLightbox" hidden>
+  <button type="button" class="dcc-lb-close" aria-label="닫기">✕</button>
+  <img class="dcc-lb-img" alt="" />
+</div>
+
 <script>
 /* 이 블록은 반드시 IIFE 로 감싼다. 주입 스크립트는 document.body 에 붙어
    전역 스코프에서 실행되므로, 최상위 const/let 을 쓰면 재주입(언마운트 후
@@ -1059,6 +1385,75 @@ const DETAIL_HTML = `<div class="dcc">
 
     form.addEventListener('submit', onSubmit);
     stops.push(function () { form.removeEventListener('submit', onSubmit); });
+  }
+
+  /* 5) 공용 이미지 라이트박스
+        여러 섹션에 이미지가 흩어져 있어 루트에서 클릭을 위임 처리한다.
+        data-zoom 이 있는 요소만 열리고, 확대 제외 이미지에는 그 속성이 없다. */
+  var lb = document.getElementById('dccLightbox');
+  var lbImg = lb ? lb.querySelector('.dcc-lb-img') : null;
+  if (lb && lbImg) {
+    var lbPrevOverflow = '';
+    var lbIsOpen = false;
+
+    var closeLb = function () {
+      if (!lbIsOpen) return;
+      lbIsOpen = false;
+      lb.setAttribute('hidden', '');
+      lbImg.removeAttribute('src');
+      // 열 때 저장해 둔 값으로 되돌린다 (다른 곳에서 잠갔을 수도 있으므로 빈 값 고정 금지)
+      document.body.style.overflow = lbPrevOverflow;
+    };
+    var openLb = function (src, alt) {
+      if (lbIsOpen) return;
+      lbIsOpen = true;
+      lbImg.setAttribute('src', src);
+      lbImg.setAttribute('alt', alt || '');
+      lb.removeAttribute('hidden');
+      lbPrevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    };
+
+    var onZoom = function (e) {
+      var t = e.target;
+      while (t && t !== root && !(t.classList && t.classList.contains('dcc-zoom'))) {
+        t = t.parentNode;
+      }
+      if (!t || t === root) return;
+      var src = t.getAttribute && t.getAttribute('data-zoom');
+      if (!src) return;
+      var im = t.querySelector ? t.querySelector('img') : null;
+      openLb(src, im ? im.getAttribute('alt') : '');
+    };
+    var onZoomKey = function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var t = e.target;
+      if (!t || !t.classList || !t.classList.contains('dcc-zoom')) return;
+      e.preventDefault();
+      onZoom({ target: t });
+    };
+    // 배경·닫기 버튼으로 닫고, 이미지 자체를 누르면 유지한다
+    var onLbClick = function (e) {
+      if (e.target === lbImg) return;
+      closeLb();
+    };
+    var onEsc = function (e) {
+      if (e.key === 'Escape') closeLb();
+    };
+
+    root.addEventListener('click', onZoom);
+    root.addEventListener('keydown', onZoomKey);
+    lb.addEventListener('click', onLbClick);
+    document.addEventListener('keydown', onEsc);
+
+    stops.push(function () {
+      // 언마운트 중이어도 body 스크롤 잠금은 반드시 풀린다
+      closeLb();
+      root.removeEventListener('click', onZoom);
+      root.removeEventListener('keydown', onZoomKey);
+      lb.removeEventListener('click', onLbClick);
+      document.removeEventListener('keydown', onEsc);
+    });
   }
 
   // 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
