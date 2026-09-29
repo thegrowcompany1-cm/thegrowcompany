@@ -47,15 +47,17 @@ export default async function AdminPage() {
   };
 
   // ── 가입자 집계 ───────────────────────────────────────────────────────────
+  // count 전용 쿼리라도 select("*") 를 쓰지 않는다 — 컬럼 단위 권한이 걸리면
+  // 읽을 수 없는 컬럼 하나 때문에 집계가 통째로 실패한다.
   const live = () =>
-    db.from("profiles").select("*", { count: "exact", head: true }).is("deleted_at", null);
+    db.from("profiles").select("id", { count: "exact", head: true }).is("deleted_at", null);
 
   const [totalRes, todayRes, weekRes, monthRes, pendingRes] = await Promise.all([
     live(),
     live().gte("created_at", kstDayStart(0).toISOString()),
     live().gte("created_at", kstDayStart(6).toISOString()),
     live().gte("created_at", kstDayStart(29).toISOString()),
-    db.from("profiles").select("*", { count: "exact", head: true }).not("deleted_at", "is", null),
+    db.from("profiles").select("id", { count: "exact", head: true }).not("deleted_at", "is", null),
   ]);
 
   note("전체 가입자", totalRes.error?.message);

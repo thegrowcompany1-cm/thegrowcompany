@@ -1,6 +1,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// /admin 접근 제어
+// /admin 접근 제어 — 관리자 이메일 기준
 //
+//  · 관리자 판정은 세션 사용자의 이메일이 ADMIN_EMAILS 에 있는지로만 한다.
+//    profiles.role 은 더 이상 보지 않는다. DB 한 줄만 고치면 권한이 넘어가는 것보다
+//    서버 환경변수로 통제하는 편이 안전하다.
+//  · ADMIN_EMAILS 는 서버 전용이다. NEXT_PUBLIC_ 을 붙이면 브라우저 번들에 들어가
+//    관리자 이메일이 그대로 노출되므로 절대 붙이지 않는다.
 //  · app/admin/ 하위의 모든 페이지는 렌더 첫 줄에서 requireAdmin() 을 호출한다.
 //    layout.tsx 에 두지 않는 이유: App Router 는 layout 과 page 를 병렬로 렌더하므로
 //    layout 의 가드가 page 의 데이터 조회를 막아주지 못한다. 가드는 page 안에 있어야 한다.
@@ -10,7 +15,7 @@
 //  · _lib 은 언더스코어 프리픽스라 라우팅 대상이 아니다 (private folder).
 //
 // 주의: 이 파일은 서버 전용이다. 클라이언트 컴포넌트에서 import 하면
-//       SUPABASE_SERVICE_ROLE_KEY 가 브라우저 번들로 새어나간다.
+//       ADMIN_EMAILS 와 SUPABASE_SERVICE_ROLE_KEY 가 브라우저 번들로 새어나간다.
 //       ("use client" 가 붙은 파일에서 절대 import 하지 말 것)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -18,8 +23,8 @@ import { notFound } from "next/navigation";
 import { createClient as createSessionClient } from "@/lib/supabase/server";
 import { createClient as createRawClient } from "@supabase/supabase-js";
 
-/** 관리자로 인정하는 profiles.role 값 — DB 값을 바꾸지 않는다 */
-const ADMIN_ROLE = "admin";
+/** ADMIN_EMAILS 가 비어 있을 때 쓰는 기본값 */
+const DEFAULT_ADMIN_EMAILS = "hjyenm1@naver.com";
 
 export type AdminContext = {
   userId: string;
@@ -30,8 +35,38 @@ export type AdminContext = {
   usingServiceRole: boolean;
 };
 
+/** 쉼표로 구분된 관리자 이메일 목록 (소문자·공백 제거) */
+function adminEmails(): string[] {
+  const raw = process.env.ADMIN_EMAILS?.trim() || DEFAULT_ADMIN_EMAILS;
+  return raw
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/** 이메일 하나가 관리자 목록에 있는지 (대소문자 무시) */
+export function isAdminEmail(email: string | null | undefined): boolean {
+  const target = (email ?? "").trim().toLowerCase();
+  if (!target) return false;
+  return adminEmails().includes(target);
+}
+
 /**
- * 로그인 + profiles.role === 'admin' 을 확인한다.
+ * 현재 세션이 관리자인지 boolean 하나만 돌려준다.
+ * 헤더의 관리자 메뉴 노출 판단용 — 이메일 목록은 서버 밖으로 내보내지 않는다.
+ */
+export async function isAdminSession(): Promise<boolean> {
+  const session = await createSessionClient();
+  const {
+    data: { user },
+    error,
+  } = await session.auth.getUser();
+  if (error || !user) return false;
+  return isAdminEmail(user.email);
+}
+
+/**
+ * 로그인 + 관리자 이메일을 확인한다.
  * 하나라도 어긋나면 notFound() 로 렌더를 중단한다(반환하지 않는다).
  *
  * 페이지(서버 컴포넌트)에서 쓴다. 라우트 핸들러는 getAdminContext() 를 쓰고
@@ -56,17 +91,7 @@ export async function getAdminContext(): Promise<AdminContext | null> {
   } = await session.auth.getUser();
 
   if (authErr || !user) return null;
-
-  const { data: profile, error: roleErr } = await session
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  // 조회가 실패한 경우(컬럼 없음·RLS 거부 등)도 권한 없음으로 본다 — fail closed.
-  // 스키마가 달라서 에러가 났는데 통과시키면 권한 검사가 통째로 무력해진다.
-  if (roleErr || !profile) return null;
-  if ((profile as { role?: unknown }).role !== ADMIN_ROLE) return null;
+  if (!isAdminEmail(user.email)) return null;
 
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -84,9 +109,8 @@ export async function getAdminContext(): Promise<AdminContext | null> {
 
   // 폴백 — 요청자 세션으로 조회한다. 이미 관리자임을 확인한 뒤이고,
   // 세션 클라이언트는 anon 키 + RLS 라 권한이 늘어나지 않는다.
-  // profiles 는 SELECT 정책이 공개라 읽히지만, auth.users(이메일·가입방식·
-  // 마지막 로그인)는 service role 이 있어야만 읽을 수 있다. 그래서 키가 없으면
-  // 그 열들이 빈 채로 나오고, 화면에 경고를 띄운다.
+  // auth.users(이메일·가입방식·마지막 로그인)와 profiles.phone 은 service role 이
+  // 있어야만 읽히므로, 키가 없으면 그 열들이 빈 채로 나오고 화면에 경고를 띄운다.
   return {
     userId: user.id,
     email: user.email ?? "",

@@ -23,6 +23,8 @@ type Props = {
 export default function AuthNav({ variant, onNavigate }: Props) {
   const router = useRouter();
   const [name, setName] = useState<string | null>(null);
+  // 관리자 여부는 서버가 boolean 하나로만 알려준다. 이메일 목록은 번들에 넣지 않는다.
+  const [isAdmin, setIsAdmin] = useState(false);
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -37,6 +39,7 @@ export default function AuthNav({ variant, onNavigate }: Props) {
 
       if (error || !data.user) {
         setName(null);
+        setIsAdmin(false);
         setReady(true);
         return;
       }
@@ -64,6 +67,17 @@ export default function AuthNav({ variant, onNavigate }: Props) {
         }),
       );
       setReady(true);
+
+      // 로그인 상태에서만 묻는다. 실패하면 조용히 비관리자로 둔다.
+      try {
+        const res = await fetch("/api/admin/check", { cache: "no-store" });
+        if (!alive) return;
+        const json = (await res.json()) as { isAdmin?: boolean };
+        if (!alive) return;
+        setIsAdmin(json.isAdmin === true);
+      } catch {
+        if (alive) setIsAdmin(false);
+      }
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange(() => {
@@ -100,6 +114,7 @@ export default function AuthNav({ variant, onNavigate }: Props) {
     const supabase = createClient();
     await supabase.auth.signOut();
     setName(null);
+    setIsAdmin(false);
     setOpen(false);
     onNavigate?.();
     router.refresh();
@@ -121,7 +136,16 @@ export default function AuthNav({ variant, onNavigate }: Props) {
     }
 
     return (
-      <div className="relative" ref={wrapRef}>
+      <div className="flex items-center gap-1">
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm font-semibold text-[#22B573] transition-colors hover:bg-white/10"
+          >
+            관리자
+          </Link>
+        )}
+        <div className="relative" ref={wrapRef}>
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -170,6 +194,7 @@ export default function AuthNav({ variant, onNavigate }: Props) {
             </button>
           </div>
         </div>
+        </div>
       </div>
     );
   }
@@ -189,6 +214,15 @@ export default function AuthNav({ variant, onNavigate }: Props) {
           >
             마이페이지
           </Link>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={onNavigate}
+              className="whitespace-nowrap text-sm font-semibold text-[#22B573] transition-colors hover:underline"
+            >
+              관리자
+            </Link>
+          )}
           <button
             type="button"
             onClick={logout}

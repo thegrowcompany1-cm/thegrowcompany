@@ -88,9 +88,15 @@ export async function loadMembers(
 ): Promise<MembersResult> {
   const issues: string[] = [];
 
+  // phone 은 service role 로만 읽을 수 있다 (anon/authenticated 에서 SELECT 권한 회수 예정).
+  // 폴백 경로에서 phone 을 요청하면 쿼리 전체가 실패하므로 컬럼 목록에서 뺀다.
+  const columns = ctx.usingServiceRole
+    ? "id, created_at, username, nickname, phone, role"
+    : "id, created_at, username, nickname, role";
+
   const { data, error } = await ctx.db
     .from("profiles")
-    .select("id, created_at, username, nickname, phone, role")
+    .select(columns)
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -102,7 +108,7 @@ export async function loadMembers(
     created_at: string | null;
     username: string | null;
     nickname: string | null;
-    phone: string | null;
+    phone?: string | null;
     role: string | null;
   }[];
 
