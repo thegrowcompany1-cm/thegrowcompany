@@ -58,19 +58,19 @@ const DCC_NO_ZOOM = ["/edu/dcc/case02-03.png", "/edu/dcc/field.jpg"];
 
 /* ▼▼ 기수 변경 시 이 상수만 수정 ▼▼ */
 const DCC = {
-  openDate: "2026.11.01",
+  openDate: "2026.11.15",
   schedule: "매주 일요일 10:00-14:00",
   capacity: 10,
   sessions: 9,
-  priceRegular: 10000000,
-  priceCohort: 6000000,
-  vatNote: "VAT 별도",
   venue: "GROW EDU 전용 교육장",
   venueNote: "KTX 광명역 기준 5분 거리",
 };
 /* ▲▲ 여기까지 ▲▲ */
 
 const won = (n: number) => n.toLocaleString("ko-KR") + "원";
+
+// 비용은 지원서 접수 후 개별 안내한다. 금액을 화면에 노출하지 않는다.
+const COST_NOTICE = "교육 비용은 지원서 작성 후 개별 안내드립니다";
 
 // ── 04-2 진행 사례 ───────────────────────────────────────────────────────────
 // 업체 실명 공개 동의를 받으면 true 로 바꾼다. false 면 익명 표기만 화면에 나간다.
@@ -214,7 +214,7 @@ const CURRICULUM: {
 }[] = [
   {
     no: "1회차",
-    date: "11/01",
+    date: "11/15",
     kind: "교육",
     tone: "edu",
     instructor: "김승호 센터장",
@@ -223,7 +223,7 @@ const CURRICULUM: {
   },
   {
     no: "2회차",
-    date: "11/08",
+    date: "11/22",
     kind: "교육",
     tone: "edu",
     instructor: "김재강 대표",
@@ -232,7 +232,7 @@ const CURRICULUM: {
   },
   {
     no: "3회차",
-    date: "11/15",
+    date: "11/29",
     kind: "과제발표 ①",
     tone: "present",
     instructor: "김승호 센터장 총괄",
@@ -241,7 +241,7 @@ const CURRICULUM: {
   },
   {
     no: "휴식",
-    date: "11/22",
+    date: "12/06",
     kind: "보완",
     tone: "rest",
     instructor: "",
@@ -250,7 +250,7 @@ const CURRICULUM: {
   },
   {
     no: "4회차",
-    date: "11/29",
+    date: "12/13",
     kind: "교육",
     tone: "edu",
     instructor: "허준영 본부장",
@@ -268,7 +268,7 @@ const CURRICULUM: {
   },
   {
     no: "6회차",
-    date: "12/13",
+    date: "12/27",
     kind: "과제발표 ②",
     tone: "present",
     instructor: "김승호 센터장 총괄",
@@ -277,7 +277,7 @@ const CURRICULUM: {
   },
   {
     no: "휴식",
-    date: "12/20",
+    date: "01/03",
     kind: "보완",
     tone: "rest",
     instructor: "",
@@ -286,7 +286,7 @@ const CURRICULUM: {
   },
   {
     no: "7회차",
-    date: "12/27",
+    date: "01/10",
     kind: "교육",
     tone: "edu",
     instructor: "김재강 대표",
@@ -295,7 +295,7 @@ const CURRICULUM: {
   },
   {
     no: "8회차",
-    date: "01/03",
+    date: "01/17",
     kind: "교육",
     tone: "edu",
     instructor: "박정민 대표",
@@ -304,7 +304,7 @@ const CURRICULUM: {
   },
   {
     no: "9회차",
-    date: "01/10",
+    date: "01/24",
     kind: "최종발표 ③",
     tone: "present",
     instructor: "김승호 센터장 총괄",
@@ -704,11 +704,8 @@ const DETAIL_HTML = `<div class="dcc">
 .dcc-sel-n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--g);color:#fff;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:1px}
 .dcc-sel-t{font-size:15px;font-weight:800;margin:0 0 3px}
 .dcc-sel-d{font-size:13px;line-height:1.6;color:#A9B8B1;margin:0}
-.dcc-price{background:#fff;color:#14231C;border-radius:20px;padding:28px 20px;text-align:center}
-.dcc-price-old{font-size:15px;color:#8A968F;text-decoration:line-through;margin:0 0 10px}
-.dcc-price-lbl{display:block;font-size:14px;font-weight:700;color:#14231C;margin:0 0 4px}
-.dcc-price-new{font-size:32px;font-weight:900;color:var(--g);line-height:1.2;margin:0 0 8px}
-.dcc-price-vat{font-size:13px;color:#6B7A72;margin:0}
+.dcc-price{background:#fff;color:#14231C;border-radius:20px;padding:26px 20px;text-align:center}
+.dcc-price-note{font-size:16px;font-weight:800;line-height:1.6;margin:0;word-break:keep-all}
 .dcc-bnf{display:grid;gap:8px;margin:22px 0 0}
 .dcc-bnf-item{background:#121614;border:1px solid var(--bd);border-radius:14px;padding:14px 16px}
 .dcc-bnf-t{font-size:14px;font-weight:800;color:var(--g);margin:0 0 4px}
@@ -868,9 +865,9 @@ const DETAIL_HTML = `<div class="dcc">
     <div class="dcc-stats dcc-rv">
       <div class="dcc-stat"><b>${DCC.sessions}회</b><span>총 과정</span></div>
       <div class="dcc-stat"><b>${DCC.capacity}명</b><span>최대 선발</span></div>
-      <div class="dcc-stat"><b>11.01</b><span>개강</span></div>
+      <div class="dcc-stat"><b>11.15</b><span>개강</span></div>
     </div>
-    <a class="dcc-cta dcc-jump dcc-rv" href="#apply">1기 지원하기</a>
+    <a class="dcc-cta dcc-jump dcc-rv" href="#apply">지원서 작성하기</a>
   </div>
 </section>
 
@@ -1258,7 +1255,7 @@ const DETAIL_HTML = `<div class="dcc">
   </div>
 </section>
 
-<!-- ── 13 선발·가격 ──────────────────────────────────────────────────────── -->
+<!-- ── 13 선발 ───────────────────────────────────────────────────────────── -->
 <!-- 앞이 같은 다크 섹션(11-2)이라 padding-top 을 없애 이음새를 줄인다 -->
 <section class="dcc-sec dcc-dark" style="padding-top:0">
   <div class="dcc-wrap">
@@ -1272,10 +1269,7 @@ const DETAIL_HTML = `<div class="dcc">
       ).join("")}
     </div>
     <div class="dcc-price dcc-rv">
-      <p class="dcc-price-old">정상 교육비 ${won(DCC.priceRegular)}</p>
-      <span class="dcc-price-lbl">1기 특별가</span>
-      <p class="dcc-price-new">${won(DCC.priceCohort)}</p>
-      <p class="dcc-price-vat">${DCC.vatNote}</p>
+      <p class="dcc-price-note">${COST_NOTICE}</p>
     </div>
     <div class="dcc-bnf">
       ${BENEFITS.map(
@@ -1306,7 +1300,7 @@ const DETAIL_HTML = `<div class="dcc">
 <section class="dcc-sec dcc-dark dcc-apply" id="apply">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">한 매장을 제대로 진단할 수 있다면,<em>다음 매장도 진단할 수 있습니다.</em></h2>
-    <p class="dcc-sum dcc-rv">최대 ${DCC.capacity}명 · 11/01 개강 · 1기 600만원(${DCC.vatNote})</p>
+    <p class="dcc-sum dcc-rv">최대 ${DCC.capacity}명 · 11/15 개강 · ${COST_NOTICE}</p>
 
     <div class="dcc-form-box dcc-rv" id="dccFormBox">
       <form id="dccForm" action="${FORM_ACTION}" method="POST" target="${FORM_TARGET}">
@@ -1371,7 +1365,7 @@ const DETAIL_HTML = `<div class="dcc">
         <!-- 보안 토큰 -->
         <input type="hidden" name="token" value="${FORM_TOKEN}" />
 
-        <button class="dcc-submit" type="submit">1기 지원서 제출하기</button>
+        <button class="dcc-submit" type="submit">지원서 제출하기</button>
         <p class="dcc-form-note">제출 후 검토를 거쳐 사전 인터뷰 일정을 개별 연락드립니다.</p>
       </form>
 
@@ -1380,7 +1374,7 @@ const DETAIL_HTML = `<div class="dcc">
   </div>
 </section>
 
-<a class="dcc-bar dcc-jump" id="dccBar" href="#apply">1기 지원하기 · 최대 ${DCC.capacity}명</a>
+<a class="dcc-bar dcc-jump" id="dccBar" href="#apply">지원서 작성하기 · 최대 ${DCC.capacity}명</a>
 <div class="dcc-barspacer"></div>
 
 <!-- 공용 이미지 라이트박스 — 04 산출물 / 04-2 진행 사례 / 11-2 메시지가 함께 쓴다.
