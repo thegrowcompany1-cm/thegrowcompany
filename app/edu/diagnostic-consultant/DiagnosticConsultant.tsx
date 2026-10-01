@@ -90,31 +90,37 @@ type DccCase = {
   extra: string;
   actions: string[];
   images: string[];
+  /** images 와 같은 순서의 대체 텍스트. 없으면 사례명 기반 기본값을 쓴다 */
+  imageAlts?: string[];
 };
 
 const DCC_CASES: DccCase[] = [
   {
-    anon: "의정부 필라테스 A센터",
-    name: "필라테스 림 탑석역점",
-    start: "2026.08.12",
-    headline: "동일기간 매출 약 +34.7%",
-    before: { label: "8/1~8/11 매출", value: 10669700 },
-    after: { label: "9/1~9/11 매출", value: 14373780 },
-    extra: "9/23 기준 8월 전체 매출의 약 78.4% 도달",
+    anon: "경기권 헬스장 A센터",
+    // 실명 공개 동의 전이라 비워 둔다. caseLabel 이 비어 있으면 익명 표기를 쓴다.
+    name: "",
+    // 컨설팅 착수일을 자료에서 확인할 수 없어 비워 둔다 (없으면 그 줄을 렌더하지 않는다).
+    // 비교 기간은 아래 before/after 라벨이 그대로 말해준다.
+    start: "",
+    headline: "FC 총매출 약 +39.2%",
+    before: { label: "5월 FC 총매출", value: 13404000 },
+    after: { label: "7월 FC 총매출", value: 18652700 },
+    extra:
+      "증가액 +5,248,700원 · 목표 대비 103.6% 달성 · 신규 고객 FC 4,664,000원 → 8,379,700원(+79.7%) · " +
+      "만료 후 재등록 FC 2,708,000원 신규 창출 · 과제 실행 완료율 80%(15개 중 12개)",
     actions: [
-      "가격·상품 구조 재설계",
-      "문의→예약→방문→상담→등록 흐름 점검",
-      "신규·재등록·휴면 DB 관리",
-      "상담 프로세스",
-      "네이버 플레이스·예약",
-      "블로그·체험단·Meta",
-      "대표·실장 주간 업무 설계",
-      "주간 실행계획 O/X 관리",
+      "상담일지 매뉴얼 표준화",
+      "당일 후속 TM 파이프라인",
+      "D-14 사전 만료 알림",
+      "만료 후 재등록 프로세스",
+      "단발성 할인 중단",
+      "무료 체험 연계 패키지",
+      "장기권 구조 설계",
     ],
-    images: [
-      "/edu/dcc/case01-01.png",
-      "/edu/dcc/case01-02.png",
-      "/edu/dcc/case01-03.png",
+    images: ["/edu/dcc/case-gym-before-after.png", "/edu/dcc/case-gym-kpi.png"],
+    imageAlts: [
+      "컨설팅 전후 비교표 — 5월 대비 7월 FC 총매출, 신규 고객 매출, 재등록 매출 변화",
+      "핵심 성과 지표와 매출 구조 분석 — 7월 FC 총매출, 신규 고객 실적, 만료 후 재등록, 과제 실행 완료율",
     ],
   },
   {
@@ -143,7 +149,8 @@ const DCC_CASES: DccCase[] = [
   },
 ];
 
-const caseLabel = (c: DccCase) => (DCC_CASE_SHOW_NAME ? c.name : c.anon);
+// 실명 공개를 켜더라도 name 이 비어 있으면 익명 표기를 유지한다
+const caseLabel = (c: DccCase) => (DCC_CASE_SHOW_NAME && c.name ? c.name : c.anon);
 
 // 진단 흐름 칩
 const DCC_CASE_FLOW = [
@@ -161,18 +168,18 @@ const DCC_CASE_FLOW = [
 // 같은 틀, 다른 처방 — 두 고객사의 처방 차이
 const DCC_FRAME_ROWS = [
   {
-    k: "인력 구조",
-    a: "오전 부원장·오후 실장 2인 교대, 인수인계 1시간",
-    b: "매니저 1인 운영, 12시 오픈 기준",
+    k: "상담 관리",
+    a: "상담일지 매뉴얼 표준화 · 당일 후속 TM",
+    b: "상담 프로세스 개선",
   },
   {
     k: "가격 처방",
-    a: "3·6·9 차등할인 + 당일 결정 추가 혜택",
+    a: "단발성 할인 중단 · 무료 체험 연계 패키지 · 장기권 구조",
     b: "24·48·70회 구조, 48회 중심 추천",
   },
   {
     k: "추가 관리",
-    a: "가격 재설계 · 재등록 관리",
+    a: "주간 과제 실행 관리 (15개 중 12개 완수)",
     b: "월간 핵심행동 캘린더 · 블로그 키워드 순위 추적",
   },
 ];
@@ -1004,7 +1011,7 @@ const DETAIL_HTML = `<div class="dcc">
           <p class="dcc-case-name">${caseLabel(c)}</p>
           <span class="dcc-case-live">진행 중</span>
         </div>
-        <p class="dcc-case-start">진단컨설팅 시작 ${c.start}</p>
+        ${c.start ? `<p class="dcc-case-start">진단컨설팅 시작 ${c.start}</p>` : ""}
         <p class="dcc-case-head">${c.headline}</p>
         <div class="dcc-ba">
           <div class="dcc-ba-cell">
@@ -1032,7 +1039,7 @@ const DETAIL_HTML = `<div class="dcc">
                 i === c.images.length - 1;
               return imgBox(
                 src,
-                `${caseLabel(c)} 진행 자료 ${i + 1}`,
+                c.imageAlts?.[i] ?? `${caseLabel(c)} 진행 자료 ${i + 1}`,
                 wide ? "2/1" : "4/3",
                 wide ? "dcc-case-thumb dcc-case-thumb--wide" : "dcc-case-thumb",
                 true,
