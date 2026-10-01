@@ -661,16 +661,26 @@ const DETAIL_HTML = `<div class="dcc">
 .dcc-chain-ar{text-align:center;color:var(--g);font-size:17px;font-weight:900;line-height:1}
 
 /* 12 예상 수익 */
+/* 모바일은 카드, 760px 이상은 표. 둘 중 하나만 그려서 가로 스크롤이 생길 여지를 없앤다 */
 .dcc-rev-cards{display:grid;gap:10px}
 .dcc-rev-table{display:none}
 @media(min-width:760px){.dcc-rev-cards{display:none}.dcc-rev-table{display:block}}
-.dcc-rev-card{background:#fff;border:1px solid rgba(20,35,28,.09);border-radius:16px;padding:18px}
-.dcc-rev-y{font-size:17px;font-weight:900;margin:0 0 4px}
-.dcc-rev-b{font-size:13px;color:#6B7A72;margin:0 0 10px}
-.dcc-rev-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid rgba(20,35,28,.07)}
-.dcc-rev-k{font-size:13px;color:#5A6B63}
-.dcc-rev-v{font-size:16px;font-weight:800;color:var(--gd)}
-.dcc-disc{margin:16px 0 0;background:rgba(20,35,28,.05);border-radius:12px;padding:14px;font-size:12.5px;line-height:1.75;color:#4E5F57}
+.dcc-rev-card{background:#121614;border:1px solid var(--bd);border-radius:16px;padding:18px;min-width:0}
+.dcc-rev-y{font-size:17px;font-weight:900;margin:0 0 4px;color:#F2F5F3}
+.dcc-rev-b{font-size:13px;color:#8A968F;margin:0 0 12px;word-break:keep-all}
+.dcc-rev-m,.dcc-rev-a{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0;padding:10px 0;border-top:1px solid var(--bd)}
+.dcc-rev-k{font-size:13px;color:#8A968F;flex:0 0 auto}
+/* 월 수익을 크게, 연 수익을 작게 — 금액은 둘 다 그린 */
+.dcc-rev-m b{font-size:24px;font-weight:900;line-height:1.2;color:var(--g);text-align:right;word-break:break-all}
+.dcc-rev-a b{font-size:15px;font-weight:800;color:var(--g);text-align:right;word-break:break-all}
+/* 커리큘럼 표(베이지)와 같은 .dcc-table 을 쓰므로, 다크용은 수정자 클래스로 덮는다 */
+.dcc-table--dark{background:#121614}
+.dcc-table--dark th{background:#0A0A0A;color:#8FD9B6}
+.dcc-table--dark td{border-top:1px solid var(--bd);color:#D3DCD7}
+.dcc-table--dark .dcc-td-no{color:#F2F5F3}
+.dcc-rev-money{color:var(--g);font-weight:800}
+/* 고지문구는 읽히는 크기를 유지한다 (13px 미만으로 줄이지 말 것) */
+.dcc-disc{margin:16px 0 0;background:rgba(20,35,28,.05);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.75;color:#4E5F57}
 
 /* 13 선발·가격 */
 .dcc-sel{display:grid;gap:10px;margin:0 0 26px}
@@ -865,8 +875,47 @@ const DETAIL_HTML = `<div class="dcc">
   </div>
 </section>
 
+<!-- ── 03-2 예상 수익 ─────────────────────────────────────────────────────── -->
+<section class="dcc-sec dcc-dark">
+  <div class="dcc-wrap">
+    <h2 class="dcc-h2 dcc-rv">배운 만큼, 관리한 만큼,<em>커리어가 수익이 됩니다.</em></h2>
+    <p class="dcc-lead dcc-rv">관리 고객사 약 10개 기준</p>
+
+    <!-- 모바일: 연차별 카드 3개 세로 스택 (월 수익을 크게, 연 수익을 작게) -->
+    <div class="dcc-rev-cards dcc-rv">
+      ${REVENUE.map(
+        (r) => `<div class="dcc-rev-card">
+        <p class="dcc-rev-y">${r.year}</p>
+        <p class="dcc-rev-b">${r.base}</p>
+        <p class="dcc-rev-m"><span class="dcc-rev-k">예상 월 수익</span><b>${r.m}</b></p>
+        <p class="dcc-rev-a"><span class="dcc-rev-k">예상 연 수익</span><b>${r.y}</b></p>
+      </div>`,
+      ).join("")}
+    </div>
+
+    <!-- PC: 4열 표 -->
+    <div class="dcc-rev-table dcc-rv">
+      <table class="dcc-table dcc-table--dark">
+        <colgroup><col style="width:16%" /><col style="width:34%" /><col style="width:25%" /><col style="width:25%" /></colgroup>
+        <thead>
+          <tr><th>구분</th><th>관리 기준</th><th>예상 월 수익</th><th>예상 연 수익</th></tr>
+        </thead>
+        <tbody>
+          ${REVENUE.map(
+            (r) =>
+              `<tr><td class="dcc-td-no">${r.year}</td><td>${r.base}</td><td><span class="dcc-rev-money">${r.m}</span></td><td><span class="dcc-rev-money">${r.y}</span></td></tr>`,
+          ).join("")}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="dcc-disc dcc-disc--dark dcc-rv">${REVENUE_DISCLAIMER}</p>
+  </div>
+</section>
+
 <!-- ── 04 약속 ───────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-beige" style="padding-top:0">
+<!-- 앞이 다크 섹션(03-2)으로 바뀌어 padding-top 을 되살렸다 -->
+<section class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">수료증보다 중요한 것은<em>한 매장을 제대로 진단할 판단력입니다.</em></h2>
     <div class="dcc-chips dcc-rv">
@@ -1155,40 +1204,9 @@ const DETAIL_HTML = `<div class="dcc">
   </div>
 </section>
 
-<!-- ── 12 예상 수익 ──────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-beige">
-  <div class="dcc-wrap">
-    <h2 class="dcc-h2 dcc-rv">배운 만큼, 관리한 만큼,<em>커리어가 수익이 됩니다.</em></h2>
-    <div class="dcc-rev-cards dcc-rv">
-      ${REVENUE.map(
-        (r) => `<div class="dcc-rev-card">
-        <p class="dcc-rev-y">${r.year}</p>
-        <p class="dcc-rev-b">${r.base}</p>
-        <div class="dcc-rev-row"><span class="dcc-rev-k">예상 월 수익</span><span class="dcc-rev-v">${r.m}</span></div>
-        <div class="dcc-rev-row"><span class="dcc-rev-k">예상 연 수익</span><span class="dcc-rev-v">${r.y}</span></div>
-      </div>`,
-      ).join("")}
-    </div>
-    <div class="dcc-rev-table dcc-rv">
-      <table class="dcc-table">
-        <colgroup><col style="width:16%" /><col style="width:34%" /><col style="width:25%" /><col style="width:25%" /></colgroup>
-        <thead>
-          <tr><th>구분</th><th>관리 기준</th><th>예상 월 수익</th><th>예상 연 수익</th></tr>
-        </thead>
-        <tbody>
-          ${REVENUE.map(
-            (r) =>
-              `<tr><td class="dcc-td-no">${r.year}</td><td>${r.base}</td><td>${r.m}</td><td>${r.y}</td></tr>`,
-          ).join("")}
-        </tbody>
-      </table>
-    </div>
-    <p class="dcc-disc dcc-rv">${REVENUE_DISCLAIMER}</p>
-  </div>
-</section>
-
 <!-- ── 13 선발·가격 ──────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark">
+<!-- 앞이 같은 다크 섹션(11-2)이라 padding-top 을 없애 이음새를 줄인다 -->
+<section class="dcc-sec dcc-dark" style="padding-top:0">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">누구나 등록할 수 있는<em>과정이 아닙니다.</em></h2>
     <div class="dcc-sel">
