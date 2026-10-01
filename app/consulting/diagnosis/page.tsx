@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import DiagnosisIntro from "./DiagnosisIntro";
+import VideoReviewPair from "@/components/VideoReviewPair";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -17,6 +18,20 @@ const CONSULTANTS = [
   { slug: "park-jungmin", name: "박정민", field: "FC운영 · PT", img: "/consultants/park-jungmin.png" },
   { slug: "gu-jinwan", name: "구진완", field: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png" },
   { slug: "heo-junyoung", name: "허준영", field: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg" },
+];
+
+// 자체 호스팅 영상 후기 (유튜브 미사용) — video-raw 원본을 720p CRF28 로 인코딩한 것
+const VIDEO_REVIEWS = [
+  {
+    src: "/reviews/diag-halfminute.mp4",
+    poster: "/reviews/diag-halfminute.jpg",
+    caption: "하프미닛 대표님 진단 솔루션 후기",
+  },
+  {
+    src: "/reviews/diag-westzin.mp4",
+    poster: "/reviews/diag-westzin.jpg",
+    caption: "웨스트진 대표님 진단 솔루션 후기",
+  },
 ];
 
 const STEPS = [
@@ -102,7 +117,19 @@ export default function DiagnosisPage() {
         </p>
       </section>
 
-      {/* ── 3. 멘토 선택 그리드 ── */}
+      {/* ── 3. 영상 후기 (문제 공감·작동 방식 → 실제 효과 증거 → 멘토 선택) ── */}
+      <section className="border-t border-white/10 bg-[#0d0d0d] px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <VideoReviewPair
+            title="진단 솔루션을 먼저 받아본"
+            titleAccent="대표님들의 이야기"
+            subtitle="영상을 누르면 대표님들의 실제 목소리를 들을 수 있습니다."
+            items={VIDEO_REVIEWS}
+          />
+        </div>
+      </section>
+
+      {/* ── 4. 멘토 선택 그리드 ── */}
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
         <p className="mb-3 text-center text-xs font-bold uppercase tracking-widest text-[#22B573]">
           헬스장 솔루션 · 필라테스 솔루션
@@ -158,7 +185,7 @@ export default function DiagnosisPage() {
         </div>
       </section>
 
-      {/* ── 4. 클로징 CTA ── */}
+      {/* ── 5. 클로징 CTA ── */}
       <section className="border-t border-white/10 bg-[#0d0d0d] px-4 py-16 text-center sm:py-20">
         <div className="mx-auto max-w-2xl">
           <p className="text-lg font-bold leading-relaxed text-white sm:text-xl">

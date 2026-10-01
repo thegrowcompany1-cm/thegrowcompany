@@ -177,6 +177,22 @@ const DCC_FRAME_ROWS = [
   },
 ];
 
+// ── 03-3 영상 후기 ──────────────────────────────────────────────────────────
+// 자체 호스팅(유튜브 미사용). video-raw 원본을 720p CRF28 로 인코딩한 것.
+// /consulting/diagnosis 도 같은 파일을 쓴다 (components/VideoReviewPair.tsx).
+const DCC_VIDEOS = [
+  {
+    src: "/reviews/diag-halfminute.mp4",
+    poster: "/reviews/diag-halfminute.jpg",
+    caption: "하프미닛 대표님 진단 솔루션 후기",
+  },
+  {
+    src: "/reviews/diag-westzin.mp4",
+    poster: "/reviews/diag-westzin.jpg",
+    caption: "웨스트진 대표님 진단 솔루션 후기",
+  },
+];
+
 // 면책문구 — 생략·접기 금지
 const DCC_CASE_DISCLAIMER =
   "진단컨설팅 시작 이후 운영지표와 실행구조를 변경했고, 그 이후 관찰된 매출 변화입니다. " +
@@ -810,6 +826,21 @@ const DETAIL_HTML = `<div class="dcc">
   .dcc-rev-item{flex:none}
 }
 
+/* 03-3 영상 후기 — PC 2열 / 모바일 1열. 포스터만 먼저 보여주고 누르면 재생한다 */
+.dcc-vid-grid{display:grid;grid-template-columns:1fr;gap:16px;max-width:100%;margin:0 auto}
+@media(min-width:720px){.dcc-vid-grid{grid-template-columns:1fr 1fr;max-width:760px}}
+/* 9:16 세로 영상이라 폭을 묶지 않으면 PC 에서 카드가 지나치게 길어진다 */
+.dcc-vid-card{min-width:0;width:100%;max-width:340px;margin:0 auto}
+.dcc-vid-media{position:relative;width:100%;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#121614;border:1px solid var(--bd)}
+.dcc-vid-media video{display:block;width:100%;height:100%;object-fit:cover}
+.dcc-vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0;border:0;background:rgba(0,0,0,.20);cursor:pointer;transition:background .2s}
+.dcc-vid-play:hover{background:rgba(0,0,0,.35)}
+.dcc-vid-play span{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(34,181,115,.92);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.dcc-vid-close{position:absolute;top:10px;right:10px;z-index:3;display:none;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font:inherit;font-size:15px;line-height:1;cursor:pointer}
+.dcc-vid-card.is-playing .dcc-vid-play{display:none}
+.dcc-vid-card.is-playing .dcc-vid-close{display:flex}
+.dcc-vid-cap{margin:12px 2px 0;font-size:14px;font-weight:700;line-height:1.55;color:#C8D3CD;word-break:keep-all}
+
 /* 공용 라이트박스 */
 /* 세로로 긴 캡처를 원본 크기로 보려면 높이를 제한하지 않고 컨테이너가 스크롤돼야 한다.
    높이에 맞춰 축소하면 카톡 메시지 글자가 읽히지 않는다. */
@@ -913,8 +944,31 @@ const DETAIL_HTML = `<div class="dcc">
   </div>
 </section>
 
+<!-- ── 03-3 영상 후기 ─────────────────────────────────────────────────────── -->
+<!-- 앞이 같은 다크 섹션(03-2 예상 수익)이라 padding-top 을 없애 한 덩어리로 읽히게 한다 -->
+<section class="dcc-sec dcc-dark" style="padding-top:0">
+  <div class="dcc-wrap">
+    <h2 class="dcc-h2 dcc-rv">진단 멘토가 만든 변화,<em>대표님들이 직접 말합니다</em></h2>
+    <p class="dcc-lead dcc-rv">영상을 누르면 대표님들의 실제 목소리를 들을 수 있습니다.</p>
+    <div class="dcc-vid-grid dcc-rv">
+      ${DCC_VIDEOS.map(
+        (v) => `<div class="dcc-vid-card">
+        <div class="dcc-vid-media">
+          <video src="${v.src}" poster="${v.poster}" preload="none" playsinline></video>
+          <button type="button" class="dcc-vid-play" aria-label="${v.caption} 재생">
+            <span><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+          <button type="button" class="dcc-vid-close" aria-label="영상 닫기">✕</button>
+        </div>
+        <p class="dcc-vid-cap">${v.caption}</p>
+      </div>`,
+      ).join("")}
+    </div>
+  </div>
+</section>
+
 <!-- ── 04 약속 ───────────────────────────────────────────────────────────── -->
-<!-- 앞이 다크 섹션(03-2)으로 바뀌어 padding-top 을 되살렸다 -->
+<!-- 앞이 다크 섹션(03-3)이라 padding-top 을 유지한다 -->
 <section class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">수료증보다 중요한 것은<em>한 매장을 제대로 진단할 판단력입니다.</em></h2>
@@ -1524,6 +1578,70 @@ const DETAIL_HTML = `<div class="dcc">
       lb.removeEventListener('click', onLbClick);
       document.removeEventListener('keydown', onEsc);
     });
+  }
+
+  /* 6) 영상 후기
+        포스터 → 클릭 재생. 한 번에 하나만 재생하고, 카드가 화면에서 벗어나면 멈춘다
+        (스크롤로 지나갔는데 소리만 계속 들리는 상황을 막는다). */
+  var vidCards = root.querySelectorAll('.dcc-vid-card');
+  if (vidCards.length) {
+    var vids = [];
+
+    var stopCard = function (card) {
+      var vd = card.querySelector('video');
+      if (!vd) return;
+      vd.pause();
+      vd.currentTime = 0;
+      vd.controls = false;
+      card.classList.remove('is-playing');
+    };
+
+    for (var v = 0; v < vidCards.length; v++) {
+      (function (card) {
+        var video = card.querySelector('video');
+        var playBtn = card.querySelector('.dcc-vid-play');
+        var closeBtn = card.querySelector('.dcc-vid-close');
+        if (!video) return;
+        vids.push(video);
+
+        var onPlay = function () {
+          // 동시 재생 금지 — 나머지 카드를 먼저 되돌린다
+          for (var k = 0; k < vids.length; k++) {
+            if (vids[k] === video) continue;
+            var other = vids[k].closest ? vids[k].closest('.dcc-vid-card') : null;
+            if (other) stopCard(other);
+          }
+          card.classList.add('is-playing');
+          video.controls = true;
+          var p = video.play();
+          // 자동재생 차단 등으로 실패하면 포스터 상태로 되돌린다
+          if (p && typeof p.catch === 'function') p.catch(function () { stopCard(card); });
+        };
+        var onClose = function () { stopCard(card); };
+
+        if (playBtn) playBtn.addEventListener('click', onPlay);
+        if (closeBtn) closeBtn.addEventListener('click', onClose);
+        video.addEventListener('ended', onClose);
+
+        stops.push(function () {
+          if (playBtn) playBtn.removeEventListener('click', onPlay);
+          if (closeBtn) closeBtn.removeEventListener('click', onClose);
+          video.removeEventListener('ended', onClose);
+          video.pause();
+        });
+      })(vidCards[v]);
+    }
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      var ioVid = new IntersectionObserver(function (entries) {
+        for (var e = 0; e < entries.length; e++) {
+          if (entries[e].isIntersecting) continue;
+          stopCard(entries[e].target);
+        }
+      }, { threshold: 0.35 });
+      for (var o = 0; o < vidCards.length; o++) ioVid.observe(vidCards[o]);
+      stops.push(function () { ioVid.disconnect(); });
+    }
   }
 
   // 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
