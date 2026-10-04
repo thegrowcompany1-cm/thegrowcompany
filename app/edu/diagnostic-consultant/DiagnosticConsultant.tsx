@@ -20,8 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   LOGO_MARQUEE_STYLE,
   LOGO_ALT,
-  chunkLogos,
-  rowConfig,
+  buildMarqueeRows,
 } from "@/components/LogoMarquee";
 
 /* ▼▼ 이미지 슬롯 ▼▼
@@ -193,22 +192,22 @@ const DCC_FRAME_ROWS = [
 ];
 
 // ── 03-4 파트너 센터 로고 마퀴 ──────────────────────────────────────────────
-// 한 줄 = 10개. 줄 수는 로고 개수에서 자동 계산된다.
-// 한 벌을 두 번 이어붙여야 트랙을 -50% 움직였을 때 그림이 정확히 맞물린다.
-const LOGO_ROWS_HTML = chunkLogos()
-  .map((row, ri) => {
-    const { dir, dur } = rowConfig(ri);
-    const tiles = [...row, ...row]
+// 검은 바탕 위에 흰색 단색 로고만 흐른다. 줄 구성(5줄, 라운드로빈 분배, 한 벌 반복,
+// 두 번 이어붙이기)은 components/LogoMarquee.tsx 의 buildMarqueeRows 를 그대로 쓴다.
+// 로고마다 폭이 달라 각 아이템을 "높이 × 비율" 고정 폭 래퍼에 넣는다 (--r).
+const LOGO_ROWS_HTML = buildMarqueeRows()
+  .map((row) => {
+    const items = row.items
       .map(
-        (src, i) =>
-          `<div class="logo-tile"><img src="${src}" alt="${LOGO_ALT}" loading="lazy" decoding="async"${
-            i >= row.length ? ' aria-hidden="true"' : ""
+        (it) =>
+          `<div class="logo-item" style="--r:${it.ratio}"><img src="${it.src}" alt="${LOGO_ALT}" loading="lazy" decoding="async"${
+            it.dupe ? ' aria-hidden="true"' : ""
           } /></div>`,
       )
       .join("");
     return (
       `<div class="logo-row">` +
-      `<div class="logo-track logo-track--${dir}" style="--logo-dur:${dur}s">${tiles}</div>` +
+      `<div class="logo-track logo-track--${row.dir}" style="--logo-dur:${row.dur}s">${items}</div>` +
       `</div>`
     );
   })
