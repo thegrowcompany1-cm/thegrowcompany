@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DiagnosisIntro from "./DiagnosisIntro";
 import VideoReviewPair from "@/components/VideoReviewPair";
-import LogoWall from "@/components/LogoWall";
+import LogoMarquee from "@/components/LogoMarquee";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -130,10 +130,10 @@ export default function DiagnosisPage() {
         </div>
       </section>
 
-      {/* ── 4. 파트너 센터 로고월 (후기 영상과 묶어 신뢰 증거 → 멘토 선택) ── */}
+      {/* ── 4. 파트너 센터 로고 마퀴 (후기 영상과 묶어 신뢰 증거 → 멘토 선택) ── */}
       <section className="border-t border-white/10 bg-[#0A0A0A] px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <LogoWall
+          <LogoMarquee
             title="더그로우와 함께"
             titleAccent="성장 중인 센터들"
             subtitle="헬스·필라테스·요가·바레, 업종을 가리지 않고 현장에서 함께합니다"
