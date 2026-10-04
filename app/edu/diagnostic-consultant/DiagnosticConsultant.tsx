@@ -1688,14 +1688,16 @@ ${LOGO_MARQUEE_STYLE}
   }
 
   /* 7) 파트너 센터 로고 마퀴
-        흐름은 전부 CSS animation 이 맡는다. 여기서는 섹션이 화면 밖으로 나갔을 때
-        is-paused 클래스만 붙여 멈춘다 (마우스를 올린 줄만 멈추는 것은 CSS 가 처리). */
+        흐름은 전부 CSS animation 이 맡고, 기본 상태는 "흐르는 중"이다. 이 스크립트가
+        실행되지 않아도 흐른다. 여기서는 섹션이 화면 밖으로 나갔을 때만 is-paused 를
+        붙이고, 다시 들어오면 뗀다 (마우스를 올린 줄만 멈추는 것은 CSS 가 처리). */
   var marquee = document.getElementById('dccLogoMarquee');
   if (marquee && typeof IntersectionObserver !== 'undefined') {
     var ioMq = new IntersectionObserver(function (entries) {
-      var onScreen = entries[0] ? entries[0].isIntersecting : true;
-      marquee.classList.toggle('is-paused', !onScreen);
-    }, { threshold: 0 });
+      for (var q = 0; q < entries.length; q++) {
+        marquee.classList.toggle('is-paused', !entries[q].isIntersecting);
+      }
+    }, { threshold: 0, rootMargin: '120px 0px' });
     ioMq.observe(marquee);
     stops.push(function () {
       ioMq.disconnect();
