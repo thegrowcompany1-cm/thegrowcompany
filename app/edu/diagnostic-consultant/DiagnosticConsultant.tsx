@@ -15,6 +15,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+// 로고 목록과 CSS 는 /consulting/diagnosis 가 쓰는 공용 컴포넌트와 같은 것을 쓴다.
+// 이 페이지는 DETAIL_HTML 주입 구조라 컴포넌트 자체는 못 쓰고 데이터·스타일만 가져온다.
+import { LOGO_STYLE, LOGO_ALT, chunkLogos } from "@/components/LogoWall";
 
 /* ▼▼ 이미지 슬롯 ▼▼
    · 강사진 사진은 기존 진단 멘토 페이지가 쓰는 public/consultants 파일을 경로로만
@@ -183,6 +186,29 @@ const DCC_FRAME_ROWS = [
     b: "월간 핵심행동 캘린더 · 블로그 키워드 순위 추적",
   },
 ];
+
+// ── 03-4 파트너 센터 로고월 ─────────────────────────────────────────────────
+// 1슬라이드 = 5열 × 2행 = 10개. 슬라이드 수는 로고 개수에서 자동 계산된다.
+const LOGO_SLIDES = chunkLogos();
+const LOGO_TRACK_HTML = LOGO_SLIDES.map(
+  (group, si) =>
+    `<div class="logo-slide">` +
+    group
+      .map(
+        (src) =>
+          `<div class="logo-tile"><img src="${src}" alt="${LOGO_ALT}" loading="${
+            si === 0 ? "eager" : "lazy"
+          }" decoding="async" /></div>`,
+      )
+      .join("") +
+    `</div>`,
+).join("");
+const LOGO_DOTS_HTML = LOGO_SLIDES.map(
+  (_, i) =>
+    `<button type="button" class="logo-dot${i === 0 ? " is-on" : ""}" data-logo-go="${i}" aria-label="${
+      i + 1
+    }번째 로고 묶음 보기"></button>`,
+).join("");
 
 // ── 03-3 영상 후기 ──────────────────────────────────────────────────────────
 // 자체 호스팅(유튜브 미사용). video-raw 원본을 720p CRF28 로 인코딩한 것.
@@ -852,6 +878,9 @@ const DETAIL_HTML = `<div class="dcc">
 /* 스크롤해도 닫기 버튼은 제자리 — .dcc-lb 에 transform 이 없어 fixed 가 뷰포트 기준으로 잡힌다 */
 .dcc-lb-close{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:2;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:18px;line-height:1;cursor:pointer}
 
+/* 파트너 센터 로고월 — components/LogoWall.tsx 와 같은 CSS 를 그대로 쓴다 */
+${LOGO_STYLE}
+
 /* 하단 고정 바 */
 .dcc-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:center;background:var(--g);color:#fff;font-size:16px;font-weight:800;text-decoration:none;padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.18);transition:transform .3s ease}
 .dcc-bar.is-hidden{transform:translateY(120%)}
@@ -967,8 +996,23 @@ const DETAIL_HTML = `<div class="dcc">
   </div>
 </section>
 
+<!-- ── 03-4 파트너 센터 로고월 ────────────────────────────────────────────── -->
+<!-- 앞이 같은 다크 섹션(03-3 영상 후기)이라 padding-top 을 없앤다 -->
+<section class="dcc-sec dcc-dark" style="padding-top:0">
+  <div class="dcc-wrap">
+    <h2 class="dcc-h2 dcc-rv">진단 멘토가<em>함께하게 될 현장</em></h2>
+    <p class="dcc-lead dcc-rv">이미 더그로우와 함께하고 있는 센터들입니다.</p>
+    <div class="logo-wall dcc-rv" id="dccLogoWall">
+      <div class="logo-viewport" id="dccLogoViewport">
+        <div class="logo-track" id="dccLogoTrack">${LOGO_TRACK_HTML}</div>
+      </div>
+      <div class="logo-dots" id="dccLogoDots">${LOGO_DOTS_HTML}</div>
+    </div>
+  </div>
+</section>
+
 <!-- ── 04 약속 ───────────────────────────────────────────────────────────── -->
-<!-- 앞이 다크 섹션(03-3)이라 padding-top 을 유지한다 -->
+<!-- 앞이 다크 섹션(03-4)이라 padding-top 을 유지한다 -->
 <section class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">수료증보다 중요한 것은<em>한 매장을 제대로 진단할 판단력입니다.</em></h2>
@@ -1639,6 +1683,105 @@ const DETAIL_HTML = `<div class="dcc">
       for (var o = 0; o < vidCards.length; o++) ioVid.observe(vidCards[o]);
       stops.push(function () { ioVid.disconnect(); });
     }
+  }
+
+  /* 7) 파트너 센터 로고월
+        4초 자동 넘김. 마우스가 올라가 있거나 손가락이 닿아 있으면 멈추고,
+        섹션이 화면 밖으로 나가도 멈춘다. prefers-reduced-motion 이면 돌지 않는다. */
+  var wall = document.getElementById('dccLogoWall');
+  var lgTrack = document.getElementById('dccLogoTrack');
+  var lgDots = document.getElementById('dccLogoDots');
+  if (wall && lgTrack && lgDots) {
+    var lgSlides = lgTrack.children.length;
+    var lgIdx = 0;
+    var lgTimer = null;
+    var lgPaused = false;
+    var lgVisible = true;
+    var lgReduce =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var lgRender = function () {
+      lgTrack.style.transform = 'translateX(-' + lgIdx * 100 + '%)';
+      var dots = lgDots.children;
+      for (var d = 0; d < dots.length; d++) {
+        dots[d].classList.toggle('is-on', d === lgIdx);
+      }
+    };
+    var lgStopTimer = function () {
+      if (lgTimer) { clearInterval(lgTimer); lgTimer = null; }
+    };
+    var lgSyncTimer = function () {
+      lgStopTimer();
+      if (lgSlides <= 1 || lgPaused || !lgVisible || lgReduce) return;
+      lgTimer = setInterval(function () {
+        lgIdx = (lgIdx + 1) % lgSlides;
+        lgRender();
+      }, 4000);
+    };
+    var lgGo = function (n) {
+      lgIdx = ((n % lgSlides) + lgSlides) % lgSlides;
+      lgRender();
+      lgSyncTimer();
+    };
+
+    var onDotClick = function (e) {
+      var t = e.target;
+      var raw = t && t.getAttribute ? t.getAttribute('data-logo-go') : null;
+      if (raw === null) return;
+      lgGo(parseInt(raw, 10) || 0);
+    };
+    var onEnter = function () { lgPaused = true; lgSyncTimer(); };
+    var onLeave = function () { lgPaused = false; lgSyncTimer(); };
+
+    // 터치 스와이프 — 가로로 움직인 경우에만 넘긴다
+    var lgStart = null;
+    var onDown = function (e) {
+      if (e.pointerType === 'mouse') return;
+      lgStart = { x: e.clientX, y: e.clientY };
+      lgPaused = true;
+      lgSyncTimer();
+    };
+    var onUp = function (e) {
+      var st = lgStart;
+      lgStart = null;
+      lgPaused = false;
+      if (!st) { lgSyncTimer(); return; }
+      var dx = e.clientX - st.x;
+      var dy = e.clientY - st.y;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) { lgSyncTimer(); return; }
+      lgGo(lgIdx + (dx < 0 ? 1 : -1));
+    };
+
+    lgDots.addEventListener('click', onDotClick);
+    wall.addEventListener('mouseenter', onEnter);
+    wall.addEventListener('mouseleave', onLeave);
+    wall.addEventListener('pointerdown', onDown);
+    wall.addEventListener('pointerup', onUp);
+    wall.addEventListener('pointercancel', onUp);
+
+    var ioLogo = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      ioLogo = new IntersectionObserver(function (entries) {
+        lgVisible = entries[0] ? entries[0].isIntersecting : true;
+        lgSyncTimer();
+      }, { threshold: 0.15 });
+      ioLogo.observe(wall);
+    }
+
+    lgRender();
+    lgSyncTimer();
+
+    stops.push(function () {
+      lgStopTimer();
+      lgDots.removeEventListener('click', onDotClick);
+      wall.removeEventListener('mouseenter', onEnter);
+      wall.removeEventListener('mouseleave', onLeave);
+      wall.removeEventListener('pointerdown', onDown);
+      wall.removeEventListener('pointerup', onUp);
+      wall.removeEventListener('pointercancel', onUp);
+      if (ioLogo) ioLogo.disconnect();
+    });
   }
 
   // 언마운트 정리용 전역 정지 훅 (React cleanup 에서 호출 후 no-op 으로 교체)

@@ -4,9 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 const FITNESS_LOGO_COUNT = 19;
-// Source A — fitness store logos (public/fitness logos)
+// Source A — fitness store logos (public/fitness-logos)
+// 폴더명에서 공백을 뺐다. 공백이 있으면 URL 인코딩이 필요해 경로가 깨지기 쉽다.
 const sourceALogos = Array.from({ length: FITNESS_LOGO_COUNT }, (_, i) =>
-  encodeURI(`/fitness logos/${i + 1}.png`)
+  `/fitness-logos/${i + 1}.png`
 );
 
 // Source B — logo set from the user-provided "아임웹 위젯 코드 - 로고 슬라이더 v4"

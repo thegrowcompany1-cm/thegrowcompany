@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DiagnosisIntro from "./DiagnosisIntro";
 import VideoReviewPair from "@/components/VideoReviewPair";
+import LogoWall from "@/components/LogoWall";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -129,7 +130,18 @@ export default function DiagnosisPage() {
         </div>
       </section>
 
-      {/* ── 4. 멘토 선택 그리드 ── */}
+      {/* ── 4. 파트너 센터 로고월 (후기 영상과 묶어 신뢰 증거 → 멘토 선택) ── */}
+      <section className="border-t border-white/10 bg-[#0A0A0A] px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <LogoWall
+            title="더그로우와 함께"
+            titleAccent="성장 중인 센터들"
+            subtitle="헬스·필라테스·요가·바레, 업종을 가리지 않고 현장에서 함께합니다"
+          />
+        </div>
+      </section>
+
+      {/* ── 5. 멘토 선택 그리드 ── */}
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
         <p className="mb-3 text-center text-xs font-bold uppercase tracking-widest text-[#22B573]">
           헬스장 솔루션 · 필라테스 솔루션
@@ -185,7 +197,7 @@ export default function DiagnosisPage() {
         </div>
       </section>
 
-      {/* ── 5. 클로징 CTA ── */}
+      {/* ── 6. 클로징 CTA ── */}
       <section className="border-t border-white/10 bg-[#0d0d0d] px-4 py-16 text-center sm:py-20">
         <div className="mx-auto max-w-2xl">
           <p className="text-lg font-bold leading-relaxed text-white sm:text-xl">
