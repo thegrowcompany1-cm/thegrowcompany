@@ -16,7 +16,7 @@
 //  · 결제 연동은 다음 작업이다. 신청 버튼은 자리만 있고 비활성이다.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   SO_CAPACITY,
@@ -332,8 +332,26 @@ const SO_STYLE = `
 .so-vid-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
 .so-vid-card{position:relative;min-width:0;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#000}
 .so-vid-card video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
-@media(max-width:1024px){.so-vid-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:640px){.so-vid{margin-top:60px}.so-vid-title{font-size:21px;margin-bottom:26px}.so-vid-grid{gap:10px}.so-vid-card{border-radius:12px}}
+.so-vid-dots{display:none}
+/* 1024px 이하 — 1줄 가로 슬라이드 (라이브러리 없이 CSS scroll-snap).
+   컨테이너만 가로로 스크롤되고 페이지(body)에는 가로 스크롤이 생기지 않는다.
+   컨테이너를 래퍼 좌우 패딩만큼 음수 마진으로 화면 끝까지 늘리고, 안쪽 padding-inline 16px 로
+   첫·마지막 카드가 화면 끝에 붙지 않게 한다. 카드를 68%/40% 로 잡아 다음 카드가 오른쪽에 살짝 보인다. */
+@media(max-width:1024px){
+  .so-vid-grid{position:relative;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;padding-inline:16px;scroll-padding-inline:16px;margin-inline:-20px}
+  .so-vid-grid::-webkit-scrollbar{display:none}
+  .so-vid-grid:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
+  .so-vid-card{flex:0 0 40%;scroll-snap-align:start}
+  .so-vid-dots{display:flex;align-items:center;justify-content:center;margin-top:14px}
+  .so-vid-dot{display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer}
+  .so-vid-dot::before{content:"";width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.28);transition:width .25s ease,background .25s ease}
+  .so-vid-dot.is-on::before{width:22px;background:var(--g)}
+}
+@media(max-width:640px){
+  .so-vid{margin-top:60px}.so-vid-title{font-size:21px;margin-bottom:26px}
+  .so-vid-grid{margin-inline:-16px}
+  .so-vid-card{flex-basis:68%;border-radius:12px}
+}
 
 /* 4. 운영 축 문제 제기 */
 .so-op-body{max-width:640px;margin:22px auto 0;text-align:center;font-size:18px;line-height:1.85;color:#3F3F3F}
@@ -409,6 +427,10 @@ const SO_STYLE = `
 export default function SalesOps() {
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  // 영상 슬라이드 (1024px 이하에서만 가로 스크롤) — 현재 카드 점 표시용
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [activeVid, setActiveVid] = useState(0);
 
   // 스크롤 등장 — 이펙트가 so-anim 을 붙인 뒤에만 숨김 → 등장. 스크립트가 안 돌면 전부 보인다.
   useEffect(() => {
@@ -433,6 +455,74 @@ export default function SalesOps() {
       root.classList.remove("so-anim");
     };
   }, []);
+
+  // 영상 슬라이드 — 현재 카드 계산(점), 재생 중인 카드가 화면 밖으로 나가면 정지
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    // 현재 인덱스: 각 카드의 "스크롤 목표 위치"(clamp 적용)와 지금 위치가 가장 가까운 카드.
+    // 끝에 가까운 카드들은 목표가 스크롤 끝으로 clamp 되어 같아질 수 있는데(태블릿 40%),
+    // 그때는 뒤쪽 카드를 현재로 본다.
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = slider.scrollWidth - slider.clientWidth;
+      if (max <= 1) {
+        setActiveVid(0); // 데스크톱 그리드 — 스크롤이 없다 (점도 숨겨져 있다)
+        return;
+      }
+      const pad = parseFloat(getComputedStyle(slider).paddingLeft) || 0;
+      let best = 0;
+      let bestDist = Infinity;
+      cardRefs.current.forEach((card, i) => {
+        if (!card) return;
+        const target = Math.min(Math.max(card.offsetLeft - pad, 0), max);
+        const dist = Math.abs(target - slider.scrollLeft);
+        if (dist <= bestDist) {
+          bestDist = dist;
+          best = i;
+        }
+      });
+      setActiveVid(best);
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    slider.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+
+    // 재생 중인 영상이 슬라이드 밖으로 50% 이상 나가면 일시정지 (root = 슬라이드 컨테이너)
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio >= 0.5) return;
+          const idx = cardRefs.current.indexOf(entry.target as HTMLDivElement);
+          const video = idx >= 0 ? videoRefs.current[idx] : null;
+          if (video && !video.paused) video.pause();
+        });
+      },
+      { root: slider, threshold: [0, 0.5, 1] },
+    );
+    cardRefs.current.forEach((card) => card && io.observe(card));
+
+    return () => {
+      slider.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (raf) cancelAnimationFrame(raf);
+      io.disconnect();
+    };
+  }, []);
+
+  // 점을 누르면 해당 카드로 이동 (맨 끝 근처 카드는 스크롤 끝에서 멈춘다)
+  const goToVideo = (i: number) => {
+    const slider = sliderRef.current;
+    const card = cardRefs.current[i];
+    if (!slider || !card) return;
+    const pad = parseFloat(getComputedStyle(slider).paddingLeft) || 0;
+    slider.scrollTo({ left: card.offsetLeft - pad, behavior: "smooth" });
+  };
 
   // 하나를 재생하면 나머지는 멈춘다 (동시에 소리가 겹치지 않게)
   const pauseOthers = (index: number) => {
@@ -579,9 +669,21 @@ export default function SalesOps() {
           <div className="so-vid">
             <p className="so-vid-label">SALES SALON</p>
             <h3 className="so-vid-title">황현진 대표의 세일즈 화법, 영상으로 먼저 만나보세요</h3>
-            <div className="so-vid-grid">
+            <div
+              className="so-vid-grid"
+              ref={sliderRef}
+              tabIndex={0}
+              role="group"
+              aria-label="황현진 대표 세일즈 화법 영상"
+            >
               {SO_VIDEOS.map(({ src, poster }, i) => (
-                <div className="so-vid-card" key={src}>
+                <div
+                  className="so-vid-card"
+                  key={src}
+                  ref={(el) => {
+                    cardRefs.current[i] = el;
+                  }}
+                >
                   <video
                     ref={(el) => {
                       videoRefs.current[i] = el;
@@ -595,6 +697,19 @@ export default function SalesOps() {
                     aria-label={`황현진 대표 세일즈 화법 영상 ${i + 1}`}
                   />
                 </div>
+              ))}
+            </div>
+            {/* 1024px 이하에서만 보이는 현재 카드 점 (데스크톱은 4열 그리드라 숨김) */}
+            <div className="so-vid-dots">
+              {SO_VIDEOS.map(({ src }, i) => (
+                <button
+                  type="button"
+                  key={src}
+                  className={`so-vid-dot${i === activeVid ? " is-on" : ""}`}
+                  aria-label={`영상 ${i + 1}번으로 이동`}
+                  aria-current={i === activeVid ? "true" : undefined}
+                  onClick={() => goToVideo(i)}
+                />
               ))}
             </div>
           </div>
