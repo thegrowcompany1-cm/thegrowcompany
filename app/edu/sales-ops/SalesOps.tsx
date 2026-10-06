@@ -31,6 +31,7 @@ import {
 
 // ── 이미지 ──────────────────────────────────────────────────────────────────
 // hwang: 배경이 제거된 누끼. consultants/hwang-hyunjin.png 의 투명 여백을 걷고 WebP 로 줄인 사본
+//        (원본 PNG 는 저장소에 올리지 않았다. 이 페이지는 아래 webp 만 불러온다)
 // kim:   기존 진단 멘토 페이지가 쓰는 경로를 그대로 참조한다 (복사하지 않음)
 const SO_IMG = {
   hwang: "/edu/sales-ops/hwang-hyunjin.webp",
@@ -79,8 +80,10 @@ const SO_HWANG_BIO = [
 
 // ── 5. 김재강 소개 — 진단 멘토 페이지(/consulting/diagnosis/kim-jaegang) 문구 원문 ──
 const SO_KIM_ROLE = "(주)더그로우컴퍼니 대표이사";
+// 진단 멘토 페이지의 1인칭 문단("저는 …마주해온 사람입니다")을 이 페이지에서만 3인칭으로 바꿨다.
+// 진단 멘토 페이지 원문은 그대로 둔다.
 const SO_KIM_BIO =
-  "저는 46개 필라테스와 6개 대형 피트니스를 총괄하며 매출 압박 속에 눈치로 버티던 관리자들을 현장에서 직접 마주해온 사람입니다.";
+  "46개 필라테스와 6개 대형 피트니스를 총괄하며 10년간 쌓은 운영 데이터로 센터의 구조를 설계합니다.";
 const SO_KIM_STATS = ["52개 센터 총괄", "10년 운영 데이터", "수백 명 조직 리딩"];
 
 // ── 6. 이런 분들께 필요합니다 ───────────────────────────────────────────────
@@ -333,24 +336,21 @@ const SO_STYLE = `
 .so-vid-card{position:relative;min-width:0;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#000}
 .so-vid-card video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
 .so-vid-dots{display:none}
-/* 1024px 이하 — 1줄 가로 슬라이드 (라이브러리 없이 CSS scroll-snap).
+/* 640px 이하 — 1줄 가로 슬라이드 (라이브러리 없이 CSS scroll-snap).
+   641px 이상(태블릿 포함)은 위의 4열 그리드를 그대로 쓰고 점도 숨긴다.
    컨테이너만 가로로 스크롤되고 페이지(body)에는 가로 스크롤이 생기지 않는다.
-   컨테이너를 래퍼 좌우 패딩만큼 음수 마진으로 화면 끝까지 늘리고, 안쪽 padding-inline 16px 로
-   첫·마지막 카드가 화면 끝에 붙지 않게 한다. 카드를 68%/40% 로 잡아 다음 카드가 오른쪽에 살짝 보인다. */
-@media(max-width:1024px){
-  .so-vid-grid{position:relative;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;padding-inline:16px;scroll-padding-inline:16px;margin-inline:-20px}
+   컨테이너를 래퍼 좌우 패딩(16px)만큼 음수 마진으로 화면 끝까지 늘리고, 안쪽 padding-inline 16px 로
+   첫·마지막 카드가 화면 끝에 붙지 않게 한다. 카드를 78% 로 잡아 다음 카드가 오른쪽에 보인다. */
+@media(max-width:640px){
+  .so-vid{margin-top:60px}.so-vid-title{font-size:21px;margin-bottom:26px}
+  .so-vid-grid{position:relative;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;padding-inline:16px;scroll-padding-inline:16px;margin-inline:-16px}
   .so-vid-grid::-webkit-scrollbar{display:none}
   .so-vid-grid:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
-  .so-vid-card{flex:0 0 40%;scroll-snap-align:start}
+  .so-vid-card{flex:0 0 78%;scroll-snap-align:start;border-radius:12px}
   .so-vid-dots{display:flex;align-items:center;justify-content:center;margin-top:14px}
   .so-vid-dot{display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer}
   .so-vid-dot::before{content:"";width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.28);transition:width .25s ease,background .25s ease}
   .so-vid-dot.is-on::before{width:22px;background:var(--g)}
-}
-@media(max-width:640px){
-  .so-vid{margin-top:60px}.so-vid-title{font-size:21px;margin-bottom:26px}
-  .so-vid-grid{margin-inline:-16px}
-  .so-vid-card{flex-basis:68%;border-radius:12px}
 }
 
 /* 4. 운영 축 문제 제기 */
