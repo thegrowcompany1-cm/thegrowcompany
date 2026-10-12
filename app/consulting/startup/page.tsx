@@ -14,7 +14,6 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import CostCalculator from "@/components/CostCalculator";
 import { SITE_URL } from "@/lib/site";
 
 // 창업 솔루션 Service 구조화 데이터
@@ -3903,11 +3902,10 @@ export default function StartupConsultingPage() {
         </div>
       </section>
 
-      {/* 창업비용 계산기 팝업 (하단 고정 트리거 바 + 패널)
-          하단 고정 CTA 바(StickyCtaBar)는 이 계산기 바가 같은 자리를 상시 덮고
-          있어 화면에 뜬 적이 없다. 푸터 가림 보정용 스페이서까지 계산기가 직접
-          깔도록 옮기고 제거했다. */}
-      <CostCalculator />
+      {/* 창업비용 계산기 팝업(하단 고정 바 + 패널)은 노출을 중단했다.
+          components/CostCalculator.tsx 와 그 데이터는 그대로 두었으니,
+          다시 열려면 import 와 <CostCalculator /> 를 이 자리에 되살리면 된다.
+          (푸터 가림 보정 스페이서도 계산기가 깔던 것이라 함께 사라진다) */}
     </div>
   );
 }
