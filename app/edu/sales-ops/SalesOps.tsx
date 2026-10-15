@@ -54,7 +54,11 @@ const SO_VIDEOS = [1, 2, 3, 4].map((n) => ({
 }));
 
 // ── 1. 히어로 ───────────────────────────────────────────────────────────────
-const SO_TARGET_TAGS = ["헬스 · 필라테스 · 요가 · 바레", "강사 · 실장 · 원장 · 점장"];
+// 히어로 대상 안내 2줄. 첫 줄은 좁은 화면에서 "등 피트니스 종사자분들" 앞에서 끊기도록 둘로 나눈다.
+const SO_TARGET_LINES: [string, string][] = [
+  ["헬스 · 필라테스 · 요가 · 바레", "등 피트니스 종사자분들"],
+  ["강사 · 실장 · 원장 · 점장을 위한", "세일즈 · 운영 교육"],
+];
 
 // ── 2. 세일즈 축 문제 제기 — 상담 대사 원문 + 회색 진단 라벨 ─────────────────
 const SO_TALKS = [
@@ -280,8 +284,9 @@ const SO_STYLE = `
 .so-hero .so-kicker{margin:0 0 18px}
 .so-h1{font-size:46px;font-weight:900;line-height:1.28;margin:0 0 16px}
 .so-hero-sub{font-size:19px;line-height:1.6;color:#C8D3CD;margin:0 0 26px}
-.so-tags{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.so-tags li{font-size:13.5px;font-weight:700;color:#D3DCD7;border:1px solid rgba(34,181,115,.35);background:rgba(34,181,115,.08);padding:8px 14px;border-radius:50px}
+.so-tags{margin:0 0 26px;display:grid;gap:5px;word-break:keep-all}
+.so-tags p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:#D3DCD7}
+.so-tags span{display:inline-block}
 .so-hero-meta{margin:0 0 30px;font-size:16px;font-weight:700;line-height:1.7;color:#fff}
 .so-hero-meta span{color:var(--g);margin-right:10px}
 .so-cta{display:inline-flex;align-items:center;justify-content:center;max-width:100%;padding:17px 34px;border-radius:50px;background:var(--g);color:#fff;font-size:17px;font-weight:800;text-decoration:none;box-shadow:0 10px 26px rgba(34,181,115,.28)}
@@ -556,11 +561,13 @@ export default function SalesOps() {
             <p className="so-kicker">더그로우 X 리얼세일즈</p>
             <h1 className="so-h1">피트니스 성장 마스터키 세미나</h1>
             <p className="so-hero-sub">운영과 세일즈, 센터 매출을 여는 두 개의 열쇠</p>
-            <ul className="so-tags">
-              {SO_TARGET_TAGS.map((t) => (
-                <li key={t}>{t}</li>
+            <div className="so-tags">
+              {SO_TARGET_LINES.map(([a, b]) => (
+                <p key={a}>
+                  {a} <span>{b}</span>
+                </p>
               ))}
-            </ul>
+            </div>
             <p className="so-hero-meta">
               <span>{SO_DATE}</span>
               {SO_TIME}
