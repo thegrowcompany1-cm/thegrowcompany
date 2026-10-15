@@ -113,6 +113,18 @@ const SO_OPS_CARDS = [
   },
 ];
 
+// 4. 운영 축 — 운영 시스템 화면 3D 원통 슬라이드 (public/edu/sales-ops/ops/)
+const SO_SYS_LABEL = "GROW SYSTEM";
+const SO_SYS_TITLE = "원장이 없어도 센터가 돌아가는 이유";
+const SO_SYS_SUB = "더그로우가 운영하는 센터에서 매일 쓰는 운영 시스템 화면입니다";
+const SO_SYS_SCREENS = [
+  { src: "/edu/sales-ops/ops/ops-01-promo.webp", name: "홍보일지", desc: "어디에 무엇을 뿌렸는지, 지도로 기록" },
+  { src: "/edu/sales-ops/ops/ops-02-dashboard.webp", name: "대시보드", desc: "유효회원·만료·매출·이탈 위험을 한 화면에" },
+  { src: "/edu/sales-ops/ops/ops-03-today.webp", name: "오늘 할 일", desc: "재등록·미가입 콜 대상을 매일 자동으로" },
+  { src: "/edu/sales-ops/ops/ops-04-pt.webp", name: "PT 관리", desc: "트레이너별 매출·재등록률·잔여 세션" },
+];
+const SO_SYS_ROTATE_MS = 3500;
+
 const SO_NEEDS = [
   {
     who: "강사 · 트레이너",
@@ -390,6 +402,45 @@ const SO_STYLE = `
 .so-need-lbl{display:inline-block;margin:0 0 14px;font-size:13px;font-weight:800;color:#0B6B3A;background:rgba(34,181,115,.14);padding:6px 13px;border-radius:50px}
 @media(max-width:640px){.so-op-body{font-size:15.5px}}
 
+/* 4-2. 운영 시스템 3D 원통 슬라이드 — 라이브러리 없이 CSS 3D transform.
+   카드 폭 --w = 데스크톱 560px / 모바일 화면폭의 78%, 높이는 4:3. 반지름 = --w / 2 (4면 원통).
+   원통을 translateZ(-반지름) 만큼 뒤로 밀어 정면 카드가 무대 평면에 오게 한다. */
+.so-sys{margin-top:84px;text-align:center}
+.so-sys-lbl{margin:0 0 12px;font-size:13px;font-weight:800;letter-spacing:.2em;color:var(--g)}
+.so-sys-title{margin:0 0 12px;font-size:30px;line-height:1.4;font-weight:900;text-wrap:balance}
+.so-sys-sub{margin:0 auto 34px;max-width:560px;font-size:16px;line-height:1.7;color:#555}
+.so-cyl-wrap{overflow:hidden;padding:8px 0}
+.so-cyl-stage{--w:min(78vw,560px);position:relative;width:var(--w);height:calc(var(--w) * .75);margin:0 auto;perspective:1400px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.so-cyl{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.22,.61,.36,1)}
+.so-cyl-face{position:absolute;inset:0;border-radius:14px;background:#0F1413;border:1px solid rgba(20,20,20,.1);box-shadow:0 18px 44px rgba(20,20,20,.18);backface-visibility:hidden;-webkit-backface-visibility:hidden;opacity:.35;filter:brightness(.6);transition:opacity .9s cubic-bezier(.22,.61,.36,1),filter .9s cubic-bezier(.22,.61,.36,1)}
+.so-cyl-face.is-front{opacity:1;filter:none}
+.so-cyl-face .so-img-ph{background:none;color:#5E6B65}
+.so-cyl-face img{pointer-events:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none}
+.so-cyl-mark{position:absolute;right:10px;bottom:8px;z-index:2;font-size:12px;font-weight:800;letter-spacing:.04em;color:rgba(255,255,255,.55);text-shadow:0 1px 4px rgba(0,0,0,.55);pointer-events:none;-webkit-user-select:none;user-select:none}
+.so-cyl-cap{min-height:72px;margin-top:26px}
+.so-cyl-cap-in{display:flex;flex-direction:column;gap:6px;align-items:center;animation:so-cap-in .6s ease both}
+.so-cyl-cap-in b{font-size:20px;font-weight:900}
+.so-cyl-cap-in span{font-size:15.5px;line-height:1.6;color:#555}
+@keyframes so-cap-in{from{opacity:0}to{opacity:1}}
+.so-sys-dots{display:flex;align-items:center;justify-content:center;margin-top:6px}
+.so-sys-dot{appearance:none;border:0;background:none;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;padding:0}
+.so-sys-dot::before{content:"";width:9px;height:9px;border-radius:50%;background:rgba(20,20,20,.2);transition:background-color .2s,transform .2s}
+.so-sys-dot.is-on::before{background:var(--g);transform:scale(1.25)}
+.so-sys-dot:focus-visible{outline:2px solid var(--g);outline-offset:-2px;border-radius:8px}
+/* 모션 축소: 회전 없이 정면 카드만 겹쳐 두고 페이드로만 전환 */
+.so-cyl-flat .so-cyl{transform:none!important;transition:none}
+.so-cyl-flat .so-cyl-face{transform:none!important;opacity:0;filter:none;transition:opacity .5s ease}
+.so-cyl-flat .so-cyl-face.is-front{opacity:1}
+@media(max-width:640px){
+  .so-sys{margin-top:64px}
+  .so-sys-title{font-size:23px}
+  .so-sys-sub{font-size:14.5px;margin-bottom:26px}
+  .so-cyl-cap-in b{font-size:18px}
+  .so-cyl-cap-in span{font-size:14.5px}
+  .so-cyl-mark{font-size:10.5px;right:8px;bottom:6px}
+}
+@media(prefers-reduced-motion:reduce){.so-cyl-cap-in{animation:none}}
+
 /* 5. 김재강 소개 */
 .so-kim{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0 auto}
 .so-kim-photo{width:100%;max-width:340px;margin:0 auto;aspect-ratio:3/4;border-radius:22px;background:#e9e4d3}
@@ -464,6 +515,49 @@ export default function SalesOps() {
   const sliderRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeVid, setActiveVid] = useState(0);
+
+  // 운영 시스템 3D 원통 — idx 는 계속 늘어나는 회전 카운터(역회전 방지), active 는 idx % 4
+  const sysStageRef = useRef<HTMLDivElement>(null);
+  const [sysIdx, setSysIdx] = useState(0);
+  const [sysVisible, setSysVisible] = useState(false);
+  const [sysHover, setSysHover] = useState(false);
+  const [sysReduced, setSysReduced] = useState(false);
+  const sysCount = SO_SYS_SCREENS.length;
+  const sysActive = ((sysIdx % sysCount) + sysCount) % sysCount;
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setSysReduced(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // 화면에 보일 때만 돈다
+  useEffect(() => {
+    const el = sysStageRef.current;
+    if (!el || !("IntersectionObserver" in window)) {
+      setSysVisible(true);
+      return;
+    }
+    const io = new IntersectionObserver(([entry]) => setSysVisible(entry.isIntersecting), { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // 3.5초마다 한 칸 — 점을 누르거나 호버가 풀리면 타이머가 새로 시작된다
+  useEffect(() => {
+    if (!sysVisible || sysHover) return;
+    const t = window.setTimeout(() => setSysIdx((v) => v + 1), SO_SYS_ROTATE_MS);
+    return () => window.clearTimeout(t);
+  }, [sysVisible, sysHover, sysIdx]);
+
+  const goToSys = (target: number) => {
+    // 가까운 방향으로 돈다 (앞으로 0~2칸, 바로 이전 화면이면 뒤로 1칸)
+    let d = (target - sysActive + sysCount) % sysCount;
+    if (d === sysCount - 1) d = -1;
+    setSysIdx((v) => v + d);
+  };
 
   // 스크롤 등장 — 이펙트가 so-anim 을 붙인 뒤에만 숨김 → 등장. 스크립트가 안 돌면 전부 보인다.
   useEffect(() => {
@@ -771,6 +865,70 @@ export default function SalesOps() {
                 <p className="so-need-body">{c.body}</p>
               </div>
             ))}
+          </div>
+
+          <div className="so-sys so-reveal">
+            <p className="so-sys-lbl">{SO_SYS_LABEL}</p>
+            <h3 className="so-sys-title">{SO_SYS_TITLE}</h3>
+            <p className="so-sys-sub">{SO_SYS_SUB}</p>
+            <div className="so-cyl-wrap">
+              <div
+                ref={sysStageRef}
+                className={"so-cyl-stage" + (sysReduced ? " so-cyl-flat" : "")}
+                role="group"
+                aria-roledescription="carousel"
+                aria-label="운영 시스템 화면"
+                onContextMenu={(e) => e.preventDefault()}
+                onDragStart={(e) => e.preventDefault()}
+                onMouseEnter={() => setSysHover(true)}
+                onMouseLeave={() => setSysHover(false)}
+              >
+                <div
+                  className="so-cyl"
+                  style={{ transform: `translateZ(calc(var(--w) / -2)) rotateY(${-sysIdx * 90}deg)` }}
+                >
+                  {SO_SYS_SCREENS.map((sc, i) => {
+                    const front = i === sysActive;
+                    return (
+                      <div
+                        key={sc.src}
+                        className={"so-cyl-face so-media" + (front ? " is-front" : "")}
+                        style={{ transform: `rotateY(${i * 90}deg) translateZ(calc(var(--w) / 2))` }}
+                        aria-hidden={!front}
+                      >
+                        <SoImg
+                          src={sc.src}
+                          alt={sc.name}
+                          sizes="(max-width: 640px) 78vw, 560px"
+                          fit="contain"
+                        />
+                        <span className="so-cyl-mark" aria-hidden="true">
+                          © THE GROW
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            <div className="so-cyl-cap" aria-live="polite">
+              <div className="so-cyl-cap-in" key={sysActive}>
+                <b>{SO_SYS_SCREENS[sysActive].name}</b>
+                <span>{SO_SYS_SCREENS[sysActive].desc}</span>
+              </div>
+            </div>
+            <div className="so-sys-dots" role="group" aria-label="운영 시스템 화면 선택">
+              {SO_SYS_SCREENS.map((sc, i) => (
+                <button
+                  key={sc.name}
+                  type="button"
+                  className={"so-sys-dot" + (i === sysActive ? " is-on" : "")}
+                  aria-label={`${sc.name} 보기`}
+                  aria-pressed={i === sysActive}
+                  onClick={() => goToSys(i)}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
