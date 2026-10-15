@@ -14,7 +14,6 @@ import Link from "next/link";
 const CONSULTANTS = [
   { slug: "kim-jaegang", name: "김재강", field: "FC운영 · 리더십", img: "/consultants/kim-jaegang.jpg" },
   { slug: "kim-seungho", name: "김승호", field: "FC운영 · PT", img: "/consultants/kim-seungho.jpg" },
-  { slug: "hwang-bongnam", name: "황봉남", field: "인적자원 · PT", img: "/consultants/hwang-bongnam.jpg" },
   { slug: "park-jungmin", name: "박정민", field: "FC운영 · PT", img: "/consultants/park-jungmin.png" },
   { slug: "gu-jinwan", name: "구진완", field: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png" },
   { slug: "heo-junyoung", name: "허준영", field: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg" },
