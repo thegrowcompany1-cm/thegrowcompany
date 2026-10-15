@@ -29,6 +29,10 @@ export type PaymentSheetRow = {
   customerEmail: string;
   paymentKey: string;
   receiptUrl: string | null;
+  /** 신청 페이지에서 받은 추가 정보 — 없는 상품은 비어 있다 (필드 추가만, 기존 키는 그대로) */
+  instagramId?: string;
+  center?: string;
+  role?: string;
 };
 
 /**
@@ -50,7 +54,16 @@ export async function sendPaymentToSheet(p: PaymentSheetRow): Promise<boolean> {
     customerEmail: p.customerEmail,
     paymentKey: p.paymentKey,
     receiptUrl: p.receiptUrl,
+    // 추가 필드 — Apps Script 가 모르는 키는 무시하므로 기존 시트 기록은 깨지지 않는다
+    인스타ID: p.instagramId ?? "",
+    센터명: p.center ?? "",
+    역할: p.role ?? "",
   };
+
+  // 전송 내용 확인용 로그 — 개인정보(이름·연락처·이메일)는 남기지 않는다
+  console.log(
+    `결제내역 시트 전송 — orderId=${p.orderId} productSlug=${p.productSlug} amount=${p.amount} 인스타ID=${body.인스타ID || "(없음)"} 센터명=${body.센터명 || "(없음)"} 역할=${body.역할 || "(없음)"}`,
+  );
 
   const logFail = (reason: string) =>
     console.error(

@@ -16,6 +16,7 @@
 import { NextResponse } from "next/server";
 import { fetchProductBySlug, parseOrderIdSlug } from "@/lib/products";
 import { sendPaymentToSheet } from "@/lib/paymentSheet";
+import { SO_PRODUCT_STORY } from "@/lib/salesOps";
 
 // Buffer(Basic 인증 헤더) 사용 — Node 런타임 고정
 export const runtime = "nodejs";
@@ -29,7 +30,15 @@ type ConfirmRequest = {
   amount?: unknown;
   /** orderId 파싱 실패 시의 예비 경로 (가격은 언제나 DB 기준으로 검증한다) */
   productSlug?: unknown;
-  customer?: { name?: unknown; phone?: unknown; email?: unknown };
+  customer?: {
+    name?: unknown;
+    phone?: unknown;
+    email?: unknown;
+    /** 신청 페이지에서 받은 추가 정보 (없는 상품은 비어 있다) */
+    center?: unknown;
+    role?: unknown;
+    instagram?: unknown;
+  };
 };
 
 /** 토스 승인 응답 중 실제로 쓰는 필드만 */
@@ -48,6 +57,12 @@ type TossPayment = {
 
 const str = (v: unknown, max = 200) =>
   typeof v === "string" ? v.trim().slice(0, max) : "";
+
+/** 인스타그램 아이디 정리 — 형식이 맞지 않으면 빈 값 */
+const cleanInstagram = (v: unknown) => {
+  const id = str(v, 60).replace(/^@+/, "");
+  return /^[A-Za-z0-9._]{1,30}$/.test(id) ? id : "";
+};
 
 const fail = (status: number, code: string, message: string) =>
   NextResponse.json({ ok: false, code, message }, { status });
@@ -162,6 +177,11 @@ export async function POST(request: Request) {
     customerName: str(body.customer?.name, 50),
     customerPhone: str(body.customer?.phone, 30),
     customerEmail: str(body.customer?.email, 120),
+    // 스토리 인증가 상품만 인스타 아이디를 기록한다 (@ 제거, 영문·숫자·._ 만 허용). 정상가는 빈 값.
+    instagramId:
+      product.slug === SO_PRODUCT_STORY ? cleanInstagram(body.customer?.instagram) : "",
+    center: str(body.customer?.center, 60),
+    role: str(body.customer?.role, 30),
   };
 
   // 결제내역 시트 기록 — 토스 승인 성공을 확인한 뒤에만 여기 도달한다.

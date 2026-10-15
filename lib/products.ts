@@ -72,6 +72,10 @@ export type CheckoutCustomer = {
   name: string;
   phone: string;
   email: string;
+  /** 신청 페이지에서 미리 받은 추가 정보 (없는 상품은 비어 있다) */
+  center?: string;
+  role?: string;
+  instagram?: string;
 };
 
 const customerKey = (orderId: string) => `tgc:checkout:${orderId}`;
@@ -96,6 +100,9 @@ export function readCheckoutCustomer(orderId: string): CheckoutCustomer | null {
       name: String(v.name ?? ""),
       phone: String(v.phone ?? ""),
       email: String(v.email ?? ""),
+      ...(v.center ? { center: String(v.center) } : {}),
+      ...(v.role ? { role: String(v.role) } : {}),
+      ...(v.instagram ? { instagram: String(v.instagram) } : {}),
     };
   } catch {
     return null;
@@ -105,6 +112,57 @@ export function readCheckoutCustomer(orderId: string): CheckoutCustomer | null {
 export function clearCheckoutCustomer(orderId: string): void {
   try {
     sessionStorage.removeItem(customerKey(orderId));
+  } catch {
+    /* 무시 */
+  }
+  // 신청 페이지에서 넘겨 둔 미리 입력 값도 결제가 끝나면 지운다
+  const slug = parseOrderIdSlug(orderId);
+  if (slug) clearCheckoutPrefill(slug);
+}
+
+// ── 신청 페이지 → 결제 페이지 미리 입력 값 ──────────────────────────────────
+// /edu/sales-ops 처럼 결제 전에 신청 정보(센터명·역할·인스타 아이디)를 먼저 받는 페이지가
+// 상품 슬러그를 키로 sessionStorage 에 담아 두면, 결제 페이지가 이름·연락처를 채우고
+// 결제 승인 단계까지 같이 실어 보낸다. 값이 없으면 기존 흐름과 완전히 같다.
+
+export type CheckoutPrefill = {
+  name: string;
+  phone: string;
+  center: string;
+  role: string;
+  instagram: string;
+};
+
+const prefillKey = (slug: string) => `tgc:checkout:prefill:${slug}`;
+
+export function saveCheckoutPrefill(slug: string, v: CheckoutPrefill): void {
+  try {
+    sessionStorage.setItem(prefillKey(slug), JSON.stringify(v));
+  } catch {
+    /* 무시 */
+  }
+}
+
+export function readCheckoutPrefill(slug: string): CheckoutPrefill | null {
+  try {
+    const raw = sessionStorage.getItem(prefillKey(slug));
+    if (!raw) return null;
+    const v = JSON.parse(raw) as Partial<CheckoutPrefill>;
+    return {
+      name: String(v.name ?? ""),
+      phone: String(v.phone ?? ""),
+      center: String(v.center ?? ""),
+      role: String(v.role ?? ""),
+      instagram: String(v.instagram ?? ""),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function clearCheckoutPrefill(slug: string): void {
+  try {
+    sessionStorage.removeItem(prefillKey(slug));
   } catch {
     /* 무시 */
   }

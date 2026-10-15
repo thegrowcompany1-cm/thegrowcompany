@@ -13,16 +13,18 @@
 //  · 애니메이션 fail-safe: 기본은 전부 표시. 이펙트가 루트에 so-anim 을 붙인 뒤에만
 //    숨김 → 등장. 스크립트가 안 돌면 모든 섹션이 보인 상태로 남는다.
 //  · IntersectionObserver 는 언마운트 시 정리, 전역 함수 없음.
-//  · 결제 연동은 다음 작업이다. 신청 버튼은 자리만 있고 비활성이다.
+//  · 신청·결제: 신청 섹션의 결제 카드 2종(components/edu/SalesOpsPay.tsx) → /checkout → 토스 → 시트 기록.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import SalesOpsPay from "@/components/edu/SalesOpsPay";
 import {
   SO_CAPACITY,
   SO_DATE,
   SO_PLACE,
-  SO_PRICE,
+  SO_PRICE_NORMAL,
+  SO_PRICE_STORY,
   SO_TIME,
   soFormatCapacity,
   soFormatPrice,
@@ -503,8 +505,6 @@ const SO_STYLE = `
 .so-table th{width:28%;font-weight:800;background:#F4F1E6;color:#3A3A3A}
 .so-table td{font-weight:700}
 .so-table td.is-pending{color:#8a8a8a;font-weight:600}
-.so-pay{display:block;width:100%;max-width:640px;margin:22px auto 0;padding:18px 20px;border:0;border-radius:50px;background:#CFCFCF;color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:not-allowed}
-.so-pay-note{max-width:640px;margin:12px auto 0;text-align:center;font-size:13.5px;line-height:1.6;color:#7a7a7a}
 @media(max-width:640px){.so-table th,.so-table td{padding:15px 14px;font-size:15px}.so-table th{width:32%}}
 `;
 
@@ -1077,17 +1077,14 @@ export default function SalesOps() {
               </tr>
               <tr>
                 <th scope="row">가격</th>
-                <td className={soIsPending(SO_PRICE) ? "is-pending" : undefined}>
-                  {soFormatPrice(SO_PRICE)}
+                <td>
+                  스토리 인증가 {soFormatPrice(SO_PRICE_STORY)} / 정상가 {soFormatPrice(SO_PRICE_NORMAL)}
                 </td>
               </tr>
             </tbody>
           </table>
-          {/* 결제 연동은 다음 작업 — 자리만 잡아 둔 비활성 버튼 */}
-          <button type="button" className="so-pay" disabled aria-disabled="true">
-            세미나 신청하기
-          </button>
-          <p className="so-pay-note">신청 접수는 준비 중입니다.</p>
+          {/* 결제 카드 2종 — 스토리 인증가 / 정상가 */}
+          <SalesOpsPay />
         </div>
       </section>
     </div>

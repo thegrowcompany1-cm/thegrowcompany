@@ -26,7 +26,9 @@ import {
 import {
   buildOrderId,
   fetchProductBySlug,
+  readCheckoutPrefill,
   saveCheckoutCustomer,
+  type CheckoutPrefill,
   type Product,
 } from "@/lib/products";
 import { EMAIL_RE, formatPhone } from "@/lib/authStyles";
@@ -86,6 +88,8 @@ export default function Checkout() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [agreePrivacy, setAgreePrivacy] = useState(false);
+  // 신청 페이지(/edu/sales-ops 등)에서 미리 받은 정보 — 없으면 null 이고 흐름은 기존과 같다
+  const [prefill, setPrefill] = useState<CheckoutPrefill | null>(null);
 
   const widgetsRef = useRef<TossPaymentsWidgets | null>(null);
   const [widgetsReady, setWidgetsReady] = useState(false);
@@ -106,6 +110,16 @@ export default function Checkout() {
       cancelled = true;
     };
   }, [slug]);
+
+  // 신청 페이지에서 넘어온 이름·연락처가 있으면 채워 둔다 (이미 입력한 값은 덮어쓰지 않는다)
+  useEffect(() => {
+    if (!product) return;
+    const pre = readCheckoutPrefill(product.slug);
+    if (!pre) return;
+    setPrefill(pre);
+    setName((v) => v || pre.name);
+    setPhone((v) => v || pre.phone);
+  }, [product]);
 
   // 상품 로드 완료 후 결제위젯 초기화 (비회원 ANONYMOUS)
   useEffect(() => {
@@ -242,6 +256,9 @@ export default function Checkout() {
       name: trimmedName,
       phone: formatPhone(phoneDigits),
       email: trimmedEmail,
+      ...(prefill?.center ? { center: prefill.center } : {}),
+      ...(prefill?.role ? { role: prefill.role } : {}),
+      ...(prefill?.instagram ? { instagram: prefill.instagram } : {}),
     });
     try {
       await widgets.requestPayment({
@@ -358,6 +375,29 @@ export default function Checkout() {
                   autoComplete="email"
                 />
               </div>
+              {prefill && (prefill.center || prefill.role || prefill.instagram) && (
+                <div className="chk-field">
+                  <span className="chk-label">신청 정보</span>
+                  {prefill.center && (
+                    <div className="chk-row">
+                      <span>센터명</span>
+                      <b>{prefill.center}</b>
+                    </div>
+                  )}
+                  {prefill.role && (
+                    <div className="chk-row">
+                      <span>역할</span>
+                      <b>{prefill.role}</b>
+                    </div>
+                  )}
+                  {prefill.instagram && (
+                    <div className="chk-row">
+                      <span>인스타그램</span>
+                      <b>@{prefill.instagram}</b>
+                    </div>
+                  )}
+                </div>
+              )}
             </section>
           </div>
 

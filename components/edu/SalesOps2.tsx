@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SalesOpsPay from "@/components/edu/SalesOpsPay";
+import { SO_PRICE_NORMAL, SO_PRICE_STORY } from "@/lib/salesOps";
 
 /*
  * /edu/sales-ops2 — 리얼세일즈 측 기획안 시안(_ref/sales-ops2/l0.html)을 그대로 옮긴 페이지.
  *  · 문구·카피·섹션 순서·색·간격은 원본 그대로다. 수정·요약하지 않았다.
  *  · 원본 <style> 은 모든 선택자를 .so2-root 아래로 한정하고 클래스명에 so2- 접두사를 붙여 사이트 다른 곳에 새지 않는다.
  *  · 원본 <script> 의 세 기능(채널 태그 / .rv 등장 모션 / 하단 고정 CTA)은 아래 useEffect 로 옮겼다.
- *  · 신청서는 원본처럼 시안 상태다. 제출해도 접수·전송되지 않는다.
+ *  · 신청서는 결제 카드 2종(components/edu/SalesOpsPay.tsx — 스토리 인증가 / 정상가)으로 교체했다.
+ *    원본의 "시안이라 제출해도 접수되지 않아요" 문구와 수강료 표기는 결제 금액에 맞춰 바꿨다.
  */
 
 const CSS = `
@@ -312,8 +315,11 @@ const CSS = `
 .so2-root .so2-vn-box .so2-vn-grid img{width:100%!important;height:auto!important;aspect-ratio:4/3;object-fit:cover;border-radius:10px;display:block;opacity:1!important;transform:none!important}
 .so2-root .so2-vn-box figcaption{margin-top:8px;font-size:13px;opacity:.7}
 .so2-root section[id]{scroll-margin-top:96px}
+.so2-root .so2-pay-card{background:none;box-shadow:none;border-radius:0;padding:0;margin-top:32px}
 .so2-root .so2-foot .so2-co img{height:38px}
 `;
+
+const fmt = (n: number) => `${n.toLocaleString("ko-KR")}원`;
 
 const CHANNELS: Record<string, string> = { thegrow: "더그로우컴퍼니", realsales: "리얼세일즈" };
 
@@ -439,7 +445,7 @@ export default function SalesOps2() {
               <div className="so2-r"><dt>일시</dt><dd>11월 21일 (토) 오후 1시</dd></div>
               <div className="so2-r"><dt>장소</dt><dd>영등포 당산 · 당산로41길 11 E동 601호</dd></div>
               <div className="so2-r"><dt>구성</dt><dd>1부 운영키 2시간 + 2부 매출키 2시간</dd></div>
-              <div className="so2-r"><dt>수강료</dt><dd>9.9만 원</dd></div>
+              <div className="so2-r"><dt>수강료</dt><dd>스토리 인증가 {fmt(SO_PRICE_STORY)} / 정상가 {fmt(SO_PRICE_NORMAL)}</dd></div>
               <div className="so2-r"><dt>정원</dt><dd>100명</dd></div>
             </dl>
             <a className="so2-btn so2-btn-light so2-btn-block" href="#apply">강의 신청하기<svg className="so2-ar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
@@ -686,7 +692,7 @@ export default function SalesOps2() {
                 <div className="so2-r"><dt>구성</dt><dd>1부 운영키 2시간 (김재강) + 2부 매출키 2시간 (황현진)</dd></div>
                 <div className="so2-r"><dt>시간</dt><dd>오후 1시 시작 (1부 2시간 + 2부 2시간)<span className="so2-memo">쉬는 시간·종료 시각 확인 필요</span></dd></div>
                 <div className="so2-r"><dt>장소</dt><dd>서울 영등포구 당산로41길 11 E동 601호<span className="so2-memo">네이버 지도 등록명: 한국에너지기술인협회</span></dd></div>
-                <div className="so2-r"><dt>수강료</dt><dd>9.9만 원<span className="so2-memo">얼리버드 등 할인 여부도 함께 논의</span></dd></div>
+                <div className="so2-r"><dt>수강료</dt><dd>스토리 인증가 {fmt(SO_PRICE_STORY)} / 정상가 {fmt(SO_PRICE_NORMAL)}</dd></div>
                 <div className="so2-r"><dt>정원</dt><dd>100명</dd></div>
                 <div className="so2-r"><dt>주최</dt><dd>(주)더그로우컴퍼니 × 리얼세일즈(주)</dd></div>
                 <div className="so2-r"><dt>문의</dt><dd><span className="so2-tbd">확인 필요</span></dd></div>
@@ -696,88 +702,10 @@ export default function SalesOps2() {
                 <figcaption>강의장 · 서울 영등포구 당산로41길 11 E동 601호</figcaption>
               </figure>
             </aside>
-            <div className="so2-form-card" id="formCard">
-              <div className="so2-form-mock">
-                <p className="so2-mock-note" role="note"><b>시안 · 실제 신청 아님</b>입력한 내용은 저장하거나 보내지 않아요.</p>
-                <h3>신청서</h3>
-                <p className="so2-sub">1분이면 끝납니다. 안내는 남겨 주신 연락처로 드립니다.</p>
-                <input type="hidden" name="src" id="src" value={src} readOnly />
-      <input type="hidden" name="campaign" id="campaign" value={campaign} readOnly />
-      <p className="so2-err" id="err" role="alert"></p>
-                <div className="so2-field">
-                  <label htmlFor="f-name">이름<span className="so2-req">*</span></label>
-                  <span className="so2-fake-input">홍길동</span>
-                </div>
-                <div className="so2-field">
-                  <label htmlFor="f-phone">휴대폰 번호<span className="so2-req">*</span></label>
-                  <span className="so2-fake-input">010-0000-0000</span>
-                  <span className="so2-hint">강의 안내 문자를 받으실 번호를 적어 주세요.</span>
-                </div>
-                <div className="so2-field">
-                  <label htmlFor="f-center">센터 이름<span className="so2-req">*</span></label>
-                  <span className="so2-fake-input">예: OO 필라테스 OO점</span>
-                </div>
-                <fieldset className="so2-roles">
-                  <legend>역할<span className="so2-req">*</span></legend>
-                  <div className="so2-role-grid">
-                    <label><span className="so2-fake-check" aria-hidden="true"></span><span>대표</span></label>
-                    <label><span className="so2-fake-check" aria-hidden="true"></span><span>관리자·팀장</span></label>
-                    <label><span className="so2-fake-check" aria-hidden="true"></span><span>트레이너</span></label>
-                  </div>
-                </fieldset>
-                <div className="so2-consents">
-                  <label className="so2-c-all"><span className="so2-fake-check so2-cbox" aria-hidden="true"></span> 아래 내용에 모두 동의합니다 (선택 포함)</label>
-                  <div className="so2-c-item">
-                    <label className="so2-c-row"><span className="so2-fake-check so2-cbox so2-c-one" aria-hidden="true"></span><span><span className="so2-badge so2-must">필수</span>개인정보 수집·이용 동의 (강의 신청 접수·안내)</span></label>
-                    <p className="so2-c-why">동의하지 않으시면 강의 신청을 받을 수 없습니다.</p>
-                    <details><summary>내용 보기</summary>
-                      <table><tbody>
-                        <tr><th>수집하는 곳</th><td>신청 링크를 보낸 회사 (더그로우컴퍼니 또는 리얼세일즈) <span className="so2-tbd">확인 필요</span></td></tr>
-                        <tr><th>항목</th><td>이름, 휴대폰 번호, 센터 이름, 역할</td></tr>
-                        <tr><th>목적</th><td>강의 신청 접수, 일정·장소 안내, 본인 확인. 멤버십 안내 등 다른 목적에는 쓰지 않습니다.</td></tr>
-                        <tr><th>보유 기간</th><td><span className="so2-tbd">확인 필요</span></td></tr>
-                        <tr><th>거부할 권리</th><td>동의를 거부할 수 있으며, 거부하면 강의 신청이 접수되지 않습니다.</td></tr>
-                      </tbody></table>
-                    </details>
-                  </div>
-                  <div className="so2-c-item">
-                    <label className="so2-c-row"><span className="so2-fake-check so2-cbox so2-c-one" aria-hidden="true"></span><span><span className="so2-badge so2-opt">선택</span>공동 주최사 간 개인정보 제공 동의 <span className="so2-tbd">법률 검토 필요</span></span></label>
-                    <p className="so2-c-why">동의하지 않아도 신청할 수 있습니다. 이 경우 신청 정보는 신청을 받은 회사만 보관합니다.</p>
-                    <details><summary>내용 보기</summary>
-                      <table><tbody>
-                        <tr><th>받는 곳</th><td>(주)더그로우컴퍼니, 리얼세일즈(주) 중 신청을 받지 않은 회사</td></tr>
-                        <tr><th>항목</th><td>이름, 휴대폰 번호, 센터 이름, 역할</td></tr>
-                        <tr><th>목적</th><td>공동 강의 운영(출석 확인, 강의 자료 안내)</td></tr>
-                        <tr><th>보유 기간</th><td><span className="so2-tbd">확인 필요</span></td></tr>
-                        <tr><th>거부할 권리</th><td>거부할 수 있으며, 강의 신청과 수강에는 영향이 없습니다.</td></tr>
-                      </tbody></table>
-                      <p style={{ margin: "8px 0 0" }}>문구, 필수·선택 여부, 받는 곳은 운영 주체 확정 후 법률 검토가 필요합니다.</p>
-                    </details>
-                  </div>
-                  <div className="so2-c-item">
-                    <label className="so2-c-row"><span className="so2-fake-check so2-cbox so2-c-one" aria-hidden="true"></span><span><span className="so2-badge so2-opt">선택</span>교육·행사 소식 수신 동의 (문자·카카오톡)</span></label>
-                    <p className="so2-c-why">동의하지 않아도 신청할 수 있습니다. 강의 안내 외 소식만 받지 않게 됩니다.</p>
-                    <details><summary>내용 보기</summary>
-                      <table><tbody>
-                        <tr><th>보내는 곳</th><td>신청을 받은 회사 (공동 주최사 간 제공에 동의하면 두 회사 모두)</td></tr>
-                        <tr><th>내용</th><td>이후 강의·행사 소식(광고성 정보 포함)</td></tr>
-                        <tr><th>보유 기간</th><td>동의 철회 시까지</td></tr>
-                        <tr><th>거부할 권리</th><td>거부하거나 언제든 철회할 수 있으며, 강의 신청과 수강에는 영향이 없습니다.</td></tr>
-                      </tbody></table>
-                    </details>
-                  </div>
-                </div>
-                <button type="submit" className="so2-btn so2-btn-acc so2-btn-block so2-submit" id="submitBtn">강의 신청하기</button>
-                <p className="so2-form-foot">시안이라 제출해도 접수되지 않아요. 결제 방법은 확정 후 안내드립니다.</p>
-              </div>
-              <div className="so2-done" id="done" aria-live="polite">
-                <span className="so2-ex">신청 완료 화면 예시</span>
-                <div className="so2-ok" aria-hidden="true"></div>
-                <h3>신청이 접수되었습니다</h3>
-                <p className="so2-msg">11월 21일에 뵙겠습니다. 오후 1시에 뵙겠습니다. 세부 안내는 문자로 드립니다.</p>
-                <dl className="so2-sum" id="sum"></dl>
-                <button type="button" className="so2-btn so2-btn-ghost so2-btn-block" id="resetBtn">처음 화면으로 (예시)</button>
-              </div>
+            <div className="so2-form-card so2-pay-card" id="formCard">
+              <input type="hidden" name="src" id="src" value={src} readOnly />
+              <input type="hidden" name="campaign" id="campaign" value={campaign} readOnly />
+              <SalesOpsPay stack accent="#3563F0" accentDark="#2A53D6" accentSoft="#EEF2FE" />
             </div>
             <p className="so2-soft">강의 후 2~3일 안에 12월 체험단 신청을 따로 안내드립니다.</p>
           </div>
@@ -787,7 +715,7 @@ export default function SalesOps2() {
             <p className="so2-eyebrow so2-rv">FAQ</p>
             <h2 id="h-faq" className="so2-rv">자주 묻는 질문</h2>
             <div className="so2-faq so2-rv">
-              <details><summary>수강료와 결제 방법은 어떻게 되나요?</summary><div className="so2-a">수강료는 9.9만 원이에요. 결제 방법은 <span className="so2-tbd">확인 필요</span> 함께 논의 후 채움</div></details>
+              <details><summary>수강료와 결제 방법은 어떻게 되나요?</summary><div className="so2-a">수강료는 스토리 인증가 {fmt(SO_PRICE_STORY)}, 정상가 {fmt(SO_PRICE_NORMAL)}이에요. 결제 방법은 <span className="so2-tbd">확인 필요</span> 함께 논의 후 채움</div></details>
               <details><summary>환불 규정이 있나요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 함께 논의 후 채움</div></details>
               <details><summary>한 센터에서 여러 명이 함께 신청할 수 있나요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 함께 논의 후 채움</div></details>
               <details><summary>한 파트만 들을 수도 있나요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 함께 논의 후 채움</div></details>
