@@ -45,3 +45,6 @@ next-env.d.ts
 
 # 사진 뷰어(ACDSee·XnView 등)가 폴더를 열 때 만드는 썸네일 캐시
 photothumb.db
+
+# 외부에서 받은 시안·참고 원본 (커밋 금지)
+/_ref/
