@@ -760,7 +760,7 @@ export default function SalesOps() {
           <h2 className="so-h2 so-reveal">회원은 사람을 보고 등록하고, 시스템을 보고 재등록합니다</h2>
           <div className="so-op-body so-reveal">
             <p>상담도, CS도, 재등록도, 직원 교육도 원장 한 사람을 거친다면 원장이 빠지는 날 매출도 같이 빠집니다.</p>
-            <p>1부에서는 52개 센터를 운영하며 정리한 운영 · CS · 시스템 기준을 그대로 공개합니다.</p>
+            <p>1부에서는 500개 이상 센터 대표님들과 함께하면서 정리한 운영 · CS · 시스템 기준을 그대로 공개합니다.</p>
             <p className="so-op-em">감이 아니라 숫자로, 사람이 아니라 구조로.</p>
           </div>
           <div className="so-needs so-stagger">
