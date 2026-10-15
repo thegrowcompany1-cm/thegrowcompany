@@ -94,6 +94,25 @@ const SO_KIM_BIO =
 const SO_KIM_STATS = ["52개 센터 총괄", "10년 운영 데이터", "수백 명 조직 리딩"];
 
 // ── 6. 이런 분들께 필요합니다 ───────────────────────────────────────────────
+// 4. 운영 축 — 본문 아래 3칸 카드
+const SO_OPS_CARDS = [
+  {
+    label: "운영",
+    title: "숫자로 읽는 센터",
+    body: "유효회원 · 객단가 · 상담 성공률 · 유지율, 매일 확인하는 운영판",
+  },
+  {
+    label: "CS",
+    title: "이탈을 막는 응대",
+    body: "재등록이 결정되는 첫 4주 관리 루틴과 응대 기준",
+  },
+  {
+    label: "시스템",
+    title: "맡겨도 돌아가는 센터",
+    body: "FC · 매니저 역할 분담과 원장 없이 돌아가는 업무 기준",
+  },
+];
+
 const SO_NEEDS = [
   {
     who: "강사 · 트레이너",
@@ -364,7 +383,11 @@ const SO_STYLE = `
 }
 
 /* 4. 운영 축 문제 제기 */
-.so-op-body{max-width:640px;margin:22px auto 0;text-align:center;font-size:18px;line-height:1.85;color:#3F3F3F}
+.so-op-body{max-width:780px;margin:22px auto 0;text-align:center;font-size:18px;line-height:1.85;color:#3F3F3F}
+.so-op-body p{margin:0}
+.so-op-body p+p{margin-top:10px}
+.so-op-body .so-op-em{margin-top:18px;font-weight:900;color:var(--g)}
+.so-need-lbl{display:inline-block;margin:0 0 14px;font-size:13px;font-weight:800;color:#0B6B3A;background:rgba(34,181,115,.14);padding:6px 13px;border-radius:50px}
 @media(max-width:640px){.so-op-body{font-size:15.5px}}
 
 /* 5. 김재강 소개 */
@@ -733,12 +756,22 @@ export default function SalesOps() {
 
       {/* ── 4. 운영 축 문제 제기 ── */}
       <section className="so-sec so-white">
-        <div className="so-wrap so-narrow">
-          <h2 className="so-h2 so-reveal">상담도, 재등록도, 직원 교육도 대표가 하고 계신다면</h2>
-          <p className="so-op-body so-reveal">
-            대표가 하루 빠지면 매출이 흔들리는 센터는 커질 수 없습니다. 감이 아니라 숫자로, 사람이 아니라
-            구조로 돌아가는 센터를 만드는 법을 나눕니다.
-          </p>
+        <div className="so-wrap">
+          <h2 className="so-h2 so-reveal">회원은 사람을 보고 등록하고, 시스템을 보고 재등록합니다</h2>
+          <div className="so-op-body so-reveal">
+            <p>상담도, CS도, 재등록도, 직원 교육도 원장 한 사람을 거친다면 원장이 빠지는 날 매출도 같이 빠집니다.</p>
+            <p>1부에서는 52개 센터를 운영하며 정리한 운영 · CS · 시스템 기준을 그대로 공개합니다.</p>
+            <p className="so-op-em">감이 아니라 숫자로, 사람이 아니라 구조로.</p>
+          </div>
+          <div className="so-needs so-stagger">
+            {SO_OPS_CARDS.map((c) => (
+              <div className="so-need so-reveal" key={c.label}>
+                <span className="so-need-lbl">{c.label}</span>
+                <h3 className="so-need-who">{c.title}</h3>
+                <p className="so-need-body">{c.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
