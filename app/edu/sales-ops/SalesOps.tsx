@@ -33,9 +33,12 @@ import {
 // hwang: 배경이 제거된 누끼. consultants/hwang-hyunjin.png 의 투명 여백을 걷고 WebP 로 줄인 사본
 //        (원본 PNG 는 저장소에 올리지 않았다. 이 페이지는 아래 webp 만 불러온다)
 // kim:   기존 진단 멘토 페이지가 쓰는 경로를 그대로 참조한다 (복사하지 않음)
+// kimHero: kim 원본(흰 배경)에서 배경을 걷어 내고, 황현진 누끼와 얼굴 크기·머리 위 여백이
+//        비슷해지도록 잘라 낸 히어로 전용 WebP. 원본 JPG 는 건드리지 않았다.
 const SO_IMG = {
   hwang: "/edu/sales-ops/hwang-hyunjin.webp",
   kim: "/consultants/kim-jaegang.jpg",
+  kimHero: "/edu/sales-ops/kim-jaegang.webp",
   books: [
     { src: "/edu/sales-ops/salesbook1.png", title: "팔리는 한 문장은 다르다" },
     { src: "/edu/sales-ops/salesbook2.png", title: "잘 파는 사람은 이렇게 팝니다" },
@@ -282,21 +285,25 @@ const SO_STYLE = `
 .so-hero-meta{margin:0 0 30px;font-size:16px;font-weight:700;line-height:1.7;color:#fff}
 .so-hero-meta span{color:var(--g);margin-right:10px}
 .so-cta{display:inline-flex;align-items:center;justify-content:center;max-width:100%;padding:17px 34px;border-radius:50px;background:var(--g);color:#fff;font-size:17px;font-weight:800;text-decoration:none;box-shadow:0 10px 26px rgba(34,181,115,.28)}
-.so-people{position:relative;width:100%;max-width:440px;margin:0 auto;aspect-ratio:4/5;min-width:0}
-.so-person-main{position:absolute;inset:0;border-radius:24px;background:radial-gradient(120% 90% at 50% 18%,rgba(34,181,115,.34) 0%,rgba(34,181,115,.08) 55%,rgba(255,255,255,.03) 100%);border:1px solid rgba(34,181,115,.22)}
-.so-person-main .so-img-ph{background:none;color:#5E6B65}
+/* 강사 카드 2장 — 같은 크기·같은 배경·같은 캡션. 두 사진 모두 배경 제거본(contain, 아래 정렬) */
+.so-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:520px;margin:0 auto;min-width:0}
+.so-person{min-width:0;aspect-ratio:4/5;border-radius:20px;background:radial-gradient(120% 90% at 50% 18%,rgba(34,181,115,.34) 0%,rgba(34,181,115,.08) 55%,rgba(255,255,255,.03) 100%);border:1px solid rgba(34,181,115,.22)}
+.so-person .so-img-ph{background:none;color:#5E6B65}
 /* 캡션이 어두운 재킷 위에 놓여 대비가 약해서, 사진 아래쪽에 어두운 그라데이션을 깐다 */
-.so-person-main::after{content:"";position:absolute;left:0;right:0;bottom:0;height:36%;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.62) 100%);pointer-events:none}
-.so-person-sub{position:absolute;left:-4px;bottom:-18px;width:34%;aspect-ratio:3/4;border-radius:16px;border:3px solid var(--dark);background:#161616;box-shadow:0 12px 30px rgba(0,0,0,.45)}
-.so-person-cap{position:absolute;z-index:2;right:14px;bottom:12px;max-width:62%;text-align:right;font-size:13px;font-weight:700;line-height:1.5;color:#E4EBE7;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.so-person::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.66) 100%);pointer-events:none}
+.so-person-cap{position:absolute;z-index:2;left:12px;right:12px;bottom:12px;margin:0;text-align:left;font-size:12.5px;font-weight:700;line-height:1.45;color:#E4EBE7;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .so-person-cap b{display:block;font-size:17px;font-weight:900;color:#fff}
-.so-person-subcap{position:absolute;left:0;bottom:-48px;font-size:12px;font-weight:700;color:#9AA7A0;white-space:nowrap}
 @media(max-width:860px){
   .so-hero{padding:52px 0 76px}
-  .so-hero-in{grid-template-columns:minmax(0,1fr);gap:56px}
+  .so-hero-in{grid-template-columns:minmax(0,1fr);gap:48px}
   .so-h1{font-size:32px}
   .so-hero-sub{font-size:16px}
-  .so-people{max-width:380px}
+  .so-people{max-width:460px}
+}
+@media(max-width:640px){
+  .so-person{border-radius:16px}
+  .so-person-cap{left:10px;right:10px;bottom:10px;font-size:11.5px}
+  .so-person-cap b{font-size:15px}
 }
 
 /* 2. 세일즈 축 문제 제기 */
@@ -330,8 +337,6 @@ const SO_STYLE = `
 
 /* 3-2. 영상 (SALES SALON) */
 .so-vid{margin-top:84px}
-.so-vid-label{margin:0 0 14px;text-align:center;font-size:13px;font-weight:800;letter-spacing:.2em;color:var(--g)}
-.so-vid-title{margin:0 0 36px;text-align:center;font-size:28px;line-height:1.45;font-weight:900;text-wrap:balance}
 .so-vid-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
 .so-vid-card{position:relative;min-width:0;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#000}
 .so-vid-card video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
@@ -342,7 +347,7 @@ const SO_STYLE = `
    컨테이너를 래퍼 좌우 패딩(16px)만큼 음수 마진으로 화면 끝까지 늘리고, 안쪽 padding-inline 16px 로
    첫·마지막 카드가 화면 끝에 붙지 않게 한다. 카드를 78% 로 잡아 다음 카드가 오른쪽에 보인다. */
 @media(max-width:640px){
-  .so-vid{margin-top:60px}.so-vid-title{font-size:21px;margin-bottom:26px}
+  .so-vid{margin-top:60px}
   .so-vid-grid{position:relative;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;padding-inline:16px;scroll-padding-inline:16px;margin-inline:-16px}
   .so-vid-grid::-webkit-scrollbar{display:none}
   .so-vid-grid:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
@@ -573,11 +578,11 @@ export default function SalesOps() {
           </div>
 
           <div className="so-people">
-            <div className="so-person-main so-media">
+            <div className="so-person so-media">
               <SoImg
                 src={SO_IMG.hwang}
                 alt="황현진 대표"
-                sizes="(max-width: 860px) 380px, 440px"
+                sizes="(max-width: 860px) 230px, 260px"
                 fit="contain"
                 position="center bottom"
                 priority
@@ -587,15 +592,20 @@ export default function SalesOps() {
                 리얼세일즈(주) 대표
               </p>
             </div>
-            <div className="so-person-sub so-media">
+            <div className="so-person so-media">
               <SoImg
-                src={SO_IMG.kim}
+                src={SO_IMG.kimHero}
                 alt="김재강 대표"
-                sizes="160px"
-                position="center 18%"
+                sizes="(max-width: 860px) 230px, 260px"
+                fit="contain"
+                position="center bottom"
+                priority
               />
+              <p className="so-person-cap">
+                <b>김재강</b>
+                (주)더그로우컴퍼니 대표이사
+              </p>
             </div>
-            <p className="so-person-subcap">김재강 · (주)더그로우컴퍼니 대표이사</p>
           </div>
         </div>
       </section>
@@ -667,8 +677,6 @@ export default function SalesOps() {
 
           {/* 기존 SALES SALON 영상 섹션 — 새로 만들지 않고 이 안으로 옮겼다 */}
           <div className="so-vid">
-            <p className="so-vid-label">SALES SALON</p>
-            <h3 className="so-vid-title">황현진 대표의 세일즈 화법, 영상으로 먼저 만나보세요</h3>
             <div
               className="so-vid-grid"
               ref={sliderRef}
