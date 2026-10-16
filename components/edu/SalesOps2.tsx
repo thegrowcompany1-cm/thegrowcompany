@@ -48,12 +48,6 @@ const CSS = `
 .so2-root .so2-body-copy p + p{margin-top:12px}
 .so2-root .so2-hl{background:linear-gradient(transparent 62%,rgba(53,99,240,.16) 62%);padding:0 .06em;font-weight:700}
 .so2-root .so2-dark .so2-hl{background:none;color:var(--acc-on-dark)}
-.so2-root .so2-tbd{display:inline-flex;align-items:center;font-size:12px;font-weight:600;line-height:1.3;color:var(--muted);border:1px dashed var(--line-2);border-radius:6px;padding:3px 8px;white-space:nowrap;vertical-align:middle;letter-spacing:0;background:transparent}
-.so2-root .so2-dark .so2-tbd{color:#A3ACBB;border-color:#3A4763}
-.so2-root .so2-draft{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;line-height:1.3;color:var(--warn);background:#FFF6EA;border-radius:6px;padding:3px 8px;vertical-align:middle;letter-spacing:0;white-space:nowrap}
-.so2-root .so2-draft::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
-.so2-root .so2-dark .so2-draft{color:#F2C58A;background:rgba(242,197,138,.12)}
-.so2-root .so2-an{font-size:.45em;font-weight:600;opacity:.6;vertical-align:.9em;margin-left:4px;letter-spacing:0}
 .so2-root .so2-caption{margin:16px 0 0;font-size:13px;line-height:1.6;color:var(--muted)}
 .so2-root .so2-dark .so2-caption{color:#8E98AA}
 .so2-root .so2-rule{height:1px;background:var(--line);border:0;margin:48px 0}
@@ -67,7 +61,6 @@ const CSS = `
 .so2-root .so2-btn-ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1px var(--line-2)}
 .so2-root .so2-btn-block{display:flex;width:100%}
 .so2-root .so2-btn .so2-ar{width:16px;height:16px;flex:none}
-.so2-root .so2-mock{background:#FFF6EA;color:#7A4A08;font-size:12px;font-weight:600;text-align:center;padding:8px 16px;line-height:1.5}
 .so2-root .so2-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:8px var(--gut);background:var(--base);color:#fff;font-size:13px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.06)}
 .so2-root .so2-top .so2-hosts{color:#C9D0DC;letter-spacing:-.01em}
 .so2-root .so2-top .so2-hosts b{color:#fff;font-weight:700}
@@ -97,7 +90,6 @@ const CSS = `
 .so2-root .so2-duo .so2-who small{display:block;font-size:12px;font-weight:500;color:#8E98AA;margin-top:2px}
 .so2-root .so2-img-kim{object-position:56% 8%;transform:scale(1.18);transform-origin:56% 18%;filter:brightness(1.05)}
 .so2-root .so2-img-hwang{object-position:50% 0}
-.so2-root .so2-h-an{margin:16px 0 0;font-size:12px;color:#8E98AA}
 .so2-root .so2-facts{margin:40px 0 0;border-top:1px solid var(--base-3)}
 .so2-root .so2-facts .so2-r{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;min-height:52px;padding:12px 0;border-bottom:1px solid var(--base-3)}
 .so2-root .so2-facts dt{font-size:13px;font-weight:600;color:#8E98AA}
@@ -137,7 +129,6 @@ const CSS = `
 .so2-root .so2-checks{list-style:none;margin:40px 0 0;padding:0;border-top:1px solid var(--line)}
 .so2-root .so2-checks li{display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:start;padding:20px 0;border-bottom:1px solid var(--line);font-size:16px;font-weight:600;letter-spacing:-.02em;line-height:1.6}
 .so2-root .so2-checks li::before{content:"";width:22px;height:22px;margin-top:2px;border-radius:50%;background:var(--acc-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 12.5l3.5 3.5 7.5-8' fill='none' stroke='%233563F0' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
-.so2-root .so2-checks .so2-draft{margin-left:6px}
 .so2-root .so2-parts{margin:40px 0 0;border-top:1px solid var(--line)}
 .so2-root .so2-parts a{display:grid;grid-template-columns:40px 1fr 20px;gap:12px;align-items:center;min-height:88px;padding:20px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
 .so2-root .so2-parts .so2-no{font-size:13px;font-weight:700;color:var(--acc);letter-spacing:.02em}
@@ -177,7 +168,6 @@ const CSS = `
 .so2-root .so2-after ol{list-style:none;counter-reset:a;margin:20px 0 0;padding:0;border-top:1px solid var(--line)}
 .so2-root .so2-after li{counter-increment:a;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line);font-size:16px;font-weight:600;letter-spacing:-.02em;line-height:1.6}
 .so2-root .so2-after li::before{content:counter(a,decimal-leading-zero);font-size:13px;font-weight:700;color:var(--acc);letter-spacing:.02em}
-.so2-root .so2-after h3 .so2-draft{margin-left:4px}
 .so2-root .so2-bridge{background:var(--base);color:#fff;padding:64px 0;text-align:center}
 .so2-root .so2-bridge p{text-wrap:balance;font-size:19px;font-weight:600;letter-spacing:-.03em;line-height:1.6;color:#E3E7EE}
 .so2-root .so2-bridge .so2-y{color:var(--acc-on-dark)}
@@ -206,24 +196,17 @@ const CSS = `
 .so2-root .so2-books{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
 .so2-root .so2-books li{padding:6px 12px;border-radius:999px;background:var(--soft);font-size:13px;font-weight:600;color:var(--fg-2);line-height:1.4}
 .so2-root .so2-books li::before{display:none}
-.so2-root .so2-rev-list{display:grid;gap:12px;margin-top:40px}
-.so2-root .so2-rev{border:1px dashed var(--line-2);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
-.so2-root .so2-rev .so2-stars{letter-spacing:3px;color:var(--line-2);font-size:14px;line-height:1}
-.so2-root .so2-rev p{font-size:15px;font-weight:500;color:var(--muted);line-height:1.6}
 .so2-root .so2-ev{margin-top:40px}
 .so2-root .so2-ev-top{padding:0 0 24px;border-bottom:1px solid var(--fg)}
 .so2-root .so2-ev-top .so2-d{font-size:40px;font-weight:800;letter-spacing:-.04em;line-height:1}
 .so2-root .so2-ev-top .so2-d small{font-size:14px;font-weight:700;color:var(--acc);margin-left:8px;letter-spacing:.06em;vertical-align:.5em}
 .so2-root .so2-ev-top .so2-t{margin:12px 0 0;font-size:17px;font-weight:700;letter-spacing:-.02em}
-.so2-root .so2-ev-top .so2-t .so2-an{font-size:12px;vertical-align:1px}
 .so2-root .so2-ev dl{margin:0}
 .so2-root .so2-ev .so2-r{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--line-2);align-items:start}
 .so2-root .so2-ev dt{font-size:13px;font-weight:600;color:var(--muted);padding-top:2px}
 .so2-root .so2-ev dd{margin:0;font-size:15px;font-weight:600;line-height:1.6}
 .so2-root .so2-ev .so2-memo{display:block;margin-top:6px;font-size:13px;font-weight:400;color:var(--muted)}
 .so2-root .so2-form-card{margin-top:48px;background:#fff;border-radius:16px;padding:32px 20px 28px;box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06)}
-.so2-root .so2-mock-note{margin:0 0 24px;background:#FFF6EA;border-radius:8px;padding:12px 14px;font-size:13px;font-weight:500;color:#7A4A08;line-height:1.55}
-.so2-root .so2-mock-note b{font-weight:700;margin-right:6px}
 .so2-root .so2-form-card .so2-sub{margin:8px 0 24px;color:var(--muted);font-size:15px}
 .so2-root .so2-field{margin-bottom:20px}
 .so2-root .so2-field label,.so2-root .so2-roles legend{display:block;font-size:14px;font-weight:600;margin-bottom:8px;color:var(--fg)}
@@ -290,7 +273,6 @@ const CSS = `
 .so2-root .so2-foot .so2-co{display:flex;align-items:center;gap:12px;margin-top:16px}
 .so2-root .so2-foot .so2-co img{opacity:.6}
 .so2-root .so2-foot p{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.so2-root .so2-foot .so2-tbd{color:#8E98AA;border-color:#2C3852}
 .so2-root .so2-sticky{position:fixed;left:0;right:0;bottom:0;z-index:30;pointer-events:none;transition:transform .35s var(--ease),opacity .35s var(--ease)}
 .so2-root .so2-sticky .so2-inner{pointer-events:auto;max-width:var(--col);margin:0 auto;display:flex;align-items:center;gap:16px;padding:12px var(--gut) calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.92);-webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px);border-top:1px solid rgba(15,23,42,.08)}
 .so2-root .so2-sticky .so2-meta{flex:none;line-height:1.35;font-size:12px;font-weight:500;color:var(--muted)}
@@ -417,7 +399,6 @@ export default function SalesOps2() {
       />
       <style>{CSS}</style>
       <div className="so2-page">
-      <div className="so2-mock" role="note">예시 상세페이지 · 시안 · 실제 신청 아님 (미확정 정보는 점선 표시)</div>
       <header className="so2-top">
         <span className="so2-hosts"><b>더그로우컴퍼니</b><span className="so2-x">×</span><b>리얼세일즈</b> 공동 강의</span>
         <a href="#apply"><span>신청하기</span></a>
@@ -428,7 +409,7 @@ export default function SalesOps2() {
           <div className="so2-in">
             <p className="so2-h-meta"><span className="so2-date">11.21 토요일</span><span className="so2-dot" aria-hidden="true"></span><span>피트니스 대표님·관리자·트레이너</span></p>
             <p className="so2-h-hook">운동만 잘 가르치면, 매출은 따라올까요?</p>
-            <h1 className="so2-h-title" id="h-title">성장<br />마스터키<span className="so2-an">(안)</span></h1>
+            <h1 className="so2-h-title" id="h-title">성장<br />마스터키</h1>
             <p className="so2-h-sub">운영키 × 매출키 · 성장을 여는 <em>두 개의 열쇠</em></p>
             <div className="so2-duo" aria-label="강의 구성">
               <a href="#part1">
@@ -440,7 +421,6 @@ export default function SalesOps2() {
                 <span className="so2-who">황현진 대표<small>리얼세일즈(주)</small></span>
               </a>
             </div>
-            <p className="so2-h-an">공동 강의 제목(안) · 1부 운영키 문안은 초안</p>
             <dl className="so2-facts" aria-label="강의 정보 요약">
               <div className="so2-r"><dt>일시</dt><dd>11월 21일 (토) 오후 1시</dd></div>
               <div className="so2-r"><dt>장소</dt><dd>영등포 당산 · 당산로41길 11 E동 601호</dd></div>
@@ -463,7 +443,7 @@ export default function SalesOps2() {
               <div className="so2-scene so2-rv"><span className="so2-no">상담 장면 03</span><p className="so2-say">"주사요? 에이~ 살 빼려면 땀을 흘리셔야죠."</p><p className="so2-why">회원의 반응에 직설적으로 반박</p></div>
             </div>
             <div className="so2-pain-ops so2-rv">
-              <p className="so2-eyebrow so2-ko">그리고 상담 밖에서는 <span className="so2-draft">초안</span></p>
+              <p className="so2-eyebrow so2-ko">그리고 상담 밖에서는</p>
               <blockquote className="so2-qb so2-q">"대표님, 오늘도 혼자 뛰고 계시지 않았나요?"</blockquote>
               <ul className="so2-chips"><li>상담도 대표가</li><li>재등록 관리도 대표가</li><li>직원 교육도 대표가</li></ul>
               <p className="so2-tail">대표가 하루 빠지면 매출이 흔들리는 센터는 커질 수 없습니다.</p>
@@ -489,11 +469,10 @@ export default function SalesOps2() {
               <li className="so2-rv"><span>상담에서 시설·가격 같은 주장만 늘어놓게 되는 분</span></li>
               <li className="so2-rv"><span>"12개월이 더 저렴하다" 같은 이성적 설득에만 기대고 있는 분</span></li>
               <li className="so2-rv"><span>'영업'이라는 부담감 대신, 전문가로서 당당하게 권하고 싶은 분</span></li>
-              <li className="so2-rv"><span>문의는 들어오는데 상담 성공률이 얼마인지 모르는 센터 <span className="so2-draft">초안</span></span></li>
-              <li className="so2-rv"><span>신규는 들어오는데 재등록에서 회원이 빠지는 센터 <span className="so2-draft">초안</span></span></li>
-              <li className="so2-rv"><span>관리자·팀장에게 맡기고 싶은데 무엇을 맡겨야 할지 모르는 대표님 <span className="so2-draft">초안</span></span></li>
+              <li className="so2-rv"><span>문의는 들어오는데 상담 성공률이 얼마인지 모르는 센터</span></li>
+              <li className="so2-rv"><span>신규는 들어오는데 재등록에서 회원이 빠지는 센터</span></li>
+              <li className="so2-rv"><span>관리자·팀장에게 맡기고 싶은데 무엇을 맡겨야 할지 모르는 대표님</span></li>
             </ul>
-            <p className="so2-caption">초안 표시 항목은 1부 김재강 대표 파트 초안 문안으로, 본인 확인 전입니다.</p>
           </div>
         </section>
         <section className="so2-sec so2-soft-bg" id="program" aria-labelledby="h-prog">
@@ -509,7 +488,7 @@ export default function SalesOps2() {
         </section>
         <section className="so2-part-head" id="part1" aria-labelledby="h-p1">
           <div className="so2-in">
-            <p className="so2-lab so2-rv"><span>PART 1</span><span className="so2-dur">1부 · 2시간</span><span className="so2-draft">초안 · 김재강 대표 확인 예정</span></p>
+            <p className="so2-lab so2-rv"><span>PART 1</span><span className="so2-dur">1부 · 2시간</span></p>
             <p className="so2-for so2-rv">오직 피트니스 분야를 위한,<br />매출구조 운영치트키</p>
             <h2 className="so2-ttl so2-rv" id="h-p1">〈운영키〉</h2>
             <p className="so2-subt so2-rv">대표가 없어도 돌아가는 센터</p>
@@ -527,7 +506,7 @@ export default function SalesOps2() {
               <p>대표가 하루 빠지면 매출이 흔들리는 센터는 커질 수 없습니다.</p>
               <p className="so2-strong">감이 아니라 <span className="so2-hl">숫자로</span>, 사람이 아니라 <span className="so2-hl">구조로</span> 돌아가는 센터를 만드는 법을 나눕니다.</p>
             </div>
-            <div className="so2-cur-h so2-rv"><h3>강의 핵심 커리큘럼</h3><span className="so2-draft">초안</span></div>
+            <div className="so2-cur-h so2-rv"><h3>강의 핵심 커리큘럼</h3></div>
             <div className="so2-key so2-rv">
               <span className="so2-lbl">1ST KEY</span><p className="so2-t">숫자의 기술</p>
               <ul>
@@ -547,14 +526,13 @@ export default function SalesOps2() {
               <div className="so2-qs"><blockquote className="so2-qb so2-box">재등록은 첫 4주에 정해진다.</blockquote></div>
             </div>
             <div className="so2-after so2-rv">
-              <h3>듣고 나면 달라지는 것 <span className="so2-draft">초안</span></h3>
+              <h3>듣고 나면 달라지는 것</h3>
               <ol>
                 <li>내 센터의 숫자를 한 장으로 읽을 수 있게 됩니다.</li>
                 <li>관리자·팀장에게 무엇을 맡길지 기준이 생깁니다.</li>
                 <li>대표가 빠져도 돌아가는 운영 루틴을 가져갑니다.</li>
               </ol>
             </div>
-            <p className="so2-caption">1부 문안은 더그로우 홈페이지 공개 내용을 바탕으로 한 초안이며, 김재강 대표 확인 후 확정합니다.</p>
           </div>
         </section>
         <div className="so2-bridge" role="note">
@@ -624,9 +602,9 @@ export default function SalesOps2() {
             <p className="so2-eyebrow so2-rv">TIME TABLE</p>
             <h2 id="h-tt" className="so2-rv">11월 21일 (토)<br />진행 순서</h2>
             <div className="so2-tt-list so2-rv" role="list">
-              <div className="so2-tt-row" role="listitem"><div className="so2-when">13:00 전<span className="so2-tbd">시간 확인 필요</span></div><div><span className="so2-nm">접수·입장</span><span className="so2-sm">입장 시작 시간은 확정 후 안내</span></div></div>
-              <div className="so2-tt-row" role="listitem"><div className="so2-when">13:00 시작<br />1부 · 2시간</div><div><span className="so2-nm">운영키 · 김재강 대표</span><span className="so2-sm">1st Key 숫자의 기술 / 2nd Key 위임의 기술 (초안)</span></div></div>
-              <div className="so2-tt-row" role="listitem"><div className="so2-when">2부 · 2시간<span className="so2-tbd">쉬는 시간 확인 필요</span></div><div><span className="so2-nm">매출키 · 황현진 대표</span><span className="so2-sm">1st Key 권유의 기술 / 2nd Key 호감의 기술</span></div></div>
+              <div className="so2-tt-row" role="listitem"><div className="so2-when">13:00 전</div><div><span className="so2-nm">접수·입장</span><span className="so2-sm">입장 시작 시간은 확정 후 안내</span></div></div>
+              <div className="so2-tt-row" role="listitem"><div className="so2-when">13:00 시작<br />1부 · 2시간</div><div><span className="so2-nm">운영키 · 김재강 대표</span><span className="so2-sm">1st Key 숫자의 기술 / 2nd Key 위임의 기술</span></div></div>
+              <div className="so2-tt-row" role="listitem"><div className="so2-when">2부 · 2시간</div><div><span className="so2-nm">매출키 · 황현진 대표</span><span className="so2-sm">1st Key 권유의 기술 / 2nd Key 호감의 기술</span></div></div>
             </div>
             <p className="so2-caption">쉬는 시간과 질의응답 진행 여부는 확정 후 안내합니다.</p>
           </div>
@@ -639,14 +617,13 @@ export default function SalesOps2() {
               <article className="so2-prof so2-rv" aria-labelledby="sp1">
                 <div className="so2-ph"><span className="so2-tag">1부 운영키</span><img className="so2-img-kim" src="/edu/sales-ops2/img/kim.jpg" alt="김재강 대표 (더그로우컴퍼니)" width="900" height="1200" /></div>
                 <div className="so2-bd">
-                  <p className="so2-tagline">대표가 없어도 돌아가는 센터 <span className="so2-tbd">초안</span></p>
+                  <p className="so2-tagline">대표가 없어도 돌아가는 센터</p>
                   <h3 className="so2-name" id="sp1">김재강<span className="so2-role">(주)더그로우컴퍼니 대표이사</span></h3>
                   <ul>
                     <li>필라테스 46개 + 대형 피트니스 6개, 총 52개 센터 총괄, 10년 운영 데이터</li>
                     <li>에이블짐·피스트X 등 21개 센터 자문</li>
                     <li>IFBB PRO NPC 심사위원 · 체형교정 강사 · 한국대학보디빌딩협회 이사</li>
                   </ul>
-                  <p className="so2-books-h">더그로우 홈페이지 소개 기준 <span className="so2-tbd">확인 부탁</span></p>
                 </div>
               </article>
               <article className="so2-prof so2-rv" aria-labelledby="sp2">
@@ -667,18 +644,6 @@ export default function SalesOps2() {
             </div>
           </div>
         </section>
-        <section className="so2-sec so2-soft-bg" aria-labelledby="h-rev">
-          <div className="so2-in">
-            <p className="so2-eyebrow so2-rv">REVIEW</p>
-            <h2 id="h-rev" className="so2-rv">수강 후기</h2>
-            <p className="so2-lead so2-rv">실제 수강 후기를 받은 뒤 채웁니다. 지어낸 후기는 넣지 않습니다.</p>
-            <div className="so2-rev-list">
-              <div className="so2-rev so2-rv"><div className="so2-stars" aria-hidden="true">★★★★★</div><p>실제 수강 후기를 받은 뒤 채웁니다</p><span className="so2-tbd">후기 자리</span></div>
-              <div className="so2-rev so2-rv"><div className="so2-stars" aria-hidden="true">★★★★★</div><p>실제 수강 후기를 받은 뒤 채웁니다</p><span className="so2-tbd">후기 자리</span></div>
-              <div className="so2-rev so2-rv"><div className="so2-stars" aria-hidden="true">★★★★★</div><p>실제 수강 후기를 받은 뒤 채웁니다</p><span className="so2-tbd">후기 자리</span></div>
-            </div>
-          </div>
-        </section>
         <section className="so2-sec" id="apply" aria-labelledby="h-apply">
           <div className="so2-in">
             <p className="so2-eyebrow so2-rv">APPLY</p>
@@ -686,16 +651,15 @@ export default function SalesOps2() {
             <aside className="so2-ev so2-rv" aria-label="강의 정보">
               <div className="so2-ev-top">
                 <div className="so2-d">11.21<small>SAT</small></div>
-                <div className="so2-t">성장 마스터키 <span className="so2-an">(안)</span></div>
+                <div className="so2-t">성장 마스터키</div>
               </div>
               <dl>
                 <div className="so2-r"><dt>구성</dt><dd>1부 운영키 2시간 (김재강) + 2부 매출키 2시간 (황현진)</dd></div>
-                <div className="so2-r"><dt>시간</dt><dd>오후 1시 시작 (1부 2시간 + 2부 2시간)<span className="so2-memo">쉬는 시간·종료 시각 확인 필요</span></dd></div>
+                <div className="so2-r"><dt>시간</dt><dd>오후 1시 시작 (1부 2시간 + 2부 2시간)</dd></div>
                 <div className="so2-r"><dt>장소</dt><dd>서울 영등포구 당산로41길 11 E동 601호<span className="so2-memo">네이버 지도 등록명: 한국에너지기술인협회</span></dd></div>
                 <div className="so2-r"><dt>수강료</dt><dd>스토리 인증가 {fmt(SO_PRICE_STORY)} / 정상가 {fmt(SO_PRICE_NORMAL)}</dd></div>
                 <div className="so2-r"><dt>정원</dt><dd>100명</dd></div>
                 <div className="so2-r"><dt>주최</dt><dd>(주)더그로우컴퍼니 × 리얼세일즈(주)</dd></div>
-                <div className="so2-r"><dt>문의</dt><dd><span className="so2-tbd">확인 필요</span></dd></div>
                       </dl>
               <figure className="so2-vn-box">
                 <div className="so2-vn-grid"><img src="/edu/sales-ops2/img/venue1.jpg" alt="강의장 내부, 앞쪽 스크린과 책상 배치" /><img src="/edu/sales-ops2/img/venue2.jpg" alt="강의장 스크린과 강연대" /><img src="/edu/sales-ops2/img/venue3.jpg" alt="강의장 뒤쪽에서 본 좌석" /><img src="/edu/sales-ops2/img/venue4.jpg" alt="강의장 좌석 배치" /></div>
@@ -715,12 +679,7 @@ export default function SalesOps2() {
             <p className="so2-eyebrow so2-rv">FAQ</p>
             <h2 id="h-faq" className="so2-rv">자주 묻는 질문</h2>
             <div className="so2-faq so2-rv">
-              <details><summary>수강료와 결제 방법은 어떻게 되나요?</summary><div className="so2-a">수강료는 스토리 인증가 {fmt(SO_PRICE_STORY)}, 정상가 {fmt(SO_PRICE_NORMAL)}이에요. 결제 방법은 <span className="so2-tbd">확인 필요</span> 함께 논의 후 채움</div></details>
-              <details><summary>환불 규정이 있나요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 함께 논의 후 채움</div></details>
-              <details><summary>한 센터에서 여러 명이 함께 신청할 수 있나요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 함께 논의 후 채움</div></details>
-              <details><summary>한 파트만 들을 수도 있나요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 함께 논의 후 채움</div></details>
-              <details><summary>주차가 가능한가요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 장소 확정 후 채움</div></details>
-              <details><summary>강의 자료나 다시보기가 제공되나요?</summary><div className="so2-a"><span className="so2-tbd">답변 확인 필요</span> 함께 논의 후 채움</div></details>
+              <details><summary>수강료와 결제 방법은 어떻게 되나요?</summary><div className="so2-a">수강료는 스토리 인증가 {fmt(SO_PRICE_STORY)}, 정상가 {fmt(SO_PRICE_NORMAL)}이에요. 결제는 신청 화면에서 바로 진행하며 카드, 간편결제, 계좌이체를 이용할 수 있습니다.</div></details>
             </div>
           </div>
         </section>
@@ -738,8 +697,6 @@ export default function SalesOps2() {
         <div className="so2-in">
           <div className="so2-hosts"><span>(주)더그로우컴퍼니</span><span className="so2-x">×</span><span>리얼세일즈(주)</span></div>
           <div className="so2-co"><span>공동 주최 협력</span><img src="/edu/sales-ops2/logo/RGC_logo_mono_white.png" alt="Real Grow Club" width="64" height="38" /></div>
-          <p>사업자 정보·개인정보 처리방침 링크 <span className="so2-tbd">확인 필요</span></p>
-          <p>이 페이지는 강의 상세페이지 구성 예시(시안)입니다. 강사 사진 외의 사진은 분위기 예시 이미지입니다.</p>
         </div>
       </footer>
       </div>
