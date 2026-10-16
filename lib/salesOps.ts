@@ -27,6 +27,21 @@ export const SO_PRICE_STORY = 99000;
 export const SO_PRODUCT_NORMAL = "sales-ops";
 export const SO_PRODUCT_STORY = "sales-ops-story";
 
+/** 랜딩 구분값 — 어느 신청 페이지에서 결제까지 왔는지 (시트 "랜딩" 열, GA4·메타 이벤트의 landing) */
+export const SO_LANDING_V1 = "sales-ops";
+export const SO_LANDING_V3 = "sales-ops3";
+
+/**
+ * 결제 상품 슬러그와 (있다면) 신청 페이지가 남긴 랜딩 값으로 최종 랜딩을 정한다.
+ *  · 신청 페이지가 값을 남겼으면 그 값 (영문 소문자·숫자·'-', 30자 이내만 인정)
+ *  · 없으면 sales-ops 상품은 "sales-ops", 다른 상품은 빈 값
+ */
+export function soResolveLanding(productSlug: string, landing?: string | null): string {
+  const clean = (landing ?? "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 30);
+  if (clean) return clean;
+  return productSlug === SO_PRODUCT_NORMAL || productSlug === SO_PRODUCT_STORY ? SO_LANDING_V1 : "";
+}
+
 /** 인증가 조건 미충족 시 안내하는 차액 (원) */
 export const SO_PRICE_DIFF = SO_PRICE_NORMAL - SO_PRICE_STORY;
 

@@ -16,7 +16,7 @@
 import { NextResponse } from "next/server";
 import { fetchProductBySlug, parseOrderIdSlug } from "@/lib/products";
 import { sendPaymentToSheet } from "@/lib/paymentSheet";
-import { SO_PRODUCT_STORY } from "@/lib/salesOps";
+import { SO_PRODUCT_STORY, soResolveLanding } from "@/lib/salesOps";
 
 // Buffer(Basic 인증 헤더) 사용 — Node 런타임 고정
 export const runtime = "nodejs";
@@ -38,6 +38,8 @@ type ConfirmRequest = {
     center?: unknown;
     role?: unknown;
     instagram?: unknown;
+    /** 신청 페이지 구분값 (예: "sales-ops3") */
+    landing?: unknown;
   };
 };
 
@@ -182,6 +184,8 @@ export async function POST(request: Request) {
       product.slug === SO_PRODUCT_STORY ? cleanInstagram(body.customer?.instagram) : "",
     center: str(body.customer?.center, 60),
     role: str(body.customer?.role, 30),
+    // 어느 랜딩에서 왔는지 — sales-ops 상품은 값이 없으면 "sales-ops", 다른 상품은 빈 값
+    landing: soResolveLanding(product.slug, str(body.customer?.landing, 40)),
   };
 
   // 결제내역 시트 기록 — 토스 승인 성공을 확인한 뒤에만 여기 도달한다.

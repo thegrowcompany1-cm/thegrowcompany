@@ -32,6 +32,7 @@ import {
   type Product,
 } from "@/lib/products";
 import { EMAIL_RE, formatPhone } from "@/lib/authStyles";
+import { soResolveLanding } from "@/lib/salesOps";
 
 export const CHK_STYLE = `
 .chk{min-height:100vh;background:#f6f5f2;color:#161616;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;overflow-x:hidden}
@@ -174,14 +175,20 @@ export default function Checkout() {
     if (initiatedRef.current === product.slug) return;
     initiatedRef.current = product.slug;
     if (typeof window.__tgcFbTrack === "function") {
+      // 결제 화면 진입 — 신청 페이지가 남긴 랜딩 구분값이 있으면 함께 보낸다
+      const entryLanding = soResolveLanding(product.slug, readCheckoutPrefill(product.slug)?.landing);
       window.__tgcFbTrack("InitiateCheckout", {
         content_name: product.name,
         content_ids: [product.slug],
         value: product.price,
         currency: "KRW",
+        ...(entryLanding ? { landing: entryLanding } : {}),
       });
     }
   }, [product]);
+
+  // 신청 페이지가 남긴 랜딩 구분값 (sales-ops 상품은 값이 없으면 "sales-ops", 다른 상품은 빈 값)
+  const landing = product ? soResolveLanding(product.slug, prefill?.landing) : "";
 
   const handlePay = async () => {
     if (!product) return;
@@ -236,6 +243,7 @@ export default function Checkout() {
         item_name: product.name,
         value: product.price,
         currency: "KRW",
+        ...(landing ? { landing } : {}),
       });
     }
     // 메타 픽셀 AddPaymentInfo — GA4 begin_checkout 과 같은 시점
@@ -245,6 +253,7 @@ export default function Checkout() {
         content_ids: [product.slug],
         value: product.price,
         currency: "KRW",
+        ...(landing ? { landing } : {}),
       });
     }
 
@@ -259,6 +268,7 @@ export default function Checkout() {
       ...(prefill?.center ? { center: prefill.center } : {}),
       ...(prefill?.role ? { role: prefill.role } : {}),
       ...(prefill?.instagram ? { instagram: prefill.instagram } : {}),
+      ...(landing ? { landing } : {}),
     });
     try {
       await widgets.requestPayment({

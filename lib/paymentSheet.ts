@@ -33,6 +33,8 @@ export type PaymentSheetRow = {
   instagramId?: string;
   center?: string;
   role?: string;
+  /** 신청 페이지 구분값 — 해당 없는 상품은 빈 값 */
+  landing?: string;
 };
 
 /**
@@ -58,11 +60,12 @@ export async function sendPaymentToSheet(p: PaymentSheetRow): Promise<boolean> {
     인스타ID: p.instagramId ?? "",
     센터명: p.center ?? "",
     역할: p.role ?? "",
+    랜딩: p.landing ?? "",
   };
 
   // 전송 내용 확인용 로그 — 개인정보(이름·연락처·이메일)는 남기지 않는다
   console.log(
-    `결제내역 시트 전송 — orderId=${p.orderId} productSlug=${p.productSlug} amount=${p.amount} 인스타ID=${body.인스타ID || "(없음)"} 센터명=${body.센터명 || "(없음)"} 역할=${body.역할 || "(없음)"}`,
+    `결제내역 시트 전송 — orderId=${p.orderId} productSlug=${p.productSlug} amount=${p.amount} 인스타ID=${body.인스타ID || "(없음)"} 센터명=${body.센터명 || "(없음)"} 역할=${body.역할 || "(없음)"} 랜딩=${body.랜딩 || "(없음)"}`,
   );
 
   const logFail = (reason: string) =>

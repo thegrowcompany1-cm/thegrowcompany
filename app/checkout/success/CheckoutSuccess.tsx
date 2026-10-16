@@ -30,6 +30,8 @@ type Payment = {
   customerName: string;
   customerPhone: string;
   customerEmail: string;
+  /** 신청 페이지 구분값 (해당 없으면 빈 값) */
+  landing?: string;
 };
 
 type Phase =
@@ -172,6 +174,7 @@ export default function CheckoutSuccess() {
           content_ids: [payment.productSlug],
           value: payment.amount,
           currency: "KRW",
+          ...(payment.landing ? { landing: payment.landing } : {}),
         },
         { eventID: payment.orderId },
       );
@@ -184,6 +187,7 @@ export default function CheckoutSuccess() {
         transaction_id: payment.orderId,
         value: payment.amount,
         currency: "KRW",
+        ...(payment.landing ? { landing: payment.landing } : {}),
       });
     }
   }, [phase]);

@@ -76,6 +76,8 @@ export type CheckoutCustomer = {
   center?: string;
   role?: string;
   instagram?: string;
+  /** 결제까지 이어진 신청 페이지 구분값 (예: "sales-ops3") */
+  landing?: string;
 };
 
 const customerKey = (orderId: string) => `tgc:checkout:${orderId}`;
@@ -103,6 +105,7 @@ export function readCheckoutCustomer(orderId: string): CheckoutCustomer | null {
       ...(v.center ? { center: String(v.center) } : {}),
       ...(v.role ? { role: String(v.role) } : {}),
       ...(v.instagram ? { instagram: String(v.instagram) } : {}),
+      ...(v.landing ? { landing: String(v.landing) } : {}),
     };
   } catch {
     return null;
@@ -131,6 +134,8 @@ export type CheckoutPrefill = {
   center: string;
   role: string;
   instagram: string;
+  /** 신청 페이지가 남기는 랜딩 구분값 (없으면 비어 있다) */
+  landing?: string;
 };
 
 const prefillKey = (slug: string) => `tgc:checkout:prefill:${slug}`;
@@ -154,6 +159,7 @@ export function readCheckoutPrefill(slug: string): CheckoutPrefill | null {
       center: String(v.center ?? ""),
       role: String(v.role ?? ""),
       instagram: String(v.instagram ?? ""),
+      ...(v.landing ? { landing: String(v.landing) } : {}),
     };
   } catch {
     return null;
