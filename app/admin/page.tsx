@@ -21,6 +21,7 @@ import {
   num,
 } from "./_lib/format";
 import MembersTable, { type MemberRow } from "./MembersTable";
+import AdminTabs from "./_components/AdminTabs";
 
 export const metadata: Metadata = {
   title: { absolute: "관리자 | 더그로우컴퍼니" },
@@ -134,6 +135,7 @@ export default async function AdminPage() {
           <h1 className="text-2xl font-black sm:text-3xl">관리자 대시보드</h1>
           <p className="mt-1.5 text-sm text-gray-400">{email} · 모든 시각은 KST 기준입니다</p>
         </header>
+        <AdminTabs active="members" />
 
         {!usingServiceRole && (
           <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm leading-relaxed text-amber-200">
