@@ -111,6 +111,7 @@ function RelatedServiceCard({
 
 // ─── 위탁 후기 영상 · CTA 블록 (DETAIL_HTML 에 문자열로 들어간다) ─────────────
 //  · 원본 video-raw/reviewwt.mp4 → ffmpeg 720p(세로 720x1280) CRF28 + AAC 96k
+//    (3번째 review-wt3 는 video-raw/필라여대(위탁,숏폼)최종.mp4 를 같은 설정으로 변환)
 //  · 클릭 전에는 poster 만 보여주고 preload="none" (모바일 데이터 절약)
 //
 //  · 예전에는 DETAIL_HTML 안에 마운트용 div 를 두고 React 포털로 꽂았는데 실제
@@ -130,7 +131,8 @@ const WT_VIDEO_HTML = `<style>
   /* PC: 두 영상 가로 나란히 중앙 정렬. max-width 로 좁은 화면에서 자동 축소되어
      640px 대 뷰포트에서도 가로로 넘치지 않는다. */
   .wt-vid-row{display:flex;gap:16px;justify-content:center;align-items:flex-start;max-width:100%}
-  .wt-vid-item{flex:0 1 320px;width:320px;max-width:calc(50% - 8px)}
+  /* 영상 3개 — PC 에서 세 개가 한 줄에 들어가도록 폭을 줄였다 (모바일은 아래 미디어쿼리의 78% 스와이프) */
+  .wt-vid-item{flex:0 1 250px;width:250px;max-width:calc(33.333% - 11px)}
   .wt-vid-frame{position:relative;width:100%;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#1a1a1a}
   .wt-vid-player{width:100%;height:100%;object-fit:cover;display:block}
   .wt-vid-cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;padding:0;cursor:pointer;transition:background .2s}
@@ -183,6 +185,14 @@ const WT_VIDEO_HTML = `<style>
       <div class="wt-vid-frame">
         <video class="wt-vid-player" src="/reviews/review-wt2.mp4" poster="/reviews/review-wt2.jpg" preload="none" playsinline></video>
         <button type="button" class="wt-vid-cover" aria-label="위탁 후기 영상 2 재생">
+          <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+      </div>
+    </div>
+    <div class="wt-vid-item">
+      <div class="wt-vid-frame">
+        <video class="wt-vid-player" src="/reviews/review-wt3.mp4" poster="/reviews/review-wt3.jpg" preload="none" playsinline></video>
+        <button type="button" class="wt-vid-cover" aria-label="위탁 후기 영상 3 재생">
           <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
         </button>
       </div>
