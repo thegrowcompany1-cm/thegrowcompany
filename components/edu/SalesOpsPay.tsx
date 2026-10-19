@@ -287,8 +287,8 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
             </span>
           </p>
           <p className="sop-cond">
-            아래 포스터를 본인 인스타그램 스토리에 {BRAND_TAG} 태그와 함께 올려주시면 인증가로 신청할 수
-            있습니다
+            스토리 결제하신 후 hyunjin_salessalon 혹은 thegrow_ceo 아래 포스터를 본인 인스타그램 스토리에{" "}
+            {BRAND_TAG} 태그와 함께 올려주시면 되십니다
           </p>
 
           <div className="sop-poster">
