@@ -242,10 +242,6 @@ const FORM_HTML = `<div class="consult-form-wrapper">
           <input type="radio" name="consultant" value="박정민" class="consultant-radio">
           <span class="checkbox-text">박정민</span>
         </label>
-        <label class="checkbox-label">
-          <input type="radio" name="consultant" value="황봉남" class="consultant-radio">
-          <span class="checkbox-text">황봉남</span>
-        </label>
       </div>
     </div>
 

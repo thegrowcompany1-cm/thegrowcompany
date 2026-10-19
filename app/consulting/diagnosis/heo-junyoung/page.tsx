@@ -245,10 +245,6 @@ const FORM_HTML = `<div class="consult-form-wrapper">
           <span class="checkbox-text">박정민</span>
         </label>
         <label class="checkbox-label">
-          <input type="radio" name="consultant" value="황봉남" class="consultant-radio">
-          <span class="checkbox-text">황봉남</span>
-        </label>
-        <label class="checkbox-label">
           <input type="radio" name="consultant" value="구진완" class="consultant-radio">
           <span class="checkbox-text">구진완</span>
         </label>
@@ -639,7 +635,7 @@ const FORM_HTML_BOTTOM = FORM_HTML
   // 상단/하단 폼이 서로 다른 iframe 을 쓰도록 따로 바꾼다.
   .replace(/diag_iframe_top/g, "diag_iframe_bottom");
 
-// ─── 황봉남 진단 랜딩 상세 HTML (hjy- 접두사, eyebrow 없음) ────────────────────
+// ─── 진단 랜딩 상세 HTML (hjy- 접두사, eyebrow 없음) ────────────────────
 // 현장사진 마퀴 <script> 포함. detailRef 주입 이펙트가 script 재실행 + rAF 정리.
 // 상위노출 마퀴 4장(140px) + 카톡 마퀴 6장(320px,역방향) + 강의 마퀴 6장(200px), 각 2회 배치.
 const DETAIL_HTML = `<div class="hjy">
