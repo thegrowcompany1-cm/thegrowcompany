@@ -27,7 +27,7 @@ import {
 import { saveCheckoutPrefill } from "@/lib/products";
 import { formatPhone } from "@/lib/authStyles";
 
-const ROLES = ["대표", "관리자·팀장", "트레이너"] as const;
+const ROLES = ["대표 · 원장", "관리자 · 팀장 · 실장", "트레이너 · 강사"] as const;
 const POSTER_SRC = "/edu/sales-ops/poster.jpg";
 const POSTER_FILENAME = "thegrow-seminar-poster.jpg";
 const BRAND_TAG = "@thegrow.company";
@@ -76,10 +76,10 @@ const SOP_RAW = `
 .sop-vat{font-size:12.5px;font-weight:600;color:var(--sop-muted);margin-left:6px}
 .sop-cond{margin:14px 0 0;font-size:14.5px;line-height:1.7;color:#333}
 .sop-poster{margin:16px 0 0}
-.sop-poster-frame{position:relative;width:100%;max-width:240px;margin:0 auto;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#E3E3E0;border:1px solid var(--sop-line)}
+.sop-poster-frame{position:relative;width:100%;max-width:320px;margin:0 auto;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:#E3E3E0;border:1px solid var(--sop-line)}
 .sop-poster-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .sop-poster-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;text-align:center;font-size:13px;font-weight:700;color:#8a8a8a}
-.sop-dl{display:flex;align-items:center;justify-content:center;width:100%;max-width:240px;margin:12px auto 0;min-height:46px;padding:10px 16px;border:1px solid var(--sop-ink);border-radius:50px;background:#fff;color:var(--sop-ink);font:inherit;font-size:14.5px;font-weight:800;text-decoration:none;cursor:pointer}
+.sop-dl{display:flex;align-items:center;justify-content:center;width:100%;max-width:320px;margin:12px auto 0;min-height:46px;padding:10px 16px;border:1px solid var(--sop-ink);border-radius:50px;background:#fff;color:var(--sop-ink);font:inherit;font-size:14.5px;font-weight:800;text-decoration:none;cursor:pointer}
 .sop-dl[aria-disabled="true"]{opacity:.45;pointer-events:none;border-color:#aaa}
 .sop-dl-note{margin:8px 0 0;text-align:center;font-size:12.5px;line-height:1.5;color:var(--sop-muted)}
 .sop-story-fields{margin:20px 0 0;padding:18px 0 0;border-top:1px solid var(--sop-line)}
