@@ -17,7 +17,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  SO_PRICE_DIFF,
   SO_PRICE_NORMAL,
   SO_PRICE_STORY,
   SO_PRODUCT_NORMAL,
@@ -30,13 +29,8 @@ import { formatPhone } from "@/lib/authStyles";
 const ROLES = ["대표 · 원장", "관리자 · 팀장 · 실장", "트레이너 · 강사"] as const;
 const POSTER_SRC = "/edu/sales-ops/poster.jpg";
 const POSTER_FILENAME = "thegrow-seminar-poster.jpg";
-const BRAND_TAG = "@thegrow.company";
 
 const won = (n: number) => `${n.toLocaleString("ko-KR")}원`;
-
-/** 입력값에서 @ 와 공백을 걷고 영문·숫자·._ 만 남긴다 */
-const cleanInstagram = (raw: string) =>
-  raw.replace(/\s+/g, "").replace(/@/g, "").replace(/[^A-Za-z0-9._]/g, "").slice(0, 30);
 
 const SOP_RAW = `
 .sop{--sop-acc:#22B573;--sop-acc-dark:#0B6B3A;--sop-acc-soft:rgba(34,181,115,.12);--sop-ink:#141414;--sop-muted:#6B6B6B;--sop-line:rgba(20,20,20,.12);--sop-bg:#fff;--sop-soft:#F6F6F4;--sop-hot:#E5483A;color:var(--sop-ink);max-width:880px;margin:36px auto 0;text-align:left;letter-spacing:-.01em;word-break:keep-all}
@@ -59,9 +53,7 @@ const SOP_RAW = `
 .sop-role span{display:flex;align-items:center;justify-content:center;min-height:48px;padding:6px 4px;border:1px solid #d6d6d6;border-radius:10px;background:#fff;font-size:14px;font-weight:700;text-align:center;line-height:1.3;transition:background-color .2s,border-color .2s,color .2s}
 .sop-role input:checked+span{background:var(--sop-acc-soft);border-color:var(--sop-acc);color:var(--sop-acc-dark)}
 .sop-role input:focus-visible+span{outline:2px solid var(--sop-acc);outline-offset:2px}
-.sop-hint{margin:7px 0 0;font-size:12.5px;line-height:1.5;color:var(--sop-muted)}
-.sop-hint.is-bad{color:var(--sop-hot);font-weight:700}
-.sop-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px;align-items:stretch}
+.sop-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px;align-items:start}
 .sop-cards.is-stack{grid-template-columns:minmax(0,1fr)}
 .sop-card{position:relative;display:flex;flex-direction:column;min-width:0;background:var(--sop-bg);border:1px solid var(--sop-line);border-radius:20px;padding:28px 24px 24px}
 .sop-card.is-story{border:2px solid var(--sop-acc);box-shadow:0 14px 36px rgba(0,0,0,.08)}
@@ -82,10 +74,6 @@ const SOP_RAW = `
 .sop-dl{display:flex;align-items:center;justify-content:center;width:100%;max-width:320px;margin:12px auto 0;min-height:46px;padding:10px 16px;border:1px solid var(--sop-ink);border-radius:50px;background:#fff;color:var(--sop-ink);font:inherit;font-size:14.5px;font-weight:800;text-decoration:none;cursor:pointer}
 .sop-dl[aria-disabled="true"]{opacity:.45;pointer-events:none;border-color:#aaa}
 .sop-dl-note{margin:8px 0 0;text-align:center;font-size:12.5px;line-height:1.5;color:var(--sop-muted)}
-.sop-story-fields{margin:20px 0 0;padding:18px 0 0;border-top:1px solid var(--sop-line)}
-.sop-check{display:flex;align-items:flex-start;gap:10px;margin:14px 0 0;font-size:14px;font-weight:700;line-height:1.55;cursor:pointer}
-.sop-check input{flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;accent-color:var(--sop-acc);cursor:pointer}
-.sop-notice{margin:14px 0 0;font-size:12.5px;line-height:1.6;color:var(--sop-muted)}
 .sop-spacer{flex:1 1 auto;min-height:16px}
 .sop-pay{display:block;width:100%;min-height:56px;margin-top:18px;padding:16px 20px;border:0;border-radius:50px;background:var(--sop-acc);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer;transition:opacity .2s,background-color .2s}
 .sop-pay:hover{opacity:.92}
@@ -122,8 +110,6 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
   const [phone, setPhone] = useState("");
   const [center, setCenter] = useState("");
   const [role, setRole] = useState("");
-  const [insta, setInsta] = useState("");
-  const [posted, setPosted] = useState(false);
   const [error, setError] = useState<{ card: "story" | "normal"; msg: string } | null>(null);
   const [posterOk, setPosterOk] = useState(true);
   const [coarse, setCoarse] = useState(false);
@@ -147,9 +133,6 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
     const img = posterRef.current;
     if (img && img.complete && img.naturalWidth === 0) setPosterOk(false);
   }, []);
-
-  const instaValid = insta.length >= 1;
-  const storyReady = instaValid && posted;
 
   const validateCommon = (): string | null => {
     if (name.trim().length < 2) {
@@ -175,10 +158,6 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
       setError({ card, msg: common });
       return;
     }
-    if (card === "story" && !storyReady) {
-      setError({ card, msg: "인스타그램 아이디와 스토리 업로드 확인이 필요합니다." });
-      return;
-    }
     setError(null);
     const slug = card === "story" ? SO_PRODUCT_STORY : SO_PRODUCT_NORMAL;
     saveCheckoutPrefill(slug, {
@@ -186,8 +165,8 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
       phone: formatPhone(phone.replace(/\D/g, "")),
       center: center.trim(),
       role,
-      // 정상가 결제는 인스타 아이디를 싣지 않는다 (시트에는 빈 값으로 기록)
-      instagram: card === "story" ? insta : "",
+      // 인스타 아이디는 더 이상 받지 않는다 (결제 후 스토리 업로드 방식). 시트의 인스타ID 열은 빈 값이 된다
+      instagram: "",
     });
     router.push(`/checkout?product=${slug}`);
   };
@@ -287,8 +266,8 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
             </span>
           </p>
           <p className="sop-cond">
-            스토리 결제하신 후 hyunjin_salessalon 혹은 thegrow_ceo 아래 포스터를 본인 인스타그램 스토리에{" "}
-            {BRAND_TAG} 태그와 함께 올려주시면 되십니다
+            스토리 결제하신 후 아래 포스터를 본인 인스타그램 스토리에 hyunjin_salessalon 혹은 thegrow_ceo 태그와
+            함께 올려주시면 되십니다
           </p>
 
           <div className="sop-poster">
@@ -321,37 +300,8 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
             )}
           </div>
 
-          <div className="sop-story-fields">
-            <div className="sop-field">
-              <label className="sop-label" htmlFor="sop-insta">
-                인스타그램 아이디<span className="sop-req">*</span>
-              </label>
-              <input
-                id="sop-insta"
-                className="sop-input"
-                type="text"
-                inputMode="url"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
-                value={insta}
-                onChange={(e) => setInsta(cleanInstagram(e.target.value))}
-                placeholder="내 인스타그램 아이디"
-              />
-              <p className="sop-hint">@ 는 빼고 입력해주세요. 영문·숫자·밑줄(_)·점(.)만 사용할 수 있습니다.</p>
-            </div>
-            <label className="sop-check">
-              <input type="checkbox" checked={posted} onChange={(e) => setPosted(e.target.checked)} />
-              <span>포스터를 {BRAND_TAG} 태그와 함께 스토리에 올렸습니다</span>
-            </label>
-          </div>
-
-          <p className="sop-notice">
-            스토리 업로드는 운영팀이 태그 알림으로 확인합니다. 확인되지 않으면 정상가와의 차액{" "}
-            {won(SO_PRICE_DIFF)}을 별도 안내드립니다.
-          </p>
           <div className="sop-spacer" />
-          <button type="button" className="sop-pay" disabled={!storyReady} onClick={() => go("story")}>
+          <button type="button" className="sop-pay" onClick={() => go("story")}>
             스토리 인증가로 신청하기
           </button>
           {error?.card === "story" && <p className="sop-err">{error.msg}</p>}

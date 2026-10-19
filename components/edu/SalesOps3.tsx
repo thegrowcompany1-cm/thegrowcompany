@@ -182,9 +182,9 @@ const SO3_PARTS = [
 // ── 8. 결제 ─────────────────────────────────────────────────────────────────
 const won = (n: number) => `${n.toLocaleString("ko-KR")}원`;
 const SO3_STEPS = [
+  `스토리 인증가 ${won(SO_PRICE_STORY)} 결제`,
   "포스터 저장",
-  "@thegrow.company 태그하고 스토리 업로드",
-  `인스타 아이디 입력 후 ${won(SO_PRICE_STORY)} 결제`,
+  "hyunjin_salessalon 혹은 thegrow_ceo 태그하고 스토리 업로드",
 ];
 
 // ── 9. 클로징 ───────────────────────────────────────────────────────────────
