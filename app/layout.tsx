@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MetaPixel from "@/components/MetaPixel";
 import ScrollDepthTracker from "@/components/ScrollDepthTracker";
+import VisitTracker from "@/components/VisitTracker";
 import { SITE_URL, SITE_NAME, OG_IMAGE } from "@/lib/site";
 
 const notoSansKR = Noto_Sans_KR({
@@ -125,6 +126,8 @@ export default function RootLayout({
         {/* GA4 스크롤 깊이·체류 이벤트 — gtag 가 로드된 경우에만 동작한다.
             GoogleAnalytics 와 MetaPixel 은 손대지 않는다. */}
         <ScrollDepthTracker />
+        {/* 자체 익명 방문 추적 — /admin/ga 의 실시간 방문자·여정·섹션 이탈. /admin 과 봇은 제외 (components/VisitTracker.tsx) */}
+        <VisitTracker />
       </body>
       {/* GA4 (gtag.js) — 측정 ID 가 설정된 경우에만 로드 */}
       {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}

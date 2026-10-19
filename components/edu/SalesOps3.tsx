@@ -1020,7 +1020,7 @@ export default function SalesOps3() {
       <style dangerouslySetInnerHTML={{ __html: SO3_STYLE }} />
 
       {/* ── 1. 히어로 ── */}
-      <section className="so3-hero" id="so3-hero" ref={heroRef}>
+      <section data-track-section="hero" className="so3-hero" id="so3-hero" ref={heroRef}>
         <div className="so3-wrap so3-hero-in">
           <div className="so3-hero-copy">
             <p className="so3-eyebrow">{SO3_EYEBROW}</p>
@@ -1061,7 +1061,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 1-2. 열쇠 전환 (데스크톱은 스크롤 연출, 그 외 정적) ── */}
-      <section className="so3-keys" aria-label="운영과 세일즈, 두 개의 열쇠">
+      <section data-track-section="keys" className="so3-keys" aria-label="운영과 세일즈, 두 개의 열쇠">
         <div className="so3-keys-stage">
           <div className="so3-key-glow" aria-hidden="true" />
           <div className="so3-key-wrap">
@@ -1079,7 +1079,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 2. 매출이 새는 곳 (퍼널) ── */}
-      <section className="so3-sec so3-white so3-funnel">
+      <section data-track-section="funnel" className="so3-sec so3-white so3-funnel">
         <div className="so3-fn-pin">
           <div className="so3-wrap">
             <h2 className="so3-h2 so3-reveal">{SO3_FUNNEL_TITLE}</h2>
@@ -1125,7 +1125,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 3. 상담 장면 + 하수 vs 고수 (유지) ── */}
-      <section className="so3-sec so3-cream">
+      <section data-track-section="problem" className="so3-sec so3-cream">
         <div className="so3-wrap">
           <h2 className="so3-h2 so3-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
           <div className="so3-talks so3-stagger">
@@ -1148,7 +1148,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 4. 신념 깨기 — 하수 vs 고수 바로 뒤 ── */}
-      <section className="so3-sec so3-dark">
+      <section data-track-section="belief" className="so3-sec so3-dark">
         <div className="so3-wrap so3-belief">
           <h2 className="so3-h2 so3-reveal">{SO3_BELIEF_HEAD}</h2>
           <div className="so3-reveal">
@@ -1169,7 +1169,7 @@ export default function SalesOps3() {
 
       {/* ── 5. 사례 스토리 (Before → After) — 수치가 확정되기 전에는 카드가 숨겨진다 ── */}
       {(salesCaseReady || opsCaseReady || preview) && (
-        <section className="so3-sec so3-white">
+        <section data-track-section="case" className="so3-sec so3-white">
           <div className="so3-wrap">
             <h2 className="so3-h2 so3-reveal">{SO3_CASE_HEAD}</h2>
             <div className="so3-cases so3-stagger">
@@ -1214,7 +1214,7 @@ export default function SalesOps3() {
       )}
 
       {/* ── 6. 강사 소개 ① 황현진 (프로필 · 약력 · 저서 · 영상) ── */}
-      <section className="so3-sec so3-dark2">
+      <section data-track-section="hwang" className="so3-sec so3-dark2">
         <div className="so3-wrap">
           <div className="so3-prof so3-reveal">
             <div className="so3-prof-photo so3-media">
@@ -1287,7 +1287,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 5. 증거 ② 김재강 프로필 · 약력 — "회원은 사람을 보고…" 보다 먼저 ── */}
-      <section className="so3-sec so3-dark">
+      <section data-track-section="kim" className="so3-sec so3-dark">
         <div className="so3-wrap">
           <div className="so3-prof so3-reveal">
             <div className="so3-prof-photo so3-media">
@@ -1307,7 +1307,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 6. 운영 축: 회원은 사람을 보고… (헤드라인 · 3칸 · 운영 시스템 화면) ── */}
-      <section className="so3-sec so3-white">
+      <section data-track-section="ops" className="so3-sec so3-white">
         <div className="so3-wrap">
           <h2 className="so3-h2 so3-reveal">{SO3_KIM_HEADLINE}</h2>
           <div className="so3-op-body so3-reveal">
@@ -1414,7 +1414,7 @@ export default function SalesOps3() {
 
       {/* ── 6. 수강하면 가져가는 것 (제공물이 확정돼 SO3_TAKEAWAYS 가 채워지면 나타난다) ── */}
       {hasTakeaways && (
-        <section className="so3-sec so3-cream">
+        <section data-track-section="takeaway" className="so3-sec so3-cream">
           <div className="so3-wrap">
             <h2 className="so3-h2 so3-reveal">{SO3_TAKEAWAYS_TITLE}</h2>
             <div className="so3-take so3-stagger">
@@ -1431,7 +1431,7 @@ export default function SalesOps3() {
       )}
 
       {/* ── 7. 커리큘럼 · 타임테이블 ── */}
-      <section className="so3-sec so3-dark">
+      <section data-track-section="curriculum" className="so3-sec so3-dark">
         <div className="so3-wrap">
           <h2 className="so3-h2 so3-reveal">
             커리큘럼 · <em>타임테이블</em>
@@ -1475,7 +1475,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 9. 가치 스택 + 회수 계산 — 신청 섹션 바로 앞. 할인은 가치 다음에 보여준다 ── */}
-      <section className="so3-sec so3-white">
+      <section data-track-section="value" className="so3-sec so3-white">
         <div className="so3-wrap so3-value">
           <h2 className="so3-h2 so3-reveal">{won(SO_PRICE_STORY)}, 상담 1건이면 회수됩니다</h2>
           <div className="so3-recover so3-reveal">
@@ -1501,7 +1501,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 10. 이런 분께 추천 (직책별) ── */}
-      <section className="so3-sec so3-cream">
+      <section data-track-section="target" className="so3-sec so3-cream">
         <div className="so3-wrap">
           <h2 className="so3-h2 so3-reveal">이런 분께 추천합니다</h2>
           <div className="so3-needs so3-stagger">
@@ -1519,7 +1519,7 @@ export default function SalesOps3() {
 
       {/* ── 11. FAQ — 답변이 확정된 항목만 보인다 ── */}
       {(SO3_FAQ.some((f) => f.a) || preview) && (
-        <section className="so3-sec so3-white">
+        <section data-track-section="faq" className="so3-sec so3-white">
           <div className="so3-wrap">
             <h2 className="so3-h2 so3-reveal">자주 묻는 질문</h2>
             <div className="so3-faq so3-reveal">
@@ -1535,7 +1535,7 @@ export default function SalesOps3() {
       )}
 
       {/* ── 8. 결제 ── */}
-      <section className="so3-sec so3-cream so3-apply" id="so3-apply" ref={applyRef}>
+      <section data-track-section="form" className="so3-sec so3-cream so3-apply" id="so3-apply" ref={applyRef}>
         <div className="so3-wrap">
           <div ref={applyHeadRef}>
             <h2 className="so3-h2 so3-reveal">세미나 신청 안내</h2>
@@ -1582,7 +1582,7 @@ export default function SalesOps3() {
       </section>
 
       {/* ── 13. 클로징 (교체) ── */}
-      <section className="so3-sec so3-dark">
+      <section data-track-section="closing" className="so3-sec so3-dark">
         <div className="so3-wrap so3-closing">
           <div className="so3-reveal">
             {SO3_CLOSING_LINES.map((l) => (

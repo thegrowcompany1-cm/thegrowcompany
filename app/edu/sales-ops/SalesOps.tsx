@@ -672,7 +672,7 @@ export default function SalesOps() {
       <style dangerouslySetInnerHTML={{ __html: SO_STYLE }} />
 
       {/* ── 1. 히어로 ── */}
-      <section className="so-hero" id="so-hero">
+      <section data-track-section="hero" className="so-hero" id="so-hero">
         <div className="so-wrap so-hero-in">
           <div className="so-hero-copy">
             <p className="so-kicker">더그로우 X 리얼세일즈</p>
@@ -735,7 +735,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 2. 세일즈 축 문제 제기 ── */}
-      <section className="so-sec so-cream">
+      <section data-track-section="problem" className="so-sec so-cream">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
 
@@ -760,7 +760,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 3. 황현진 작가 소개 (저서 · 영상 포함) ── */}
-      <section className="so-sec so-dark2">
+      <section data-track-section="hwang" className="so-sec so-dark2">
         <div className="so-wrap">
           <div className="so-prof so-reveal">
             <div className="so-prof-photo so-media">
@@ -849,7 +849,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 4. 운영 축 문제 제기 ── */}
-      <section className="so-sec so-white">
+      <section data-track-section="ops" className="so-sec so-white">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">회원은 사람을 보고 등록하고, 시스템을 보고 재등록합니다</h2>
           <div className="so-op-body so-reveal">
@@ -934,7 +934,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 5. 김재강 대표 소개 ── */}
-      <section className="so-sec so-cream">
+      <section data-track-section="kim" className="so-sec so-cream">
         <div className="so-wrap">
           <div className="so-kim so-reveal">
             <div className="so-kim-photo so-media">
@@ -960,7 +960,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 6. 이런 분들께 필요합니다 ── */}
-      <section className="so-sec so-white">
+      <section data-track-section="target" className="so-sec so-white">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">이런 분들께 필요합니다</h2>
           <div className="so-needs so-stagger">
@@ -976,7 +976,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 7. 커리큘럼 · 타임테이블 ── */}
-      <section className="so-sec so-dark">
+      <section data-track-section="curriculum" className="so-sec so-dark">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">
             커리큘럼 · <em>타임테이블</em>
@@ -1020,7 +1020,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 8. 듣고 나면 달라지는 것 ── */}
-      <section className="so-sec so-cream">
+      <section data-track-section="change" className="so-sec so-cream">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">듣고 나면 달라지는 것</h2>
           <div className="so-changes so-stagger">
@@ -1039,7 +1039,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 9. 클로징 ── */}
-      <section className="so-sec so-dark">
+      <section data-track-section="closing" className="so-sec so-dark">
         <div className="so-wrap so-narrow so-closing">
           {SO_CLOSING.map((group, gi) => (
             <div className={gi > 0 ? "so-gap so-reveal" : "so-reveal"} key={gi}>
@@ -1054,7 +1054,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 10. 신청 ── */}
-      <section className="so-sec so-cream so-apply" id="so-apply">
+      <section data-track-section="form" className="so-sec so-cream so-apply" id="so-apply">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">세미나 신청 안내</h2>
           <table className="so-table so-reveal">

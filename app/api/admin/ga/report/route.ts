@@ -1,65 +1,72 @@
 // 기간 리포트 — GET /api/admin/ga/report?range=7|28|90 (기본 28)
 //
 //  · 관리자가 아니면 401.
-//  · batchRunReports 한 번으로 4종을 가져온다.
+//  · batchRunReports 는 한 번에 최대 5개라 두 번(5개 + 4개)으로 나눠 동시에 호출한다.
+//    [묶음 1]
 //      a) 날짜별 activeUsers·sessions (+ 기간 전체 합계: 사용자 · 참여율 · 평균 세션 시간)
 //      b) 채널(sessionDefaultChannelGroup)별 sessions · activeUsers · engagementRate ·
 //         averageSessionDuration · keyEvents
 //      c) 페이지(pagePath)별 screenPageViews · activeUsers · userEngagementDuration, 조회수 상위 20
-//         → 페이지당 평균 체류시간 = userEngagementDuration / activeUsers
-//      d) 페이지별 eventName='scroll' 의 eventCount (90% 스크롤 도달)
-//         → 스크롤 도달률 = scroll eventCount / screenPageViews (c 와 pagePath 로 합침)
-//  · 서버 메모리 캐시 10분 (기간별). 서버리스 인스턴스마다 따로 갖는 단순 캐시다.
-//  · GA 집계 특성상 최대 24~48시간 지연될 수 있다 (화면에 안내).
+//      d) 페이지별 eventName='scroll' 의 eventCount (90% 스크롤 도달) → 스크롤 도달률
+//      e) 랜딩(landingPage)별 sessions · engagedSessions · engagementRate · userEngagementDuration · keyEvents
+//    [묶음 2]
+//      f) 자연검색(Organic Search) sessionSource 별 세션·참여율
+//      g) 자연검색 유입 랜딩 Top 20
+//      h) AI 검색 소스(chatgpt·perplexity·gemini·copilot·claude·wrtn 등)별 세션
+//      i) AI 유입 랜딩
+//  · landingPage 는 쿼리스트링이 없는 경로 기준이다 (landingPagePlusQueryString 을 쓰지 않는다).
+//  · 서버 메모리 캐시 10분 (기간별). GA 집계 특성상 최대 24~48시간 지연될 수 있다.
 
 import { NextResponse } from "next/server";
 import { protos } from "@google-analytics/data";
 import { getAdminContext } from "@/app/admin/_lib/guard";
 import { gaErrorBody, getGa } from "@/lib/ga";
+import { AI_SOURCE_REGEX, RANGES, type LandingRow, type Range, type ReportPayload } from "@/lib/gaTypes";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 const CACHE_TTL_MS = 10 * 60 * 1000;
-const RANGES = [7, 28, 90] as const;
-type Range = (typeof RANGES)[number];
 
 type Row = { dimensionValues?: { value?: string | null }[] | null; metricValues?: { value?: string | null }[] | null };
-
-type ReportPayload = {
-  ok: true;
-  range: Range;
-  totals: { users: number; sessions: number; engagementRate: number; avgSessionDuration: number };
-  daily: { date: string; users: number; sessions: number }[];
-  channels: {
-    channel: string;
-    sessions: number;
-    users: number;
-    engagementRate: number;
-    avgSessionDuration: number;
-    keyEvents: number;
-  }[];
-  pages: {
-    path: string;
-    views: number;
-    users: number;
-    /** 사용자당 평균 참여 시간(초) */
-    avgEngagementSec: number;
-    /** 스크롤 90% 도달률 (0~1). 스크롤 이벤트 데이터가 없으면 null */
-    scrollRate: number | null;
-  }[];
-  cachedAt: string;
-};
 
 const cache = new Map<Range, { at: number; data: ReportPayload }>();
 
 const n = (v: string | null | undefined) => Number(v ?? 0) || 0;
 const dim = (r: Row, i = 0) => r.dimensionValues?.[i]?.value ?? "";
 const met = (r: Row, i: number) => n(r.metricValues?.[i]?.value);
-
-/** GA 날짜 "20261018" → "2026-10-18" */
 const isoDate = (d: string) => (d.length === 8 ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6)}` : d);
+
+const { MetricAggregation } = protos.google.analytics.data.v1beta;
+const { Filter } = protos.google.analytics.data.v1beta;
+
+const eqFilter = (fieldName: string, value: string) => ({
+  filter: { fieldName, stringFilter: { matchType: Filter.StringFilter.MatchType.EXACT, value } },
+});
+const regexFilter = (fieldName: string, value: string) => ({
+  filter: { fieldName, stringFilter: { matchType: Filter.StringFilter.MatchType.PARTIAL_REGEXP, value } },
+});
+
+const LANDING_METRICS = [
+  { name: "sessions" },
+  { name: "engagedSessions" },
+  { name: "engagementRate" },
+  { name: "userEngagementDuration" },
+  { name: "keyEvents" },
+];
+
+const toLanding = (r: Row): LandingRow => {
+  const sessions = met(r, 0);
+  return {
+    landing: dim(r) || "(not set)",
+    sessions,
+    engagedSessions: met(r, 1),
+    engagementRate: met(r, 2),
+    avgEngagementSec: sessions > 0 ? met(r, 3) / sessions : 0,
+    keyEvents: met(r, 4),
+  };
+};
 
 export async function GET(request: Request) {
   const admin = await getAdminContext();
@@ -78,67 +85,115 @@ export async function GET(request: Request) {
   try {
     const { client, property } = getGa();
     const dateRanges = [{ startDate: `${range - 1}daysAgo`, endDate: "today" }];
+    const bySessions = [{ metric: { metricName: "sessions" }, desc: true }];
 
-    const [res] = await client.batchRunReports({
-      property,
-      requests: [
-        // a) 날짜별 추이 + 기간 전체 합계 (totals 는 중복 제거된 실제 합계다)
-        {
-          dateRanges,
-          dimensions: [{ name: "date" }],
-          metrics: [
-            { name: "activeUsers" },
-            { name: "sessions" },
-            { name: "engagementRate" },
-            { name: "averageSessionDuration" },
-          ],
-          orderBys: [{ dimension: { dimensionName: "date" } }],
-          metricAggregations: [protos.google.analytics.data.v1beta.MetricAggregation.TOTAL],
-          limit: 200,
-        },
-        // b) 채널별
-        {
-          dateRanges,
-          dimensions: [{ name: "sessionDefaultChannelGroup" }],
-          metrics: [
-            { name: "sessions" },
-            { name: "activeUsers" },
-            { name: "engagementRate" },
-            { name: "averageSessionDuration" },
-            { name: "keyEvents" },
-          ],
-          orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
-          limit: 20,
-        },
-        // c) 페이지별 조회수 상위 20
-        {
-          dateRanges,
-          dimensions: [{ name: "pagePath" }],
-          metrics: [{ name: "screenPageViews" }, { name: "activeUsers" }, { name: "userEngagementDuration" }],
-          orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
-          limit: 20,
-        },
-        // d) 페이지별 스크롤(90%) 이벤트 수 — c 의 상위 20 을 넉넉히 덮도록 많이 받는다
-        {
-          dateRanges,
-          dimensions: [{ name: "pagePath" }],
-          metrics: [{ name: "eventCount" }],
-          dimensionFilter: {
-            filter: { fieldName: "eventName", stringFilter: { matchType: "EXACT", value: "scroll" } },
+    const [[res1], [res2]] = await Promise.all([
+      client.batchRunReports({
+        property,
+        requests: [
+          // a) 날짜별 추이 + 기간 전체 합계
+          {
+            dateRanges,
+            dimensions: [{ name: "date" }],
+            metrics: [{ name: "activeUsers" }, { name: "sessions" }, { name: "engagementRate" }, { name: "averageSessionDuration" }],
+            orderBys: [{ dimension: { dimensionName: "date" } }],
+            metricAggregations: [MetricAggregation.TOTAL],
+            limit: 200,
           },
-          limit: 1000,
-        },
-      ],
-    });
+          // b) 채널별
+          {
+            dateRanges,
+            dimensions: [{ name: "sessionDefaultChannelGroup" }],
+            metrics: [
+              { name: "sessions" },
+              { name: "activeUsers" },
+              { name: "engagementRate" },
+              { name: "averageSessionDuration" },
+              { name: "keyEvents" },
+            ],
+            orderBys: bySessions,
+            limit: 20,
+          },
+          // c) 페이지별 조회수 상위 20
+          {
+            dateRanges,
+            dimensions: [{ name: "pagePath" }],
+            metrics: [{ name: "screenPageViews" }, { name: "activeUsers" }, { name: "userEngagementDuration" }],
+            orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
+            limit: 20,
+          },
+          // d) 페이지별 스크롤(90%) 이벤트 수
+          {
+            dateRanges,
+            dimensions: [{ name: "pagePath" }],
+            metrics: [{ name: "eventCount" }],
+            dimensionFilter: eqFilter("eventName", "scroll"),
+            limit: 1000,
+          },
+          // e) 랜딩 성과 (landingPage = 쿼리스트링 제외)
+          {
+            dateRanges,
+            dimensions: [{ name: "landingPage" }],
+            metrics: LANDING_METRICS,
+            orderBys: bySessions,
+            limit: 40,
+          },
+        ],
+      }),
+      client.batchRunReports({
+        property,
+        requests: [
+          // f) 자연검색 — 소스별
+          {
+            dateRanges,
+            dimensions: [{ name: "sessionSource" }],
+            metrics: [{ name: "sessions" }, { name: "engagementRate" }],
+            dimensionFilter: eqFilter("sessionDefaultChannelGroup", "Organic Search"),
+            orderBys: bySessions,
+            limit: 20,
+          },
+          // g) 자연검색 유입 랜딩 Top 20
+          {
+            dateRanges,
+            dimensions: [{ name: "landingPage" }],
+            metrics: LANDING_METRICS,
+            dimensionFilter: eqFilter("sessionDefaultChannelGroup", "Organic Search"),
+            orderBys: bySessions,
+            limit: 20,
+          },
+          // h) AI 검색 — 소스별
+          {
+            dateRanges,
+            dimensions: [{ name: "sessionSource" }],
+            metrics: [
+              { name: "sessions" },
+              { name: "engagementRate" },
+              { name: "activeUsers" },
+              { name: "averageSessionDuration" },
+              { name: "keyEvents" },
+            ],
+            dimensionFilter: regexFilter("sessionSource", AI_SOURCE_REGEX),
+            orderBys: bySessions,
+            limit: 20,
+          },
+          // i) AI 유입 랜딩
+          {
+            dateRanges,
+            dimensions: [{ name: "landingPage" }],
+            metrics: LANDING_METRICS,
+            dimensionFilter: regexFilter("sessionSource", AI_SOURCE_REGEX),
+            orderBys: bySessions,
+            limit: 20,
+          },
+        ],
+      }),
+    ]);
 
-    const [a, b, c, d] = res.reports ?? [];
+    const [a, b, c, d, e] = res1.reports ?? [];
+    const [f, g, h, i] = res2.reports ?? [];
 
     const totalRow = (a?.totals?.[0] ?? null) as Row | null;
-    const daily = ((a?.rows ?? []) as Row[]).map((r) => ({
-      date: isoDate(dim(r)),
-      users: met(r, 0),
-      sessions: met(r, 1),
-    }));
+    const daily = ((a?.rows ?? []) as Row[]).map((r) => ({ date: isoDate(dim(r)), users: met(r, 0), sessions: met(r, 1) }));
     const totals = totalRow
       ? { users: met(totalRow, 0), sessions: met(totalRow, 1), engagementRate: met(totalRow, 2), avgSessionDuration: met(totalRow, 3) }
       : { users: 0, sessions: 0, engagementRate: 0, avgSessionDuration: 0 };
@@ -154,23 +209,45 @@ export async function GET(request: Request) {
 
     const scrollByPath = new Map<string, number>();
     for (const r of (d?.rows ?? []) as Row[]) scrollByPath.set(dim(r), met(r, 0));
-
     const pages = ((c?.rows ?? []) as Row[]).map((r) => {
       const path = dim(r);
       const views = met(r, 0);
       const users = met(r, 1);
-      const engagement = met(r, 2);
       const scrolls = scrollByPath.get(path);
       return {
         path,
         views,
         users,
-        avgEngagementSec: users > 0 ? engagement / users : 0,
+        avgEngagementSec: users > 0 ? met(r, 2) / users : 0,
         scrollRate: scrolls === undefined || views <= 0 ? null : Math.min(1, scrolls / views),
       };
     });
 
-    const data: ReportPayload = { ok: true, range, totals, daily, channels, pages, cachedAt: new Date().toISOString() };
+    const data: ReportPayload = {
+      ok: true,
+      range,
+      totals,
+      daily,
+      channels,
+      pages,
+      landings: ((e?.rows ?? []) as Row[]).map(toLanding),
+      organic: {
+        sources: ((f?.rows ?? []) as Row[]).map((r) => ({ source: dim(r) || "(not set)", sessions: met(r, 0), engagementRate: met(r, 1) })),
+        landings: ((g?.rows ?? []) as Row[]).map(toLanding),
+      },
+      ai: {
+        sources: ((h?.rows ?? []) as Row[]).map((r) => ({
+          source: dim(r) || "(not set)",
+          sessions: met(r, 0),
+          engagementRate: met(r, 1),
+          users: met(r, 2),
+          avgSessionDuration: met(r, 3),
+          keyEvents: met(r, 4),
+        })),
+        landings: ((i?.rows ?? []) as Row[]).map(toLanding),
+      },
+      cachedAt: new Date().toISOString(),
+    };
     cache.set(range, { at: Date.now(), data });
     return NextResponse.json(data, { headers: NO_STORE });
   } catch (err) {

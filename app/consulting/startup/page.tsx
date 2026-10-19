@@ -174,7 +174,7 @@ const VIDEO_SECTION_HTML = `<style>
 @media(max-width:640px){.tgc-vid{padding:64px 0}.tgc-vid h2{font-size:24px}.tgc-vid-card{width:260px}.tgc-vid-track{gap:14px}}
 </style>
 
-<section class="tgc-vid" id="tgc-vid-sec">
+<section data-track-section="review" class="tgc-vid" id="tgc-vid-sec">
   <div class="tgc-vid-inner">
     <h2>먼저 창업한 <span class="green">대표님들의 이야기</span></h2>
     <p class="tgc-vid-sub">영상을 누르면 대표님들의 실제 목소리를 들을 수 있습니다.</p>
@@ -504,7 +504,7 @@ const HERO_SECTION_HTML = `<style>
 }
 </style>
 
-<section class="tgc-hero">
+<section data-track-section="hero" class="tgc-hero">
   <div class="tgc-hero-content">
     <div class="tgc-hero-badge tgc-fade-up tgc-delay-1">헬스장 · 필라테스 창업 전문</div>
 
@@ -1039,7 +1039,7 @@ const DETAIL_HTML = `
 }
 </style>
 
-<section class="tgc-empathy">
+<section data-track-section="empathy" class="tgc-empathy">
   <div class="tgc-empathy-inner">
     <p class="tgc-empathy-quote tgc-fade-up tgc-delay-1">
       <span class="typing-text">센터 차릴 때 자본만 있으면 <br>되는 거 아닌가요..</span>
@@ -1293,7 +1293,7 @@ const DETAIL_HTML = `
 }
 </style>
 
-<section class="tgc-problem">
+<section data-track-section="solution" class="tgc-problem">
   <div class="tgc-problem-inner">
     <div class="tgc-solution" id="solutionBox">
       <span class="tgc-solution-badge">💡 더그로우는 어떤 곳이길래?</span>
@@ -1642,7 +1642,7 @@ const DETAIL_HTML = `
 }
 </style>
 
-<section class="tgc-process">
+<section data-track-section="process" class="tgc-process">
   <div class="tgc-process-inner">
     <div class="tgc-process-header tgc-fade-up">
       <span class="tgc-process-badge">🚀 A to Z 창업 솔루션</span>
@@ -2244,7 +2244,7 @@ const DETAIL_HTML = `
 }
 </style>
 
-<section class="tgc-trust">
+<section data-track-section="proof" class="tgc-trust">
   <div class="tgc-trust-inner">
     <!-- 헤더 -->
     <div class="tgc-trust-header tgc-fade-up">
@@ -2818,7 +2818,7 @@ const DETAIL_HTML = `
 }
 </style>
 
-<section class="tgc-faq">
+<section data-track-section="faq" class="tgc-faq">
   <div class="tgc-faq-inner">
     <!-- 헤더 -->
     <div class="tgc-faq-header tgc-fade-up">
@@ -3509,7 +3509,7 @@ function toggleFaq(element) {
 }
 </style>
 
-<section class="tgc-cta-section" id="consulting-form">
+<section data-track-section="form" class="tgc-cta-section" id="consulting-form">
   <div class="tgc-cta-inner">
     <div class="tgc-cta-header tgc-fade-up" id="ctaHeader">
       <span class="tgc-cta-badge"> 지금 바로 시작하세요</span>

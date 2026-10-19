@@ -169,7 +169,7 @@ const WT_VIDEO_HTML = `<style>
   }
 </style>
 
-<div class="wt-vid-sec" id="wt-vid-sec">
+<div class="wt-vid-sec" id="wt-vid-sec" data-track-section="video">
   <p class="wt-vid-lead">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</p>
 
   <div class="wt-vid-row">
@@ -443,7 +443,7 @@ const DETAIL_HTML = `<style>
   }
 </style>
 
-<div class="hero-section">
+<div class="hero-section" data-track-section="hero">
   <div class="hero-animate" id="heroTitle">
     <p class="hero-eyebrow">헬스장 위탁 · 필라테스 위탁</p>
     <h1 class="hero-title">
@@ -618,7 +618,7 @@ const DETAIL_HTML = `<style>
   }
 </style>
 
-<div class="empathy-section">
+<div class="empathy-section" data-track-section="empathy">
   <h2 class="empathy-title">
     혹시 지금<br>
     <span class="highlight">이런 상황</span> 아니세요?
@@ -795,7 +795,7 @@ ${WT_VIDEO_HTML}
   }
 </style>
 
-<div class="evidence-section">
+<div class="evidence-section" data-track-section="proof">
   <h2 class="evidence-title">
     결과로 증명합니다.<br>
     <span class="highlight">평균 매출 상승률 130%</span>
@@ -1193,7 +1193,7 @@ ${WT_MID_CTA_HTML}
   }
 </style>
 
-<div class="compare-section">
+<div class="compare-section" data-track-section="compare">
   <h2 class="compare-title">
     더그로우가<br>
     <span class="highlight">타 업체와 다른 결정적 이유</span>
@@ -1345,7 +1345,7 @@ ${WT_MID_CTA_HTML}
   }
 </style>
 
-<div class="system-section">
+<div class="system-section" data-track-section="solution">
   <div class="system-badge">더그로우 운영시스템</div>
 
   <h2 class="system-title">
@@ -1484,7 +1484,7 @@ ${WT_MID_CTA_HTML}
   }
 </style>
 
-<div class="process-section">
+<div class="process-section" data-track-section="process">
   <h2 class="process-title">
     매장 상주 솔루션<br>
     <span class="highlight">진행 과정</span>
@@ -1748,7 +1748,7 @@ ${WT_MID_CTA_HTML}
   }
 </style>
 
-<div class="aftercare-section">
+<div class="aftercare-section" data-track-section="aftercare">
   <h2 class="aftercare-title">
     업계 유일,<br>
     <span class="highlight">지속적인 사후관리</span>
@@ -2041,7 +2041,7 @@ ${WT_MID_CTA_GRAY_HTML}
   }
 </style>
 
-<div class="review-section">
+<div class="review-section" data-track-section="review">
   <h2 class="review-title">
     함께한 대표님들의<br>
     <span class="highlight">생생한 후기</span>
@@ -2187,7 +2187,7 @@ ${WT_MID_CTA_GRAY_HTML}
   }
 </style>
 
-<div class="faq-section">
+<div class="faq-section" data-track-section="faq">
   <h2 class="faq-title">
     <span class="highlight">자주 묻는 질문</span>
   </h2>
@@ -2447,7 +2447,7 @@ function toggleFaq(el) {
 
 ${WT_TEASER_HTML}
 
-<div class="cta-section" id="consulting-form-wt">
+<div class="cta-section" id="consulting-form-wt" data-track-section="form">
   <div class="cta-inner">
     <h2 class="cta-title">
       지금 바로<br>

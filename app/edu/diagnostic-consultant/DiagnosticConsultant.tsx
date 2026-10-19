@@ -891,7 +891,7 @@ ${LOGO_MARQUEE_STYLE}
 </style>
 
 <!-- ── 01 히어로 ─────────────────────────────────────────────────────────── -->
-<section class="dcc-hero">
+<section data-track-section="hero" class="dcc-hero">
   ${DCC_IMG.hero ? `<img class="dcc-hero-bg" src="${DCC_IMG.hero}" alt="" aria-hidden="true" />` : ""}
   <div class="dcc-hero-ov"></div>
   <div class="dcc-wrap dcc-hero-in">
@@ -907,7 +907,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 02 공감 ───────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark">
+<section data-track-section="problem" class="dcc-sec dcc-dark">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">경력은 쌓였는데,<em>다음 커리어가 보이지 않는 분께</em></h2>
     <div class="dcc-bubbles">
@@ -921,7 +921,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 03 포지션 ─────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-beige">
+<section data-track-section="solution" class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">현장을 운영하는 사람에서,<em>현장을 진단하는 사람으로.</em></h2>
     <div class="dcc-cmp">
@@ -939,7 +939,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 03-2 예상 수익 ─────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark">
+<section data-track-section="income" class="dcc-sec dcc-dark">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">배운 만큼, 관리한 만큼,<em>커리어가 수익이 됩니다.</em></h2>
     <p class="dcc-lead dcc-rv">관리 고객사 약 10개 기준</p>
@@ -978,7 +978,7 @@ ${LOGO_MARQUEE_STYLE}
 
 <!-- ── 03-3 영상 후기 ─────────────────────────────────────────────────────── -->
 <!-- 앞이 같은 다크 섹션(03-2 예상 수익)이라 padding-top 을 없애 한 덩어리로 읽히게 한다 -->
-<section class="dcc-sec dcc-dark" style="padding-top:0">
+<section data-track-section="review" class="dcc-sec dcc-dark" style="padding-top:0">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">진단 멘토가 만든 변화,<em>대표님들이 직접 말합니다</em></h2>
     <p class="dcc-lead dcc-rv">영상을 누르면 대표님들의 실제 목소리를 들을 수 있습니다.</p>
@@ -1001,7 +1001,7 @@ ${LOGO_MARQUEE_STYLE}
 
 <!-- ── 03-4 파트너 센터 로고 마퀴 ─────────────────────────────────────────── -->
 <!-- 앞이 같은 다크 섹션(03-3 영상 후기)이라 padding-top 을 없앤다 -->
-<section class="dcc-sec dcc-dark" style="padding-top:0">
+<section data-track-section="field" class="dcc-sec dcc-dark" style="padding-top:0">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">진단 멘토가<em>함께하게 될 현장</em></h2>
     <p class="dcc-lead dcc-rv">이미 더그로우와 함께하고 있는 센터들입니다.</p>
@@ -1014,7 +1014,7 @@ ${LOGO_MARQUEE_STYLE}
 
 <!-- ── 04 약속 ───────────────────────────────────────────────────────────── -->
 <!-- 앞이 다크 섹션(03-4)이라 padding-top 을 유지한다 -->
-<section class="dcc-sec dcc-beige">
+<section data-track-section="skill" class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">수료증보다 중요한 것은<em>한 매장을 제대로 진단할 판단력입니다.</em></h2>
     <div class="dcc-chips dcc-rv">
@@ -1040,7 +1040,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 04-2 진행 사례 ─────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark">
+<section data-track-section="proof" class="dcc-sec dcc-dark">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">배운 방법은,<em>지금 실제 고객사에서 돌아가고 있습니다.</em></h2>
     <p class="dcc-lead dcc-rv">THE GROW 진단 컨설턴트가 현재 관리 중인 고객사의 진행 사례입니다.</p>
@@ -1129,7 +1129,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 05 대상 ───────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark">
+<section data-track-section="target" class="dcc-sec dcc-dark">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">이런 분께 맞습니다</h2>
     <div class="dcc-targets dcc-rv">
@@ -1143,7 +1143,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 06 구조 ───────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark" style="padding-top:0">
+<section data-track-section="program" class="dcc-sec dcc-dark" style="padding-top:0">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">전문교육 5회 + 과제발표 3회 + 현장실습 1회</h2>
     <p class="dcc-lead dcc-rv">총 ${DCC.sessions}회 · 약 3개월 과정</p>
@@ -1187,7 +1187,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 07 커리큘럼 ───────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-beige">
+<section data-track-section="curriculum" class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">${DCC.sessions}회 전체 커리큘럼</h2>
     <div class="dcc-cur-cards dcc-rv">${curCards}</div>
@@ -1205,7 +1205,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 08 강사진 ─────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-beige" style="padding-top:0">
+<section data-track-section="instructor" class="dcc-sec dcc-beige" style="padding-top:0">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">김승호 센터장 총괄<em>분야별 현장 전문 강사진</em></h2>
     <div class="dcc-fac dcc-rv">${facultyCards}</div>
@@ -1213,7 +1213,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 09 현장실습 ───────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark">
+<section data-track-section="verify" class="dcc-sec dcc-dark">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">교실에서 배운 기준을<em>실제 현장에서 검증합니다.</em></h2>
     <div class="dcc-flow dcc-rv">
@@ -1234,7 +1234,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 10 평가 ───────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-beige">
+<section data-track-section="cert" class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">수료 · 인증 · 현장배정은<em>분리됩니다.</em></h2>
     <div class="dcc-scores dcc-rv">
@@ -1254,7 +1254,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 11 커리어 ─────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark">
+<section data-track-section="contract" class="dcc-sec dcc-dark">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">본사가 계약하고,<em>컨설턴트는 성과에 집중합니다.</em></h2>
     <div class="dcc-chain">
@@ -1278,7 +1278,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 11-2 고객사 메시지 ─────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark" style="padding-top:0">
+<section data-track-section="chat" class="dcc-sec dcc-dark" style="padding-top:0">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">THE GROW 컨설턴트가 관리 중인<em>고객사 대표·관리자의 실제 메시지</em></h2>
     <p class="dcc-lead dcc-rv">현재 THE GROW 진단 컨설턴트가 관리하고 있는 고객사에서 보내온 메시지입니다. 개인정보 보호를 위해 일부 정보는 가렸습니다.</p>
@@ -1305,7 +1305,7 @@ ${LOGO_MARQUEE_STYLE}
 
 <!-- ── 13 선발 ───────────────────────────────────────────────────────────── -->
 <!-- 앞이 같은 다크 섹션(11-2)이라 padding-top 을 없애 이음새를 줄인다 -->
-<section class="dcc-sec dcc-dark" style="padding-top:0">
+<section data-track-section="selection" class="dcc-sec dcc-dark" style="padding-top:0">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">누구나 등록할 수 있는<em>과정이 아닙니다.</em></h2>
     <div class="dcc-sel">
@@ -1330,7 +1330,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 14 자주 묻는 내용 ─────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-beige">
+<section data-track-section="faq" class="dcc-sec dcc-beige">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">자주 묻는 내용</h2>
     <div class="dcc-acc dcc-rv">
@@ -1345,7 +1345,7 @@ ${LOGO_MARQUEE_STYLE}
 </section>
 
 <!-- ── 15 지원폼 ─────────────────────────────────────────────────────────── -->
-<section class="dcc-sec dcc-dark dcc-apply" id="apply">
+<section data-track-section="form" class="dcc-sec dcc-dark dcc-apply" id="apply">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">한 매장을 제대로 진단할 수 있다면,<em>다음 매장도 진단할 수 있습니다.</em></h2>
     <p class="dcc-sum dcc-rv">최대 ${DCC.capacity}명 · 11/15 개강 · ${COST_NOTICE}</p>

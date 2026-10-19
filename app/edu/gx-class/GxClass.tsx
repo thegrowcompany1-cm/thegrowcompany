@@ -753,7 +753,7 @@ export default function GxClass() {
       <style dangerouslySetInnerHTML={{ __html: GX_STYLE }} />
 
       {/* ── 1. 히어로 ── */}
-      <section className="gx1-hero" id="gx1-hero">
+      <section data-track-section="hero" className="gx1-hero" id="gx1-hero">
         {/* 배경 단체사진 — 로드 실패 시 이미지만 숨기고 다크 배경 유지 */}
         <div className="gx1-hero-bg">
           <Image
@@ -804,7 +804,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 2. 고객 대사 ── */}
-      <section className="gx1-sec gx1-dark2">
+      <section data-track-section="stats" className="gx1-sec gx1-dark2">
         <div className="gx1-wrap">
           <ul className="gx1-voices gx1-stagger">
             {VOICES.map((v) => (
@@ -817,7 +817,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 3. 문제의 진짜 원인 ── */}
-      <section className="gx1-sec gx1-white">
+      <section data-track-section="problem" className="gx1-sec gx1-white">
         <div className="gx1-wrap gx1-cause">
           <span className="gx1-cause-line gx1-reveal" aria-hidden="true" />
           <h2 className="gx1-cause-quote gx1-reveal">
@@ -835,7 +835,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 4. 손실 확대 — 악순환 ── */}
-      <section className="gx1-sec gx1-dark">
+      <section data-track-section="loop" className="gx1-sec gx1-dark">
         <div className="gx1-wrap">
           <div
             id="gx1-cycle"
@@ -937,7 +937,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 5. 왜 다들 못 하는가 (승부처) ── */}
-      <section className="gx1-sec gx1-cream">
+      <section data-track-section="solution" className="gx1-sec gx1-cream">
         <div className="gx1-wrap">
           <h2 className="gx1-h2 gx1-h2--xl gx1-reveal">
             그룹운동 교육은 프로그램을 가르칩니다.
@@ -977,7 +977,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 6. 관점 전환 — 4요소 ── */}
-      <section className="gx1-sec gx1-white">
+      <section data-track-section="reframe" className="gx1-sec gx1-white">
         <div className="gx1-wrap">
           <h2 className="gx1-h2 gx1-reveal">
             그룹운동은 수업이 아니라
@@ -999,7 +999,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 7. 해답 선언 — 3축 ── */}
-      <section className="gx1-sec gx1-dark2">
+      <section data-track-section="system" className="gx1-sec gx1-dark2">
         <div className="gx1-wrap">
           <h2 className="gx1-h2 gx1-reveal">
             <em>신규 전환</em> × <em>재등록</em> × <em>운영 루틴</em>
@@ -1021,7 +1021,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 8. 증거 ── */}
-      <section className="gx1-sec gx1-dark" id="gx1-proof">
+      <section data-track-section="proof" className="gx1-sec gx1-dark" id="gx1-proof">
         <div className="gx1-wrap">
           <div className="gx1-proof gx1-stagger">
             {PROOF_STATS.map((s, i) => (
@@ -1062,7 +1062,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 9. 강사 서사 ── */}
-      <section className="gx1-sec gx1-white">
+      <section data-track-section="story" className="gx1-sec gx1-white">
         <div className="gx1-wrap">
           <h2 className="gx1-h2 gx1-reveal">
             4년간의 시행착오에서 나온 방법입니다.
@@ -1101,7 +1101,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 10. 커리큘럼 1부 ── */}
-      <section className="gx1-sec gx1-cream">
+      <section data-track-section="result" className="gx1-sec gx1-cream">
         <div className="gx1-wrap">
           <span className="gx1-kicker gx1-reveal">커리큘럼 1부</span>
           <h2 className="gx1-h2 gx1-reveal">
@@ -1122,7 +1122,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 11. 체험 7단계 타임라인 ── */}
-      <section className="gx1-sec gx1-dark2">
+      <section data-track-section="newconv" className="gx1-sec gx1-dark2">
         <div className="gx1-wrap">
           <h2 className="gx1-h2 gx1-reveal">
             고객이 들어온 순간부터
@@ -1144,7 +1144,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 12. 커리큘럼 2부 ── */}
-      <section className="gx1-sec gx1-cream">
+      <section data-track-section="revenue" className="gx1-sec gx1-cream">
         <div className="gx1-wrap">
           <span className="gx1-kicker gx1-reveal">커리큘럼 2부</span>
           <h2 className="gx1-h2 gx1-reveal">
@@ -1165,7 +1165,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 13. 재등록 3단계 ── */}
-      <section className="gx1-sec gx1-white">
+      <section data-track-section="rejoin" className="gx1-sec gx1-white">
         <div className="gx1-wrap">
           <h2 className="gx1-h2 gx1-reveal">재등록 3단계</h2>
           <div className="gx1-emph gx1-reveal">
@@ -1201,7 +1201,7 @@ export default function GxClass() {
       </section>
 
       {/* ── 14. 커뮤니티 증명 + 범위 선언 ── */}
-      <section className="gx1-sec gx1-dark">
+      <section data-track-section="community" className="gx1-sec gx1-dark">
         <div className="gx1-wrap">
           <h2 className="gx1-h2 gx1-reveal">
             회원이 <em>회원 때문에</em> 남습니다.
@@ -1248,7 +1248,7 @@ export default function GxClass() {
 
       {/* ── 15. 클로징 (#contact) — 강의 정보 → 희소성 → 결제 카드.
           기존 CTA·외부 링크의 #contact 앵커가 이 섹션을 가리킨다. ── */}
-      <section className="gx1-sec gx1-dark" id="contact">
+      <section data-track-section="price" className="gx1-sec gx1-dark" id="contact">
         <div className="gx1-wrap gx1-narrow">
           <h2 className="gx1-h2 gx1-reveal">강의 정보 및 신청</h2>
           <h3 className="gx1-sub-t gx1-reveal">강의 정보</h3>

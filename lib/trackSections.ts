@@ -1,0 +1,77 @@
+// 랜딩별 섹션 순서 — data-track-section 속성 값을 화면에 그려지는 순서대로 적었다.
+// /admin/ga 의 "섹션 도달 퍼널"이 이 순서로 막대를 그린다. 랜딩에 섹션을 추가·삭제하면 여기도 같이 고친다.
+// 값은 각 랜딩 컴포넌트의 data-track-section 과 같아야 한다 (Chrome 으로 DOM 순서를 읽어 맞췄다).
+
+export const TRACK_SECTION_ORDER: Record<string, string[]> = {
+  "/consulting/startup": ["hero", "review", "empathy", "solution", "process", "proof", "faq", "form"],
+  "/consulting/outsourcing": ["hero", "empathy", "video", "proof", "compare", "solution", "process", "aftercare", "review", "faq", "form"],
+  "/edu/fc-class": ["hero", "problem", "solution", "instructor", "curriculum", "review", "result", "gallery", "feedback", "target", "benefit", "faq", "price"],
+  "/edu/gx-class": ["hero", "stats", "problem", "loop", "solution", "reframe", "system", "proof", "story", "result", "newconv", "revenue", "rejoin", "community", "price"],
+  "/edu/sales-ops": ["hero", "problem", "hwang", "ops", "kim", "target", "curriculum", "change", "closing", "form"],
+  // case · takeaway 는 내용이 확정되기 전에는 화면에 없다 (있으면 problem 과 hwang 사이 / ops 와 curriculum 사이)
+  "/edu/sales-ops3": ["hero", "keys", "funnel", "problem", "belief", "case", "hwang", "kim", "ops", "takeaway", "curriculum", "value", "target", "faq", "form", "closing"],
+  "/edu/diagnostic-consultant": ["hero", "problem", "solution", "income", "review", "field", "skill", "proof", "target", "program", "curriculum", "instructor", "verify", "cert", "contract", "chat", "selection", "faq", "form"],
+};
+
+/** 화면 표시용 한글 이름 (없는 섹션은 원래 이름 그대로 보인다) */
+export const TRACK_SECTION_LABEL: Record<string, string> = {
+  hero: "첫 화면",
+  problem: "문제 제기",
+  solution: "해결 방식",
+  review: "후기",
+  proof: "증거·사례",
+  price: "가격·신청",
+  form: "신청 폼",
+  faq: "FAQ",
+  curriculum: "커리큘럼",
+  instructor: "강사",
+  target: "추천 대상",
+  closing: "클로징",
+  stats: "핵심 수치",
+  loop: "문제 반복 구조",
+  reframe: "관점 전환",
+  system: "시스템",
+  story: "사례 스토리",
+  result: "성과",
+  newconv: "신규 전환",
+  revenue: "매출 사례",
+  rejoin: "재등록",
+  community: "커뮤니티",
+  gallery: "현장 사진",
+  feedback: "수강 후기",
+  benefit: "얻어가는 것",
+  empathy: "공감",
+  process: "진행 과정",
+  video: "후기 영상",
+  compare: "비교",
+  aftercare: "사후 관리",
+  keys: "열쇠 전환",
+  funnel: "매출 새는 곳",
+  belief: "신념 깨기",
+  case: "사례 Before·After",
+  hwang: "황현진 소개",
+  kim: "김재강 소개",
+  ops: "운영 시스템",
+  takeaway: "수강 결과물",
+  value: "가치·회수",
+  change: "달라지는 것",
+  income: "수익 구조",
+  field: "현장",
+  skill: "역량",
+  program: "프로그램",
+  verify: "현장 검증",
+  cert: "수료·인증",
+  contract: "계약 구조",
+  chat: "카톡 후기",
+  selection: "선발",
+};
+
+export const TRACK_SOURCE_LABEL: Record<string, string> = {
+  paid_meta: "메타 광고",
+  organic_google: "구글 검색",
+  organic_naver: "네이버 검색",
+  organic_other: "기타 검색",
+  ai: "AI 검색",
+  direct: "직접 유입",
+  referral: "추천 유입",
+};

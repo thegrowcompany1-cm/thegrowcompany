@@ -409,7 +409,7 @@ const DETAIL_HTML = `<div class="fc1">
 </style>
 
 <!-- 1. 히어로 -->
-<section class="fc1-hero">
+<section data-track-section="hero" class="fc1-hero">
   <img class="fc1-hero-bg" src="/legacy/fc-class/6b0de22aa5b3b.jpg" alt="정규 FC 클래스 강의 현장 배경">
   <div class="fc1-hero-ov"></div>
   <div class="fc1-hero-in">
@@ -424,7 +424,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 2. 문제 -->
-<section class="fc1-sec fc1-problem">
+<section data-track-section="problem" class="fc1-sec fc1-problem">
   <div class="fc1-wrap">
     <h2 class="fc1-h2 fc1-reveal">매출이 잘 오르지 않는 이유는<br>아마도 이 <em>3가지 중 1개</em>일 확률이 큽니다.</h2>
     <p class="fc1-sub fc1-reveal">해당되는 부분이 있는지 확인해보세요.</p>
@@ -452,7 +452,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 3. 해결책 -->
-<section class="fc1-sec fc1-solution">
+<section data-track-section="solution" class="fc1-sec fc1-solution">
   <div class="fc1-wrap">
     <span class="fc1-badge fc1-reveal">그로우 아카데미 FC 클래스</span>
     <h2 class="fc1-h2 fc1-reveal">단순히 듣기만 하는<br>교육이 아닙니다.</h2>
@@ -482,7 +482,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 4. 강사 프로필 -->
-<section class="fc1-sec fc1-inst" id="fc1-instructors">
+<section data-track-section="instructor" class="fc1-sec fc1-inst" id="fc1-instructors">
   <div class="fc1-wrap">
     <span class="fc1-badge fc1-reveal">강사진</span>
     <h2 class="fc1-h2 fc1-reveal">그래서, 누가 가르치는지<br>보여드립니다.</h2>
@@ -541,7 +541,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 5. 커리큘럼 타임라인 -->
-<section class="fc1-sec fc1-curri" id="fc1-curriculum">
+<section data-track-section="curriculum" class="fc1-sec fc1-curri" id="fc1-curriculum">
   <div class="fc1-wrap">
     <span class="fc1-badge fc1-reveal">정규 FC과정 커리큘럼</span>
     <h2 class="fc1-h2 fc1-reveal">총 4시간, 이 순서로<br>쌓아 올립니다.</h2>
@@ -602,7 +602,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 6. 수강생 카톡후기 슬라이더 -->
-<section class="fc1-sec fc1-rev">
+<section data-track-section="review" class="fc1-sec fc1-rev">
   <div class="fc1-wrap">
     <p class="fc1-rev-label fc1-reveal">그로우 아카데미 수강생 후기</p>
     <h2 class="fc1-h2 fc1-reveal">불과 얼마 전까지만 해도<br><span class="fc1-red2">적자가 나셔서</span> 힘들어하셨던 분들입니다.</h2>
@@ -626,7 +626,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 7. 성과 데이터 -->
-<section class="fc1-sec fc1-result">
+<section data-track-section="result" class="fc1-sec fc1-result">
   <div class="fc1-wrap">
     <p class="fc1-rev-label fc1-reveal">실제 수강생 성과</p>
     <h2 class="fc1-h2 fc1-reveal">수강 후 네이버 플레이스<br><span class="fc1-hl">유입 증가 사례</span></h2>
@@ -641,7 +641,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 8. 교육 현장 갤러리 -->
-<section class="fc1-sec fc1-gal">
+<section data-track-section="gallery" class="fc1-sec fc1-gal">
   <div class="fc1-wrap">
     <h2 class="fc1-h2 fc1-reveal">실전 경험을 나누는<br>교육 현장</h2>
     <p class="fc1-sub fc1-reveal">단순 이론이 아닌, 현장에서 바로 적용 가능한 실무 교육</p>
@@ -677,7 +677,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 9. 1:1 피드백 3D 캐러셀 -->
-<section class="fc1-sec fc1-3dsec">
+<section data-track-section="feedback" class="fc1-sec fc1-3dsec">
   <div class="fc1-wrap">
     <p class="fc1-3d-label fc1-reveal">REAL REVIEWS</p>
     <h2 class="fc1-h2 fc1-reveal">수강생들의 1:1 피드백<br>생생 후기</h2>
@@ -698,7 +698,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 10. 대상자 추천/비추천 -->
-<section class="fc1-sec fc1-target">
+<section data-track-section="target" class="fc1-sec fc1-target">
   <div class="fc1-wrap">
     <h2 class="fc1-h2 fc1-reveal"><span class="fc1-red2">50% 이상 해당</span>하신다면<br>망설이지 마세요.</h2>
     <p class="fc1-sub fc1-sub-dark fc1-reveal">이런 분들을 위해 준비한 교육입니다</p>
@@ -719,7 +719,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 11. 혜택 -->
-<section class="fc1-sec fc1-benefit">
+<section data-track-section="benefit" class="fc1-sec fc1-benefit">
   <div class="fc1-wrap">
     <span class="fc1-bf-badge fc1-reveal">ALL INCLUDED</span>
     <h2 class="fc1-h2 fc1-reveal">이 강의로 얻어가는<br>것들입니다.</h2>
@@ -745,7 +745,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 12. 아코디언 -->
-<section class="fc1-sec fc1-acc-sec">
+<section data-track-section="faq" class="fc1-sec fc1-acc-sec">
   <div class="fc1-wrap">
     <p class="fc1-acc-sub fc1-reveal">FC 클래스가 특별한 이유</p>
     <div class="fc1-acc" id="fc1Acc">
@@ -768,7 +768,7 @@ const DETAIL_HTML = `<div class="fc1">
 </section>
 
 <!-- 13. 마지막 수강신청 -->
-<section class="fc1-sec fc1-enroll" id="fc1-enroll">
+<section data-track-section="price" class="fc1-sec fc1-enroll" id="fc1-enroll">
   <div class="fc1-wrap">
     <h2 class="fc1-h2 fc1-reveal">지금, 정규 FC 클래스에<br><em>합류하세요.</em></h2>
     <p class="fc1-sub fc1-reveal">다음 기수 준비중 · 총 4시간</p>

@@ -42,6 +42,12 @@ function readEnv(): GaEnv {
   };
 }
 
+/** 서비스 계정 자격증명 — 서치콘솔(lib/gsc.ts) 도 같은 계정을 쓴다 */
+export function getGaCredentials(): { client_email: string; private_key: string } {
+  const env = readEnv();
+  return { client_email: env.clientEmail, private_key: env.privateKey };
+}
+
 let client: BetaAnalyticsDataClient | null = null;
 
 /** 싱글턴 클라이언트 + 속성 경로("properties/123456789") */

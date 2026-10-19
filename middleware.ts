@@ -41,7 +41,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // 정적 파일·이미지·favicon 은 제외 (인증 갱신이 필요 없음)
-    "/((?!_next/static|_next/image|favicon.ico|icon.png|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|webp|svg|mp4|ico)$).*)",
+    // 정적 파일·이미지·favicon, 익명 방문 기록(/api/track, 15초마다 호출)은 제외 (인증 갱신이 필요 없음)
+    "/((?!_next/static|_next/image|favicon.ico|icon.png|apple-icon.png|robots.txt|sitemap.xml|api/track|.*\\.(?:png|jpg|jpeg|gif|webp|svg|mp4|ico)$).*)",
   ],
 };
