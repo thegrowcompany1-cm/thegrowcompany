@@ -13,6 +13,11 @@
 //  · 섹션: [data-track-section="이름"] 요소가 50% 이상 보이면 한 번만 기록한다.
 //  · 체류 시간은 탭이 보이는 동안만 센다 (백그라운드 탭은 세지 않는다).
 //  · 쿠키를 쓰지 않는다. localStorage 를 쓸 수 없는 환경이면 조용히 아무것도 하지 않는다.
+//  · 중복 방지 가드: 인앱 브라우저(인스타그램 등)에서 진입 때 이 코드가 두 번 실행돼 같은 페이지의
+//    visits 가 수십 ms 간격으로 2행 생기던 문제를 막는다. 같은 세션 + 같은 경로로 2초 안에 다시
+//    실행되면 두 번째 인스턴스는 start·핑·섹션·이탈을 아무것도 보내지 않고 첫 인스턴스의 visit id 만
+//    쓴다 (sessionStorage 가드 + 모듈 변수 가드). 첫 인스턴스가 정리된 직후라면(React 개발 모드의
+//    이펙트 재실행·새로고침) 이어받아 start 없이 핑만 이어 간다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect } from "react";
@@ -125,6 +130,39 @@ function visitorId(): string | null {
   }
 }
 
+// ── 진입 중복 가드 ──────────────────────────────────────────────────────────
+const GUARD_KEY = "tgc:vt:guard";
+const GUARD_MS = 2000;
+/** 정리(React cleanup) 뒤 이탈 전송을 잠깐 미뤄 두는 시간 — 바로 이어받는 인스턴스가 취소할 수 있게 */
+const END_DEFER_MS = 400;
+type Guard = { key: string; at: number; id: string; alive: boolean };
+let memGuard: Guard | null = null; // sessionStorage 를 못 쓰는 환경 대비
+const pendingEnds = new Map<string, number>();
+
+function readGuard(): Guard | null {
+  let stored: Guard | null = null;
+  try {
+    const raw = sessionStorage.getItem(GUARD_KEY);
+    if (raw) {
+      const g = JSON.parse(raw) as Guard;
+      if (g && g.key && g.id) stored = g;
+    }
+  } catch {
+    /* 모듈 변수로 대신한다 */
+  }
+  if (stored && memGuard) return stored.at >= memGuard.at ? stored : memGuard;
+  return stored ?? memGuard;
+}
+
+function writeGuard(g: Guard) {
+  memGuard = g;
+  try {
+    sessionStorage.setItem(GUARD_KEY, JSON.stringify(g));
+  } catch {
+    /* 무시 */
+  }
+}
+
 function send(payload: Record<string, unknown>, beacon = false) {
   const body = JSON.stringify(payload);
   try {
@@ -150,7 +188,30 @@ export default function VisitTracker() {
     const session = readSession(search, document.referrer);
     saveSession(session);
 
-    const visitId = uuid();
+    // 같은 세션 + 같은 경로로 2초 안에 다시 실행된 인스턴스는 방문을 새로 만들지 않는다
+    const key = `${session.id}|${pathname}`;
+    const guard = readGuard();
+    let visitId: string;
+    let sendStart = true;
+    if (guard && guard.key === key && Date.now() - guard.at < GUARD_MS) {
+      visitId = guard.id;
+      sendStart = false;
+      if (guard.alive) return; // 이미 다른 인스턴스가 이 방문을 맡고 있다 — 아무것도 보내지 않는다
+      // 맡던 인스턴스가 방금 정리됐다 (개발 모드 이펙트 재실행 · 새로고침) — 이어받는다
+      const timer = pendingEnds.get(guard.id);
+      if (timer) {
+        window.clearTimeout(timer);
+        pendingEnds.delete(guard.id);
+      }
+      writeGuard({ ...guard, alive: true });
+    } else {
+      visitId = uuid();
+      writeGuard({ key, at: Date.now(), id: visitId, alive: true });
+    }
+    const markDead = () => {
+      const g = readGuard();
+      if (g && g.id === visitId) writeGuard({ ...g, alive: false });
+    };
     const base = { visitorId: vid, sessionId: session.id };
     let maxScroll = 0;
     let lastSection = "";
@@ -165,18 +226,20 @@ export default function VisitTracker() {
       saveSession(session);
     };
 
-    send({
-      type: "start",
-      id: visitId,
-      ...base,
-      path: pathname,
-      referrer: session.ref,
-      utmSource: session.utm.s,
-      utmMedium: session.utm.m,
-      utmCampaign: session.utm.c,
-      sourceType: session.src,
-      device: deviceOf(),
-    });
+    if (sendStart) {
+      send({
+        type: "start",
+        id: visitId,
+        ...base,
+        path: pathname,
+        referrer: session.ref,
+        utmSource: session.utm.s,
+        utmMedium: session.utm.m,
+        utmCampaign: session.utm.c,
+        sourceType: session.src,
+        device: deviceOf(),
+      });
+    }
 
     const report = (type: "ping" | "end", beacon = false) => {
       if (ended) return;
@@ -251,6 +314,7 @@ export default function VisitTracker() {
         activeMs += Date.now() - visibleSince;
         visibleSince = null;
       }
+      markDead();
       report("end", true);
     };
     document.addEventListener("visibilitychange", onVisibility);
@@ -276,7 +340,14 @@ export default function VisitTracker() {
         activeMs += Date.now() - visibleSince;
         visibleSince = null;
       }
-      report("end", true);
+      markDead();
+      // 바로 보내지 않고 잠깐 미룬다 — 곧바로 이어받는 인스턴스(개발 모드 재실행 등)가 취소할 수 있다.
+      // 실제 경로 이동이면 0.4초 뒤 그대로 전송된다.
+      const timer = window.setTimeout(() => {
+        pendingEnds.delete(visitId);
+        report("end", true);
+      }, END_DEFER_MS);
+      pendingEnds.set(visitId, timer);
     };
   }, [pathname]);
 

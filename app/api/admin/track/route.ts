@@ -7,10 +7,13 @@
 //  · view=funnel   path=<경로>&days=7 섹션 도달 퍼널 (도달 세션 ÷ 그 경로에 들어온 세션)
 //  · view=exits    최근 24시간 이탈 지점 Top (페이지, 마지막 섹션)
 //  · 테이블이 아직 없으면(마이그레이션 전) 안내 메시지를 돌려준다.
+//  · 같은 session_id + path 로 3초 안에 들어온 visits 행은 한 번의 방문으로 묶어 센다 (lib/trackDedupe.ts).
+//    인앱 브라우저에서 진입 기록이 두 번 생기는 문제의 집계 쪽 안전장치다.
 
 import { NextResponse } from "next/server";
 import { getAdminContext } from "@/app/admin/_lib/guard";
 import { TRACK_SECTION_ORDER } from "@/lib/trackSections";
+import { dedupeVisits } from "@/lib/trackDedupe";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -96,13 +99,13 @@ export async function GET(request: Request) {
       .select(VISIT_COLS)
       .gte("last_seen_at", iso(now - LIVE_WINDOW_MS))
       .is("left_at", null)
-      .order("entered_at", { ascending: false })
+      .order("entered_at", { ascending: true })
       .limit(300);
     if (error) return dbFail(error);
 
-    // 세션당 가장 최근 방문 한 줄
+    // 세션당 가장 최근 방문 한 줄 (3초 안 중복 진입은 한 건으로 합친 뒤)
     const latest = new Map<string, Visit>();
-    for (const v of (liveVisits ?? []) as Visit[]) if (!latest.has(v.session_id)) latest.set(v.session_id, v);
+    for (const v of dedupeVisits((liveVisits ?? []) as Visit[])) latest.set(v.session_id, v); // 오름차순이라 마지막 값이 최신
     const ids = [...latest.keys()];
 
     // 세션 시작 시각·본 페이지 수 — 오늘 안의 방문만 본다
@@ -110,12 +113,13 @@ export async function GET(request: Request) {
     if (ids.length) {
       const { data: all, error: e2 } = await db
         .from("visits")
-        .select("session_id, entered_at")
+        .select(VISIT_COLS)
         .in("session_id", ids)
         .gte("entered_at", iso(now - 6 * 3600_000))
+        .order("entered_at", { ascending: true })
         .limit(2000);
       if (e2) return dbFail(e2);
-      for (const r of (all ?? []) as { session_id: string; entered_at: string }[]) {
+      for (const r of dedupeVisits((all ?? []) as Visit[])) {
         const cur = starts.get(r.session_id);
         if (!cur) starts.set(r.session_id, { start: r.entered_at, pages: 1 });
         else {
@@ -157,7 +161,7 @@ export async function GET(request: Request) {
     ]);
     if (vis.error) return dbFail(vis.error);
     if (secs.error) return dbFail(secs.error);
-    const visits = (vis.data ?? []) as Visit[];
+    const visits = dedupeVisits((vis.data ?? []) as Visit[]);
     const last = visits[visits.length - 1];
     const ended = !!last && (!!last.left_at || now - Date.parse(last.last_seen_at) > GONE_AFTER_MS);
     return NextResponse.json(
@@ -186,12 +190,12 @@ export async function GET(request: Request) {
     const path = url.searchParams.get("path") ?? "";
 
     // 경로 목록: 방문이 있는 경로 (세션 수 많은 순)
-    const pv = await fetchAll<{ path: string; session_id: string }>((f, t) =>
-      db.from("visits").select("path, session_id").gte("entered_at", since).order("entered_at", { ascending: false }).range(f, t),
+    const pv = await fetchAll<Visit>((f, t) =>
+      db.from("visits").select(VISIT_COLS).gte("entered_at", since).order("entered_at", { ascending: true }).range(f, t),
     );
     if (pv.error) return dbFail(pv.error);
     const sessionsByPath = new Map<string, Set<string>>();
-    for (const r of pv.rows) {
+    for (const r of dedupeVisits(pv.rows)) {
       if (!sessionsByPath.has(r.path)) sessionsByPath.set(r.path, new Set());
       sessionsByPath.get(r.path)!.add(r.session_id);
     }
@@ -228,7 +232,7 @@ export async function GET(request: Request) {
     );
     if (all.error) return dbFail(all.error);
     const lastBySession = new Map<string, Visit>();
-    for (const v of all.rows) lastBySession.set(v.session_id, v); // 오름차순이라 마지막 값이 세션의 마지막 방문
+    for (const v of dedupeVisits(all.rows)) lastBySession.set(v.session_id, v); // 오름차순이라 마지막 값이 세션의 마지막 방문
     const counts = new Map<string, { path: string; section: string; count: number }>();
     let exited = 0;
     for (const v of lastBySession.values()) {
