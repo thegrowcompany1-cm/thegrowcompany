@@ -13,10 +13,10 @@ export const SO_PENDING: Pending = "미정";
 export const SO_DATE = "2026.11.21(토)";
 /** 시간 — 확정 */
 export const SO_TIME = "13:00~17:00";
-/** TODO: 장소 확정 후 문자열로 교체 (예: "서울 영등포구 ○○ 5층") */
-export const SO_PLACE: string | Pending = SO_PENDING;
-/** TODO: 정원 확정 후 숫자로 교체 (예: 30) */
-export const SO_CAPACITY: number | Pending = SO_PENDING;
+/** 장소 — 신청 포스터(public/edu/sales-ops/poster.jpg)에 기재된 내용 */
+export const SO_PLACE: string | Pending = "한국에너지기술인협회 교육장 (서울 영등포구 당산로41길 11 E동 601호)";
+/** 정원 — 신청 포스터의 "100명 한정" */
+export const SO_CAPACITY: number | Pending = 100;
 /** 정상가 (원) — products 의 sales-ops 가격과 같아야 한다 (서버가 DB 가격으로 금액을 검증한다) */
 export const SO_PRICE_NORMAL = 165000;
 /** 스토리 인증가 (원) — products 의 sales-ops-story 가격과 같아야 한다 */

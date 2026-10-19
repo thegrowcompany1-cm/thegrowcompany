@@ -49,9 +49,17 @@ const SO3_IMG = {
     { src: "/edu/sales-ops/salesbook4.png", title: "설득의 정석" },
   ],
 };
+// 캡션은 각 영상 첫 화면의 자막(제목)을 그대로 옮긴 것이다. 영상이 바뀌면 함께 바꿀 것.
+const SO3_VIDEO_CAPTIONS = [
+  "고객이 안 사는 이유, 결국 5가지 중 하나",
+  "'나중에 할게요.'라는 고객, 사막생수화법",
+  "피트니스 업계 종사자라면 꼭 알아야 할 AI 시대 생존전략",
+  "'고민해볼게요'라고 할 때, 이제는 이렇게 말하는 겁니다",
+];
 const SO3_VIDEOS = [1, 2, 3, 4].map((n) => ({
   src: `/edu/sales-ops/videos/sales-0${n}.mp4`,
   poster: `/edu/sales-ops/videos/sales-0${n}.jpg`,
+  caption: SO3_VIDEO_CAPTIONS[n - 1] ?? "",
 }));
 
 // ── 1. 히어로 ───────────────────────────────────────────────────────────────
@@ -81,11 +89,13 @@ const SO3_TALKS = [
 
 // ── 4. 증거 ① 황현진 ────────────────────────────────────────────────────────
 const SO3_HWANG_HEADLINE = "대한민국 세일즈교육&컨설팅 섭외 0순위, 세일즈작가 황현진";
+// TODO(출처): "섭외 0순위", "1등 기업들이 찾는", "홈쇼핑 최다매출 기네스 기록" 은 황현진 대표 원문 그대로다.
+//             근거(기관·연도·기록 표기)가 확인되면 아래 문구에 병기하고, 확인이 안 되면 표현을 낮춘다.
+// 경력 bullet 은 4줄 → 3줄로 압축했다 (표현·사실은 그대로, 줄만 합침).
 const SO3_HWANG_BIO = [
-  "현 리얼세일즈(주) 대표",
+  "현 리얼세일즈(주) 대표 · 전 NS홈쇼핑 쇼호스트",
   "대한민국 1등 기업들이 찾는 세일즈대본 개발·화법컨설팅 마스터",
-  "피트니스 프랜차이즈 세일즈 특강 다수",
-  "전 NS홈쇼핑 (홈쇼핑 최다매출 기네스 기록)",
+  "피트니스 프랜차이즈 세일즈 특강 다수 · 홈쇼핑 최다매출 기네스 기록",
 ];
 
 // ── 5. 증거 ② 김재강 ────────────────────────────────────────────────────────
@@ -197,9 +207,74 @@ const SO3_STEPS = [
 ];
 
 // ── 9. 클로징 ───────────────────────────────────────────────────────────────
-const SO3_CLOSING = [
-  ["당신의 일은 단지 운동을 가르치는 것이 아닙니다.", "누군가가 자신을 더 사랑할 수 있게끔 돕는 일입니다."],
-  ["최고의 전문성을 갖춘 스스로에게", "이제 날개를 달아줄 '세일즈 언어'를 선물하세요."],
+const SO3_CLOSING_LINES = [
+  "상담은 내일도 들어옵니다.",
+  "같은 말로 같은 결과를 받을지, 한 문장을 바꿔 다른 결과를 받을지.",
+];
+
+
+// ═══ 설득 구조 보강 섹션 데이터 ═══════════════════════════════════════════════
+// 원칙: 가격을 내리지 않고 인지 가치를 올린다 (Hook → Story → Offer).
+// 값이 확정되지 않은 항목은 비워 두었고, 비어 있으면 그 블록은 화면에서 숨겨진다.
+// 자리만 미리 보려면 주소 뒤에 ?preview=1 을 붙인다 (점선 [자리표시]로 나온다).
+
+// ── 4. 신념 깨기 ──
+const SO3_BELIEF_HEAD = "세일즈가 불편한 건, 당신이 착해서가 아닙니다";
+const SO3_BELIEF_LINES = [
+  "강하게 미는 방법밖에 배운 적이 없어서입니다.",
+  "\"이거 권해도 되나?\" 망설이는 순간, 회원은 그 망설임을 먼저 읽습니다.",
+];
+const SO3_BELIEF_MISSION = [
+  "당신의 일은 단지 운동을 가르치는 것이 아닙니다.",
+  "누군가가 자신을 더 사랑할 수 있게끔 돕는 일입니다.",
+];
+const SO3_BELIEF_TAIL = "그래서 세일즈는 강매가 아니라, 회원이 원하는 몸까지 가는 길을 열어주는 일입니다.";
+
+// ── 5. 사례 스토리 (Before → After) ──
+// TODO(운영): 실제 사례 수치·문구를 확인한 뒤 채운다. 임의 수치는 넣지 않는다.
+//   sales.center      : 센터 유형/지역        예) "서울 OO구 필라테스"
+//   sales.beforeN     : 바꾸기 전, 상담 10건 중 등록 건수
+//   sales.change      : 바꾼 질문/화법 한 줄
+//   sales.period      : 바꾼 뒤 측정 기간      예) "4주"
+//   sales.afterN      : 바꾼 뒤, 상담 10건 중 등록 건수
+//   ops.weeks         : 원장 부재 기간(주)
+//   ops.result        : 부재 중 매출 결과      예) "유지" / "OO% 증가"
+export type So3Cases = {
+  sales: { center: string; beforeN: number | null; change: string; period: string; afterN: number | null };
+  ops: { weeks: number | null; result: string };
+};
+const SO3_CASES: So3Cases = {
+  sales: { center: "", beforeN: null, change: "", period: "", afterN: null },
+  ops: { weeks: null, result: "" },
+};
+const SO3_CASE_HEAD = "같은 센터, 같은 회원. 바뀐 건 상담의 한 문장이었습니다";
+
+// ── 9. 가치 스택 + 회수 계산 ──
+// TODO(운영): PT 10회 등록 1건의 평균 금액(만원). 숫자를 넣으면 회수 계산 줄이 나온다.
+const SO3_PT10_MAN: number | null = null;
+// confirmed=false 인 항목은 제공 여부가 확인될 때까지 화면에서 뺀다 (지어낸 제공물 금지).
+const SO3_STACK: { text: string; confirmed: boolean; todo?: string }[] = [
+  { text: "4시간 실전 교육 (운영 2시간 + 세일즈 2시간)", confirmed: true },
+  { text: "현장 검증 상담 화법", confirmed: false, todo: "자료 제공 여부 확인" },
+  { text: "매일 확인하는 운영판 기준 (유효회원 · 객단가 · 상담 성공률 · 유지율)", confirmed: true },
+  { text: "첫 4주 재등록 관리 루틴", confirmed: true },
+  { text: "사후 Q&A · 단톡방 등", confirmed: false, todo: "제공 여부 확인 후 추가" },
+];
+
+// ── 10. 이런 분께 추천 ──
+const SO3_RECOMMEND = [
+  { who: "대표 · 원장", body: "원장이 빠지면 매출도 같이 빠지는 구조를 바꾸고 싶은 분" },
+  { who: "실장 · 관리자", body: "상담은 많은데 등록 전환이 안 나오는 분" },
+  { who: "트레이너 · 강사", body: "권유가 불편하고 \"생각해 볼게요\" 앞에서 말문이 막히는 분" },
+];
+
+// ── 11. FAQ — 답변이 비어 있는 항목은 확인 전까지 숨긴다 ──
+const SO3_FAQ: { q: string; a: string; todo?: string }[] = [
+  { q: "트레이너 혼자 들어도 도움이 되나요?", a: "2부 세일즈 파트는 현장에서 바로 쓰는 화법 중심이라 트레이너에게 특히 유용합니다." },
+  { q: "강의 자료를 받을 수 있나요?", a: "", todo: "확인 후 기입" },
+  { q: "녹화본이 제공되나요?", a: "", todo: "확인 후 기입" },
+  { q: "직원과 함께 신청할 수 있나요?", a: "", todo: "확인 후 기입 — 단체 할인이 있으면 명시" },
+  { q: "환불 규정은 어떻게 되나요?", a: "", todo: "확인 후 기입" },
 ];
 
 /** 사이트 공통 헤더(상단 고정) 높이 — 핀 고정 구간이 헤더 밑에서 시작하도록 */
@@ -407,7 +482,7 @@ const SO3_STYLE = `
   .so3-vid-grid{position:relative;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;padding-inline:16px;scroll-padding-inline:16px;margin-inline:-16px}
   .so3-vid-grid::-webkit-scrollbar{display:none}
   .so3-vid-grid:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
-  .so3-vid-card{flex:0 0 78%;scroll-snap-align:start;border-radius:12px}
+  .so3-vid-card{border-radius:12px}
   .so3-vid-dots{display:flex;align-items:center;justify-content:center;margin-top:14px}
   .so3-vid-dot{display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer}
   .so3-vid-dot::before{content:"";width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.28);transition:width .25s ease,background .25s ease}
@@ -518,6 +593,63 @@ const SO3_STYLE = `
 @media(max-width:760px){.so3-steps{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:640px){.so3-table th,.so3-table td{padding:14px 14px;font-size:15px}.so3-table th{width:32%}}
 
+/* 4. 신념 깨기 */
+.so3-belief{text-align:center;max-width:760px}
+.so3-belief .so3-h2{margin-bottom:28px}
+.so3-belief p{margin:0;font-size:19px;line-height:1.9;color:#D3DCD7}
+.so3-belief p+p{margin-top:8px}
+.so3-belief .so3-gap{margin-top:30px}
+.so3-belief .so3-hl{color:var(--g);font-weight:800}
+.so3-belief .so3-tail{margin-top:30px;font-size:21px;font-weight:900;color:#fff;line-height:1.7;text-wrap:balance}
+@media(max-width:640px){.so3-belief p{font-size:16px}.so3-belief .so3-tail{font-size:18px}}
+/* 5. 사례 스토리 */
+.so3-cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:900px;margin:44px auto 0}
+.so3-case{min-width:0;background:#fff;border:1px solid rgba(20,20,20,.08);border-radius:22px;padding:26px 24px;box-shadow:0 10px 28px rgba(20,20,20,.05)}
+.so3-case-tag{display:inline-block;margin:0 0 16px;font-size:13px;font-weight:800;color:#fff;background:var(--dark);padding:6px 14px;border-radius:50px}
+.so3-case-row{border-radius:14px;padding:14px 16px;font-size:15.5px;line-height:1.7;font-weight:700}
+.so3-case-row+.so3-case-row{margin-top:10px}
+.so3-case-k{display:block;margin:0 0 4px;font-size:12px;font-weight:900;letter-spacing:.08em}
+.so3-case-before{background:#F1F1EF;color:#4a4a4a}
+.so3-case-before .so3-case-k{color:#8a8a8a}
+.so3-case-change{background:rgba(34,181,115,.12);color:#0B4F2C}
+.so3-case-change .so3-case-k{color:#0B6B3A}
+.so3-case-after{background:var(--dark);color:#fff}
+.so3-case-after .so3-case-k{color:var(--g)}
+.so3-ph{display:inline-block;padding:0 6px;border:1px dashed #b4b4b4;border-radius:6px;color:#8a8a8a;font-weight:700;background:rgba(255,255,255,.5)}
+@media(max-width:760px){.so3-cases{grid-template-columns:minmax(0,1fr)}}
+/* 9. 가치 스택 */
+.so3-value{max-width:720px;margin:0 auto}
+.so3-recover{margin:36px 0 0;background:var(--cream);border:1px solid rgba(20,20,20,.08);border-radius:20px;padding:24px 26px;text-align:center}
+.so3-recover-n{margin:0 0 8px;font-size:22px;font-weight:900;color:var(--g)}
+.so3-recover-t{margin:0;font-size:17px;line-height:1.8;font-weight:700;color:#2E2E2E}
+.so3-check{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:14px}
+.so3-check li{position:relative;padding-left:34px;font-size:17px;font-weight:700;line-height:1.6}
+.so3-check li::before{content:"";position:absolute;left:0;top:.2em;width:22px;height:22px;border-radius:50%;background:var(--g)}
+.so3-check li::after{content:"";position:absolute;left:7.5px;top:.45em;width:6px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.so3-value-price{margin:34px 0 0;text-align:center;font-size:18px;font-weight:800;color:#555}
+.so3-value-price s{color:#9a9a9a;font-weight:700}
+.so3-value-price b{display:inline-block;margin-left:6px;font-size:30px;font-weight:900;color:#141414}
+@media(max-width:640px){.so3-recover-n{font-size:19px}.so3-recover-t,.so3-check li{font-size:15.5px}.so3-value-price b{font-size:26px}}
+/* 11. FAQ */
+.so3-faq{max-width:760px;margin:40px auto 0;border-top:2px solid #141414}
+.so3-faq details{border-bottom:1px solid rgba(20,20,20,.12)}
+.so3-faq summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:28px minmax(0,1fr) 20px;gap:8px;align-items:center;min-height:64px;padding:16px 0;font-size:17px;font-weight:800;line-height:1.5}
+.so3-faq summary::-webkit-details-marker{display:none}
+.so3-faq summary::before{content:"Q";font-weight:900;color:var(--g)}
+.so3-faq summary::after{content:"";width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/20px no-repeat;transition:transform .25s ease}
+.so3-faq details[open] summary::after{transform:rotate(180deg)}
+.so3-faq summary:focus-visible{outline:2px solid var(--g);outline-offset:2px;border-radius:6px}
+.so3-faq .so3-a{padding:0 0 22px 36px;font-size:16px;line-height:1.8;color:#3A3A3A}
+@media(prefers-reduced-motion:reduce){.so3-faq summary::after{transition:none}}
+/* 영상 캡션 · 신청 마감 문구 · 클로징 CTA */
+.so3-vid-item{min-width:0}
+.so3-vid-cap{margin:0 0 10px;min-height:3em;font-size:14px;font-weight:700;line-height:1.5;color:#D3DCD7}
+.so3-urgency{margin:34px 0 0;text-align:center;font-size:16px;font-weight:800;color:#C23A2B}
+.so3-closing .so3-cta{margin-top:34px}
+@media(max-width:640px){
+  .so3-vid-item{flex:0 0 78%;scroll-snap-align:start}
+  .so3-vid-item .so3-vid-card{width:100%}
+}
 /* 9. 클로징 + 하단 고정 CTA */
 .so3-closing{text-align:center;max-width:820px}
 .so3-closing p{margin:0;font-size:25px;font-weight:800;line-height:1.7;text-wrap:balance}
@@ -559,6 +691,15 @@ export default function SalesOps3() {
   const sysActive = ((sysIdx % sysCount) + sysCount) % sysCount;
 
   const [stickyOn, setStickyOn] = useState(false);
+
+  // ?preview=1 — 값이 비어 숨겨진 블록을 점선 자리표시로 미리 본다 (확정 값이 들어가면 필요 없다)
+  const [preview, setPreview] = useState(false);
+  useEffect(() => {
+    setPreview(new URLSearchParams(window.location.search).get("preview") === "1");
+  }, []);
+  /** 값이 있으면 그대로, 없으면 preview 일 때만 [라벨] 자리표시 */
+  const ph = (v: string | number | null | undefined, label: string) =>
+    v !== null && v !== undefined && v !== "" ? v : preview ? <span className="so3-ph">[{label}]</span> : null;
 
   // ── 측정: view_item (진입 1회) ──
   const viewedRef = useRef(false);
@@ -869,6 +1010,9 @@ export default function SalesOps3() {
   };
 
   const placeKnown = !soIsPending(SO_PLACE);
+  const sc = SO3_CASES.sales;
+  const salesCaseReady = !!(sc.center && sc.beforeN !== null && sc.change && sc.period && sc.afterN !== null);
+  const opsCaseReady = SO3_CASES.ops.weeks !== null && !!SO3_CASES.ops.result;
   const hasTakeaways = SO3_TAKEAWAYS.length > 0;
 
   return (
@@ -980,7 +1124,96 @@ export default function SalesOps3() {
         </div>
       </section>
 
-      {/* ── 3. 증거 ① 황현진 (프로필 · 약력 · 저서 · 영상) — 상담 장면보다 먼저 ── */}
+      {/* ── 3. 상담 장면 + 하수 vs 고수 (유지) ── */}
+      <section className="so3-sec so3-cream">
+        <div className="so3-wrap">
+          <h2 className="so3-h2 so3-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
+          <div className="so3-talks so3-stagger">
+            {SO3_TALKS.map((t) => (
+              <div className="so3-talk so3-reveal" key={t.line}>
+                <p className="so3-bubble">{t.line}</p>
+                <span className="so3-diag">{t.diag}</span>
+              </div>
+            ))}
+          </div>
+          <div className="so3-versus so3-stagger">
+            <p className="so3-versus-row so3-reveal">
+              하수는 <mark>주장</mark>만 하지만, 고수는 <mark>주목</mark>시킵니다.
+            </p>
+            <p className="so3-versus-row so3-reveal">
+              하수는 <mark>이성</mark>을 향하지만, 고수는 <mark>감정</mark>을 공략합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. 신념 깨기 — 하수 vs 고수 바로 뒤 ── */}
+      <section className="so3-sec so3-dark">
+        <div className="so3-wrap so3-belief">
+          <h2 className="so3-h2 so3-reveal">{SO3_BELIEF_HEAD}</h2>
+          <div className="so3-reveal">
+            {SO3_BELIEF_LINES.map((l) => (
+              <p key={l}>{l}</p>
+            ))}
+          </div>
+          <div className="so3-gap so3-reveal">
+            {SO3_BELIEF_MISSION.map((l, i) => (
+              <p key={l} className={i === SO3_BELIEF_MISSION.length - 1 ? "so3-hl" : undefined}>
+                {l}
+              </p>
+            ))}
+          </div>
+          <p className="so3-tail so3-reveal">{SO3_BELIEF_TAIL}</p>
+        </div>
+      </section>
+
+      {/* ── 5. 사례 스토리 (Before → After) — 수치가 확정되기 전에는 카드가 숨겨진다 ── */}
+      {(salesCaseReady || opsCaseReady || preview) && (
+        <section className="so3-sec so3-white">
+          <div className="so3-wrap">
+            <h2 className="so3-h2 so3-reveal">{SO3_CASE_HEAD}</h2>
+            <div className="so3-cases so3-stagger">
+              {(salesCaseReady || preview) && (
+                <div className="so3-case so3-reveal">
+                  <span className="so3-case-tag">세일즈</span>
+                  <p className="so3-case-row so3-case-before">
+                    <span className="so3-case-k">BEFORE</span>
+                    {ph(SO3_CASES.sales.center, "센터 유형/지역")}, 상담 10건 중 {ph(SO3_CASES.sales.beforeN, "N")}건 등록.
+                    {" "}&quot;생각해 볼게요&quot;에서 대부분 종료
+                  </p>
+                  <p className="so3-case-row so3-case-change">
+                    <span className="so3-case-k">바꾼 것</span>
+                    {ph(SO3_CASES.sales.change, "바꾼 질문/화법 한 줄")}
+                  </p>
+                  <p className="so3-case-row so3-case-after">
+                    <span className="so3-case-k">AFTER</span>
+                    {ph(SO3_CASES.sales.period, "기간")} 후 상담 10건 중 {ph(SO3_CASES.sales.afterN, "N")}건 등록
+                  </p>
+                </div>
+              )}
+              {(opsCaseReady || preview) && (
+                <div className="so3-case so3-reveal">
+                  <span className="so3-case-tag">운영</span>
+                  <p className="so3-case-row so3-case-before">
+                    <span className="so3-case-k">BEFORE</span>
+                    원장이 상담 · CS · 재등록을 모두 직접 처리
+                  </p>
+                  <p className="so3-case-row so3-case-change">
+                    <span className="so3-case-k">바꾼 것</span>
+                    FC · 매니저 역할 분담 + 매일 보는 운영판
+                  </p>
+                  <p className="so3-case-row so3-case-after">
+                    <span className="so3-case-k">AFTER</span>
+                    원장 {ph(SO3_CASES.ops.weeks, "N")}주 부재 중에도 매출 {ph(SO3_CASES.ops.result, "유지/증감 수치")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── 6. 강사 소개 ① 황현진 (프로필 · 약력 · 저서 · 영상) ── */}
       <section className="so3-sec so3-dark2">
         <div className="so3-wrap">
           <div className="so3-prof so3-reveal">
@@ -1012,26 +1245,28 @@ export default function SalesOps3() {
 
           <div className="so3-vid">
             <div className="so3-vid-grid" ref={sliderRef} tabIndex={0} role="group" aria-label="황현진 대표 세일즈 화법 영상">
-              {SO3_VIDEOS.map(({ src, poster }, i) => (
-                <div
-                  className="so3-vid-card"
-                  key={src}
-                  ref={(el) => {
-                    cardRefs.current[i] = el;
-                  }}
-                >
-                  <video
+              {SO3_VIDEOS.map(({ src, poster, caption }, i) => (
+                <div className="so3-vid-item" key={src}>
+                  {caption && <p className="so3-vid-cap">{caption}</p>}
+                  <div
+                    className="so3-vid-card"
                     ref={(el) => {
-                      videoRefs.current[i] = el;
+                      cardRefs.current[i] = el;
                     }}
-                    src={src}
-                    poster={poster}
-                    controls
-                    playsInline
-                    preload="none"
-                    onPlay={() => pauseOthers(i)}
-                    aria-label={`황현진 대표 세일즈 화법 영상 ${i + 1}`}
-                  />
+                  >
+                    <video
+                      ref={(el) => {
+                        videoRefs.current[i] = el;
+                      }}
+                      src={src}
+                      poster={poster}
+                      controls
+                      playsInline
+                      preload="none"
+                      onPlay={() => pauseOthers(i)}
+                      aria-label={`황현진 대표 세일즈 화법 영상 ${i + 1}`}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -1047,29 +1282,6 @@ export default function SalesOps3() {
                 />
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 3. 상담 장면 + 하수 vs 고수 ── */}
-      <section className="so3-sec so3-cream">
-        <div className="so3-wrap">
-          <h2 className="so3-h2 so3-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
-          <div className="so3-talks so3-stagger">
-            {SO3_TALKS.map((t) => (
-              <div className="so3-talk so3-reveal" key={t.line}>
-                <p className="so3-bubble">{t.line}</p>
-                <span className="so3-diag">{t.diag}</span>
-              </div>
-            ))}
-          </div>
-          <div className="so3-versus so3-stagger">
-            <p className="so3-versus-row so3-reveal">
-              하수는 <mark>주장</mark>만 하지만, 고수는 <mark>주목</mark>시킵니다.
-            </p>
-            <p className="so3-versus-row so3-reveal">
-              하수는 <mark>이성</mark>을 향하지만, 고수는 <mark>감정</mark>을 공략합니다.
-            </p>
           </div>
         </div>
       </section>
@@ -1262,6 +1474,66 @@ export default function SalesOps3() {
         </div>
       </section>
 
+      {/* ── 9. 가치 스택 + 회수 계산 — 신청 섹션 바로 앞. 할인은 가치 다음에 보여준다 ── */}
+      <section className="so3-sec so3-white">
+        <div className="so3-wrap so3-value">
+          <h2 className="so3-h2 so3-reveal">{won(SO_PRICE_STORY)}, 상담 1건이면 회수됩니다</h2>
+          <div className="so3-recover so3-reveal">
+            {(SO3_PT10_MAN !== null || preview) && (
+              <p className="so3-recover-n">PT 10회 등록 1건 = 약 {ph(SO3_PT10_MAN, "OO")}만원</p>
+            )}
+            <p className="so3-recover-t">
+              이번 세미나에서 바꾼 한 문장으로 상담 1건만 더 등록돼도, 참가비는 이미 돌아와 있습니다.
+            </p>
+          </div>
+          <ul className="so3-check so3-stagger">
+            {SO3_STACK.filter((s) => s.confirmed || preview).map((s) => (
+              <li className="so3-reveal" key={s.text}>
+                {s.text}
+                {!s.confirmed && <span className="so3-ph"> [{s.todo}]</span>}
+              </li>
+            ))}
+          </ul>
+          <p className="so3-value-price so3-reveal">
+            정상가 <s>{won(SO_PRICE_NORMAL)}</s> → 스토리 인증가 <b>{won(SO_PRICE_STORY)}</b>
+          </p>
+        </div>
+      </section>
+
+      {/* ── 10. 이런 분께 추천 (직책별) ── */}
+      <section className="so3-sec so3-cream">
+        <div className="so3-wrap">
+          <h2 className="so3-h2 so3-reveal">이런 분께 추천합니다</h2>
+          <div className="so3-needs so3-stagger">
+            {SO3_RECOMMEND.map((r) => (
+              <div className="so3-need so3-reveal" key={r.who} style={{ background: "#fff" }}>
+                <span className="so3-need-lbl">{r.who}</span>
+                <p className="so3-need-body" style={{ fontWeight: 700, fontSize: 17 }}>
+                  {r.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 11. FAQ — 답변이 확정된 항목만 보인다 ── */}
+      {(SO3_FAQ.some((f) => f.a) || preview) && (
+        <section className="so3-sec so3-white">
+          <div className="so3-wrap">
+            <h2 className="so3-h2 so3-reveal">자주 묻는 질문</h2>
+            <div className="so3-faq so3-reveal">
+              {SO3_FAQ.filter((f) => f.a || preview).map((f) => (
+                <details key={f.q}>
+                  <summary>{f.q}</summary>
+                  <div className="so3-a">{f.a || <span className="so3-ph">[{f.todo}]</span>}</div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── 8. 결제 ── */}
       <section className="so3-sec so3-cream so3-apply" id="so3-apply" ref={applyRef}>
         <div className="so3-wrap">
@@ -1300,24 +1572,27 @@ export default function SalesOps3() {
               </tbody>
             </table>
           </div>
+          {!soIsPending(SO_CAPACITY) && (
+            <p className="so3-urgency">정원 {SO_CAPACITY}명 · 마감 시 조기 종료</p>
+          )}
           <div onClickCapture={onPayCapture} onClick={onPayBubble}>
             <SalesOpsPay />
           </div>
         </div>
       </section>
 
-      {/* ── 9. 클로징 ── */}
+      {/* ── 13. 클로징 (교체) ── */}
       <section className="so3-sec so3-dark">
         <div className="so3-wrap so3-closing">
-          {SO3_CLOSING.map((group, gi) => (
-            <div className={gi > 0 ? "so3-gap so3-reveal" : "so3-reveal"} key={gi}>
-              {group.map((line, li) => (
-                <p key={line} className={gi === 1 && li === 1 ? "so3-hl" : undefined}>
-                  {line}
-                </p>
-              ))}
-            </div>
-          ))}
+          <div className="so3-reveal">
+            {SO3_CLOSING_LINES.map((l) => (
+              <p key={l}>{l}</p>
+            ))}
+            <p className="so3-gap so3-hl">{SO_DATE}, 4시간이면 충분합니다.</p>
+            <a className="so3-cta" href="#so3-apply" onClick={scrollToApply}>
+              세미나 신청하기
+            </a>
+          </div>
         </div>
       </section>
 

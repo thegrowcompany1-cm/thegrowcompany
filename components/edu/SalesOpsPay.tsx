@@ -112,6 +112,7 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
   const [role, setRole] = useState("");
   const [error, setError] = useState<{ card: "story" | "normal"; msg: string } | null>(null);
   const [posterOk, setPosterOk] = useState(true);
+  const [posterLoaded, setPosterLoaded] = useState(false);
   const [coarse, setCoarse] = useState(false);
 
   const posterRef = useRef<HTMLImageElement>(null);
@@ -132,6 +133,7 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
   useEffect(() => {
     const img = posterRef.current;
     if (img && img.complete && img.naturalWidth === 0) setPosterOk(false);
+    if (img && img.complete && img.naturalWidth > 0) setPosterLoaded(true);
   }, []);
 
   const validateCommon = (): string | null => {
@@ -272,15 +274,19 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
 
           <div className="sop-poster">
             <div className="sop-poster-frame">
-              <span className="sop-poster-ph" aria-hidden={posterOk}>
-                포스터 이미지 준비 중
-              </span>
+              {/* 이미지가 뜨면 대체 문구는 DOM 에서 뺀다 (뒤에 깔려 있기만 해도 노출로 집계되지 않게) */}
+              {!posterLoaded && (
+                <span className="sop-poster-ph" aria-hidden={posterOk}>
+                  포스터 이미지 준비 중
+                </span>
+              )}
               {posterOk && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   ref={posterRef}
                   src={POSTER_SRC}
                   alt="세미나 안내 포스터"
+                  onLoad={() => setPosterLoaded(true)}
                   onError={() => setPosterOk(false)}
                 />
               )}
