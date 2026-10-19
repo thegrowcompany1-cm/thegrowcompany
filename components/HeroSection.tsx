@@ -164,7 +164,9 @@ export default function HeroSection() {
       {/* Logo marquee background — bottom-weighted */}
       <div
         className="absolute inset-x-0 bottom-0 z-10 flex flex-col justify-between overflow-hidden"
-        style={{ height: "55%", pointerEvents: "none" }}
+        /* 로고 PNG 자체에 검은 배경이 칠해져 있어 박스처럼 보인다. screen 합성은 검정을 투명처럼
+           처리(배경 영상은 그대로, 밝은 로고 글자만 얹힘)하므로 이미지 파일을 바꾸지 않고 박스만 지운다. */
+        style={{ height: "55%", pointerEvents: "none", mixBlendMode: "screen" }}
         aria-hidden="true"
       >
         {displayLogoRows.map((row, rowIndex) => {
@@ -191,7 +193,7 @@ export default function HeroSection() {
                       key={`${rowIndex}-${i}`}
                       className="flex-shrink-0 flex items-center justify-center mx-[1px] sm:mx-[2px] h-[49px] sm:h-[69px]"
                     >
-                      <div className={boxClass} style={{ opacity: 0.7, filter: "grayscale(1)" }}>
+                      <div className={boxClass} style={{ opacity: 0.7, filter: "grayscale(1) contrast(1.5)" }}>
                         <Image
                           src={logo.src}
                           alt=""
