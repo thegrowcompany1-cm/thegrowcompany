@@ -8,11 +8,36 @@ export type ApiError = { ok: false; code: string; message: string };
 
 export const num = (v: number) => v.toLocaleString("ko-KR");
 export const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
-/** 초 → 분:초 */
+/** 초 → "1분 12초" (1분 미만은 "31초") */
 export const mmss = (sec: number) => {
   const s = Math.max(0, Math.round(sec));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const m = Math.floor(s / 60);
+  return m > 0 ? `${m}분 ${s % 60}초` : `${s}초`;
 };
+
+/** 직전 기간 대비 증감 배지 — 비율 지표는 %p, 나머지는 상대 % (좋으면 초록, 나쁘면 빨강, 0이면 회색) */
+export function Delta({ cur, prev, kind, label = "이전 기간 대비" }: { cur: number; prev: number | undefined; kind: "rel" | "pp"; label?: string }) {
+  if (prev === undefined) return null;
+  if (kind === "pp") {
+    const d = (cur - prev) * 100;
+    const cls = Math.abs(d) < 0.05 ? "flat" : d > 0 ? "up" : "down";
+    return (
+      <span className={`ga-delta ${cls}`}>
+        {cls === "flat" ? "– " : d > 0 ? "▲ " : "▼ "}
+        {Math.abs(d).toFixed(1)}%p <small>{label}</small>
+      </span>
+    );
+  }
+  if (prev === 0) return <span className="ga-delta flat">– <small>이전 기간 0 (비교 불가)</small></span>;
+  const d = ((cur - prev) / prev) * 100;
+  const cls = Math.abs(d) < 0.05 ? "flat" : d > 0 ? "up" : "down";
+  return (
+    <span className={`ga-delta ${cls}`}>
+      {cls === "flat" ? "– " : d > 0 ? "▲ " : "▼ "}
+      {Math.abs(d).toFixed(1)}% <small>{label}</small>
+    </span>
+  );
+}
 
 export async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T | ApiError> {
   const res = await fetch(url, { cache: "no-store", signal });
@@ -44,8 +69,17 @@ export function Insight({ text }: { text: string | null }) {
   );
 }
 
-export function Empty({ children }: { children: ReactNode }) {
-  return <p className="ga-empty">{children}</p>;
+/** 빈 상태 — 아이콘 + 한 줄 안내 + 보조 설명 1줄 */
+export function Empty({ children, hint }: { children: ReactNode; hint?: string }) {
+  return (
+    <div className="ga-empty">
+      <svg className="ga-empty-ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M3 12h4l2-6 4 12 2-6h6" />
+      </svg>
+      <p className="ga-empty-t">{children}</p>
+      {hint && <p className="ga-empty-h">{hint}</p>}
+    </div>
+  );
 }
 
 export const GA_STYLE = `
@@ -179,6 +213,87 @@ export const GA_STYLE = `
 .ga-btn:hover{border-color:#22B573;color:#4ade80}
 .ga-notice{margin:0 0 14px;padding:10px 14px;border-radius:10px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.3);font-size:13px;line-height:1.6;color:#fde68a}
 @media(max-width:560px){.ga-presets button{padding:7px 12px;font-size:12.5px}.ga-cal{left:0;right:0;padding:12px}.ga-mix{width:84px}}
-@media(max-width:860px){.ga-live{grid-template-columns:minmax(0,1fr)}.ga-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.ga-live-num{font-size:46px}.ga-kpi-v{font-size:24px}.ga-chart{height:240px}.ga-card{padding:16px}.ga-fbar{grid-template-columns:76px minmax(0,1fr) 54px;gap:8px}.ga-sess li button{grid-template-columns:minmax(0,1fr) auto}.ga-sess li button .ga-src{display:none}}
+/* ── UI 개선: 타이포·카드 ── */
+.ga{font-variant-numeric:tabular-nums}
+.ga-card+.ga-card{margin-top:16px}
+.ga-kpis+.ga-card,.ga-kpis{margin-bottom:16px}
+.ga-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.ga-h .ga-sub{font-weight:500}
+.ga-empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:30px 12px;text-align:center}
+.ga-empty-ic{color:#4b4b4b;margin-bottom:2px}
+.ga-empty-t{margin:0;font-size:14px;font-weight:700;color:#d0d0d0}
+.ga-empty-h{margin:0;font-size:12px;color:#8b8b8b}
+/* 고정 헤더 */
+.ga-sticky{position:sticky;top:var(--ga-top,0px);z-index:30;margin:0 0 16px;padding:12px 0 0;background:rgba(10,10,10,.82);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+.ga-sticky .ga-range{margin:0 0 4px}
+.ga-tabbar{display:flex;align-items:center;gap:12px}
+.ga-tabbar .ga-tabs{flex:1;min-width:0;margin:0;border-bottom:0}
+.ga-period{flex:0 0 auto;font-size:12.5px;font-weight:700;color:#cfcfcf;white-space:nowrap}
+.ga-period-m{display:none;margin:0;font-size:12.5px;font-weight:700;color:#cfcfcf}
+.ga-tabs button{color:#8b8b8b}
+/* 오늘 한눈에 */
+.ga-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.ga-sc{background:#141414;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;min-width:0}
+.ga-sc-l{margin:0;font-size:12px;font-weight:700;color:#9a9a9a}
+.ga-sc-v{margin:6px 0 0;font-size:26px;font-weight:900;line-height:1.15;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ga-sc-v small{margin-left:3px;font-size:13px;font-weight:700;color:#9a9a9a}
+.ga-sc-v.is-live{color:#22B573}
+.ga-sc .ga-delta{margin-top:6px}
+.ga-sc-s{margin:6px 0 0;font-size:12px;color:#8b8b8b}
+.ga-strip-note{margin:12px 0 16px;font-size:13px;line-height:1.6;color:#d6f5e6}
+/* 표 공통 */
+.ga-table-wrap{max-height:560px;overflow:auto}
+.ga-table thead th{position:sticky;top:0;z-index:1;background:#141414;box-shadow:0 1px 0 rgba(255,255,255,.1)}
+.ga-table tbody tr:hover td{background:rgba(255,255,255,.05)}
+.ga-table tbody tr.is-opp:hover td{background:rgba(250,204,21,.14)}
+/* 퍼널 */
+.ga-fbar{grid-template-columns:110px minmax(0,1fr) 168px 64px}
+.ga-fbar-track i{background:linear-gradient(90deg,#3f5a4d,#22B573)}
+.ga-fbar.is-warn .ga-fbar-track i{background:#f59e0b}
+.ga-fbar.is-drop .ga-fbar-track i{background:#ef4444}
+.ga-fbar.is-warn .ga-fbar-d{color:#fbbf24}
+.ga-fbar.is-drop .ga-fbar-d{color:#f87171}
+.ga-fbar.is-warn .ga-fbar-name,.ga-fbar.is-warn .ga-fbar-v{color:#d6d6d6}
+.ga-fbar.is-drop .ga-fbar-name,.ga-fbar.is-drop .ga-fbar-v{color:#f87171}
+.ga-fbars.is-low .ga-fbar-track i{opacity:.4}
+.ga-fbar-v{text-align:right;font-weight:700;color:#d6d6d6;white-space:nowrap}
+.ga-fbar-d{text-align:right;font-weight:800;font-size:12.5px;color:#8b8b8b;white-space:nowrap}
+.ga-fbar-r{display:contents}
+.ga-warnbadge{display:inline-block;margin:0 0 12px;padding:5px 12px;border-radius:999px;background:rgba(250,204,21,.16);border:1px solid rgba(250,204,21,.35);color:#fde68a;font-size:12.5px;font-weight:800}
+.ga-fsel{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* 실시간 세션 */
+.ga-sess li button{grid-template-columns:auto minmax(0,1fr) auto}
+.ga-sess li button.is-new{animation:ga-new 3s ease-out}
+@keyframes ga-new{0%,70%{background:rgba(34,181,115,.22);border-color:#22B573}100%{background:rgba(255,255,255,.03)}}
+@media(prefers-reduced-motion:reduce){.ga-sess li button.is-new{animation:none;border-color:#22B573}}
+.ga-src.organic_google,.ga-src.organic_naver,.ga-src.organic_other{background:rgba(34,181,115,.2);color:#4ade80}
+.ga-src.direct{background:rgba(156,163,175,.2);color:#d1d5db}
+.ga-dev-ic{display:inline-flex;vertical-align:-3px;margin-right:4px;color:#9a9a9a}
+@media(max-width:860px){.ga-live{grid-template-columns:minmax(0,1fr)}.ga-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ga-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.ga-strip .ga-sc:last-child{grid-column:1/-1}}
+@media(max-width:560px){.ga-live-num{font-size:46px}.ga-kpi-v{font-size:24px}.ga-chart{height:240px}.ga-card{padding:16px}.ga-fbar{grid-template-columns:76px minmax(0,1fr) 54px;gap:8px}.ga-sess li button{grid-template-columns:minmax(0,1fr) auto}}
+@media(max-width:560px){
+.ga-presets{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.ga-presets::-webkit-scrollbar{display:none}
+.ga-period{display:none}.ga-period-m{display:block}
+.ga-sc{padding:14px}.ga-sc-v{font-size:22px}
+.ga-fbar{grid-template-columns:76px minmax(0,1fr);row-gap:2px}
+.ga-fbar-r{display:flex;grid-column:1/-1;justify-content:space-between;gap:8px;padding-left:2px}
+.ga-fbar-v,.ga-fbar-d{text-align:left}
+.ga-sess li button{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;padding:10px 12px}
+.ga-table-wrap{max-height:none;overflow:visible}
+.ga-table{min-width:0;display:block}
+.ga-table thead{display:none}
+.ga-table tbody{display:grid;gap:10px}
+.ga-table tbody tr{display:block;padding:10px 12px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.03)}
+.ga-table td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 0;border:0;white-space:normal;text-align:right}
+.ga-table td::before{content:attr(data-label);flex:0 0 auto;font-size:12px;font-weight:600;color:#8b8b8b}
+.ga-table td:first-child{display:block;max-width:none;padding:0 0 6px;font-weight:800;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ga-table td:first-child::before{content:none}
+.ga-table tbody tr:hover td{background:none}
+.ga-table tr:not(.is-click):not([data-open="1"]) td:nth-child(n+5){display:none}
+.ga-table tr:not(.is-click):has(td:nth-child(5))::after{content:"탭하여 자세히 보기";display:block;padding-top:6px;font-size:11.5px;font-weight:700;color:#22B573}
+.ga-table tr[data-open="1"]:not(.is-click):has(td:nth-child(5))::after{content:"접기"}
+.ga-table tr.is-weekend,.ga-table tr.is-weekend td{background:rgba(255,255,255,.06)}
+.ga-mix{margin-left:0}
+}
 `;

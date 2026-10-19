@@ -114,10 +114,6 @@ export default function RangePicker({ from, to, onChange }: Props) {
         </button>
       </div>
 
-      <p className="ga-range-now">
-        {from === to ? from : `${from} ~ ${to}`} <span>({rangeLength(from, to)}일 · KST)</span>
-      </p>
-
       {open && (
         <div className="ga-cal" role="dialog" aria-label="기간 직접 선택">
           <DayPicker

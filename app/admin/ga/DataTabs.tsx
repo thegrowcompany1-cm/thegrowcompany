@@ -22,7 +22,7 @@ function Badge({ row }: { row: LandingRow }) {
 }
 
 function LandingTable({ rows, empty }: { rows: LandingRow[]; empty: string }) {
-  if (!rows.length) return <Empty>{empty}</Empty>;
+  if (!rows.length) return <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">{empty.replace(/[.]$/, "")}</Empty>;
   return (
     <div className="ga-table-wrap">
       <table className="ga-table">
@@ -119,7 +119,7 @@ export function DailyTab({ report, onPickDay }: { report: ReportPayload; onPickD
           <button type="button" className="ga-btn" onClick={download} disabled={!rows.length}>CSV 다운로드</button>
         </div>
         {rows.length === 0 ? (
-          <Empty>이 기간의 일별 데이터가 없습니다.</Empty>
+          <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">이 기간의 일별 데이터가 없습니다</Empty>
         ) : (
           <>
             <p className="ga-sub" style={{ margin: "10px 0" }}>
@@ -248,7 +248,7 @@ export function SearchTab({ report, from, to }: { report: ReportPayload; from: s
               기회 키워드 <span className="ga-sub">노출 {GSC_OPP_MIN_IMPRESSIONS} 이상 · 순위 {GSC_OPP_POS_MIN}~{GSC_OPP_POS_MAX}위 — SEO 우선 작업 대상</span>
             </h3>
             {gsc.opportunities.length === 0 ? (
-              <Empty>조건에 맞는 검색어가 아직 없습니다.</Empty>
+              <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">조건에 맞는 검색어가 아직 없습니다</Empty>
             ) : (
               <div className="ga-table-wrap" style={{ marginBottom: 18 }}>
                 <table className="ga-table">
@@ -315,7 +315,7 @@ export function SearchTab({ report, from, to }: { report: ReportPayload; from: s
         <h2 className="ga-h">GA4 자연검색 유입 <span className="ga-sub">· 채널 = Organic Search</span></h2>
         <h3 className="ga-kpi-l" style={{ margin: "0 0 8px" }}>검색엔진별</h3>
         {report.organic.sources.length === 0 ? (
-          <Empty>이 기간의 자연검색 유입이 없습니다.</Empty>
+          <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">이 기간의 자연검색 유입이 없습니다</Empty>
         ) : (
           <div className="ga-table-wrap" style={{ marginBottom: 18 }}>
             <table className="ga-table">
@@ -352,7 +352,7 @@ export function AiTab({ report }: { report: ReportPayload }) {
         <h2 className="ga-h">AI 검색 유입 (AEO) <span className="ga-sub">· chatgpt · perplexity · gemini · copilot · claude · wrtn</span></h2>
         <Insight text={aiInsight(sources)} />
         {sources.length === 0 ? (
-          <Empty>이 기간에 AI 검색에서 들어온 세션이 없습니다.</Empty>
+          <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">이 기간에 AI 검색에서 들어온 세션이 없습니다</Empty>
         ) : (
           <div className="ga-table-wrap">
             <table className="ga-table">
@@ -414,7 +414,7 @@ export function ChannelTab({ report }: { report: ReportPayload }) {
       <section className="ga-card">
         <h2 className="ga-h">전체 채널</h2>
         {report.channels.length === 0 ? (
-          <Empty>이 기간의 채널 데이터가 없습니다.</Empty>
+          <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">이 기간의 채널 데이터가 없습니다</Empty>
         ) : (
           <div className="ga-table-wrap">
             <table className="ga-table">

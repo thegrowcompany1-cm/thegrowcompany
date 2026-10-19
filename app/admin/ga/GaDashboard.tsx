@@ -11,15 +11,16 @@
 //  · 차트는 recharts. CSS 클래스 접두사 ga-.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { parseRange, presetRange, todayKst } from "@/lib/gaRange";
+import { parseRange, presetRange, rangeLength, todayKst, weekdayKo } from "@/lib/gaRange";
 import type { ReportPayload, Totals } from "@/lib/gaTypes";
 import { AiTab, ChannelTab, DailyTab, LandingTab, SearchTab } from "./DataTabs";
 import LiveTab from "./LiveTab";
 import RangePicker from "./RangePicker";
-import { ErrBox, GA_STYLE, Skel, fetchJson, mmss, num, pct, type ApiError } from "./ga-shared";
+import SummaryStrip from "./SummaryStrip";
+import { Delta, ErrBox, GA_STYLE, Skel, fetchJson, mmss, num, pct, type ApiError } from "./ga-shared";
 
 const TABS = [
   { key: "live", label: "실시간 방문자" },
@@ -40,28 +41,10 @@ const CHART_OPTIONS: { key: ChartMetric; label: string }[] = [
   { key: "keyEvents", label: "키 이벤트" },
 ];
 
-/** 직전 기간 대비 증감 — 비율 지표는 %p, 나머지는 상대 % */
-function Delta({ cur, prev, kind }: { cur: number; prev: number | undefined; kind: "rel" | "pp" }) {
-  if (prev === undefined) return null;
-  if (kind === "pp") {
-    const d = (cur - prev) * 100;
-    const cls = Math.abs(d) < 0.05 ? "flat" : d > 0 ? "up" : "down";
-    return (
-      <span className={`ga-delta ${cls}`}>
-        {cls === "flat" ? "– " : d > 0 ? "▲ " : "▼ "}
-        {Math.abs(d).toFixed(1)}%p <small>이전 기간 대비</small>
-      </span>
-    );
-  }
-  if (prev === 0) return <span className="ga-delta flat">– <small>이전 기간 0 (비교 불가)</small></span>;
-  const d = ((cur - prev) / prev) * 100;
-  const cls = Math.abs(d) < 0.05 ? "flat" : d > 0 ? "up" : "down";
-  return (
-    <span className={`ga-delta ${cls}`}>
-      {cls === "flat" ? "– " : d > 0 ? "▲ " : "▼ "}
-      {Math.abs(d).toFixed(1)}% <small>이전 기간 대비</small>
-    </span>
-  );
+const fmtDay = (d: string) => `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}(${weekdayKo(d)})`;
+function periodText(from: string, to: string) {
+  const n = rangeLength(from, to);
+  return from === to ? `${fmtDay(from)} · ${n}일` : `${fmtDay(from)} ~ ${fmtDay(to)} · ${n}일`;
 }
 
 export default function GaDashboard() {
@@ -112,6 +95,50 @@ export default function GaDashboard() {
     return () => ctrl.abort();
   }, [from, to, compare]);
 
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // 사이트 상단 헤더(sticky) 높이만큼 비워서 고정 헤더가 그 밑에 붙게 한다
+  useEffect(() => {
+    const h = document.querySelector("header");
+    const root = rootRef.current;
+    if (!h || !root) return;
+    const set = () => root.style.setProperty("--ga-top", `${Math.round(h.getBoundingClientRect().height)}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(h);
+    return () => ro.disconnect();
+  }, []);
+
+  // 모바일 카드형 표: 각 칸에 열 제목(data-label)을 붙이고, 카드를 누르면 나머지 지표를 펼친다
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const label = () => {
+      root.querySelectorAll("table.ga-table").forEach((t) => {
+        const heads = [...t.querySelectorAll("thead th")].map((th) => th.textContent?.trim() ?? "");
+        t.querySelectorAll("tbody tr").forEach((tr) => {
+          [...tr.children].forEach((td, i) => {
+            if (heads[i] && td.getAttribute("data-label") !== heads[i]) td.setAttribute("data-label", heads[i]);
+          });
+        });
+      });
+    };
+    label();
+    const mo = new MutationObserver(label);
+    mo.observe(root, { childList: true, subtree: true });
+    const onClick = (e: MouseEvent) => {
+      const tr = (e.target as HTMLElement).closest("table.ga-table tbody tr");
+      if (!tr || tr.classList.contains("is-click") || !window.matchMedia("(max-width: 560px)").matches) return;
+      if (tr.getAttribute("data-open") === "1") tr.removeAttribute("data-open");
+      else tr.setAttribute("data-open", "1");
+    };
+    root.addEventListener("click", onClick);
+    return () => {
+      mo.disconnect();
+      root.removeEventListener("click", onClick);
+    };
+  }, []);
+
   const chartLines = useMemo(() => {
     if (metric === "both")
       return [
@@ -139,17 +166,29 @@ export default function GaDashboard() {
     : [];
 
   return (
-    <div className="ga">
+    <div className="ga" ref={rootRef}>
       <style dangerouslySetInnerHTML={{ __html: GA_STYLE }} />
 
-      <h2 className="ga-h" style={{ margin: "0 0 12px" }}>마케팅 인사이트</h2>
-      <RangePicker from={from} to={to} onChange={(f, t) => go(f, t, compare)} />
+      <div className="ga-sticky">
+        <RangePicker from={from} to={to} onChange={(f, t) => go(f, t, compare)} />
+        <div className="ga-tabbar">
+          <div className="ga-tabs" role="tablist" aria-label="분석 항목">
+            {TABS.map((t) => (
+              <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} onClick={() => setTab(t.key)}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <span className="ga-period" title="선택한 기간 (KST)">{periodText(from, to)}</span>
+        </div>
+      </div>
 
       <div className="ga-opts">
         <label className="ga-check">
           <input type="checkbox" checked={compare} onChange={(e) => go(from, to, e.target.checked)} />
           이전 기간과 비교
         </label>
+        <span className="ga-period-m">{periodText(from, to)}</span>
         {compare && report?.prev && (
           <span className="ga-sub">
             비교 기간 {report.prev.from === report.prev.to ? report.prev.from : `${report.prev.from} ~ ${report.prev.to}`}
@@ -172,6 +211,8 @@ export default function GaDashboard() {
         </div>
       )}
 
+      <SummaryStrip report={report} compare={compare} loading={repLoading} />
+
       {repLoading && !report ? (
         <div className="ga-card" aria-busy="true">
           <Skel h={80} />
@@ -192,7 +233,7 @@ export default function GaDashboard() {
 
           <section className="ga-card">
             <div className="ga-row">
-              <h3 className="ga-h" style={{ margin: 0 }}>일별 추이</h3>
+              <h3 className="ga-h" style={{ margin: 0 }}>일별 추이 <span className="ga-sub">· {periodText(from, to)}</span></h3>
               <select className="ga-select" aria-label="차트 지표" value={metric} onChange={(e) => setMetric(e.target.value as ChartMetric)}>
                 {CHART_OPTIONS.map((o) => (
                   <option key={o.key} value={o.key}>{o.label}</option>
@@ -225,14 +266,6 @@ export default function GaDashboard() {
           </section>
         </div>
       ) : null}
-
-      <div className="ga-tabs" role="tablist" aria-label="분석 항목">
-        {TABS.map((t) => (
-          <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} onClick={() => setTab(t.key)}>
-            {t.label}
-          </button>
-        ))}
-      </div>
 
       <div role="tabpanel">
         {tab === "live" && <LiveTab from={from} to={to} />}
