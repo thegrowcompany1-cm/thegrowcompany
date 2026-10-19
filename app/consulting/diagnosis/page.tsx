@@ -13,11 +13,11 @@ export const metadata: Metadata = {
 };
 
 const CONSULTANTS = [
-  { slug: "kim-jaegang", name: "김재강", field: "FC운영 · 리더십", img: "/consultants/kim-jaegang.jpg" },
-  { slug: "kim-seungho", name: "김승호", field: "FC운영 · PT", img: "/consultants/kim-seungho.jpg" },
-  { slug: "park-jungmin", name: "박정민", field: "FC운영 · PT", img: "/consultants/park-jungmin.png" },
-  { slug: "gu-jinwan", name: "구진완", field: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png" },
-  { slug: "heo-junyoung", name: "허준영", field: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg" },
+  { slug: "kim-jaegang", name: "김재강", field: "매장 운영 개선 · 조직 성장", img: "/consultants/kim-jaegang.jpg" },
+  { slug: "kim-seungho", name: "김승호", field: "매장 운영 개선 · 조직 성장", img: "/consultants/kim-seungho.jpg" },
+  { slug: "park-jungmin", name: "박정민", field: "매장 운영 개선 · PT 매출 증대", img: "/consultants/park-jungmin.png" },
+  { slug: "gu-jinwan", name: "구진완", field: "매장 운영 개선 · 조직 성장", img: "/consultants/gu-jinwan.png" },
+  { slug: "heo-junyoung", name: "허준영", field: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg" },
 ];
 
 // 자체 호스팅 영상 후기 (유튜브 미사용) — video-raw 원본을 720p CRF28 로 인코딩한 것
@@ -169,7 +169,7 @@ export default function DiagnosisPage() {
                 <h3 className="text-sm font-bold text-white group-hover:text-[#22B573] sm:text-base">
                   {c.name} 멘토
                 </h3>
-                <p className="text-xs font-medium text-[#22B573]">{c.field}</p>
+                <p className="break-keep text-xs font-medium text-[#22B573]">{c.field}</p>
               </div>
             </Link>
           ))}

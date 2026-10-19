@@ -12,11 +12,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 const CONSULTANTS = [
-  { slug: "kim-jaegang", name: "김재강", field: "FC운영 · 리더십", img: "/consultants/kim-jaegang.jpg" },
-  { slug: "kim-seungho", name: "김승호", field: "FC운영 · PT", img: "/consultants/kim-seungho.jpg" },
-  { slug: "park-jungmin", name: "박정민", field: "FC운영 · PT", img: "/consultants/park-jungmin.png" },
-  { slug: "gu-jinwan", name: "구진완", field: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png" },
-  { slug: "heo-junyoung", name: "허준영", field: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg" },
+  { slug: "kim-jaegang", name: "김재강", field: "매장 운영 개선 · 조직 성장", img: "/consultants/kim-jaegang.jpg" },
+  { slug: "kim-seungho", name: "김승호", field: "매장 운영 개선 · 조직 성장", img: "/consultants/kim-seungho.jpg" },
+  { slug: "park-jungmin", name: "박정민", field: "매장 운영 개선 · PT 매출 증대", img: "/consultants/park-jungmin.png" },
+  { slug: "gu-jinwan", name: "구진완", field: "매장 운영 개선 · 조직 성장", img: "/consultants/gu-jinwan.png" },
+  { slug: "heo-junyoung", name: "허준영", field: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg" },
 ];
 
 type Consultant = (typeof CONSULTANTS)[number];
@@ -50,7 +50,7 @@ function ConsultantCard({ c }: { c: Consultant }) {
         <h3 className="text-sm font-bold text-[#1a1a1a] group-hover:text-[#009519] sm:text-base">
           {c.name} 멘토
         </h3>
-        <p className="text-xs leading-snug text-[#777]">{c.field}</p>
+        <p className="break-keep text-xs leading-snug text-[#777]">{c.field}</p>
       </div>
     </Link>
   );

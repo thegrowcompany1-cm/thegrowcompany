@@ -86,11 +86,11 @@ const groups: Group[] = [
     category: "진단 솔루션",
     desc: "우리 매장에 직접 방문하여 1:1로 매장 운영을 개선해드립니다.",
     cards: [
-      { title: "김재강 멘토", desc: "FC운영 · 리더십", img: "/consultants/kim-jaegang.jpg", href: "/consulting/diagnosis/kim-jaegang", photo: true },
-      { title: "김승호 멘토", desc: "FC운영 · PT", img: "/consultants/kim-seungho.jpg", href: "/consulting/diagnosis/kim-seungho", photo: true },
-      { title: "박정민 멘토", desc: "FC운영 · PT", img: "/consultants/park-jungmin.png", href: "/consulting/diagnosis/park-jungmin", photo: true },
-      { title: "구진완 멘토", desc: "FC운영 · 리더십", img: "/consultants/gu-jinwan.png", href: "/consulting/diagnosis/gu-jinwan", photo: true },
-      { title: "허준영 멘토", desc: "FC운영 · 마케팅", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
+      { title: "김재강 멘토", desc: "매장 운영 개선 · 조직 성장", img: "/consultants/kim-jaegang.jpg", href: "/consulting/diagnosis/kim-jaegang", photo: true },
+      { title: "김승호 멘토", desc: "매장 운영 개선 · 조직 성장", img: "/consultants/kim-seungho.jpg", href: "/consulting/diagnosis/kim-seungho", photo: true },
+      { title: "박정민 멘토", desc: "매장 운영 개선 · PT 매출 증대", img: "/consultants/park-jungmin.png", href: "/consulting/diagnosis/park-jungmin", photo: true },
+      { title: "구진완 멘토", desc: "매장 운영 개선 · 조직 성장", img: "/consultants/gu-jinwan.png", href: "/consulting/diagnosis/gu-jinwan", photo: true },
+      { title: "허준영 멘토", desc: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
     ],
   },
   {
@@ -152,7 +152,7 @@ function ServiceCard({ card }: { card: Card }) {
           </h4>
         </div>
         {card.desc && (
-          <p className="mt-1.5 text-xs leading-relaxed text-[#999999] sm:text-[13px]">
+          <p className="break-keep mt-1.5 text-xs leading-relaxed text-[#999999] sm:text-[13px]">
             {card.desc}
           </p>
         )}
