@@ -57,7 +57,8 @@ function SourceBadge({ type }: { type: string }) {
   return <span className={`ga-src ${type}`}>{TRACK_SOURCE_LABEL[type] ?? type}</span>;
 }
 
-export default function LiveTab({ days }: { days: number }) {
+export default function LiveTab({ from, to }: { from: string; to: string }) {
+  const periodLabel = from === to ? from : `${from} ~ ${to}`;
   // ── GA4 실시간 ──
   const [rt, setRt] = useState<Realtime | null>(null);
   const [rtErr, setRtErr] = useState<ApiError | null>(null);
@@ -159,7 +160,7 @@ export default function LiveTab({ days }: { days: number }) {
     const ctrl = new AbortController();
     (async () => {
       try {
-        const q = `/api/admin/track?view=funnel&days=${days}${funnelPath ? `&path=${encodeURIComponent(funnelPath)}` : ""}`;
+        const q = `/api/admin/track?view=funnel&from=${from}&to=${to}${funnelPath ? `&path=${encodeURIComponent(funnelPath)}` : ""}`;
         const data = await fetchJson<FunnelRes>(q, ctrl.signal);
         if (data.ok) {
           setFunnel(data);
@@ -171,13 +172,13 @@ export default function LiveTab({ days }: { days: number }) {
       }
     })();
     return () => ctrl.abort();
-  }, [days, funnelPath]);
+  }, [from, to, funnelPath]);
 
   useEffect(() => {
     const ctrl = new AbortController();
     const load = async () => {
       try {
-        const data = await fetchJson<ExitsRes>("/api/admin/track?view=exits", ctrl.signal);
+        const data = await fetchJson<ExitsRes>(`/api/admin/track?view=exits&from=${from}&to=${to}`, ctrl.signal);
         if (data.ok) {
           setExits(data);
           setExitsErr(null);
@@ -194,7 +195,7 @@ export default function LiveTab({ days }: { days: number }) {
       window.clearInterval(id);
       ctrl.abort();
     };
-  }, []);
+  }, [from, to]);
 
   const now = Date.now() + skew + tick * 0; // tick 은 재렌더 트리거
   const elapsed = (iso: string) => Math.max(0, Math.round((now - Date.parse(iso)) / 1000));
@@ -350,7 +351,7 @@ export default function LiveTab({ days }: { days: number }) {
           {/* ── 섹션 도달 퍼널 ───────────────────────────────────────── */}
           <section className="ga-card" aria-label="섹션 도달 퍼널">
             <div className="ga-row">
-              <h2 className="ga-h" style={{ margin: 0 }}>랜딩 섹션 도달 퍼널 <span className="ga-sub">· 최근 {days}일</span></h2>
+              <h2 className="ga-h" style={{ margin: 0 }}>랜딩 섹션 도달 퍼널 <span className="ga-sub">· {periodLabel}</span></h2>
               <select className="ga-select" aria-label="랜딩 선택" value={funnelPath} onChange={(e) => setFunnelPath(e.target.value)}>
                 {(funnel?.paths ?? []).map((p) => (
                   <option key={p.path} value={p.path}>{p.path} ({num(p.sessions)}세션)</option>
@@ -380,7 +381,7 @@ export default function LiveTab({ days }: { days: number }) {
 
           {/* ── 이탈 지점 ───────────────────────────────────────────── */}
           <section className="ga-card" aria-label="이탈 지점">
-            <h2 className="ga-h">최근 24시간 이탈 지점 Top <span className="ga-sub">· (페이지, 마지막으로 본 섹션) 조합</span></h2>
+            <h2 className="ga-h">이탈 지점 Top <span className="ga-sub">· {periodLabel} · (페이지, 마지막으로 본 섹션) 조합</span></h2>
             {exitsErr && !exits ? (
               exitsErr.code === "TRACK_NOT_READY" ? null : <ErrBox title="이탈 지점을 불러오지 못했습니다" err={exitsErr} />
             ) : !exits ? (

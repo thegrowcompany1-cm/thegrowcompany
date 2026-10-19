@@ -133,6 +133,52 @@ export const GA_STYLE = `
 .ga-fbar-v{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
 .ga-select{appearance:none;background:#0A0A0A;color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:9px 12px;font:inherit;font-size:13px;max-width:100%}
 .ga-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px}
+/* 기간 선택 */
+.ga-range{position:relative;margin:0 0 6px}
+.ga-presets{display:flex;flex-wrap:wrap;gap:6px}
+.ga-presets button{appearance:none;border:1px solid rgba(255,255,255,.16);background:none;color:#b8b8b8;font:inherit;font-size:13px;font-weight:800;padding:8px 14px;border-radius:999px;cursor:pointer;min-height:36px;white-space:nowrap}
+.ga-presets button[aria-pressed="true"]{background:#22B573;border-color:#22B573;color:#fff}
+.ga-range-now{margin:10px 0 0;font-size:13px;font-weight:800;color:#e5e5e5}
+.ga-range-now span{font-weight:600;color:#8b8b8b}
+.ga-cal{position:absolute;z-index:40;left:0;top:calc(100% - 4px);margin-top:8px;padding:16px;border-radius:16px;background:#1a1a1a;border:1px solid rgba(255,255,255,.18);box-shadow:0 20px 50px rgba(0,0,0,.6);max-width:calc(100vw - 32px)}
+.ga-cal .rdp-root{--rdp-accent-color:#22B573;--rdp-accent-background-color:rgba(34,181,115,.2);--rdp-day-height:40px;--rdp-day-width:40px;--rdp-day_button-height:38px;--rdp-day_button-width:38px;--rdp-range_middle-background-color:rgba(34,181,115,.2);--rdp-range_middle-color:#fff;--rdp-today-color:#4ade80;color:#fff;font-size:14px}
+.ga-cal .rdp-chevron{fill:#fff}
+.ga-cal .rdp-month_caption{color:#fff;font-weight:800}
+.ga-cal .rdp-weekday{color:#8b8b8b;font-weight:700;font-size:12px}
+.ga-cal .rdp-day_button:hover{background:rgba(255,255,255,.1)}
+.ga-cal .rdp-disabled{opacity:.28}
+.ga-cal-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
+.ga-cal-info{font-size:13px;font-weight:700;color:#d6d6d6}
+.ga-cal-info.is-bad{color:#f87171}
+.ga-cal-btns{display:inline-flex;gap:8px}
+.ga-cal-btns button{appearance:none;font:inherit;font-size:13px;font-weight:800;padding:9px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:none;color:#fff;cursor:pointer;min-height:38px}
+.ga-cal-btns button.is-primary{background:#22B573;border-color:#22B573}
+.ga-cal-btns button:disabled{opacity:.4;cursor:not-allowed}
+.ga-opts{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:14px 0 4px}
+.ga-check{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#d6d6d6;cursor:pointer}
+.ga-check input{width:18px;height:18px;accent-color:#22B573;cursor:pointer}
+.ga-delta{display:block;margin-top:4px;font-size:12px;font-weight:800}
+.ga-delta.up{color:#4ade80}
+.ga-delta.down{color:#f87171}
+.ga-delta.flat{color:#9a9a9a}
+.ga-delta small{font-weight:600;color:#8b8b8b}
+/* 일별 보기 */
+.ga-table tr.is-weekend td{background:rgba(255,255,255,.04)}
+.ga-table tr.is-click{cursor:pointer}
+.ga-table tr.is-click:hover td{background:rgba(34,181,115,.1)}
+.ga-table tr.is-click:focus-visible{outline:2px solid #22B573;outline-offset:-2px}
+.ga-dayname{font-weight:800;color:#fff}
+.ga-dayname small{margin-left:4px;font-weight:600;color:#8b8b8b}
+.ga-mix{display:flex;width:120px;height:10px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.08);margin-left:auto}
+.ga-mix i{display:block;height:100%}
+.ga-mix .m{background:#60a5fa}.ga-mix .o{background:#22B573}.ga-mix .a{background:#c084fc}.ga-mix .d{background:#fbbf24}.ga-mix .x{background:#9ca3af}
+.ga-legend{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 10px;font-size:12px;color:#b8b8b8}
+.ga-legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.ga-legend .m::before{background:#60a5fa}.ga-legend .o::before{background:#22B573}.ga-legend .a::before{background:#c084fc}.ga-legend .d::before{background:#fbbf24}.ga-legend .x::before{background:#9ca3af}
+.ga-btn{appearance:none;font:inherit;font-size:13px;font-weight:800;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:none;color:#fff;cursor:pointer;min-height:38px}
+.ga-btn:hover{border-color:#22B573;color:#4ade80}
+.ga-notice{margin:0 0 14px;padding:10px 14px;border-radius:10px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.3);font-size:13px;line-height:1.6;color:#fde68a}
+@media(max-width:560px){.ga-presets button{padding:7px 12px;font-size:12.5px}.ga-cal{left:0;right:0;padding:12px}.ga-mix{width:84px}}
 @media(max-width:860px){.ga-live{grid-template-columns:minmax(0,1fr)}.ga-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.ga-live-num{font-size:46px}.ga-kpi-v{font-size:24px}.ga-chart{height:240px}.ga-card{padding:16px}.ga-fbar{grid-template-columns:76px minmax(0,1fr) 54px;gap:8px}.ga-sess li button{grid-template-columns:minmax(0,1fr) auto}.ga-sess li button .ga-src{display:none}}
 `;

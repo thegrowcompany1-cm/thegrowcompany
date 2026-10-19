@@ -6,6 +6,7 @@
 //    GA4 Data API 를 부르므로 서비스 계정 키는 브라우저로 나가지 않는다.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { requireAdmin } from "../_lib/guard";
 import AdminTabs from "../_components/AdminTabs";
@@ -27,7 +28,9 @@ export default async function AdminGaPage() {
           <p className="mt-1.5 text-sm text-gray-400">{email} · 모든 시각은 KST 기준입니다</p>
         </header>
         <AdminTabs active="ga" />
-        <GaDashboard />
+        <Suspense fallback={null}>
+          <GaDashboard />
+        </Suspense>
       </div>
     </main>
   );

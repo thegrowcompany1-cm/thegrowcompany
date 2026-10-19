@@ -4,8 +4,10 @@
 //    visits/section_views 의 관리자 이메일 select 정책)로 한다.
 //  · view=live     지금 접속 중인 세션 (최근 60초 안에 핑이 온 방문)
 //  · view=journey  session=<id> 한 세션의 페이지별 여정
-//  · view=funnel   path=<경로>&days=7 섹션 도달 퍼널 (도달 세션 ÷ 그 경로에 들어온 세션)
-//  · view=exits    최근 24시간 이탈 지점 Top (페이지, 마지막 섹션)
+//  · view=funnel   path=<경로>&from&to  섹션 도달 퍼널 (도달 세션 ÷ 그 경로에 들어온 세션)
+//  · view=exits    이탈 지점 Top (페이지, 마지막 섹션) — from/to 가 없으면 최근 24시간
+//  · view=daily    from&to  날짜별 방문 수와 유입 구성 (일별 보기 · 유입 분류)
+//  · from/to 는 KST 날짜(YYYY-MM-DD). from 00:00:00 ~ to 23:59:59.999 KST 로 거른다. 잘못된 값은 400.
 //  · 테이블이 아직 없으면(마이그레이션 전) 안내 메시지를 돌려준다.
 //  · 같은 session_id + path 로 3초 안에 들어온 visits 행은 한 번의 방문으로 묶어 센다 (lib/trackDedupe.ts).
 //    인앱 브라우저에서 진입 기록이 두 번 생기는 문제의 집계 쪽 안전장치다.
@@ -14,6 +16,7 @@ import { NextResponse } from "next/server";
 import { getAdminContext } from "@/app/admin/_lib/guard";
 import { TRACK_SECTION_ORDER } from "@/lib/trackSections";
 import { dedupeVisits } from "@/lib/trackDedupe";
+import { kstBounds, kstDateOf, listDays, parseRange, todayKst } from "@/lib/gaRange";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -58,15 +61,15 @@ const isMissingTable = (e: { code?: string; message?: string } | null) =>
 /** PostgREST 는 한 번에 1000행까지라 페이지를 넘겨 가며 모은다 */
 async function fetchAll<T>(
   build: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { code?: string; message?: string } | null }>,
-): Promise<{ rows: T[]; error: { code?: string; message?: string } | null }> {
+): Promise<{ rows: T[]; error: { code?: string; message?: string } | null; capped: boolean }> {
   const rows: T[] = [];
   for (let from = 0; from < CAP; from += PAGE) {
     const { data, error } = await build(from, from + PAGE - 1);
-    if (error) return { rows, error };
+    if (error) return { rows, error, capped: false };
     rows.push(...(data ?? []));
-    if (!data || data.length < PAGE) break;
+    if (!data || data.length < PAGE) return { rows, error: null, capped: false };
   }
-  return { rows, error: null };
+  return { rows, error: null, capped: true }; // 상한(CAP)까지 읽고도 더 있을 수 있다
 }
 
 const iso = (ms: number) => new Date(ms).toISOString();
@@ -79,6 +82,15 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const view = url.searchParams.get("view");
   const now = Date.now();
+
+  // 선택 기간 (KST). from/to 가 없으면 null — 뷰마다 예전 기본값(days, 24시간)으로 돌아간다.
+  const hasRange = url.searchParams.has("from") || url.searchParams.has("to");
+  let period: { from: string; to: string; gte: string; lte: string } | null = null;
+  if (hasRange) {
+    const pr = parseRange({ from: url.searchParams.get("from"), to: url.searchParams.get("to") }, todayKst(now));
+    if (!pr.ok) return fail(400, "BAD_RANGE", pr.message);
+    period = { from: pr.from, to: pr.to, ...kstBounds(pr.from, pr.to) };
+  }
 
   const notReady = () =>
     fail(
@@ -186,12 +198,13 @@ export async function GET(request: Request) {
   // ── 랜딩별 섹션 도달 퍼널 ──────────────────────────────────────────────────
   if (view === "funnel") {
     const days = Math.min(Math.max(Number(url.searchParams.get("days")) || 7, 1), 90);
-    const since = iso(now - days * 86400_000);
+    const since = period ? period.gte : iso(now - days * 86400_000);
+    const until = period ? period.lte : iso(now);
     const path = url.searchParams.get("path") ?? "";
 
     // 경로 목록: 방문이 있는 경로 (세션 수 많은 순)
     const pv = await fetchAll<Visit>((f, t) =>
-      db.from("visits").select(VISIT_COLS).gte("entered_at", since).order("entered_at", { ascending: true }).range(f, t),
+      db.from("visits").select(VISIT_COLS).gte("entered_at", since).lte("entered_at", until).order("entered_at", { ascending: true }).range(f, t),
     );
     if (pv.error) return dbFail(pv.error);
     const sessionsByPath = new Map<string, Set<string>>();
@@ -204,11 +217,11 @@ export async function GET(request: Request) {
       .filter((p) => p.tracked)
       .sort((a, b) => b.sessions - a.sessions);
 
-    if (!path) return NextResponse.json({ ok: true, days, paths }, { headers: NO_STORE });
+    if (!path) return NextResponse.json({ ok: true, days, paths, capped: pv.capped }, { headers: NO_STORE });
 
     const total = sessionsByPath.get(path)?.size ?? 0;
     const sv = await fetchAll<{ session_id: string; section: string }>((f, t) =>
-      db.from("section_views").select("session_id, section").eq("path", path).gte("seen_at", since).order("seen_at", { ascending: false }).range(f, t),
+      db.from("section_views").select("session_id, section").eq("path", path).gte("seen_at", since).lte("seen_at", until).order("seen_at", { ascending: false }).range(f, t),
     );
     if (sv.error) return dbFail(sv.error);
     const reached = new Map<string, Set<string>>();
@@ -222,13 +235,19 @@ export async function GET(request: Request) {
       .filter((s) => reached.has(s))
       .map((s) => ({ section: s, sessions: reached.get(s)!.size }))
       .map((r) => ({ ...r, rate: total > 0 ? Math.min(1, r.sessions / total) : 0 }));
-    return NextResponse.json({ ok: true, days, path, totalSessions: total, paths, rows }, { headers: NO_STORE });
+    return NextResponse.json({ ok: true, days, path, totalSessions: total, paths, rows, capped: pv.capped || sv.capped }, { headers: NO_STORE });
   }
 
   // ── 최근 24시간 이탈 지점 Top ──────────────────────────────────────────────
   if (view === "exits") {
     const all = await fetchAll<Visit>((f, t) =>
-      db.from("visits").select(VISIT_COLS).gte("entered_at", iso(now - 86400_000)).order("entered_at", { ascending: true }).range(f, t),
+      db
+        .from("visits")
+        .select(VISIT_COLS)
+        .gte("entered_at", period ? period.gte : iso(now - 86400_000))
+        .lte("entered_at", period ? period.lte : iso(now))
+        .order("entered_at", { ascending: true })
+        .range(f, t),
     );
     if (all.error) return dbFail(all.error);
     const lastBySession = new Map<string, Visit>();
@@ -246,7 +265,58 @@ export async function GET(request: Request) {
       else counts.set(key, { path: v.path, section, count: 1 });
     }
     const top = [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 15);
-    return NextResponse.json({ ok: true, sessions: lastBySession.size, exited, top }, { headers: NO_STORE });
+    return NextResponse.json({ ok: true, sessions: lastBySession.size, exited, top, capped: all.capped }, { headers: NO_STORE });
+  }
+
+  // ── 날짜별 방문 수 · 유입 구성 (일별 보기) ─────────────────────────────────
+  if (view === "daily") {
+    if (!period) return fail(400, "BAD_RANGE", "from·to 가 필요합니다.");
+    const all = await fetchAll<Visit>((f, t) =>
+      db
+        .from("visits")
+        .select(VISIT_COLS)
+        .gte("entered_at", period!.gte)
+        .lte("entered_at", period!.lte)
+        .order("entered_at", { ascending: true })
+        .range(f, t),
+    );
+    if (all.error) return dbFail(all.error);
+
+    type Day = { date: string; visits: number; sessions: number; meta: number; organic: number; ai: number; direct: number; other: number };
+    const days = new Map<string, Day>(
+      listDays(period.from, period.to).map((d) => [d, { date: d, visits: 0, sessions: 0, meta: 0, organic: 0, ai: 0, direct: 0, other: 0 }]),
+    );
+    const group = (st: string): "meta" | "organic" | "ai" | "direct" | "other" =>
+      st === "paid_meta" ? "meta" : st.startsWith("organic_") ? "organic" : st === "ai" ? "ai" : st === "direct" ? "direct" : "other";
+    const seenSession = new Set<string>(); // 날짜별로 한 세션은 한 번만 센다
+    const total = { sessions: new Set<string>(), meta: 0, organic: 0, ai: 0, direct: 0, other: 0 };
+    for (const v of dedupeVisits(all.rows)) {
+      const date = kstDateOf(v.entered_at);
+      const day = days.get(date);
+      if (!day) continue;
+      day.visits += 1;
+      const sk = `${date}|${v.session_id}`;
+      if (!seenSession.has(sk)) {
+        seenSession.add(sk);
+        day.sessions += 1;
+        day[group(v.source_type)] += 1;
+      }
+      if (!total.sessions.has(v.session_id)) {
+        total.sessions.add(v.session_id);
+        total[group(v.source_type)] += 1;
+      }
+    }
+    return NextResponse.json(
+      {
+        ok: true,
+        from: period.from,
+        to: period.to,
+        days: [...days.values()],
+        sources: { sessions: total.sessions.size, meta: total.meta, organic: total.organic, ai: total.ai, direct: total.direct, other: total.other },
+        capped: all.capped,
+      },
+      { headers: NO_STORE },
+    );
   }
 
   return fail(400, "BAD_VIEW", "view 값이 올바르지 않습니다.");

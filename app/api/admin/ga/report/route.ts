@@ -1,37 +1,37 @@
-// 기간 리포트 — GET /api/admin/ga/report?range=7|28|90 (기본 28)
+// 기간 리포트 — GET /api/admin/ga/report?from=YYYY-MM-DD&to=YYYY-MM-DD[&compare=1]
 //
-//  · 관리자가 아니면 401.
+//  · 관리자가 아니면 401. 잘못된 날짜 · from>to · 1년 초과 · 미래 날짜는 400.
+//  · 예전 ?range=7|28|90 도 받는다 (오늘까지 N일). from/to 가 모두 없으면 최근 28일.
+//  · 모든 날짜 경계는 KST 기준이다 (GA 속성 시간대가 Asia/Seoul 이라고 가정 — lib/gaRange.ts).
 //  · batchRunReports 는 한 번에 최대 5개라 두 번(5개 + 4개)으로 나눠 동시에 호출한다.
 //    [묶음 1]
-//      a) 날짜별 activeUsers·sessions (+ 기간 전체 합계: 사용자 · 참여율 · 평균 세션 시간)
-//      b) 채널(sessionDefaultChannelGroup)별 sessions · activeUsers · engagementRate ·
-//         averageSessionDuration · keyEvents
-//      c) 페이지(pagePath)별 screenPageViews · activeUsers · userEngagementDuration, 조회수 상위 20
-//      d) 페이지별 eventName='scroll' 의 eventCount (90% 스크롤 도달) → 스크롤 도달률
-//      e) 랜딩(landingPage)별 sessions · engagedSessions · engagementRate · userEngagementDuration · keyEvents
-//    [묶음 2]
-//      f) 자연검색(Organic Search) sessionSource 별 세션·참여율
-//      g) 자연검색 유입 랜딩 Top 20
-//      h) AI 검색 소스(chatgpt·perplexity·gemini·copilot·claude·wrtn 등)별 세션
-//      i) AI 유입 랜딩
-//  · landingPage 는 쿼리스트링이 없는 경로 기준이다 (landingPagePlusQueryString 을 쓰지 않는다).
-//  · 서버 메모리 캐시 10분 (기간별). GA 집계 특성상 최대 24~48시간 지연될 수 있다.
+//      a) 날짜별 activeUsers · sessions · engagementRate · userEngagementDuration · keyEvents (+ 기간 합계)
+//      b) 채널(sessionDefaultChannelGroup)별 성과
+//      c) 페이지(pagePath)별 조회수 상위 20  d) 페이지별 scroll 이벤트 → 스크롤 도달률
+//      e) 랜딩(landingPage)별 성과 (쿼리스트링 제외)
+//    [묶음 2] f) 자연검색 소스별 g) 자연검색 랜딩 Top 20 h) AI 소스별 i) AI 랜딩
+//  · compare=1 이면 별도 runReport 한 번에 dateRanges 를 2개(선택 기간 + 같은 길이의 직전 기간)로 줘서
+//    직전 기간 합계를 받는다 (KPI 증감 표시용).
+//  · 서버 메모리 캐시: 키에 from/to/compare 포함. 오늘이 들어 있으면 5분, 아니면 10분.
 
 import { NextResponse } from "next/server";
 import { protos } from "@google-analytics/data";
 import { getAdminContext } from "@/app/admin/_lib/guard";
 import { gaErrorBody, getGa } from "@/lib/ga";
-import { AI_SOURCE_REGEX, RANGES, type LandingRow, type Range, type ReportPayload } from "@/lib/gaTypes";
+import { listDays, parseRange, previousRange, todayKst } from "@/lib/gaRange";
+import { AI_SOURCE_REGEX, type DailyRow, type LandingRow, type ReportPayload, type Totals } from "@/lib/gaTypes";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const NO_STORE = { "Cache-Control": "no-store" };
-const CACHE_TTL_MS = 10 * 60 * 1000;
+const TTL_DEFAULT_MS = 10 * 60 * 1000;
+const TTL_TODAY_MS = 5 * 60 * 1000;
+const CACHE_MAX = 60;
 
 type Row = { dimensionValues?: { value?: string | null }[] | null; metricValues?: { value?: string | null }[] | null };
 
-const cache = new Map<Range, { at: number; data: ReportPayload }>();
+const cache = new Map<string, { at: number; ttl: number; data: ReportPayload }>();
 
 const n = (v: string | null | undefined) => Number(v ?? 0) || 0;
 const dim = (r: Row, i = 0) => r.dimensionValues?.[i]?.value ?? "";
@@ -68,26 +68,36 @@ const toLanding = (r: Row): LandingRow => {
   };
 };
 
+const bad = (message: string) =>
+  NextResponse.json({ ok: false, code: "BAD_RANGE", message }, { status: 400, headers: NO_STORE });
+
 export async function GET(request: Request) {
   const admin = await getAdminContext();
   if (!admin) {
     return NextResponse.json({ ok: false, code: "UNAUTHORIZED", message: "권한이 없습니다." }, { status: 401, headers: NO_STORE });
   }
 
-  const asked = Number(new URL(request.url).searchParams.get("range"));
-  const range: Range = (RANGES as readonly number[]).includes(asked) ? (asked as Range) : 28;
+  const q = new URL(request.url).searchParams;
+  const today = todayKst();
+  const parsed = parseRange({ from: q.get("from"), to: q.get("to"), range: q.get("range") }, today);
+  if (!parsed.ok) return bad(parsed.message);
+  const { from, to } = parsed;
+  const compare = q.get("compare") === "1";
+  const includesToday = to >= today;
 
-  const hit = cache.get(range);
-  if (hit && Date.now() - hit.at < CACHE_TTL_MS) {
+  const key = `${from}|${to}|${compare ? 1 : 0}`;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < hit.ttl) {
     return NextResponse.json(hit.data, { headers: NO_STORE });
   }
 
   try {
     const { client, property } = getGa();
-    const dateRanges = [{ startDate: `${range - 1}daysAgo`, endDate: "today" }];
+    const dateRanges = [{ startDate: from, endDate: to }];
     const bySessions = [{ metric: { metricName: "sessions" }, desc: true }];
+    const prevRange = compare ? previousRange(from, to) : null;
 
-    const [[res1], [res2]] = await Promise.all([
+    const [[res1], [res2], prevRes] = await Promise.all([
       client.batchRunReports({
         property,
         requests: [
@@ -95,10 +105,17 @@ export async function GET(request: Request) {
           {
             dateRanges,
             dimensions: [{ name: "date" }],
-            metrics: [{ name: "activeUsers" }, { name: "sessions" }, { name: "engagementRate" }, { name: "averageSessionDuration" }],
+            metrics: [
+              { name: "activeUsers" },
+              { name: "sessions" },
+              { name: "engagementRate" },
+              { name: "averageSessionDuration" },
+              { name: "keyEvents" },
+              { name: "userEngagementDuration" },
+            ],
             orderBys: [{ dimension: { dimensionName: "date" } }],
             metricAggregations: [MetricAggregation.TOTAL],
-            limit: 200,
+            limit: 400,
           },
           // b) 채널별
           {
@@ -187,16 +204,58 @@ export async function GET(request: Request) {
           },
         ],
       }),
+      // 직전 기간 비교 — dateRanges 를 2개 주면 행마다 dateRange 차원(date_range_0 / date_range_1)이 붙는다
+      prevRange
+        ? client.runReport({
+            property,
+            dateRanges: [dateRanges[0], { startDate: prevRange.from, endDate: prevRange.to }],
+            metrics: [
+              { name: "activeUsers" },
+              { name: "sessions" },
+              { name: "engagementRate" },
+              { name: "averageSessionDuration" },
+              { name: "keyEvents" },
+            ],
+          })
+        : Promise.resolve(null),
     ]);
 
     const [a, b, c, d, e] = res1.reports ?? [];
     const [f, g, h, i] = res2.reports ?? [];
 
-    const totalRow = (a?.totals?.[0] ?? null) as Row | null;
-    const daily = ((a?.rows ?? []) as Row[]).map((r) => ({ date: isoDate(dim(r)), users: met(r, 0), sessions: met(r, 1) }));
-    const totals = totalRow
-      ? { users: met(totalRow, 0), sessions: met(totalRow, 1), engagementRate: met(totalRow, 2), avgSessionDuration: met(totalRow, 3) }
-      : { users: 0, sessions: 0, engagementRate: 0, avgSessionDuration: 0 };
+    // 합계·직전 기간 행의 열 순서: users, sessions, engagementRate, averageSessionDuration, keyEvents
+    const totalsOf = (r: Row | null | undefined): Totals => ({
+      users: r ? met(r, 0) : 0,
+      sessions: r ? met(r, 1) : 0,
+      engagementRate: r ? met(r, 2) : 0,
+      avgSessionDuration: r ? met(r, 3) : 0,
+      keyEvents: r ? met(r, 4) : 0,
+    });
+
+    // a) 날짜별 — 데이터가 없는 날도 0 으로 채워 표·차트가 빠짐없이 그려지게 한다
+    const byDate = new Map<string, DailyRow>();
+    for (const r of (a?.rows ?? []) as Row[]) {
+      const sessions = met(r, 1);
+      const date = isoDate(dim(r));
+      byDate.set(date, {
+        date,
+        users: met(r, 0),
+        sessions,
+        engagementRate: met(r, 2),
+        avgEngagementSec: sessions > 0 ? met(r, 5) / sessions : 0,
+        keyEvents: met(r, 4),
+      });
+    }
+    const daily = listDays(from, to).map(
+      (date) => byDate.get(date) ?? { date, users: 0, sessions: 0, engagementRate: 0, avgEngagementSec: 0, keyEvents: 0 },
+    );
+    const totals = totalsOf((a?.totals?.[0] ?? null) as Row | null);
+
+    let prev: ReportPayload["prev"];
+    if (prevRange && prevRes) {
+      const rows = ((prevRes[0].rows ?? []) as Row[]).filter((r) => /_1$/.test(dim(r)));
+      prev = { from: prevRange.from, to: prevRange.to, totals: totalsOf(rows[0]) };
+    }
 
     const channels = ((b?.rows ?? []) as Row[]).map((r) => ({
       channel: dim(r) || "(기타)",
@@ -225,8 +284,11 @@ export async function GET(request: Request) {
 
     const data: ReportPayload = {
       ok: true,
-      range,
+      from,
+      to,
+      includesToday,
       totals,
+      ...(prev ? { prev } : {}),
       daily,
       channels,
       pages,
@@ -248,7 +310,9 @@ export async function GET(request: Request) {
       },
       cachedAt: new Date().toISOString(),
     };
-    cache.set(range, { at: Date.now(), data });
+
+    if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value as string); // 가장 오래된 항목부터 비운다
+    cache.set(key, { at: Date.now(), ttl: includesToday ? TTL_TODAY_MS : TTL_DEFAULT_MS, data });
     return NextResponse.json(data, { headers: NO_STORE });
   } catch (err) {
     const { status, body } = gaErrorBody(err);

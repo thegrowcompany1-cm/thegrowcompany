@@ -12,6 +12,7 @@ import {
   type LandingRow,
   type ReportPayload,
 } from "@/lib/gaTypes";
+import { isWeekend, weekdayKo } from "@/lib/gaRange";
 import { VERDICT_LABEL, aiInsight, buildChannelCompare, channelInsight, judgeLanding, landingInsight, searchInsight } from "@/lib/gaInsights";
 import { Empty, ErrBox, Insight, Skel, fetchJson, mmss, num, pct, type ApiError } from "./ga-shared";
 
@@ -50,6 +51,148 @@ function LandingTable({ rows, empty }: { rows: LandingRow[]; empty: string }) {
 
 const BADGE_GUIDE = "판정: 평균 참여 20초 이상 좋음 · 10~20초 보통 · 10초 미만 개선 필요 · 세션 10 미만은 표본 적음 (평균 참여 = 참여시간 ÷ 세션)";
 
+// ── 일별 ─────────────────────────────────────────────────────────────────────
+type TrackDay = { date: string; visits: number; sessions: number; meta: number; organic: number; ai: number; direct: number; other: number };
+type TrackDaily = { ok: true; days: TrackDay[]; capped?: boolean };
+
+const MIX_LABEL: Record<string, string> = { m: "메타광고", o: "자연검색", a: "AI", d: "직접", x: "기타" };
+const MIX_KEYS = [
+  ["m", "meta"],
+  ["o", "organic"],
+  ["a", "ai"],
+  ["d", "direct"],
+  ["x", "other"],
+] as const;
+
+function csvCell(v: string | number) {
+  const s = String(v);
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+export function DailyTab({ report, onPickDay }: { report: ReportPayload; onPickDay: (date: string) => void }) {
+  const [track, setTrack] = useState<TrackDaily | null>(null);
+  const [trackErr, setTrackErr] = useState<ApiError | null>(null);
+  const { from, to } = report;
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    setTrack(null);
+    setTrackErr(null);
+    (async () => {
+      try {
+        const data = await fetchJson<TrackDaily>(`/api/admin/track?view=daily&from=${from}&to=${to}`, ctrl.signal);
+        if (data.ok) setTrack(data);
+        else setTrackErr(data);
+      } catch (e) {
+        if ((e as Error).name !== "AbortError") setTrackErr({ ok: false, code: "NETWORK", message: "자체 추적 일별 데이터를 불러오지 못했습니다." });
+      }
+    })();
+    return () => ctrl.abort();
+  }, [from, to]);
+
+  const byDate = useMemo(() => new Map((track?.days ?? []).map((d) => [d.date, d])), [track]);
+  const rows = useMemo(() => [...report.daily].sort((a, b) => (a.date < b.date ? 1 : -1)), [report.daily]);
+  const avgSessions = report.daily.length ? report.daily.reduce((s, d) => s + d.sessions, 0) / report.daily.length : 0;
+
+  const download = () => {
+    const head = ["날짜", "요일", "사용자", "세션", "참여율", "평균 참여시간(초)", "키 이벤트", "자체추적 방문", "메타광고", "자연검색", "AI", "직접", "기타"];
+    const lines = [...rows].reverse().map((d) => {
+      const t = byDate.get(d.date);
+      return [d.date, weekdayKo(d.date), d.users, d.sessions, (d.engagementRate * 100).toFixed(1) + "%", Math.round(d.avgEngagementSec), d.keyEvents, t?.visits ?? "", t?.meta ?? "", t?.organic ?? "", t?.ai ?? "", t?.direct ?? "", t?.other ?? ""];
+    });
+    const csv = "﻿" + [head, ...lines].map((r) => r.map(csvCell).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ga-daily_${from}_${to}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div>
+      <section className="ga-card">
+        <div className="ga-row">
+          <h2 className="ga-h" style={{ margin: 0 }}>일별 보기 <span className="ga-sub">· 최신 날짜가 위 · 행을 누르면 그날 하루만 봅니다</span></h2>
+          <button type="button" className="ga-btn" onClick={download} disabled={!rows.length}>CSV 다운로드</button>
+        </div>
+        {rows.length === 0 ? (
+          <Empty>이 기간의 일별 데이터가 없습니다.</Empty>
+        ) : (
+          <>
+            <p className="ga-sub" style={{ margin: "10px 0" }}>
+              세션 배지: 기간 일평균({Math.round(avgSessions).toLocaleString("ko-KR")}) 대비 30% 이상 많으면 ▲, 적으면 ▼
+            </p>
+            <div className="ga-legend" aria-label="유입 비중 범례">
+              {MIX_KEYS.map(([k]) => (
+                <span key={k} className={k}>{MIX_LABEL[k]}</span>
+              ))}
+            </div>
+            <div className="ga-table-wrap">
+              <table className="ga-table">
+                <thead>
+                  <tr>
+                    <th>날짜</th><th>사용자</th><th>세션</th><th>참여율</th><th>평균 참여시간</th><th>키 이벤트</th><th>자체추적 방문</th><th>유입 비중</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((d) => {
+                    const t = byDate.get(d.date);
+                    const ratio = avgSessions > 0 ? d.sessions / avgSessions : 1;
+                    const hi = report.daily.length > 1 && ratio >= 1.3;
+                    const lo = report.daily.length > 1 && ratio <= 0.7;
+                    const total = t ? t.meta + t.organic + t.ai + t.direct + t.other : 0;
+                    return (
+                      <tr
+                        key={d.date}
+                        className={"is-click" + (isWeekend(d.date) ? " is-weekend" : "")}
+                        tabIndex={0}
+                        onClick={() => onPickDay(d.date)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onPickDay(d.date);
+                          }
+                        }}
+                      >
+                        <td className="ga-dayname">{d.date}<small>({weekdayKo(d.date)})</small></td>
+                        <td>{num(d.users)}</td>
+                        <td>
+                          {num(d.sessions)}
+                          {hi && <span className="ga-delta up" style={{ display: "inline", marginLeft: 6 }}>▲ {Math.round((ratio - 1) * 100)}%</span>}
+                          {lo && <span className="ga-delta down" style={{ display: "inline", marginLeft: 6 }}>▼ {Math.round((1 - ratio) * 100)}%</span>}
+                        </td>
+                        <td>{pct(d.engagementRate)}</td>
+                        <td>{mmss(d.avgEngagementSec)}</td>
+                        <td>{num(d.keyEvents)}</td>
+                        <td>{t ? num(t.visits) : "-"}</td>
+                        <td>
+                          {t && total > 0 ? (
+                            <div className="ga-mix" title={MIX_KEYS.map(([k, f]) => `${MIX_LABEL[k]} ${t[f]}`).join(" · ")}>
+                              {MIX_KEYS.map(([k, f]) => (t[f] ? <i key={k} className={k} style={{ width: `${(t[f] / total) * 100}%` }} /> : null))}
+                            </div>
+                          ) : (
+                            <span className="ga-sub">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {trackErr && <p className="ga-sub" style={{ marginTop: 10 }}>자체 추적 열은 표시하지 못했습니다 — {trackErr.message}</p>}
+            {track?.capped && <p className="ga-sub" style={{ marginTop: 10 }}>자체 추적 기록이 많아 일부만 집계됐습니다.</p>}
+            <p className="ga-sub" style={{ marginTop: 10 }}>날짜는 KST 기준 · 자체추적은 /admin 과 봇을 제외한 익명 방문입니다 (GA 와 숫자가 다를 수 있음).</p>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
 // ── 랜딩 성과 ────────────────────────────────────────────────────────────────
 export function LandingTab({ report }: { report: ReportPayload }) {
   return (
@@ -65,15 +208,17 @@ export function LandingTab({ report }: { report: ReportPayload }) {
 }
 
 // ── 검색·SEO ─────────────────────────────────────────────────────────────────
-export function SearchTab({ report }: { report: ReportPayload }) {
+export function SearchTab({ report, from, to }: { report: ReportPayload; from: string; to: string }) {
   const [gsc, setGsc] = useState<GscReport | null>(null);
   const [gscErr, setGscErr] = useState<ApiError | null>(null);
 
   useEffect(() => {
     const ctrl = new AbortController();
+    setGsc(null);
+    setGscErr(null);
     (async () => {
       try {
-        const data = await fetchJson<GscReport>("/api/admin/gsc", ctrl.signal);
+        const data = await fetchJson<GscReport>(`/api/admin/gsc?from=${from}&to=${to}`, ctrl.signal);
         if (data.ok) setGsc(data);
         else setGscErr(data);
       } catch (e) {
@@ -81,7 +226,7 @@ export function SearchTab({ report }: { report: ReportPayload }) {
       }
     })();
     return () => ctrl.abort();
-  }, []);
+  }, [from, to]);
 
   const oppKeys = useMemo(() => new Set((gsc?.opportunities ?? []).map((o) => o.key)), [gsc]);
   const MAIN_ENGINES = ["google", "naver", "daum", "bing"];
@@ -89,7 +234,8 @@ export function SearchTab({ report }: { report: ReportPayload }) {
   return (
     <div>
       <section className="ga-card">
-        <h2 className="ga-h">서치콘솔 <span className="ga-sub">{gsc ? `· ${gsc.startDate} ~ ${gsc.endDate} (최근 28일, 1시간 캐시)` : ""}</span></h2>
+        <h2 className="ga-h">서치콘솔 <span className="ga-sub">{gsc ? `· ${gsc.startDate} ~ ${gsc.endDate} (1시간 캐시)` : ""}</span></h2>
+        {gsc?.delayed && <p className="ga-notice" role="note">서치콘솔은 약 2~3일 지연됩니다 — 선택한 기간의 끝 며칠은 숫자가 비어 있거나 작게 보일 수 있습니다.</p>}
         {gscErr ? (
           <ErrBox title="서치콘솔 데이터를 불러오지 못했습니다" err={gscErr} />
         ) : !gsc ? (
