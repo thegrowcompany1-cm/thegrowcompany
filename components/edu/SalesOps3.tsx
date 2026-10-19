@@ -95,8 +95,17 @@ const SO3_KIM_BODY = [
   "1부에서는 500개 이상 센터 대표님들과 함께하면서 정리한 운영 · CS · 시스템 기준을 그대로 공개합니다.",
 ];
 const SO3_KIM_EM = "감이 아니라 숫자로, 사람이 아니라 구조로.";
-const SO3_KIM_ROLE = "(주)더그로우컴퍼니 대표이사 김재강";
-const SO3_KIM_STATS = ["52개 센터 총괄", "10년 운영 데이터", "수백 명 조직 리딩"];
+// 김재강 프로필 — 약력은 신청 포스터(public/edu/sales-ops/poster.jpg)의 소개 문구를 그대로 옮겼다.
+const SO3_KIM_PROFILE_HEADLINE = "피트니스 성장 마이더스의 손, 더그로우컴퍼니 대표 김재강";
+const SO3_KIM_BIO = [
+  "현 피트니스전문 솔루션 더그로우컴퍼니 대표",
+  "창업·컨설팅·운영 560개 이상",
+  "필라테스 46개 · 대형 피트니스 6개, 52개 센터 총괄 / 10년 운영",
+  "IFBB PRO NPC 심사위원 · 체형교정 강사 · 한국대학보디빌딩협회 이사",
+];
+// 두 강사를 한눈에 구분하는 라벨 (커리큘럼: 1부 김재강 운영 / 2부 황현진 세일즈)
+const SO3_LABEL_HWANG = "세일즈 강사 · 2부";
+const SO3_LABEL_KIM = "운영 강사 · 1부";
 const SO3_OPS_CARDS = [
   { label: "운영", title: "숫자로 읽는 센터", body: "유효회원 · 객단가 · 상담 성공률 · 유지율, 매일 확인하는 운영판" },
   { label: "CS", title: "이탈을 막는 응대", body: "재등록이 결정되는 첫 4주 관리 루틴과 응대 기준" },
@@ -376,6 +385,7 @@ const SO3_STYLE = `
 .so3-prof{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0 auto}
 .so3-prof-photo{width:100%;max-width:340px;margin:0 auto;aspect-ratio:4/5;border-radius:22px;background:radial-gradient(120% 90% at 50% 20%,rgba(34,181,115,.32) 0%,rgba(34,181,115,.07) 60%,rgba(255,255,255,.03) 100%);border:1px solid rgba(34,181,115,.22)}
 .so3-prof-photo .so3-img-ph{background:none;color:#5E6B65}
+.so3-prof-tag{display:inline-block;margin:0 0 12px;font-size:13px;font-weight:800;color:#fff;background:var(--g);padding:6px 14px;border-radius:50px}
 .so3-prof-h{font-size:26px;font-weight:900;line-height:1.5;margin:0 0 20px;text-wrap:balance}
 .so3-bio{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .so3-bio li{position:relative;padding-left:18px;font-size:16px;line-height:1.65;color:#D3DCD7}
@@ -385,7 +395,7 @@ const SO3_STYLE = `
 .so3-book{min-width:0}
 .so3-book .so3-media{aspect-ratio:374/552;border-radius:8px;background:#161616;box-shadow:0 14px 34px rgba(0,0,0,.5)}
 .so3-book-t{margin:14px 2px 0;text-align:center;font-size:14.5px;font-weight:700;line-height:1.5;color:#E4EBE7}
-@media(max-width:860px){.so3-prof{grid-template-columns:minmax(0,1fr);gap:28px}.so3-prof-h{font-size:22px;text-align:center}}
+@media(max-width:860px){.so3-prof{grid-template-columns:minmax(0,1fr);gap:28px}.so3-prof-h{font-size:22px;text-align:center}.so3-prof-tag{display:table;margin-left:auto;margin-right:auto}}
 @media(max-width:640px){.so3-books{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}.so3-sub-h{margin-top:56px;font-size:19px}}
 .so3-vid{margin-top:84px}
 .so3-vid-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
@@ -970,30 +980,7 @@ export default function SalesOps3() {
         </div>
       </section>
 
-      {/* ── 3. 상담 장면 + 하수 vs 고수 ── */}
-      <section className="so3-sec so3-cream">
-        <div className="so3-wrap">
-          <h2 className="so3-h2 so3-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
-          <div className="so3-talks so3-stagger">
-            {SO3_TALKS.map((t) => (
-              <div className="so3-talk so3-reveal" key={t.line}>
-                <p className="so3-bubble">{t.line}</p>
-                <span className="so3-diag">{t.diag}</span>
-              </div>
-            ))}
-          </div>
-          <div className="so3-versus so3-stagger">
-            <p className="so3-versus-row so3-reveal">
-              하수는 <mark>주장</mark>만 하지만, 고수는 <mark>주목</mark>시킵니다.
-            </p>
-            <p className="so3-versus-row so3-reveal">
-              하수는 <mark>이성</mark>을 향하지만, 고수는 <mark>감정</mark>을 공략합니다.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 4. 증거 ① 황현진 (약력 · 저서 · 영상) ── */}
+      {/* ── 3. 증거 ① 황현진 (프로필 · 약력 · 저서 · 영상) — 상담 장면보다 먼저 ── */}
       <section className="so3-sec so3-dark2">
         <div className="so3-wrap">
           <div className="so3-prof so3-reveal">
@@ -1001,6 +988,7 @@ export default function SalesOps3() {
               <So3Img src={SO3_IMG.hwang} alt="세일즈작가 황현진" sizes="340px" fit="contain" position="center bottom" />
             </div>
             <div>
+              <span className="so3-prof-tag">{SO3_LABEL_HWANG}</span>
               <h2 className="so3-prof-h">{SO3_HWANG_HEADLINE}</h2>
               <ul className="so3-bio">
                 {SO3_HWANG_BIO.map((b) => (
@@ -1063,7 +1051,50 @@ export default function SalesOps3() {
         </div>
       </section>
 
-      {/* ── 5. 증거 ② 김재강 (헤드라인 · 3칸 · 운영 시스템 화면) ── */}
+      {/* ── 3. 상담 장면 + 하수 vs 고수 ── */}
+      <section className="so3-sec so3-cream">
+        <div className="so3-wrap">
+          <h2 className="so3-h2 so3-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
+          <div className="so3-talks so3-stagger">
+            {SO3_TALKS.map((t) => (
+              <div className="so3-talk so3-reveal" key={t.line}>
+                <p className="so3-bubble">{t.line}</p>
+                <span className="so3-diag">{t.diag}</span>
+              </div>
+            ))}
+          </div>
+          <div className="so3-versus so3-stagger">
+            <p className="so3-versus-row so3-reveal">
+              하수는 <mark>주장</mark>만 하지만, 고수는 <mark>주목</mark>시킵니다.
+            </p>
+            <p className="so3-versus-row so3-reveal">
+              하수는 <mark>이성</mark>을 향하지만, 고수는 <mark>감정</mark>을 공략합니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. 증거 ② 김재강 프로필 · 약력 — "회원은 사람을 보고…" 보다 먼저 ── */}
+      <section className="so3-sec so3-dark">
+        <div className="so3-wrap">
+          <div className="so3-prof so3-reveal">
+            <div className="so3-prof-photo so3-media">
+              <So3Img src={SO3_IMG.kimHero} alt="김재강 대표" sizes="340px" fit="contain" position="center bottom" />
+            </div>
+            <div>
+              <span className="so3-prof-tag">{SO3_LABEL_KIM}</span>
+              <h2 className="so3-prof-h">{SO3_KIM_PROFILE_HEADLINE}</h2>
+              <ul className="so3-bio">
+                {SO3_KIM_BIO.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. 운영 축: 회원은 사람을 보고… (헤드라인 · 3칸 · 운영 시스템 화면) ── */}
       <section className="so3-sec so3-white">
         <div className="so3-wrap">
           <h2 className="so3-h2 so3-reveal">{SO3_KIM_HEADLINE}</h2>
@@ -1072,14 +1103,6 @@ export default function SalesOps3() {
               <p key={t}>{t}</p>
             ))}
             <p className="so3-op-em">{SO3_KIM_EM}</p>
-          </div>
-          <div className="so3-kim-line so3-reveal">
-            <span className="so3-kim-role">{SO3_KIM_ROLE}</span>
-            {SO3_KIM_STATS.map((s) => (
-              <span className="so3-kim-stat" key={s}>
-                {s}
-              </span>
-            ))}
           </div>
           <div className="so3-needs so3-stagger">
             {SO3_OPS_CARDS.map((c) => (

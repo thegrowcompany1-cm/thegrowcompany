@@ -266,7 +266,7 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
             </span>
           </p>
           <p className="sop-cond">
-            스토리 결제하신 후 아래 포스터를 본인 인스타그램 스토리에 hyunjin_salessalon 혹은 thegrow_ceo 태그와
+            결제하신 후 아래 포스터를 본인 인스타그램 스토리에 hyunjin_salessalon 혹은 thegrow_ceo 태그와
             함께 올려주시면 되십니다
           </p>
 
