@@ -18,6 +18,7 @@ import { parseRange, presetRange, rangeLength, todayKst, weekdayKo } from "@/lib
 import type { ReportPayload, Totals } from "@/lib/gaTypes";
 import { AiTab, ChannelTab, DailyTab, LandingTab, SearchTab } from "./DataTabs";
 import LiveTab from "./LiveTab";
+import WeeklyTab from "./WeeklyTab";
 import RangePicker from "./RangePicker";
 import SummaryStrip from "./SummaryStrip";
 import { Delta, ErrBox, GA_STYLE, Skel, fetchJson, mmss, num, pct, type ApiError } from "./ga-shared";
@@ -29,6 +30,7 @@ const TABS = [
   { key: "search", label: "검색·SEO" },
   { key: "ai", label: "AI 유입(AEO)" },
   { key: "channel", label: "채널 비교" },
+  { key: "weekly", label: "주간 리포트" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
@@ -68,7 +70,7 @@ export default function GaDashboard() {
     [router, pathname],
   );
 
-  const [tab, setTab] = useState<TabKey>("live");
+  const [tab, setTab] = useState<TabKey>(() => (TABS.some((t) => t.key === sp.get("tab")) ? (sp.get("tab") as TabKey) : "live"));
   const [metric, setMetric] = useState<ChartMetric>("both");
 
   const [report, setReport] = useState<ReportPayload | null>(null);
@@ -149,7 +151,7 @@ export default function GaDashboard() {
     return [{ key: metric, name: o.label, color: metric === "keyEvents" ? "#fbbf24" : metric === "engagementRate" ? "#c084fc" : "#22B573" }];
   }, [metric]);
 
-  const needsReport = tab !== "live";
+  const needsReport = tab !== "live" && tab !== "weekly";
   const showReport = report && report.from === from && report.to === to;
 
   const kpis: { l: string; v: string; cur: number; prev?: number; kind: "rel" | "pp" }[] = report
@@ -269,6 +271,7 @@ export default function GaDashboard() {
 
       <div role="tabpanel">
         {tab === "live" && <LiveTab from={from} to={to} />}
+        {tab === "weekly" && <WeeklyTab />}
         {needsReport && !showReport && !repErr && <Skel h={160} />}
         {needsReport && showReport && report && (
           <div style={{ opacity: repLoading ? 0.55 : 1, transition: "opacity .2s" }}>

@@ -231,6 +231,17 @@ export const GA_STYLE = `
 .ga-period{flex:0 0 auto;font-size:12.5px;font-weight:700;color:#cfcfcf;white-space:nowrap}
 .ga-period-m{display:none;margin:0;font-size:12.5px;font-weight:700;color:#cfcfcf}
 .ga-tabs button{color:#8b8b8b}
+/* 주간 리포트 본문 (마크다운) */
+.ga-md{font-size:14px;line-height:1.75;color:#d6d6d6}
+.ga-md-h{margin:26px 0 10px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:16px;font-weight:900;color:#fff}
+.ga-md>.ga-md-h:first-child{margin-top:12px;padding-top:0;border-top:0}
+.ga-md-h2{margin:16px 0 6px;font-size:14px;font-weight:800;color:#fff}
+.ga-md-p{margin:0 0 10px}
+.ga-md-list{margin:0 0 10px;padding-left:20px;display:grid;gap:6px}
+.ga-md-quote{margin:0 0 10px;padding:8px 12px;border-left:3px solid #FACC15;background:rgba(250,204,21,.08);color:#fde68a;font-size:13px}
+.ga-md b{color:#fff}
+.ga-md code{padding:1px 6px;border-radius:6px;background:rgba(255,255,255,.1);font-size:12.5px}
+.ga-md .ga-table-wrap{margin:0 0 12px}
 /* 오늘 한눈에 */
 .ga-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
 .ga-sc{background:#141414;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;min-width:0}

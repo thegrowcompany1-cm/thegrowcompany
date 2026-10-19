@@ -14,7 +14,7 @@
 
 import { NextResponse } from "next/server";
 import { getAdminContext } from "@/app/admin/_lib/guard";
-import { TRACK_SECTION_ORDER } from "@/lib/trackSections";
+import { GONE_AFTER_MS, VISIT_COLS, fetchAll, funnelData, exitsData, isMissingTable, type Visit } from "@/lib/trackAgg";
 import { dedupeVisits } from "@/lib/trackDedupe";
 import { kstBounds, kstDateOf, listDays, parseRange, todayKst } from "@/lib/gaRange";
 
@@ -23,54 +23,11 @@ export const dynamic = "force-dynamic";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 const LIVE_WINDOW_MS = 60_000;
-/** 마지막 핑이 이보다 오래됐으면 이탈한 것으로 본다 */
-const GONE_AFTER_MS = 90_000;
-const PAGE = 1000;
-const CAP = 20_000;
-
-type Visit = {
-  id: string;
-  session_id: string;
-  visitor_id: string;
-  path: string;
-  referrer: string | null;
-  utm_source: string | null;
-  utm_medium: string | null;
-  utm_campaign: string | null;
-  source_type: string;
-  device: string | null;
-  entered_at: string;
-  left_at: string | null;
-  last_seen_at: string;
-  duration_sec: number | null;
-  max_scroll_pct: number | null;
-  last_section: string | null;
-};
 
 type Db = Awaited<ReturnType<typeof getAdminContext>> extends infer C ? (C extends { db: infer D } ? D : never) : never;
 
-const VISIT_COLS =
-  "id, session_id, visitor_id, path, referrer, utm_source, utm_medium, utm_campaign, source_type, device, entered_at, left_at, last_seen_at, duration_sec, max_scroll_pct, last_section";
-
 const fail = (status: number, code: string, message: string) =>
   NextResponse.json({ ok: false, code, message }, { status, headers: NO_STORE });
-
-const isMissingTable = (e: { code?: string; message?: string } | null) =>
-  !!e && (e.code === "42P01" || e.code === "PGRST205" || /does not exist|schema cache/i.test(e.message ?? ""));
-
-/** PostgREST 는 한 번에 1000행까지라 페이지를 넘겨 가며 모은다 */
-async function fetchAll<T>(
-  build: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { code?: string; message?: string } | null }>,
-): Promise<{ rows: T[]; error: { code?: string; message?: string } | null; capped: boolean }> {
-  const rows: T[] = [];
-  for (let from = 0; from < CAP; from += PAGE) {
-    const { data, error } = await build(from, from + PAGE - 1);
-    if (error) return { rows, error, capped: false };
-    rows.push(...(data ?? []));
-    if (!data || data.length < PAGE) return { rows, error: null, capped: false };
-  }
-  return { rows, error: null, capped: true }; // 상한(CAP)까지 읽고도 더 있을 수 있다
-}
 
 const iso = (ms: number) => new Date(ms).toISOString();
 
@@ -201,71 +158,20 @@ export async function GET(request: Request) {
     const since = period ? period.gte : iso(now - days * 86400_000);
     const until = period ? period.lte : iso(now);
     const path = url.searchParams.get("path") ?? "";
-
-    // 경로 목록: 방문이 있는 경로 (세션 수 많은 순)
-    const pv = await fetchAll<Visit>((f, t) =>
-      db.from("visits").select(VISIT_COLS).gte("entered_at", since).lte("entered_at", until).order("entered_at", { ascending: true }).range(f, t),
+    const r = await funnelData(db, since, until, path || undefined);
+    if (r.error) return dbFail(r.error);
+    if (!r.detail) return NextResponse.json({ ok: true, days, paths: r.paths, capped: r.capped }, { headers: NO_STORE });
+    return NextResponse.json(
+      { ok: true, days, path: r.detail.path, totalSessions: r.detail.totalSessions, paths: r.paths, rows: r.detail.rows, capped: r.capped },
+      { headers: NO_STORE },
     );
-    if (pv.error) return dbFail(pv.error);
-    const sessionsByPath = new Map<string, Set<string>>();
-    for (const r of dedupeVisits(pv.rows)) {
-      if (!sessionsByPath.has(r.path)) sessionsByPath.set(r.path, new Set());
-      sessionsByPath.get(r.path)!.add(r.session_id);
-    }
-    const paths = [...sessionsByPath.entries()]
-      .map(([p, s]) => ({ path: p, sessions: s.size, tracked: p in TRACK_SECTION_ORDER }))
-      .filter((p) => p.tracked)
-      .sort((a, b) => b.sessions - a.sessions);
-
-    if (!path) return NextResponse.json({ ok: true, days, paths, capped: pv.capped }, { headers: NO_STORE });
-
-    const total = sessionsByPath.get(path)?.size ?? 0;
-    const sv = await fetchAll<{ session_id: string; section: string }>((f, t) =>
-      db.from("section_views").select("session_id, section").eq("path", path).gte("seen_at", since).lte("seen_at", until).order("seen_at", { ascending: false }).range(f, t),
-    );
-    if (sv.error) return dbFail(sv.error);
-    const reached = new Map<string, Set<string>>();
-    for (const r of sv.rows) {
-      if (!reached.has(r.section)) reached.set(r.section, new Set());
-      reached.get(r.section)!.add(r.session_id);
-    }
-    const order = TRACK_SECTION_ORDER[path] ?? [...reached.keys()];
-    // 페이지에 없는(숨겨진) 섹션은 도달 0 이어도 막대를 그리지 않는다 — 한 번도 안 본 섹션은 제외
-    const rows = order
-      .filter((s) => reached.has(s))
-      .map((s) => ({ section: s, sessions: reached.get(s)!.size }))
-      .map((r) => ({ ...r, rate: total > 0 ? Math.min(1, r.sessions / total) : 0 }));
-    return NextResponse.json({ ok: true, days, path, totalSessions: total, paths, rows, capped: pv.capped || sv.capped }, { headers: NO_STORE });
   }
 
-  // ── 최근 24시간 이탈 지점 Top ──────────────────────────────────────────────
+  // ── 이탈 지점 Top (기간이 없으면 최근 24시간) ──────────────────────────────
   if (view === "exits") {
-    const all = await fetchAll<Visit>((f, t) =>
-      db
-        .from("visits")
-        .select(VISIT_COLS)
-        .gte("entered_at", period ? period.gte : iso(now - 86400_000))
-        .lte("entered_at", period ? period.lte : iso(now))
-        .order("entered_at", { ascending: true })
-        .range(f, t),
-    );
-    if (all.error) return dbFail(all.error);
-    const lastBySession = new Map<string, Visit>();
-    for (const v of dedupeVisits(all.rows)) lastBySession.set(v.session_id, v); // 오름차순이라 마지막 값이 세션의 마지막 방문
-    const counts = new Map<string, { path: string; section: string; count: number }>();
-    let exited = 0;
-    for (const v of lastBySession.values()) {
-      const gone = !!v.left_at || now - Date.parse(v.last_seen_at) > GONE_AFTER_MS;
-      if (!gone) continue; // 아직 보고 있는 세션은 이탈이 아니다
-      exited += 1;
-      const section = v.last_section || "(섹션 도달 전)";
-      const key = `${v.path}\u0000${section}`;
-      const cur = counts.get(key);
-      if (cur) cur.count += 1;
-      else counts.set(key, { path: v.path, section, count: 1 });
-    }
-    const top = [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 15);
-    return NextResponse.json({ ok: true, sessions: lastBySession.size, exited, top, capped: all.capped }, { headers: NO_STORE });
+    const r = await exitsData(db, period ? period.gte : iso(now - 86400_000), period ? period.lte : iso(now), 15, now);
+    if (r.error) return dbFail(r.error);
+    return NextResponse.json({ ok: true, sessions: r.sessions, exited: r.exited, top: r.top, capped: r.capped }, { headers: NO_STORE });
   }
 
   // ── 날짜별 방문 수 · 유입 구성 (일별 보기) ─────────────────────────────────
