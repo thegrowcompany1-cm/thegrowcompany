@@ -142,12 +142,12 @@ const SO_SYS_SCREENS = [
 ];
 const SO_SYS_ROTATE_MS = 3500;
 
-// 히어로 직책 아코디언 — 누르면 속마음·가져갈 것 3개·CTA 가 펼쳐진다 (한 번에 하나, 처음엔 모두 닫힘).
+// 히어로 직책 탭 — 한 줄 탭 3개 + 아래 패널 1개(속마음 → 가져갈 것 3개 → CTA). 기본은 첫 탭이 선택된 상태.
 // role: 신청 폼의 역할 선택값 (components/edu/SalesOpsPay.tsx 의 ROLES 와 같은 문자열)
 const SO_ROLES = [
   {
     id: "trainer",
-    button: "강사·트레이너분이라면?",
+    tab: "강사·트레이너",
     role: "트레이너 · 강사",
     quote: "권하는 게 영업처럼 느껴져, 자꾸 말을 아끼고 있다면",
     take: [
@@ -158,14 +158,14 @@ const SO_ROLES = [
   },
   {
     id: "manager",
-    button: "실장·팀장분이라면?",
+    tab: "실장·팀장",
     role: "관리자 · 팀장 · 실장",
     quote: "상담은 매번 열심인데, 등록률은 매번 들쭉날쭉하다면",
     take: ["상담 등록률을 끌어올리는 실전 화법", "재등록이 결정되는 첫 4주 관리 루틴", "이탈을 막는 응대 기준"],
   },
   {
     id: "owner",
-    button: "원장·점장분이라면?",
+    tab: "원장·점장",
     role: "대표 · 원장",
     quote: "하루만 자리를 비워도 센터가 흔들린다면",
     take: [
@@ -379,28 +379,31 @@ const SO_STYLE = `
 .so-hero-copy{min-width:0;text-align:center}
 .so-h1{font-size:46px;font-weight:900;line-height:1.28;margin:0 0 16px}
 .so-hero-sub{font-size:19px;line-height:1.6;color:#C8D3CD;margin:0 0 26px}
-.so-tags{margin:0 0 26px;display:grid;gap:5px;word-break:keep-all}
-.so-tags p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:#D3DCD7}
+/* 대상 안내 — 가운데가 은은하게 밝고 양쪽으로 사라지는 띠(위아래 1px 선). 좁은 화면(단일 컬럼)에서는 화면 가로 꽉 차게 */
+.so-tags{position:relative;margin:0 0 26px;padding:14px 0;display:grid;gap:5px;word-break:keep-all;background:linear-gradient(90deg,transparent 0%,rgba(34,181,115,.18) 50%,transparent 100%)}
+.so-tags::before,.so-tags::after{content:"";position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(34,181,115,.4) 50%,transparent 100%)}
+.so-tags::before{top:0}
+.so-tags::after{bottom:0}
+.so-tags p{margin:0;font-size:13.5px;font-weight:600;line-height:1.55;color:#fff}
 .so-tags span{display:inline-block}
 /* 대상 칩 — 탭. 아래 패널은 선택한 대상의 '가져갈 것' */
-/* 직책 아코디언 — 세로로 쌓은 버튼 3개(가로 100%·높이 52px 이상), 누르면 바로 아래가 펼쳐진다 */
-.so-acc{display:grid;gap:10px;margin:0 0 30px;text-align:left}
-.so-acc-item{border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.05);overflow:hidden}
-.so-acc-item.is-open{border-color:var(--g);background:rgba(34,181,115,.08)}
-.so-acc-btn{appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;padding:12px 18px;border:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:800;text-align:left;cursor:pointer}
-.so-acc-btn:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
-.so-acc-ico{flex:0 0 auto;color:var(--g);font-size:18px;line-height:1;transition:transform .2s ease}
-.so-acc-item.is-open .so-acc-ico{transform:rotate(180deg)}
-.so-acc-panel{padding:4px 18px 20px;animation:so-acc-in .25s ease}
-.so-acc-panel[hidden]{display:none}
-@keyframes so-acc-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.so-acc-quote{margin:0 0 16px;font-size:15.5px;font-weight:700;line-height:1.7;color:#fff}
-.so-acc-take{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:10px;text-align:left}
-.so-acc-take li{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;color:#E4EBE7}
-.so-acc-n{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--g);color:#fff;font-size:12.5px;font-weight:900}
-.so-acc-cta{appearance:none;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:12px 16px;border:0;border-radius:50px;background:var(--g);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer}
-.so-acc-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
-@media(prefers-reduced-motion:reduce){.so-acc-panel{animation:none}.so-acc-ico{transition:none}}
+/* 직책 탭 — 가로 한 줄 pill 3개 + 아래 패널 1개 */
+.so-tabs{margin:0 0 30px;text-align:left}
+.so-tabs-hint{margin:0 0 10px;text-align:center;font-size:13px;line-height:1.4;color:#8F9A94}
+.so-tabs-row{display:flex;gap:8px;margin:0 0 12px}
+.so-tab{appearance:none;flex:1 1 0;min-width:0;min-height:44px;padding:0 4px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:transparent;color:#D3DCD7;font:inherit;font-size:14px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;text-align:center;cursor:pointer;transition:background-color .2s,border-color .2s,color .2s}
+.so-tab.is-on{background:var(--g);border-color:var(--g);color:#fff}
+.so-tab:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.so-tp-stack{display:grid;border:1px solid rgba(34,181,115,.45);border-radius:14px;background:rgba(34,181,115,.08)}
+.so-tp{grid-area:1/1;padding:18px 18px 20px;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s linear .2s}
+.so-tp.is-on{opacity:1;visibility:visible;transition-delay:0s}
+.so-tp-quote{margin:0 0 16px;font-size:15.5px;font-weight:700;line-height:1.7;color:#fff}
+.so-tp-take{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:10px;text-align:left}
+.so-tp-take li{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;color:#E4EBE7}
+.so-tp-n{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--g);color:#fff;font-size:12.5px;font-weight:900}
+.so-tp-cta{appearance:none;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:12px 16px;border:0;border-radius:50px;background:var(--g);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+.so-tp-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.so-tp,.so-tab{transition:none}}
 /* 강사 카드 2장 — 같은 크기·같은 배경·같은 캡션. 두 사진 모두 배경 제거본(contain, 아래 정렬) */
 .so-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:520px;margin:0 auto;min-width:0}
 .so-person{min-width:0;aspect-ratio:4/5;border-radius:20px;background:radial-gradient(120% 90% at 50% 18%,rgba(34,181,115,.34) 0%,rgba(34,181,115,.08) 55%,rgba(255,255,255,.03) 100%);border:1px solid rgba(34,181,115,.22)}
@@ -414,6 +417,7 @@ const SO_STYLE = `
   .so-hero-in{grid-template-columns:minmax(0,1fr);gap:48px}
   .so-h1{font-size:32px}
   .so-hero-sub{font-size:16px}
+  .so-tags{width:100vw;margin-left:calc(50% - 50vw)}
   .so-people{max-width:460px}
 }
 @media(max-width:640px){
@@ -744,8 +748,9 @@ export default function SalesOps() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeVid, setActiveVid] = useState(0);
 
-  // 히어로 직책 아코디언 — 열린 항목(없으면 null, 처음엔 모두 닫힘)과, CTA 가 신청 폼 역할을 맞추는 신호(n 이 매번 바뀐다)
-  const [openRole, setOpenRole] = useState<number | null>(null);
+  // 히어로 직책 탭 — 선택된 탭(기본 0 = 강사·트레이너)과, CTA 가 신청 폼 역할을 맞추는 신호(n 이 매번 바뀐다).
+  // 신청 폼 역할은 탭을 고르는 것만으로는 바뀌지 않고 CTA 를 눌렀을 때만 맞춰진다.
+  const [activeRole, setActiveRole] = useState(0);
   const [preset, setPreset] = useState<{ value: string; n: number } | undefined>(undefined);
 
   // 하단 고정 바 — 페이지에 들어오면 계속 보이고, 신청 섹션에 닿으면(들어왔거나 이미 지나친 뒤) 숨긴다
@@ -997,41 +1002,54 @@ export default function SalesOps() {
                 </p>
               ))}
             </div>
-            <div className="so-acc" data-track-section="target">
-              {SO_ROLES.map((r, i) => {
-                const open = openRole === i;
-                return (
-                  <div className={`so-acc-item${open ? " is-open" : ""}`} key={r.id}>
-                    <button
-                      type="button"
-                      className="so-acc-btn"
-                      id={`so-acc-b-${i}`}
-                      aria-expanded={open}
-                      aria-controls={`so-acc-p-${i}`}
-                      onClick={() => setOpenRole(open ? null : i)}
+            <div className="so-tabs" data-track-section="target">
+              <p className="so-tabs-hint">내 직책을 눌러보세요</p>
+              <div className="so-tabs-row" role="tablist" aria-label="직책 선택">
+                {SO_ROLES.map((r, i) => (
+                  <button
+                    type="button"
+                    key={r.id}
+                    role="tab"
+                    id={`so-tab-${i}`}
+                    aria-selected={i === activeRole}
+                    aria-controls={`so-tp-${i}`}
+                    className={`so-tab${i === activeRole ? " is-on" : ""}`}
+                    onClick={() => setActiveRole(i)}
+                  >
+                    {r.tab}
+                  </button>
+                ))}
+              </div>
+              {/* 패널 3개를 같은 칸에 겹쳐 두고 선택된 것만 보인다 — 칸 높이가 가장 긴 내용에 맞춰 고정되어
+                  탭을 바꿔도 아래 콘텐츠가 위아래로 흔들리지 않는다 (글자 크기·화면 폭이 바뀌어도 자동으로 맞는다) */}
+              <div className="so-tp-stack">
+                {SO_ROLES.map((r, i) => {
+                  const on = i === activeRole;
+                  return (
+                    <div
+                      className={`so-tp${on ? " is-on" : ""}`}
+                      key={r.id}
+                      id={`so-tp-${i}`}
+                      role="tabpanel"
+                      aria-labelledby={`so-tab-${i}`}
+                      aria-hidden={!on}
                     >
-                      <span>{r.button}</span>
-                      <span className="so-acc-ico" aria-hidden="true">
-                        ▾
-                      </span>
-                    </button>
-                    <div className="so-acc-panel" id={`so-acc-p-${i}`} role="region" aria-labelledby={`so-acc-b-${i}`} hidden={!open}>
-                      <p className="so-acc-quote">“{r.quote}”</p>
-                      <ol className="so-acc-take">
+                      <p className="so-tp-quote">“{r.quote}”</p>
+                      <ol className="so-tp-take">
                         {r.take.map((t, k) => (
                           <li key={t}>
-                            <span className="so-acc-n">{k + 1}</span>
+                            <span className="so-tp-n">{k + 1}</span>
                             {t}
                           </li>
                         ))}
                       </ol>
-                      <button type="button" className="so-acc-cta" onClick={() => pickRole(r.role)}>
+                      <button type="button" className="so-tp-cta" onClick={() => pickRole(r.role)} tabIndex={on ? 0 : -1}>
                         이 3가지 가져가기 · 좌석 신청 →
                       </button>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
 
