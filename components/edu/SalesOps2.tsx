@@ -293,8 +293,12 @@ const CSS = `
 .so2-root .so2-fake-ta{min-height:96px}
 .so2-root .so2-fake-check{display:inline-block;width:20px;height:20px;border:1.5px solid #8A968F;border-radius:5px;vertical-align:middle;flex:none}
 .so2-root .so2-vn-box{margin:20px 0 0;padding:0}
-.so2-root .so2-vn-box .so2-vn-grid{display:grid!important;grid-template-columns:1fr 1fr;gap:6px}
-.so2-root .so2-vn-box .so2-vn-grid img{width:100%!important;height:auto!important;aspect-ratio:4/3;object-fit:cover;border-radius:10px;display:block;opacity:1!important;transform:none!important}
+.so2-root .so2-vn-box .so2-vn-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:12px;gap:0}
+.so2-root .so2-vn-box .so2-vn-track::-webkit-scrollbar{display:none}
+.so2-root .so2-vn-box .so2-vn-track img{flex:0 0 100%;width:100%!important;height:auto!important;aspect-ratio:4/3;object-fit:cover;scroll-snap-align:center;display:block;opacity:1!important;transform:none!important}
+.so2-root .so2-vn-box .so2-vn-dots{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.so2-root .so2-vn-box .so2-vn-dots button{appearance:none;border:0;padding:0;width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.25;cursor:pointer;transition:opacity .2s,transform .2s}
+.so2-root .so2-vn-box .so2-vn-dots button[aria-current="true"]{opacity:.85;transform:scale(1.25)}
 .so2-root .so2-vn-box figcaption{margin-top:8px;font-size:13px;opacity:.7}
 .so2-root section[id]{scroll-margin-top:96px}
 .so2-root .so2-pay-card{background:none;box-shadow:none;border-radius:0;padding:0;margin-top:32px}
@@ -304,6 +308,63 @@ const CSS = `
 const fmt = (n: number) => `${n.toLocaleString("ko-KR")}원`;
 
 const CHANNELS: Record<string, string> = { thegrow: "더그로우컴퍼니", realsales: "리얼세일즈" };
+
+const VENUE_IMGS = [
+  { src: "/edu/sales-ops2/img/venue1.jpg", alt: "강의장 내부, 앞쪽 스크린과 책상 배치" },
+  { src: "/edu/sales-ops2/img/venue2.jpg", alt: "강의장 스크린과 강연대" },
+  { src: "/edu/sales-ops2/img/venue3.jpg", alt: "강의장 뒤쪽에서 본 좌석" },
+  { src: "/edu/sales-ops2/img/venue4.jpg", alt: "강의장 좌석 배치" },
+];
+
+/** 강의장 사진 1칸 슬라이드 — 스와이프(scroll-snap) + 3.5초 자동 넘김. 손대거나 마우스를 올리면 멈추고, 움직임 줄이기 설정이면 자동 넘김 없음 */
+function VenueSlider() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(false);
+  const [idx, setIdx] = useState(0);
+
+  const goTo = (i: number) => {
+    const el = trackRef.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => {
+      const el = trackRef.current;
+      if (!el || pausedRef.current || document.visibilityState !== "visible") return;
+      const cur = Math.round(el.scrollLeft / el.clientWidth);
+      el.scrollTo({ left: ((cur + 1) % VENUE_IMGS.length) * el.clientWidth, behavior: "smooth" });
+    }, 3500);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <>
+      <div
+        className="so2-vn-track"
+        ref={trackRef}
+        role="group"
+        aria-roledescription="carousel"
+        aria-label="강의장 사진"
+        onScroll={(e) => setIdx(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
+        onMouseEnter={() => (pausedRef.current = true)}
+        onMouseLeave={() => (pausedRef.current = false)}
+        onTouchStart={() => (pausedRef.current = true)}
+        onTouchEnd={() => window.setTimeout(() => (pausedRef.current = false), 4000)}
+      >
+        {VENUE_IMGS.map((im) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={im.src} src={im.src} alt={im.alt} loading="lazy" draggable={false} />
+        ))}
+      </div>
+      <div className="so2-vn-dots">
+        {VENUE_IMGS.map((im, i) => (
+          <button key={im.src} type="button" aria-label={`사진 ${i + 1}`} aria-current={idx === i} onClick={() => goTo(i)} />
+        ))}
+      </div>
+    </>
+  );
+}
 
 export default function SalesOps2() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -662,7 +723,7 @@ export default function SalesOps2() {
                 <div className="so2-r"><dt>주최</dt><dd>(주)더그로우컴퍼니 × 리얼세일즈(주)</dd></div>
                       </dl>
               <figure className="so2-vn-box">
-                <div className="so2-vn-grid"><img src="/edu/sales-ops2/img/venue1.jpg" alt="강의장 내부, 앞쪽 스크린과 책상 배치" /><img src="/edu/sales-ops2/img/venue2.jpg" alt="강의장 스크린과 강연대" /><img src="/edu/sales-ops2/img/venue3.jpg" alt="강의장 뒤쪽에서 본 좌석" /><img src="/edu/sales-ops2/img/venue4.jpg" alt="강의장 좌석 배치" /></div>
+                <VenueSlider />
                 <figcaption>강의장 · 서울 영등포구 당산로41길 11 E동 601호</figcaption>
               </figure>
             </aside>
