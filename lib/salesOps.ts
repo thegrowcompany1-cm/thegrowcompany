@@ -21,6 +21,11 @@ export const SO_CAPACITY: number | Pending = 100;
 export const SO_PRICE_NORMAL = 165000;
 /** 스토리 인증가 (원) — products 의 sales-ops-story 가격과 같아야 한다 */
 export const SO_PRICE_STORY = 99000;
+/** 신청 마감 시각 — 세미나 시작 시각(2026-11-21 13:00 KST). 하단 바의 카운트다운 기준 */
+export const SO_DEADLINE_ISO = "2026-11-21T13:00:00+09:00";
+export const SO_DEADLINE_MS = Date.parse(SO_DEADLINE_ISO);
+/** 잔여석 집계 시작 시각(KST) — 상품을 연 날. 이전 거래는 세지 않는다 */
+export const SO_SALES_FROM = "2026-10-15T00:00:00";
 /* ▲▲ 여기까지 ▲▲ */
 
 /** 신청 폼의 역할 선택값 중 대표·원장 — components/edu/SalesOpsPay.tsx 의 ROLES 와 같은 문자열이어야 한다 */

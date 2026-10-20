@@ -22,6 +22,7 @@ import Image from "next/image";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
 import {
   SO_CAPACITY,
+  SO_DEADLINE_MS,
   SO_DATE,
   SO_PLACE,
   SO_PRICE_NORMAL,
@@ -360,16 +361,11 @@ const SO_STYLE = `
 .so-hero{background:var(--dark);color:#fff;padding:72px 0 80px;overflow:hidden}
 .so-hero-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
 .so-hero-copy{min-width:0}
-.so-hero .so-kicker{margin:0 0 18px}
 .so-h1{font-size:46px;font-weight:900;line-height:1.28;margin:0 0 16px}
 .so-hero-sub{font-size:19px;line-height:1.6;color:#C8D3CD;margin:0 0 26px}
 .so-tags{margin:0 0 26px;display:grid;gap:5px;word-break:keep-all}
 .so-tags p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:#D3DCD7}
 .so-tags span{display:inline-block}
-.so-hero-info{margin:0 0 26px}
-.so-hero-meta{margin:0 0 4px;font-size:16px;font-weight:700;line-height:1.7;color:#fff}
-.so-nb{white-space:nowrap}
-.so-hero-price{margin:0 0 4px;font-size:15px;font-weight:800;line-height:1.7;color:var(--g)}
 /* 대상 칩 — 탭. 아래 패널은 선택한 대상의 '가져갈 것' */
 .so-chips{margin:0 0 30px}
 .so-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
@@ -378,8 +374,6 @@ const SO_STYLE = `
 .so-chip:focus-visible{outline:2px solid var(--g);outline-offset:2px}
 .so-chip-panel{margin:0;min-height:3.5em;font-size:15.5px;line-height:1.7;color:#E4EBE7}
 .so-chip-panel b{display:block;margin:0 0 2px;font-size:12.5px;font-weight:800;letter-spacing:.04em;color:var(--g)}
-.so-hero-meta span{color:var(--g);margin-right:10px}
-.so-cta{display:inline-flex;align-items:center;justify-content:center;max-width:100%;padding:17px 34px;border-radius:50px;background:var(--g);color:#fff;font-size:17px;font-weight:800;text-decoration:none;box-shadow:0 10px 26px rgba(34,181,115,.28)}
 /* 강사 카드 2장 — 같은 크기·같은 배경·같은 캡션. 두 사진 모두 배경 제거본(contain, 아래 정렬) */
 .so-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:520px;margin:0 auto;min-width:0}
 .so-person{min-width:0;aspect-ratio:4/5;border-radius:20px;background:radial-gradient(120% 90% at 50% 18%,rgba(34,181,115,.34) 0%,rgba(34,181,115,.08) 55%,rgba(255,255,255,.03) 100%);border:1px solid rgba(34,181,115,.22)}
@@ -583,15 +577,21 @@ const SO_STYLE = `
 .so-faq-item[open] summary::after{content:"−"}
 .so-faq-item summary:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
 .so-faq-item p{margin:0;padding:0 18px 16px;font-size:15.5px;line-height:1.7;color:#3A3A3A}
-/* 모바일 하단 고정 CTA — 768px 미만에서만. 숨김일 때는 포커스도 못 받게 visibility 로 접는다 */
-.so-sticky{display:none}
-@media(max-width:767px){
-  .so-sticky{display:block;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(10,10,10,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transform:translateY(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
-  .so-sticky.is-on{transform:none;visibility:visible;transition-delay:0s}
-  .so-sticky-cta{display:flex;width:100%;padding:15px 20px;box-shadow:none}
-  .so-apply{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
-}
-@media(prefers-reduced-motion:reduce){.so-sticky,.so-sticky.is-on{transition:none}}
+/* 하단 고정 바 — 모든 폭. 숨김일 때는 포커스도 못 받게 visibility 로 접는다 */
+.so{--so-bar-h:68px}
+.so-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(10,10,10,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transform:translateY(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
+.so-bar.is-on{transform:none;visibility:visible;transition-delay:0s}
+.so-bar-in{max-width:880px;margin:0 auto;min-height:var(--so-bar-h);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.so-bar-txt{min-width:0;color:#fff}
+.so-bar-cd{margin:0;font-size:15px;font-weight:800;line-height:1.35;white-space:nowrap;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.so-bar-cd .so-bar-num{display:inline-block;color:var(--g);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.so-bar-seats{margin:1px 0 0;font-size:12px;font-weight:600;line-height:1.4;color:#B8C4BE;font-variant-numeric:tabular-nums}
+.so-bar-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:0;border-radius:50px;background:var(--g);color:#fff;font:inherit;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer}
+.so-bar-btn:disabled{background:#4a4a4a;color:#9a9a9a;cursor:not-allowed}
+@media(max-width:380px){.so-bar-cd{font-size:13.5px}.so-bar-btn{padding:0 16px;font-size:14px}}
+/* 하단 바 높이만큼 페이지 끝 여백 */
+.so-apply{padding-bottom:calc(var(--so-bar-h) + 40px + env(safe-area-inset-bottom))}
+@media(prefers-reduced-motion:reduce){.so-bar,.so-bar.is-on{transition:none}}
 `;
 
 export default function SalesOps() {
@@ -605,8 +605,13 @@ export default function SalesOps() {
   // 히어로 대상 칩 — 선택한 대상의 "가져갈 것"을 보여 준다 (기본: 첫 칩)
   const [needIdx, setNeedIdx] = useState(0);
 
-  // 모바일 하단 고정 CTA — 히어로가 보이는 동안과 신청 섹션에 닿은 뒤(들어왔거나 이미 지나친 뒤)에는 숨긴다
-  const [stickyOn, setStickyOn] = useState(false);
+  // 하단 고정 바 — 페이지에 들어오면 계속 보이고, 신청 섹션에 닿으면(들어왔거나 이미 지나친 뒤) 숨긴다
+  const [barOn, setBarOn] = useState(true);
+  // 마감 카운트다운 — 숫자는 requestAnimationFrame 으로 DOM 에 직접 쓴다(재렌더 없이). 마감이 지나면 closed
+  const cdRef = useRef<HTMLSpanElement>(null);
+  const [closed, setClosed] = useState(false);
+  // 잔여석 — 서버(/api/seminar-seats)가 토스 결제 완료 건수로 센 값. 못 가져오면 null 이고 줄을 숨긴다
+  const [seats, setSeats] = useState<number | null>(null);
 
   // 운영 시스템 3D 원통 — idx 는 계속 늘어나는 회전 카운터(역회전 방지), active 는 idx % 4
   const sysStageRef = useRef<HTMLDivElement>(null);
@@ -758,26 +763,16 @@ export default function SalesOps() {
   };
 
   useEffect(() => {
-    const hero = document.getElementById("so-hero");
     const apply = document.getElementById("so-apply");
-    if (!hero || !apply) return;
-    // 상태는 요소의 현재 위치로 다시 읽는다. IntersectionObserver 는 경계를 '넘는 순간'만 알려 주어서
-    // 앵커 이동처럼 한 번에 크게 점프하면(신청 섹션을 지나친 상태에서 위로 되돌아갈 때) 놓칠 수 있다.
-    // 그래서 옵저버가 깨우면 위치를 다시 읽고, 스크롤·크기 변화에서도 같은 계산을 한다.
-    const sync = () => {
-      const vh = window.innerHeight;
-      const h = hero.getBoundingClientRect();
-      const a = apply.getBoundingClientRect();
-      const heroIn = h.bottom > 0 && h.top < vh; // 히어로가 화면에 보이는 동안
-      const applyHide = a.top < vh; // 신청 섹션이 들어왔거나(보이는 중) 이미 지나쳤다
-      setStickyOn(!heroIn && !applyHide);
-    };
+    if (!apply) return;
+    // 신청 섹션 위치로 다시 읽는다. IntersectionObserver 는 경계를 '넘는 순간'만 알려 주어서 앵커 이동처럼
+    // 한 번에 크게 점프하면 놓칠 수 있다 — 옵저버가 깨우면 위치를 다시 읽고, 스크롤·크기 변화에서도 같은 계산을 한다.
+    const sync = () => setBarOn(!(apply.getBoundingClientRect().top < window.innerHeight));
     let raf = 0;
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(() => { raf = 0; sync(); });
     };
     const io = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(schedule, { threshold: 0 });
-    io?.observe(hero);
     io?.observe(apply);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
@@ -790,7 +785,43 @@ export default function SalesOps() {
     };
   }, []);
 
-  const placeKnown = !soIsPending(SO_PLACE);
+  // "마감까지 DD일 HH:MM:SS.ms" — 밀리초는 2자리(1/100초)
+  useEffect(() => {
+    const pad = (v: number) => String(v).padStart(2, "0");
+    let raf = 0;
+    const tick = () => {
+      const left = SO_DEADLINE_MS - Date.now();
+      if (left <= 0) {
+        setClosed(true);
+        return;
+      }
+      const el = cdRef.current;
+      if (el) {
+        const d = Math.floor(left / 86_400_000);
+        const h = Math.floor((left % 86_400_000) / 3_600_000);
+        const m = Math.floor((left % 3_600_000) / 60_000);
+        const s = Math.floor((left % 60_000) / 1000);
+        const cs = Math.floor((left % 1000) / 10);
+        el.textContent = `${pad(d)}일 ${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/seminar-seats")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { ok?: boolean; remaining?: unknown } | null) => {
+        if (alive && d?.ok && typeof d.remaining === "number") setSeats(d.remaining);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   return (
     <div ref={rootRef} className="so">
@@ -800,8 +831,11 @@ export default function SalesOps() {
       <section data-track-section="hero" className="so-hero" id="so-hero">
         <div className="so-wrap so-hero-in">
           <div className="so-hero-copy">
-            <p className="so-kicker">더그로우 X 리얼세일즈</p>
-            <h1 className="so-h1">피트니스 성장 마스터키 세미나</h1>
+            <h1 className="so-h1">
+              피트니스 성장
+              <br />
+              마스터키 세미나
+            </h1>
             <p className="so-hero-sub">운영과 세일즈, 센터 매출을 여는 두 개의 열쇠</p>
             <div className="so-tags">
               {SO_TARGET_LINES.map(([a, b]) => (
@@ -809,23 +843,6 @@ export default function SalesOps() {
                   {a} <span>{b}</span>
                 </p>
               ))}
-            </div>
-            <div className="so-hero-info">
-              <p className="so-hero-meta">
-                <span>{SO_DATE}</span>
-                {SO_TIME}
-              </p>
-              <p className="so-hero-price">
-                <span className="so-nb">스토리 인증 시 {soFormatPrice(SO_PRICE_STORY)}</span>{" "}
-                <span className="so-nb">(정가 {soFormatPrice(SO_PRICE_NORMAL)})</span> ·{" "}
-                <span className="so-nb">정원 {soFormatCapacity(SO_CAPACITY)}</span>
-              </p>
-              {placeKnown && (
-                <p className="so-hero-meta">
-                  <span>장소</span>
-                  {SO_PLACE}
-                </p>
-              )}
             </div>
             <div className="so-chips" data-track-section="target">
               <div className="so-chip-row" role="tablist" aria-label="대상별 가져갈 것">
@@ -849,9 +866,6 @@ export default function SalesOps() {
                 {SO_NEEDS[needIdx].body}
               </p>
             </div>
-            <a className="so-cta" href="#so-apply" onClick={scrollToApply}>
-              세미나 신청하기
-            </a>
           </div>
 
           <div className="so-people">
@@ -1250,16 +1264,31 @@ export default function SalesOps() {
         </div>
       </section>
 
-      {/* 모바일 하단 고정 CTA — 잔여석 표기는 실제 숫자 연동 전까지 넣지 않는다 */}
-      <div className={`so-sticky${stickyOn ? " is-on" : ""}`} aria-hidden={!stickyOn}>
-        <a
-          className="so-cta so-sticky-cta"
-          href="#so-apply"
-          onClick={scrollToApply}
-          tabIndex={stickyOn ? 0 : -1}
-        >
-          {soFormatPrice(SO_PRICE_STORY)} 신청하기
-        </a>
+      {/* 하단 고정 바 — 마감 카운트다운 + 잔여석(실데이터일 때만) + 좌석 신청하기 */}
+      <div className={`so-bar${barOn ? " is-on" : ""}`} aria-hidden={!barOn}>
+        <div className="so-bar-in">
+          <div className="so-bar-txt">
+            <p className="so-bar-cd" aria-live="off">
+              {closed ? (
+                "신청 마감"
+              ) : (
+                <>
+                  마감까지 <span className="so-bar-num" ref={cdRef}>--일 --:--:--.--</span>
+                </>
+              )}
+            </p>
+            {seats !== null && <p className="so-bar-seats">잔여 {seats}석</p>}
+          </div>
+          {closed ? (
+            <button type="button" className="so-bar-btn" disabled>
+              좌석 신청하기
+            </button>
+          ) : (
+            <a className="so-bar-btn" href="#so-apply" onClick={scrollToApply} tabIndex={barOn ? 0 : -1}>
+              좌석 신청하기
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
