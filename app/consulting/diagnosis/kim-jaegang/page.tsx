@@ -236,6 +236,10 @@ const FORM_HTML = `<div class="consult-form-wrapper">
           <input type="checkbox" name="consultField" value="인적자원관리" class="consultField-checkbox">
           <span class="checkbox-text">인적자원관리</span>
         </label>
+        <label class="checkbox-label">
+          <input type="checkbox" name="consultField" value="세일즈·상담" class="consultField-checkbox">
+          <span class="checkbox-text">세일즈·상담</span>
+        </label>
       </div>
     </div>
 
@@ -253,6 +257,10 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         <label class="checkbox-label">
           <input type="radio" name="consultant" value="박정민" class="consultant-radio">
           <span class="checkbox-text">박정민</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="radio" name="consultant" value="황현진" class="consultant-radio">
+          <span class="checkbox-text">황현진</span>
         </label>
       </div>
     </div>

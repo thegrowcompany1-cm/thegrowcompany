@@ -91,6 +91,7 @@ const navItems: NavItem[] = [
       { label: "박정민 멘토", href: "/consulting/diagnosis/park-jungmin" },
       { label: "구진완 멘토", href: "/consulting/diagnosis/gu-jinwan" },
       { label: "허준영 멘토", href: "/consulting/diagnosis/heo-junyoung" },
+      { label: "황현진 멘토", href: "/consulting/diagnosis/hwang-hyunjin" },
     ],
   },
   {

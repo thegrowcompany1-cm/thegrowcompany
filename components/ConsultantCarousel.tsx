@@ -17,6 +17,7 @@ const CONSULTANTS = [
   { slug: "park-jungmin", name: "박정민", field: "매장 운영 개선 · PT 매출 증대", img: "/consultants/park-jungmin.png" },
   { slug: "gu-jinwan", name: "구진완", field: "매장 운영 개선 · 조직 성장", img: "/consultants/gu-jinwan.png" },
   { slug: "heo-junyoung", name: "허준영", field: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg" },
+  { slug: "hwang-hyunjin", name: "황현진", field: "상담 등록률 · 세일즈 화법", img: "/consultants/hwang-hyunjin.png" },
 ];
 
 type Consultant = (typeof CONSULTANTS)[number];

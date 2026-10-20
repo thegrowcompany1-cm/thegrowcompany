@@ -9,6 +9,7 @@ const consultants = [
   { name: "김승호", role: "멘토",      image: "/consultants/kim-seungho.jpg" },
   { name: "구진완", role: "멘토",      image: "/consultants/gu-jinwan.png" },
   { name: "허준영", role: "멘토",      image: "/consultants/heo-junyoung.jpg" },
+  { name: "황현진", role: "멘토",      image: "/consultants/hwang-hyunjin.png" },
 ];
 
 const slogans: { content: React.ReactNode; sizeClass: string; weight: number }[] = [

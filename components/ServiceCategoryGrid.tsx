@@ -91,6 +91,7 @@ const groups: Group[] = [
       { title: "박정민 멘토", desc: "매장 운영 개선 · PT 매출 증대", img: "/consultants/park-jungmin.png", href: "/consulting/diagnosis/park-jungmin", photo: true },
       { title: "구진완 멘토", desc: "매장 운영 개선 · 조직 성장", img: "/consultants/gu-jinwan.png", href: "/consulting/diagnosis/gu-jinwan", photo: true },
       { title: "허준영 멘토", desc: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
+      { title: "황현진 멘토", desc: "상담 등록률 · 세일즈 화법", img: "/consultants/hwang-hyunjin.png", href: "/consulting/diagnosis/hwang-hyunjin", photo: true },
     ],
   },
   {
