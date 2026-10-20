@@ -744,7 +744,6 @@ export default function SalesOps2() {
               <details><summary>환불 규정이 있나요?</summary><div className="so2-a">강의 5일 전까지는 100% 환불이 가능합니다. 정원이 한정된 강의라 그 이후에는 환불이 불가합니다.</div></details>
               <details><summary>한 센터에서 여러 명이 함께 신청할 수 있나요?</summary><div className="so2-a">단체 예약이 가능합니다.</div></details>
               <details><summary>주차가 가능한가요?</summary><div className="so2-a">가능합니다. 최초 30분은 무료이며, 이후에는 시간당 3,000원입니다. 인근 공영주차장이나 대중교통 이용을 권장드립니다.</div></details>
-              <details><summary>강의 자료가 제공되나요?</summary><div className="so2-a">강의자료는 제공되지 않습니다.</div></details>
             </div>
           </div>
         </section>
