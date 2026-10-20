@@ -8,7 +8,7 @@
 //  · 결제 흐름은 /edu/gx-class 와 같다: 이 컴포넌트가 신청 정보를 sessionStorage 에 담고
 //    /checkout?product=<슬러그> 로 보낸다 → Supabase products 조회 → 토스 결제 →
 //    /api/payments/confirm → CheckoutSuccess → 에듀DB 시트(결제내역) 기록.
-//  · 이름·연락처·센터명·역할은 결제 전에 받고, 이메일은 결제 페이지(/checkout)에서 받는다.
+//  · 이름·연락처·역할은 결제 전에 받고(센터명은 받지 않는다 — 2026-10-20), 이메일은 결제 페이지(/checkout)에서 받는다.
 //  · 인스타 아이디는 결제 승인 후 시트의 "인스타ID" 열로 전달된다 (정상가는 빈 값).
 //  · 포스터는 저장 차단 대상이 아니다 — 원통 슬라이드의 차단 스타일을 쓰지 않는다.
 //  · CSS 접두사 sop-. 색은 부모가 CSS 변수(--sop-acc 등)로 바꿀 수 있다.
@@ -117,7 +117,6 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft, pre
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [center, setCenter] = useState("");
   const [role, setRole] = useState("");
   // presetRole.n 이 바뀔 때마다 한 번 맞춘다 (렌더 중 상태 맞춤 — 이펙트로 하면 한 박자 늦게 깜빡인다)
   const [appliedPresetN, setAppliedPresetN] = useState(0);
@@ -137,7 +136,6 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft, pre
   const posterRef = useRef<HTMLImageElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
-  const centerRef = useRef<HTMLInputElement>(null);
 
   // 모바일(터치)에서는 download 속성이 막히는 브라우저가 많아 새 탭으로 열어 길게 눌러 저장하게 한다
   useEffect(() => {
@@ -238,10 +236,6 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft, pre
       phoneRef.current?.focus();
       return "휴대폰 번호를 정확히 입력해주세요.";
     }
-    if (!center.trim()) {
-      centerRef.current?.focus();
-      return "센터명을 입력해주세요.";
-    }
     if (!role) return "역할을 선택해주세요.";
     return null;
   };
@@ -258,7 +252,8 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft, pre
     saveCheckoutPrefill(slug, {
       name: name.trim(),
       phone: formatPhone(phone.replace(/\D/g, "")),
-      center: center.trim(),
+      // 센터명은 더 이상 받지 않는다 — 시트의 센터명 열은 빈 값이 된다
+      center: "",
       role,
       // 인스타 아이디는 더 이상 받지 않는다 (결제 후 스토리 업로드 방식). 시트의 인스타ID 열은 빈 값이 된다
       instagram: "",
@@ -318,21 +313,6 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft, pre
               onChange={(e) => setPhone(formatPhone(e.target.value))}
               placeholder="010-0000-0000"
               autoComplete="tel"
-            />
-          </div>
-          <div className="sop-field is-wide">
-            <label className="sop-label" htmlFor="sop-center">
-              센터명<span className="sop-req">*</span>
-            </label>
-            <input
-              id="sop-center"
-              ref={centerRef}
-              className="sop-input"
-              type="text"
-              value={center}
-              onChange={(e) => setCenter(e.target.value)}
-              placeholder="예: OO 필라테스 OO점"
-              autoComplete="organization"
             />
           </div>
           <fieldset className="sop-field is-wide sop-roles" aria-label="역할">
