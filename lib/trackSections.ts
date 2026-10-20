@@ -7,7 +7,8 @@ export const TRACK_SECTION_ORDER: Record<string, string[]> = {
   "/consulting/outsourcing": ["hero", "empathy", "video", "proof", "compare", "solution", "process", "aftercare", "review", "faq", "form"],
   "/edu/fc-class": ["hero", "problem", "solution", "instructor", "curriculum", "review", "result", "gallery", "feedback", "target", "benefit", "faq", "price"],
   "/edu/gx-class": ["hero", "stats", "problem", "loop", "solution", "reframe", "system", "proof", "story", "result", "newconv", "revenue", "rejoin", "community", "price"],
-  "/edu/sales-ops": ["hero", "target", "problem", "hwang", "ops", "kim", "curriculum", "change", "closing", "form"],
+  // 신규 랜딩(SalesOpsLanding) 기준. review(후기)는 3건 이상 모이기 전에는 화면에 없어 뺀다 (생기면 video 와 form 사이)
+  "/edu/sales-ops": ["hero", "target", "problem", "ops", "system", "curriculum", "video", "form", "faq"],
   // case · takeaway 는 내용이 확정되기 전에는 화면에 없다 (있으면 problem 과 hwang 사이 / ops 와 curriculum 사이)
   "/edu/sales-ops3": ["hero", "keys", "funnel", "problem", "belief", "case", "hwang", "kim", "ops", "takeaway", "curriculum", "value", "target", "faq", "form", "closing"],
   "/edu/diagnostic-consultant": ["hero", "problem", "solution", "income", "review", "field", "skill", "proof", "target", "program", "curriculum", "instructor", "verify", "cert", "contract", "chat", "selection", "faq", "form"],

@@ -97,19 +97,27 @@ const SOP_STYLE = SOP_RAW.replace(/(^|[\n{}])(\s*)\.sop-/g, "$1$2.sop .sop-");
 type Props = {
   /** true 면 화면 폭과 관계없이 카드를 위아래로 쌓는다 (좁은 단일 컬럼 페이지용) */
   stack?: boolean;
+  /** 부모(히어로 칩)가 골라 준 역할 — ROLES 중 하나일 때만 따른다. 이후 직접 바꾸면 그 값을 쓴다 */
+  presetRole?: string;
   /** 부모 페이지의 포인트 색을 맞추고 싶을 때 (예: 시안 페이지의 블루) */
   accent?: string;
   accentDark?: string;
   accentSoft?: string;
 };
 
-export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: Props) {
+export default function SalesOpsPay({ stack, accent, accentDark, accentSoft, presetRole }: Props) {
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [center, setCenter] = useState("");
   const [role, setRole] = useState("");
+  // presetRole 이 바뀔 때만 한 번 맞춘다 (렌더 중 상태 맞춤 — 이펙트로 하면 한 박자 늦게 깜빡인다)
+  const [appliedPreset, setAppliedPreset] = useState<string | undefined>(undefined);
+  if (presetRole !== appliedPreset) {
+    setAppliedPreset(presetRole);
+    if (presetRole && (ROLES as readonly string[]).includes(presetRole)) setRole(presetRole);
+  }
   const [error, setError] = useState<{ card: "story" | "normal"; msg: string } | null>(null);
   const [posterOk, setPosterOk] = useState(true);
   const [posterLoaded, setPosterLoaded] = useState(false);
