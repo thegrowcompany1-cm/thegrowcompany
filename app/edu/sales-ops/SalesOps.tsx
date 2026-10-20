@@ -343,21 +343,18 @@ function SoImg({
 }
 
 const SO_STYLE = `
-.so{--g:#22B573;--dark:#0A0A0A;--dark2:#0d0d0d;--cream:#FBF8EC;font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-.01em;color:#141414;background:#fff;width:100%;max-width:100%;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere}
+.so{--g:#22B573;--gt:#167A44;--cta:#178048;--ink:#1A1A1A;--sub:#5F6368;--line:#E6E8E6;--alt:#F6F7F5;--tint:#EAF7EF;--dark:#0A0A0A;font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-.01em;color:var(--ink);background:#fff;width:100%;max-width:100%;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere;font-size:16px;line-height:1.7}
 .so *{box-sizing:border-box}
 .so-wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .so-narrow{max-width:820px}
-.so-sec{padding:96px 0}
-.so-dark{background:var(--dark);color:#fff}
-.so-dark2{background:var(--dark2);color:#fff}
-.so-cream{background:var(--cream);color:#141414}
-.so-white{background:#fff;color:#141414}
-.so-kicker{display:table;margin:0 auto 16px;font-size:13px;font-weight:800;color:var(--g);background:rgba(34,181,115,.12);padding:7px 16px;border-radius:50px}
-.so-h2{font-size:34px;font-weight:800;line-height:1.4;text-align:center;margin:0 0 16px}
-.so-h2 em{font-style:normal;color:var(--g)}
+/* 히어로 아래는 전부 밝은 배경 — 흰색 / 연회색(#F6F7F5)을 번갈아. 글자 크기는 24(제목)·16(본문)·13(보조·라벨) 세 단계만 쓴다 */
+.so-sec{padding:64px 0}
+.so-white{background:#fff;color:var(--ink)}
+.so-alt{background:var(--alt);color:var(--ink)}
+.so-h2{font-size:24px;font-weight:700;line-height:1.5;text-align:left;margin:0 0 16px;max-width:34em}
+.so-h2 em{font-style:normal;color:var(--gt)}
 .so-h2,.so-prof-h,.so-closing p{text-wrap:balance}
-.so-lead{font-size:17px;line-height:1.8;text-align:center;margin:0 auto;max-width:660px;opacity:.78}
-@media(max-width:640px){.so-sec{padding:68px 0}.so-h2{font-size:25px}.so-lead{font-size:15px}.so-wrap{padding:0 16px}}
+@media(max-width:640px){.so-wrap{padding:0 16px}}
 
 /* fail-safe reveal — 기본 표시. 루트에 so-anim 이 붙은 경우에만 숨김 후 등장 */
 .so.so-anim .so-reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
@@ -426,208 +423,193 @@ const SO_STYLE = `
   .so-person-cap b{font-size:15px}
 }
 
-/* 2. 세일즈 축 문제 제기 */
-/* 하수↔고수 대조 — 한 줄이 좌(이렇게 말하면)·우(이렇게 바뀝니다) 두 칸. 모바일은 위아래로 쌓는다 */
-.so-vs{display:grid;gap:22px;margin:44px 0 0}
-.so-vs-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
-.so-vs-cell{min-width:0;display:flex;flex-direction:column;gap:10px}
-.so-vs-tag{align-self:flex-start;font-size:12.5px;font-weight:800;letter-spacing:.02em;color:#7A7A7A}
-.so-vs-r .so-vs-tag{color:#0B6B3A}
-.so-vs-pro{flex:1 1 auto;border-radius:18px;padding:22px 20px;font-size:17px;font-weight:800;line-height:1.6;background:var(--dark);color:#fff;box-shadow:0 8px 24px rgba(20,20,20,.12)}
-.so-vs-tease{flex:1 1 auto;display:flex;align-items:center;border-radius:18px;padding:22px 20px;font-size:16px;font-weight:800;line-height:1.6;color:#0B6B3A;background:rgba(34,181,115,.1);border:1px dashed rgba(34,181,115,.55)}
-/* 4. 운영 고통 장면 — problem 의 말풍선과 같은 스타일 */
-.so-pains{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 56px}
-.so-pains .so-bubble{margin:0}
-.so-bubble{flex:1 1 auto;position:relative;background:#fff;border:1px solid rgba(20,20,20,.08);border-radius:18px;padding:22px 20px;font-size:17px;font-weight:700;line-height:1.6;box-shadow:0 8px 24px rgba(20,20,20,.06)}
-.so-bubble::after{content:"";position:absolute;left:26px;bottom:-9px;width:16px;height:16px;background:#fff;border-right:1px solid rgba(20,20,20,.08);border-bottom:1px solid rgba(20,20,20,.08);transform:rotate(45deg)}
-.so-diag{align-self:flex-start;margin-top:8px;font-size:13px;font-weight:700;color:#6E6E6E;background:#E6E6E6;padding:7px 14px;border-radius:50px}
-.so-versus{display:grid;gap:12px;max-width:760px;margin:44px auto 0}
-.so-versus-row{background:var(--dark);color:#fff;border-radius:16px;padding:22px 24px;font-size:18px;font-weight:700;line-height:1.7;text-align:center}
-.so-versus-row mark{background:none;color:var(--g);font-weight:900}
-@media(max-width:860px){.so-pains{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:760px){.so-vs{gap:26px}.so-vs-row{grid-template-columns:minmax(0,1fr);gap:14px}}
-@media(max-width:640px){.so-bubble{font-size:16px}.so-vs-pro{font-size:16px}.so-versus-row{font-size:16px;padding:18px 16px}}
+/* 2. 세일즈 축 문제 제기 — 상담 장면 01·02·03 (얇은 구분선 + 번호 라벨 + 굵은 대사 + 회색 설명 한 줄) */
+.so-scenes{margin:32px 0 0;max-width:34em}
+.so-scene{padding:24px 0;border-top:1px solid var(--line)}
+.so-scene:last-child{border-bottom:1px solid var(--line)}
+.so-scene-n{display:block;margin:0 0 8px;font-size:13px;font-weight:600;color:var(--sub)}
+.so-scene-line{margin:0;font-size:16px;font-weight:700;line-height:1.7}
+.so-scene-diag{margin:4px 0 0;font-size:13px;line-height:1.6;color:var(--sub)}
+.so-scene-pro{margin:16px 0 0;padding:14px 16px;border-radius:14px;background:var(--tint);color:var(--ink);font-size:16px;font-weight:700;line-height:1.7}
+.so-scene-pro small{display:block;margin:0 0 4px;font-size:13px;font-weight:600;color:var(--gt)}
+.so-scene-tease{margin:12px 0 0;font-size:13px;line-height:1.6;color:var(--sub)}
+.so-versus{display:grid;gap:12px;max-width:34em;margin:32px 0 0}
+.so-versus-row{margin:0;padding:16px;border-radius:14px;background:var(--tint);color:var(--ink);font-size:16px;font-weight:700;line-height:1.7;text-align:left}
+.so-versus-row mark{background:none;color:var(--gt);font-weight:700}
+/* 4. 운영 고통 장면 — 같은 구분선 목록 (번호는 CSS 카운터) */
+.so-pains{display:block;max-width:34em;margin:0 0 48px;counter-reset:pn}
+.so-bubble{counter-increment:pn;position:relative;display:block;margin:0;padding:20px 0;border-top:1px solid var(--line);font-size:16px;font-weight:700;line-height:1.7;background:none;border-radius:0}
+.so-bubble:last-child{border-bottom:1px solid var(--line)}
+.so-bubble::before{content:"0" counter(pn);display:block;margin:0 0 6px;font-size:13px;font-weight:600;color:var(--sub)}
 
 /* 3. 황현진 소개 */
-.so-prof{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0 auto}
-.so-prof-photo{width:100%;max-width:340px;margin:0 auto;aspect-ratio:4/5;border-radius:22px;background:radial-gradient(120% 90% at 50% 20%,rgba(34,181,115,.32) 0%,rgba(34,181,115,.07) 60%,rgba(255,255,255,.03) 100%);border:1px solid rgba(34,181,115,.22)}
-.so-prof-photo .so-img-ph{background:none;color:#5E6B65}
-.so-prof-h{font-size:26px;font-weight:900;line-height:1.5;margin:0 0 20px}
-.so-prof-h em{font-style:normal;color:var(--g)}
-.so-bio{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.so-bio li{position:relative;padding-left:18px;font-size:16px;line-height:1.65;color:#D3DCD7}
-.so-bio li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--g)}
-/* 저서 — 1열 무한 자동 슬라이드(왼쪽으로 천천히), 가운데는 크고 선명하게·양옆은 안쪽으로 기울여 작게(3D) */
-.so-bs{margin-top:72px}
-.so-bs-label{margin:0 0 6px;text-align:center;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--g)}
+.so-prof{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0}
+.so-prof-photo{width:100%;max-width:340px;margin:0;aspect-ratio:4/5;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.so-prof-photo .so-img-ph{background:none;color:var(--sub)}
+.so-prof-h{font-size:24px;font-weight:700;line-height:1.5;margin:0 0 20px}
+.so-prof-h em{font-style:normal;color:var(--gt)}
+.so-bio{list-style:none;margin:0;padding:0;display:grid;gap:10px;max-width:34em}
+.so-bio li{position:relative;padding-left:16px;font-size:16px;line-height:1.7;color:var(--ink)}
+.so-bio li::before{content:"";position:absolute;left:0;top:.7em;width:6px;height:6px;border-radius:50%;background:#9AA0A6}
+/* 저서 — 1열 무한 자동 슬라이드(왼쪽으로 천천히), 가운데는 크고 선명하게·양옆은 안쪽으로 기울여 작게(3D).
+   표지 칸은 비율(aspect-ratio)로 폭을 미리 잡아, 이미지가 늦게 떠도 칸이 0폭으로 접히지 않는다 */
+.so-bs{margin-top:56px}
+.so-bs-label{margin:0 0 6px;text-align:left;font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--gt)}
 .so-bs-stage{position:relative;perspective:900px;overflow:hidden;padding:20px 0 30px;-webkit-user-select:none;user-select:none}
 .so-bs-track{position:relative;display:flex;gap:18px;width:max-content;will-change:transform}
-.so-bs-item{flex:0 0 auto;height:140px;border-radius:5px;background:#161616;transform-style:preserve-3d;will-change:transform,opacity;pointer-events:none}
-.so-bs-item img{display:block;height:100%;width:auto;max-width:none;border-radius:5px;-webkit-user-drag:none}
-@media(max-width:860px){.so-prof{grid-template-columns:minmax(0,1fr);gap:28px}.so-prof-h{font-size:22px;text-align:center}}
-@media(max-width:640px){.so-bs{margin-top:56px}}
+.so-bs-item{flex:0 0 auto;height:140px;aspect-ratio:371/548;border-radius:5px;background:var(--line);transform-style:preserve-3d;will-change:transform,opacity;pointer-events:none}
+.so-bs-item img{display:block;height:100%;width:100%;max-width:none;object-fit:cover;border-radius:5px;-webkit-user-drag:none}
+@media(max-width:860px){.so-prof{grid-template-columns:minmax(0,1fr);gap:28px}}
 
 /* 3-2. 영상 (SALES SALON) */
-.so-vid{margin-top:84px}
-.so-vid-head{margin:0 0 26px;text-align:center}
-.so-vid-lbl{margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--g)}
-.so-vid-title{margin:0 0 8px;font-size:24px;font-weight:800;line-height:1.4;color:#fff;text-wrap:balance}
-.so-vid-sub{margin:0;font-size:14.5px;line-height:1.6;color:#98A39D}
-@media(max-width:640px){.so-vid-title{font-size:20px}}
+.so-vid{margin-top:56px}
+.so-vid-head{margin:0 0 24px;text-align:left}
+.so-vid-lbl{margin:0 0 6px;font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--gt)}
+.so-vid-title{margin:0 0 6px;font-size:16px;font-weight:700;line-height:1.6;color:var(--ink);text-wrap:balance}
+.so-vid-sub{margin:0;font-size:13px;line-height:1.6;color:var(--sub)}
 .so-vid-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.so-vid-card{position:relative;min-width:0;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#000}
-.so-vid-card video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.so-vid-card{position:relative;min-width:0;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:var(--line)}
+.so-vid-card video{display:block;width:100%;height:100%;object-fit:cover;background:var(--line)}
 .so-vid-dots{display:none}
-/* 640px 이하 — 1줄 가로 슬라이드 (라이브러리 없이 CSS scroll-snap).
-   641px 이상(태블릿 포함)은 위의 4열 그리드를 그대로 쓰고 점도 숨긴다.
-   컨테이너만 가로로 스크롤되고 페이지(body)에는 가로 스크롤이 생기지 않는다.
-   컨테이너를 래퍼 좌우 패딩(16px)만큼 음수 마진으로 화면 끝까지 늘리고, 안쪽 padding-inline 16px 로
-   첫·마지막 카드가 화면 끝에 붙지 않게 한다. 카드를 78% 로 잡아 다음 카드가 오른쪽에 보인다. */
+/* 640px 이하 — 1줄 가로 슬라이드 (라이브러리 없이 CSS scroll-snap). 컨테이너만 가로로 스크롤되고 페이지에는 가로 스크롤이 생기지 않는다.
+   래퍼 좌우 패딩(16px)만큼 음수 마진으로 화면 끝까지 늘리고, 안쪽 padding-inline 16px 로 첫·마지막 카드가 화면 끝에 붙지 않게 한다. */
 @media(max-width:640px){
-  .so-vid{margin-top:60px}
+  .so-vid{margin-top:48px}
   .so-vid-grid{position:relative;display:flex;align-items:flex-start;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;padding-inline:16px;scroll-padding-inline:16px;margin-inline:-16px}
   .so-vid-grid::-webkit-scrollbar{display:none}
-  .so-vid-grid:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
-  .so-vid-card{flex:0 0 78%;scroll-snap-align:start;border-radius:12px}
+  .so-vid-grid:focus-visible{outline:2px solid var(--gt);outline-offset:-2px}
+  .so-vid-card{flex:0 0 78%;scroll-snap-align:start}
   .so-vid-dots{display:flex;align-items:center;justify-content:center;margin-top:14px}
   .so-vid-dot{display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer}
-  .so-vid-dot::before{content:"";width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.28);transition:width .25s ease,background .25s ease}
-  .so-vid-dot.is-on::before{width:22px;background:var(--g)}
+  .so-vid-dot::before{content:"";width:8px;height:8px;border-radius:999px;background:rgba(26,26,26,.22);transition:width .25s ease,background .25s ease}
+  .so-vid-dot.is-on::before{width:22px;background:var(--sub)}
 }
 
 /* 4. 운영 축 문제 제기 */
-.so-op-body{max-width:780px;margin:22px auto 0;text-align:center;font-size:18px;line-height:1.85;color:#3F3F3F}
+.so-op-body{max-width:34em;margin:0;text-align:left;font-size:16px;line-height:1.7;color:var(--ink)}
 .so-op-body p{margin:0}
-.so-op-body p+p{margin-top:10px}
-.so-op-body .so-op-em{margin-top:18px;font-weight:900;color:var(--g)}
-.so-need-lbl{display:inline-block;margin:0 0 14px;font-size:13px;font-weight:800;color:#0B6B3A;background:rgba(34,181,115,.14);padding:6px 13px;border-radius:50px}
-@media(max-width:640px){.so-op-body{font-size:15.5px}}
+.so-op-body p+p{margin-top:16px}
+.so-op-body .so-op-em{font-weight:700;color:var(--gt)}
+.so-need-lbl{display:block;margin:0 0 8px;font-size:13px;font-weight:600;color:var(--gt)}
 
 /* 4-2. 운영 시스템 3D 원통 슬라이드 — 라이브러리 없이 CSS 3D transform.
    카드 폭 --w = 데스크톱 560px / 모바일 화면폭의 78%, 높이는 4:3. 반지름 = --w / 2 (4면 원통).
    원통을 translateZ(-반지름) 만큼 뒤로 밀어 정면 카드가 무대 평면에 오게 한다. */
-.so-sys{margin-top:84px;text-align:center}
-.so-sys-lbl{margin:0 0 12px;font-size:13px;font-weight:800;letter-spacing:.2em;color:var(--g)}
-.so-sys-title{margin:0 0 12px;font-size:30px;line-height:1.4;font-weight:900;text-wrap:balance}
-.so-sys-sub{margin:0 auto 34px;max-width:560px;font-size:16px;line-height:1.7;color:#555}
+.so-sys{margin-top:64px;text-align:left}
+.so-sys-lbl{margin:0 0 8px;font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--gt)}
+.so-sys-title{margin:0 0 12px;font-size:24px;line-height:1.5;font-weight:700;text-wrap:balance;max-width:34em}
+.so-sys-sub{margin:0 0 32px;max-width:34em;font-size:16px;line-height:1.7;color:var(--sub)}
 .so-cyl-wrap{overflow:hidden;padding:8px 0}
 .so-cyl-stage{--w:min(78vw,560px);position:relative;width:var(--w);height:calc(var(--w) * .75);margin:0 auto;perspective:1400px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .so-cyl{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.22,.61,.36,1)}
-.so-cyl-face{position:absolute;inset:0;border-radius:14px;background:#0F1413;border:1px solid rgba(20,20,20,.1);box-shadow:0 18px 44px rgba(20,20,20,.18);backface-visibility:hidden;-webkit-backface-visibility:hidden;opacity:.35;filter:brightness(.6);transition:opacity .9s cubic-bezier(.22,.61,.36,1),filter .9s cubic-bezier(.22,.61,.36,1)}
-.so-cyl-face.is-front{opacity:1;filter:none}
-.so-cyl-face .so-img-ph{background:none;color:#5E6B65}
+.so-cyl-face{position:absolute;inset:0;border-radius:14px;background:var(--alt);border:1px solid var(--line);box-shadow:0 8px 24px rgba(26,26,26,.12);backface-visibility:hidden;-webkit-backface-visibility:hidden;opacity:.35;transition:opacity .9s cubic-bezier(.22,.61,.36,1)}
+.so-cyl-face.is-front{opacity:1}
+.so-cyl-face .so-img-ph{background:none;color:var(--sub)}
 .so-cyl-face img{pointer-events:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none}
-.so-cyl-mark{position:absolute;right:10px;bottom:8px;z-index:2;font-size:12px;font-weight:800;letter-spacing:.04em;color:rgba(255,255,255,.55);text-shadow:0 1px 4px rgba(0,0,0,.55);pointer-events:none;-webkit-user-select:none;user-select:none}
-.so-cyl-cap{min-height:72px;margin-top:26px}
-.so-cyl-cap-in{display:flex;flex-direction:column;gap:6px;align-items:center;animation:so-cap-in .6s ease both}
-.so-cyl-cap-in b{font-size:20px;font-weight:900}
-.so-cyl-cap-in span{font-size:15.5px;line-height:1.6;color:#555}
+.so-cyl-mark{position:absolute;right:10px;bottom:8px;z-index:2;font-size:13px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(0,0,0,.55);pointer-events:none;-webkit-user-select:none;user-select:none}
+.so-cyl-cap{min-height:72px;margin-top:24px}
+.so-cyl-cap-in{display:flex;flex-direction:column;gap:4px;align-items:flex-start;animation:so-cap-in .6s ease both}
+.so-cyl-cap-in b{font-size:16px;font-weight:700}
+.so-cyl-cap-in span{font-size:13px;line-height:1.6;color:var(--sub)}
 @keyframes so-cap-in{from{opacity:0}to{opacity:1}}
-.so-sys-dots{display:flex;align-items:center;justify-content:center;margin-top:6px}
+.so-sys-dots{display:flex;align-items:center;justify-content:flex-start;margin-top:6px}
 .so-sys-dot{appearance:none;border:0;background:none;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;padding:0}
-.so-sys-dot::before{content:"";width:9px;height:9px;border-radius:50%;background:rgba(20,20,20,.2);transition:background-color .2s,transform .2s}
-.so-sys-dot.is-on::before{background:var(--g);transform:scale(1.25)}
-.so-sys-dot:focus-visible{outline:2px solid var(--g);outline-offset:-2px;border-radius:8px}
+.so-sys-dot::before{content:"";width:9px;height:9px;border-radius:50%;background:rgba(26,26,26,.22);transition:background-color .2s,transform .2s}
+.so-sys-dot.is-on::before{background:var(--sub);transform:scale(1.25)}
+.so-sys-dot:focus-visible{outline:2px solid var(--gt);outline-offset:-2px;border-radius:8px}
 /* 모션 축소: 회전 없이 정면 카드만 겹쳐 두고 페이드로만 전환 */
 .so-cyl-flat .so-cyl{transform:none!important;transition:none}
-.so-cyl-flat .so-cyl-face{transform:none!important;opacity:0;filter:none;transition:opacity .5s ease}
+.so-cyl-flat .so-cyl-face{transform:none!important;opacity:0;transition:opacity .5s ease}
 .so-cyl-flat .so-cyl-face.is-front{opacity:1}
-@media(max-width:640px){
-  .so-sys{margin-top:64px}
-  .so-sys-title{font-size:23px}
-  .so-sys-sub{font-size:14.5px;margin-bottom:26px}
-  .so-cyl-cap-in b{font-size:18px}
-  .so-cyl-cap-in span{font-size:14.5px}
-  .so-cyl-mark{font-size:10.5px;right:8px;bottom:6px}
-}
+@media(max-width:640px){.so-sys{margin-top:48px}}
 @media(prefers-reduced-motion:reduce){.so-cyl-cap-in{animation:none}}
 
 /* 5. 김재강 소개 */
-.so-kim-wrap{margin:0 0 72px}
-.so-kim{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0 auto}
-.so-kim-photo{width:100%;max-width:340px;margin:0 auto;aspect-ratio:3/4;border-radius:22px;background:#e9e4d3}
-.so-kim-role{display:inline-block;margin:0 0 12px;font-size:14px;font-weight:800;color:#0B6B3A;background:rgba(34,181,115,.14);padding:7px 14px;border-radius:50px}
-.so-kim-name{font-size:30px;font-weight:900;margin:0 0 16px}
-.so-kim-bio{margin:0 0 20px;font-size:17px;line-height:1.85;color:#2E2E2E}
+.so-kim-wrap{margin:0 0 56px}
+.so-kim{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0}
+.so-kim-photo{width:100%;max-width:340px;margin:0;aspect-ratio:3/4;border-radius:14px;background:var(--alt);border:1px solid var(--line)}
+.so-kim-role{display:block;margin:0 0 8px;font-size:13px;font-weight:600;color:var(--sub)}
+.so-kim-name{font-size:24px;font-weight:700;line-height:1.5;margin:0 0 12px}
+.so-kim-bio{margin:0 0 20px;max-width:34em;font-size:16px;line-height:1.7;color:var(--ink)}
 .so-kim-stats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.so-kim-stats li{font-size:14px;font-weight:800;color:#141414;background:#fff;border:1px solid rgba(20,20,20,.1);padding:9px 15px;border-radius:50px}
-@media(max-width:860px){.so-kim{grid-template-columns:minmax(0,1fr);gap:28px;text-align:center}.so-kim-stats{justify-content:center}.so-kim-name{font-size:25px}}
+.so-kim-stats li{font-size:13px;font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 14px;border-radius:50px}
+@media(max-width:860px){.so-kim{grid-template-columns:minmax(0,1fr);gap:28px}}
 
-/* 6. 이런 분들께 */
-.so-needs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:44px 0 0}
-.so-need{min-width:0;background:var(--cream);border:1px solid rgba(20,20,20,.07);border-radius:20px;padding:30px 24px}
-.so-need-n{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:var(--g);color:#fff;font-weight:900;font-size:15px;margin:0 0 16px}
-.so-need-who{font-size:20px;font-weight:900;margin:0 0 10px}
-.so-need-body{margin:0;font-size:16px;line-height:1.75;color:#3A3A3A}
+/* 6. 카드 — 한 종류만: 흰 배경 · 1px #E6E8E6 · radius 14 · 그림자 없음 */
+.so-needs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:40px 0 0}
+.so-need{min-width:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 20px}
+.so-need-who{font-size:16px;font-weight:700;line-height:1.6;margin:0 0 8px}
+.so-need-body{margin:0;font-size:16px;line-height:1.7;color:var(--ink)}
 @media(max-width:860px){.so-needs{grid-template-columns:minmax(0,1fr)}}
 
 /* 7. 커리큘럼 */
-.so-parts{display:grid;gap:20px;max-width:900px;margin:44px auto 0}
-.so-part{min-width:0;background:#121614;border:1px solid rgba(34,181,115,.18);border-radius:22px;padding:30px 26px}
+.so-parts{display:grid;gap:16px;max-width:900px;margin:32px 0 0}
+.so-part{min-width:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 24px}
 .so-part-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 6px}
-.so-part-time{font-size:14px;font-weight:800;color:#fff;background:var(--g);padding:7px 14px;border-radius:50px}
-.so-part-speaker{font-size:15px;font-weight:700;color:#C8D3CD}
-.so-part-title{font-size:28px;font-weight:900;margin:8px 0 22px}
-.so-keys{display:grid;gap:14px}
-.so-key{min-width:0;background:#0A0A0A;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px 20px}
+.so-part-time{font-size:13px;font-weight:600;color:var(--ink);background:#EEF0EE;padding:6px 12px;border-radius:50px}
+.so-part-speaker{font-size:16px;font-weight:400;color:var(--sub)}
+.so-part-title{font-size:24px;font-weight:700;line-height:1.5;margin:8px 0 8px}
+.so-keys{display:grid;gap:0}
+.so-key{min-width:0;padding:20px 0 4px;border-top:1px solid var(--line);margin-top:16px}
 .so-key-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:0 0 12px}
-.so-key-tag{font-size:13px;font-weight:800;color:var(--g)}
-.so-key-name{font-size:19px;font-weight:900}
-.so-key ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
-.so-key li{position:relative;padding-left:16px;font-size:15.5px;line-height:1.65;color:#D3DCD7}
-.so-key li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:6px;border-radius:50%;background:var(--g)}
-.so-qs{display:grid;gap:10px;margin:18px 0 0}
-.so-q{margin:0;padding:15px 18px;border-left:4px solid var(--g);border-radius:0 12px 12px 0;background:rgba(34,181,115,.08);font-size:16px;font-weight:700;line-height:1.65;color:#fff}
-@media(max-width:640px){.so-part{padding:24px 16px}.so-part-title{font-size:23px}.so-key{padding:18px 14px}}
+.so-key-tag{font-size:13px;font-weight:600;color:var(--gt)}
+.so-key-name{font-size:16px;font-weight:700}
+.so-key ul{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px;max-width:34em}
+.so-key li{position:relative;padding-left:16px;font-size:16px;line-height:1.7;color:var(--ink)}
+.so-key li::before{content:"";position:absolute;left:0;top:.7em;width:6px;height:6px;border-radius:50%;background:#9AA0A6}
+.so-qs{display:grid;gap:10px;margin:0 0 16px;max-width:34em}
+.so-q{margin:0;padding:14px 16px;border-radius:14px;background:var(--tint);font-size:16px;font-weight:700;line-height:1.7;color:var(--ink)}
+@media(max-width:640px){.so-part{padding:24px 16px}}
 
 /* 8. 듣고 나면 달라지는 것 */
-.so-changes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:900px;margin:44px auto 0}
-.so-change{min-width:0;background:#fff;border:1px solid rgba(20,20,20,.08);border-radius:22px;padding:30px 26px;box-shadow:0 10px 28px rgba(20,20,20,.05)}
-.so-change-side{display:inline-block;font-size:15px;font-weight:900;color:#fff;background:var(--dark);padding:8px 18px;border-radius:50px;margin:0 0 18px}
-.so-change ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
-.so-change li{position:relative;padding-left:26px;font-size:16.5px;font-weight:700;line-height:1.65}
-.so-change li::before{content:"";position:absolute;left:0;top:.35em;width:17px;height:17px;border-radius:50%;background:var(--g)}
-.so-change li::after{content:"";position:absolute;left:5.5px;top:.62em;width:5px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.so-changes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:900px;margin:32px 0 0}
+.so-change{min-width:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 20px}
+.so-change-side{display:inline-block;font-size:13px;font-weight:600;color:var(--ink);background:#EEF0EE;padding:6px 12px;border-radius:50px;margin:0 0 16px}
+.so-change ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.so-change li{position:relative;padding-left:26px;font-size:16px;font-weight:700;line-height:1.7}
+.so-change li::before{content:"";position:absolute;left:0;top:.45em;width:16px;height:16px;border-radius:50%;background:#9AA0A6}
+.so-change li::after{content:"";position:absolute;left:5px;top:.64em;width:4px;height:7px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 @media(max-width:760px){.so-changes{grid-template-columns:minmax(0,1fr)}}
 
 /* 9. 클로징 */
-.so-closing{text-align:center}
-.so-closing p{margin:0;font-size:25px;font-weight:800;line-height:1.7}
-.so-closing .so-gap{margin-top:34px}
-.so-closing .so-hl{color:var(--g)}
-@media(max-width:640px){.so-closing p{font-size:19px}.so-closing .so-gap{margin-top:26px}}
+.so-closing{text-align:left}
+.so-closing p{margin:0;font-size:24px;font-weight:700;line-height:1.6}
+.so-closing .so-gap{margin-top:32px}
+.so-closing .so-hl{color:var(--gt)}
+@media(max-width:640px){.so-closing .so-gap{margin-top:24px}}
 
 /* 10. 신청 */
 .so-apply{scroll-margin-top:88px}
-.so-table{width:100%;max-width:640px;margin:36px auto 0;border-collapse:collapse;background:#fff;border:1px solid rgba(20,20,20,.1);border-radius:18px;overflow:hidden}
-.so-table th,.so-table td{padding:18px 20px;text-align:left;font-size:16px;line-height:1.5;border-top:1px solid rgba(20,20,20,.08)}
+.so-table{width:100%;max-width:640px;margin:32px 0 0;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.so-table th,.so-table td{padding:16px 20px;text-align:left;font-size:16px;line-height:1.6;border-top:1px solid var(--line)}
 .so-table tr:first-child th,.so-table tr:first-child td{border-top:0}
-.so-table th{width:28%;font-weight:800;background:#F4F1E6;color:#3A3A3A}
-.so-table td{font-weight:700}
-.so-table td.is-pending{color:#8a8a8a;font-weight:600}
-@media(max-width:640px){.so-table th,.so-table td{padding:15px 14px;font-size:15px}.so-table th{width:32%}}
+.so-table th{width:28%;font-weight:600;background:var(--alt);color:var(--sub)}
+.so-table td{font-weight:700;color:var(--ink)}
+.so-table td.is-pending{color:var(--sub);font-weight:400}
+@media(max-width:640px){.so-table th,.so-table td{padding:14px;font-size:16px}.so-table th{width:32%}}
 /* FAQ — 아코디언(details) */
-.so-faq{max-width:640px;margin:40px auto 0}
-.so-faq-h{margin:0 0 12px;font-size:18px;font-weight:800;text-align:center}
-.so-faq-item{background:#fff;border:1px solid rgba(20,20,20,.1);border-radius:14px;margin:0 0 10px;overflow:hidden}
-.so-faq-item summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;font-size:16px;font-weight:800}
+.so-faq{max-width:640px;margin:40px 0 0}
+.so-faq-h{margin:0 0 12px;font-size:16px;font-weight:700;text-align:left}
+.so-faq-item{background:#fff;border:1px solid var(--line);border-radius:14px;margin:0 0 10px;overflow:hidden}
+.so-faq-item summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;font-size:16px;font-weight:700}
 .so-faq-item summary::-webkit-details-marker{display:none}
-.so-faq-item summary::after{content:"+";font-size:20px;font-weight:900;color:var(--g)}
+.so-faq-item summary::after{content:"+";font-size:20px;font-weight:400;color:var(--sub)}
 .so-faq-item[open] summary::after{content:"−"}
-.so-faq-item summary:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
-.so-faq-item p{margin:0;padding:0 18px 16px;font-size:15.5px;line-height:1.7;color:#3A3A3A}
-/* 하단 고정 바 — 모든 폭. 숨김일 때는 포커스도 못 받게 visibility 로 접는다 */
+.so-faq-item summary:focus-visible{outline:2px solid var(--gt);outline-offset:-2px}
+.so-faq-item p{margin:0;padding:0 18px 16px;font-size:16px;line-height:1.7;color:var(--ink)}
+/* 하단 고정 바 — 흰 바탕 + 위쪽 1px 선 + 은은한 그림자. 숫자는 진한 글자, 초록은 버튼에만. 숨김일 때는 포커스도 못 받게 visibility 로 접는다 */
 .so{--so-bar-h:68px}
-.so-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(10,10,10,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transform:translateY(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
+.so-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(26,26,26,.06);transform:translateY(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
 .so-bar.is-on{transform:none;visibility:visible;transition-delay:0s}
 .so-bar-in{max-width:880px;margin:0 auto;min-height:var(--so-bar-h);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
-.so-bar-txt{min-width:0;color:#fff}
-.so-bar-cd{margin:0;font-size:15px;font-weight:800;line-height:1.35;white-space:nowrap;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
-.so-bar-cd .so-bar-num{display:inline-block;color:var(--g);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
-.so-bar-seats{margin:1px 0 0;font-size:12px;font-weight:600;line-height:1.4;color:#B8C4BE;font-variant-numeric:tabular-nums}
-.so-bar-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:0;border-radius:50px;background:var(--g);color:#fff;font:inherit;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer}
-.so-bar-btn:disabled{background:#4a4a4a;color:#9a9a9a;cursor:not-allowed}
-@media(max-width:380px){.so-bar-cd{font-size:13.5px}.so-bar-btn{padding:0 16px;font-size:14px}}
+.so-bar-txt{min-width:0;color:var(--ink)}
+.so-bar-cd{margin:0;font-size:16px;font-weight:700;line-height:1.35;white-space:nowrap;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.so-bar-cd .so-bar-num{display:inline-block;color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.so-bar-cd .so-bar-ms{display:inline-block;margin-left:1px;font-size:14px;font-weight:400;color:var(--sub);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.so-bar-seats{margin:1px 0 0;font-size:13px;font-weight:400;line-height:1.4;color:var(--sub);font-variant-numeric:tabular-nums}
+.so-bar-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:0;border-radius:50px;background:var(--cta);color:#fff;font:inherit;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer}
+.so-bar-btn:disabled{background:#E6E8E6;color:var(--sub);cursor:not-allowed}
+@media(max-width:380px){.so-bar-cd{font-size:14px}.so-bar-cd .so-bar-ms{font-size:13px}.so-bar-btn{padding:0 16px;font-size:14px}}
 /* 하단 바 높이만큼 페이지 끝 여백 */
 .so-apply{padding-bottom:calc(var(--so-bar-h) + 40px + env(safe-area-inset-bottom))}
 @media(prefers-reduced-motion:reduce){.so-bar,.so-bar.is-on{transition:none}}
@@ -730,7 +712,7 @@ function BookSlider({ books }: { books: { src: string; title: string }[] }) {
             books.map((b) => (
               <div className="so-bs-item" key={`${copy}-${b.src}`} aria-hidden={copy > 0 ? true : undefined}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={b.src} alt={copy === 0 ? `${b.title} 표지` : ""} draggable={false} loading="lazy" />
+                <img src={b.src} alt={copy === 0 ? `${b.title} 표지` : ""} draggable={false} loading="eager" decoding="async" />
               </div>
             )),
           )}
@@ -757,6 +739,7 @@ export default function SalesOps() {
   const [barOn, setBarOn] = useState(true);
   // 마감 카운트다운 — 숫자는 requestAnimationFrame 으로 DOM 에 직접 쓴다(재렌더 없이). 마감이 지나면 closed
   const cdRef = useRef<HTMLSpanElement>(null);
+  const msRef = useRef<HTMLSpanElement>(null);
   const [closed, setClosed] = useState(false);
   // 잔여석 — 서버(/api/seminar-seats)가 토스 결제 완료 건수로 센 값. 못 가져오면 null 이고 줄을 숨긴다
   const [seats, setSeats] = useState<number | null>(null);
@@ -820,10 +803,35 @@ export default function SalesOps() {
       { threshold: 0.12 },
     );
     root.classList.add("so-anim");
-    root.querySelectorAll(".so-reveal").forEach((el) => io.observe(el));
+    const targets = Array.from(root.querySelectorAll<HTMLElement>(".so-reveal"));
+    targets.forEach((el) => io.observe(el));
+
+    // 빠른 스크롤·앵커 이동(좌석 신청 버튼 등)으로 화면을 건너뛰면 옵저버가 그 요소를 한 번도 "교차"로 못 잡아
+    // 지나친 구간이 투명한 채 빈 공간으로 남는다. 화면 아래쪽 경계보다 위에 있는 요소는 모두 바로 보이게 한다.
+    let raf = 0;
+    const revealPassed = () => {
+      raf = 0;
+      const line = window.innerHeight;
+      targets.forEach((el) => {
+        if (el.classList.contains("so-in")) return;
+        if (el.getBoundingClientRect().top < line) {
+          el.classList.add("so-in");
+          io.unobserve(el);
+        }
+      });
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(revealPassed);
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    schedule();
 
     return () => {
       io.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (raf) cancelAnimationFrame(raf);
       root.classList.remove("so-anim");
     };
   }, []);
@@ -956,7 +964,8 @@ export default function SalesOps() {
         const m = Math.floor((left % 3_600_000) / 60_000);
         const s = Math.floor((left % 60_000) / 1000);
         const cs = Math.floor((left % 1000) / 10);
-        el.textContent = `${pad(d)}일 ${pad(h)}:${pad(m)}:${pad(s)}.${pad(cs)}`;
+        el.textContent = `${pad(d)}일 ${pad(h)}:${pad(m)}:${pad(s)}`;
+        if (msRef.current) msRef.current.textContent = `.${pad(cs)}`;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -1087,22 +1096,24 @@ export default function SalesOps() {
       </section>
 
       {/* ── 2. 세일즈 축 문제 제기 ── */}
-      <section data-track-section="problem" className="so-sec so-cream">
+      <section data-track-section="problem" className="so-sec so-white">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
 
-          <div className="so-vs so-stagger">
-            {SO_TALKS.map((t) => (
-              <div className="so-vs-row so-reveal" key={t.line}>
-                <div className="so-vs-cell so-vs-l">
-                  <span className="so-vs-tag">이렇게 말하면</span>
-                  <p className="so-bubble">{t.line}</p>
-                  <span className="so-diag">{t.diag}</span>
-                </div>
-                <div className="so-vs-cell so-vs-r">
-                  <span className="so-vs-tag">이렇게 바뀝니다</span>
-                  {t.pro ? <p className="so-vs-pro">{t.pro}</p> : <p className="so-vs-tease">→ 2부에서 공개</p>}
-                </div>
+          <div className="so-scenes so-stagger">
+            {SO_TALKS.map((t, i) => (
+              <div className="so-scene so-reveal" key={t.line}>
+                <span className="so-scene-n">{`0${i + 1} · 이렇게 말하면`}</span>
+                <p className="so-scene-line">{t.line}</p>
+                <p className="so-scene-diag">{t.diag}</p>
+                {t.pro ? (
+                  <p className="so-scene-pro">
+                    <small>이렇게 바뀝니다</small>
+                    {t.pro}
+                  </p>
+                ) : (
+                  <p className="so-scene-tease">→ 2부에서 공개</p>
+                )}
               </div>
             ))}
           </div>
@@ -1119,7 +1130,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 3. 황현진 작가 소개 (저서 · 영상 포함) ── */}
-      <section data-track-section="hwang" className="so-sec so-dark2">
+      <section data-track-section="hwang" className="so-sec so-alt">
         <div className="so-wrap">
           <div className="so-prof so-reveal">
             <div className="so-prof-photo so-media">
@@ -1308,7 +1319,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 7. 커리큘럼 · 타임테이블 ── */}
-      <section data-track-section="curriculum" className="so-sec so-dark">
+      <section data-track-section="curriculum" className="so-sec so-alt">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">
             커리큘럼 · <em>타임테이블</em>
@@ -1352,7 +1363,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 8. 듣고 나면 달라지는 것 ── */}
-      <section data-track-section="change" className="so-sec so-cream">
+      <section data-track-section="change" className="so-sec so-white">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">듣고 나면 달라지는 것</h2>
           <div className="so-changes so-stagger">
@@ -1371,7 +1382,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 9. 클로징 ── */}
-      <section data-track-section="closing" className="so-sec so-dark">
+      <section data-track-section="closing" className="so-sec so-alt">
         <div className="so-wrap so-narrow so-closing">
           {SO_CLOSING.map((group, gi) => (
             <div className={gi > 0 ? "so-gap so-reveal" : "so-reveal"} key={gi}>
@@ -1386,7 +1397,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 10. 신청 ── */}
-      <section data-track-section="form" className="so-sec so-cream so-apply" id="so-apply">
+      <section data-track-section="form" className="so-sec so-white so-apply" id="so-apply">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">세미나 신청 안내</h2>
           <table className="so-table so-reveal">
@@ -1444,7 +1455,8 @@ export default function SalesOps() {
                 "신청 마감"
               ) : (
                 <>
-                  마감까지 <span className="so-bar-num" ref={cdRef}>--일 --:--:--.--</span>
+                  마감까지 <span className="so-bar-num" ref={cdRef}>--일 --:--:--</span>
+                  <span className="so-bar-ms" ref={msRef}>.--</span>
                 </>
               )}
             </p>
