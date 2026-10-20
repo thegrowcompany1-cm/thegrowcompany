@@ -16,6 +16,7 @@ import {
   parseOrderIdSlug,
   readCheckoutCustomer,
 } from "@/lib/products";
+import { SO_PRODUCT_NORMAL, SO_PRODUCT_STORY, SO_ROLE_OWNER } from "@/lib/salesOps";
 
 type Payment = {
   orderId: string;
@@ -36,7 +37,9 @@ type Payment = {
 
 type Phase =
   | { kind: "confirming" }
-  | { kind: "done"; payment: Payment }
+  // role: 결제 전 신청 폼에서 고른 역할(브라우저에 잠깐 저장해 둔 값). 서버 응답에는 없고,
+  // 결제 직후 화면에서만 읽을 수 있다 (새로고침하면 저장값이 지워져 빈 값이 된다).
+  | { kind: "done"; payment: Payment; role: string }
   | { kind: "error"; message: string; code?: string };
 
 const formatKRW = (n: number) => `${n.toLocaleString("ko-KR")}원`;
@@ -134,7 +137,7 @@ export default function CheckoutSuccess() {
         }
 
         clearCheckoutCustomer(orderId);
-        setPhase({ kind: "done", payment: data.payment });
+        setPhase({ kind: "done", payment: data.payment, role: customer?.role ?? "" });
       } catch {
         setPhase({
           kind: "error",
@@ -227,6 +230,10 @@ export default function CheckoutSuccess() {
 
   // ── 승인 성공 ────────────────────────────────────────────────────────────
   const { payment } = phase;
+  // 세미나 결제 + 대표·원장 — 다음 문 하나. "우선 예약" 같은 약속 문구는 쓰지 않는다.
+  const showDiagnosisCard =
+    (payment.productSlug === SO_PRODUCT_NORMAL || payment.productSlug === SO_PRODUCT_STORY) &&
+    phase.role === SO_ROLE_OWNER;
   return (
     <div className="chk">
       <style dangerouslySetInnerHTML={{ __html: CHK_STYLE }} />
@@ -257,6 +264,20 @@ export default function CheckoutSuccess() {
             </div>
           ) : null}
         </div>
+        {showDiagnosisCard ? (
+          <div className="chk-next">
+            <style
+              dangerouslySetInnerHTML={{
+                __html:
+                  ".chk-next{margin:22px 0 4px;padding:18px 18px 20px;border:1px solid rgba(20,20,20,.12);border-radius:14px;background:#fff;text-align:center}" +
+                  ".chk-next p{margin:0 0 12px;font-size:15px;line-height:1.7;font-weight:700;color:#2E2E2E}" +
+                  ".chk-next a{display:inline-flex;align-items:center;justify-content:center;padding:13px 22px;border-radius:50px;background:#141414;color:#fff;font-size:15px;font-weight:800;text-decoration:none}",
+              }}
+            />
+            <p>세미나 전에 우리 센터 숫자를 먼저 보고 싶다면</p>
+            <Link href="/consulting/diagnosis">진단 컨설팅 상담 신청</Link>
+          </div>
+        ) : null}
         <Contact />
         <Link href="/" className="chk-home">
           홈으로

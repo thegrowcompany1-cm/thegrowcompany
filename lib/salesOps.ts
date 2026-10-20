@@ -23,6 +23,9 @@ export const SO_PRICE_NORMAL = 165000;
 export const SO_PRICE_STORY = 99000;
 /* ▲▲ 여기까지 ▲▲ */
 
+/** 신청 폼의 역할 선택값 중 대표·원장 — components/edu/SalesOpsPay.tsx 의 ROLES 와 같은 문자열이어야 한다 */
+export const SO_ROLE_OWNER = "대표 · 원장";
+
 /** 결제 상품 슬러그 — Supabase products 테이블의 slug(is_active=true)와 일치해야 결제창이 뜬다 */
 export const SO_PRODUCT_NORMAL = "sales-ops";
 export const SO_PRODUCT_STORY = "sales-ops-story";

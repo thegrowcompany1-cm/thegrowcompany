@@ -6,8 +6,9 @@
 //  · 구조·스타일은 /edu/gx-class 를 따른다. 주입 HTML 없이 전부 React 렌더,
 //    클래스 접두사 so-, 상수 접두사 SO_.
 //  · 일자·장소·정원·가격은 lib/salesOps.ts 상수만 수정한다 (장소·정원·가격은 TODO).
-//  · 10섹션: 히어로 → 세일즈 문제 → 황현진 소개(저서·영상) → 운영 문제 → 김재강 소개
-//    → 대상 → 커리큘럼 → 변화 → 클로징 → 신청.
+//  · 9섹션: 히어로(가격 한 줄 + 대상 칩) → 세일즈 문제(하수↔고수 대조) → 황현진 소개(저서·영상)
+//    → 운영 문제 → 김재강 소개 → 커리큘럼 → 변화 → 클로징 → 신청(FAQ 포함).
+//  · 모바일(768px 미만)은 하단 고정 CTA 가 붙는다 — 히어로가 보이는 동안과 신청 섹션에 닿은 뒤에는 숨는다.
 //  · 영상(SALES SALON)은 3번 섹션 안에 있다. 자체 호스팅이며 인스타그램 임베드·링크는
 //    이 페이지 어디에도 두지 않는다 (외부 이탈 방지).
 //  · 애니메이션 fail-safe: 기본은 전부 표시. 이펙트가 루트에 so-anim 을 붙인 뒤에만
@@ -62,19 +63,23 @@ const SO_TARGET_LINES: [string, string][] = [
   ["강사 · 실장 · 원장 · 점장을 위한", "세일즈 · 운영 교육"],
 ];
 
-// ── 2. 세일즈 축 문제 제기 — 상담 대사 원문 + 회색 진단 라벨 ─────────────────
-const SO_TALKS = [
-  {
-    line: "회원님, 가격 대비 저희 시설과 기구가 최고죠!",
-    diag: "주장만 늘어놓는 설득",
-  },
+// ── 2. 세일즈 축 문제 제기 — 상담 대사 원문(하수) ↔ 바꾼 말(고수). 좌: 이렇게 말하면 / 우: 이렇게 바뀝니다
+// pro 가 없는 항목은 우측에 "2부에서 공개"만 보인다 (SO_QUOTES 는 커리큘럼에서 그대로 노출한다).
+const SO_TALKS: { line: string; diag: string; pro: string | null }[] = [
   {
     line: "3개월보단 12개월이 훨씬 저렴하니까 이렇게 하세요.",
     diag: "이성적 설득에만 집착",
+    pro: "도화지 10장에 그리는 그림 vs 100장에 그리는 그림, 어떤 완성도를 원하세요?",
   },
   {
     line: "주사요? 에이~ 살 빼려면 땀을 흘리셔야죠.",
     diag: "회원의 반응에 직설적으로 반박",
+    pro: "운동이 적금이라면, 주사는 대출입니다.",
+  },
+  {
+    line: "회원님, 가격 대비 저희 시설과 기구가 최고죠!",
+    diag: "주장만 늘어놓는 설득",
+    pro: null,
   },
 ];
 
@@ -96,6 +101,14 @@ const SO_KIM_BIO =
 const SO_KIM_STATS = ["52개 센터 총괄", "10년 운영 데이터", "수백 명 조직 리딩"];
 
 // ── 6. 이런 분들께 필요합니다 ───────────────────────────────────────────────
+// 4. 운영 축 — 맨 앞의 고통 장면 (원칙 문장 앞). problem 섹션과 같은 말풍선 스타일.
+// TODO 대표님 확인: 실제 위탁센터에서 들은 말로 교체
+const SO_OPS_PAINS = [
+  "원장님 오늘 안 나오세요? 그럼 상담은 내일 다시…",
+  "이번 달 매출이 왜 빠졌는지 모르겠어요",
+  "PT 재등록은 담당 쌤 따라 나갔어요",
+];
+
 // 4. 운영 축 — 본문 아래 3칸 카드
 const SO_OPS_CARDS = [
   {
@@ -127,16 +140,20 @@ const SO_SYS_SCREENS = [
 ];
 const SO_SYS_ROTATE_MS = 3500;
 
+// 대상별 "가져갈 것" — 히어로의 칩 3개가 이 순서로 탭이 된다 (기본 선택은 첫 칩)
 const SO_NEEDS = [
   {
+    chip: "강사·트레이너",
     who: "강사 · 트레이너",
     body: "'영업'이라는 부담 대신, 전문가로서 당당하게 권하는 법",
   },
   {
+    chip: "실장·팀장",
     who: "실장 · 팀장",
     body: "상담 등록률과 재등록을 끌어올리는 실전 화법과 관리 루틴",
   },
   {
+    chip: "원장·점장",
     who: "원장 · 점장",
     body: "숫자로 읽는 센터, 맡겨도 돌아가는 운영 구조",
   },
@@ -188,7 +205,7 @@ const SO_PARTS = [
         points: [
           "회원의 마음을 여는 질문 한 줄",
           "몰입시키는 한 줄 권유화법",
-          "현장에서 검증된 실전 화법",
+          "회원의 반대(가격·시간·효과)에 답하는 한 줄 화법",
         ],
         quotes: SO_QUOTES,
       },
@@ -197,7 +214,7 @@ const SO_PARTS = [
         name: "호감의 기술",
         points: [
           "회원은 '좋은 사람'이 권하는 '좋아 보이는 것'을 선택합니다",
-          "세일즈 초고수들의 필승 전략",
+          "권유가 '영업'으로 들리지 않게 하는 호감 설계",
           "이탈을 막고 재등록률을 끌어올리는 실천 전략",
         ],
         quotes: [] as string[],
@@ -230,7 +247,43 @@ const SO_CHANGES = [
 const SO_CLOSING = [
   ["당신의 일은 단지 운동을 가르치는 것이 아닙니다.", "누군가가 자신을 더 사랑할 수 있게끔 돕는 일입니다."],
   ["최고의 전문성을 갖춘 스스로에게", "이제 날개를 달아줄 '세일즈 언어'를 선물하세요."],
+  ["원장님께는,", "자리를 비워도 숫자가 지켜지는 센터를."],
 ];
+
+// ── 신청 안내 아래 FAQ ──────────────────────────────────────────────────────
+// a 가 null 이면 렌더링하지 않는다 (확정 전 문구를 화면에 내지 않기 위해). 질문형 후킹을 피하려고 항목명만 쓴다.
+const SO_FAQ: { q: string; a: string | null }[] = [
+  {
+    q: "환불 규정",
+    // TODO 대표님 확인: GX·FC와 같은 '강의 5일 전까지 100% 환불, 정원 마감 시 100% 환불' 적용 여부
+    a: null,
+  },
+  {
+    q: "장소 · 시간",
+    a: soIsPending(SO_PLACE) ? null : `${SO_DATE} ${SO_TIME} · ${SO_PLACE}`,
+  },
+  {
+    q: "주차",
+    // TODO 대표님 확인: 교육장 주차 가능 여부·대수·요금
+    a: null,
+  },
+  {
+    q: "강의자료 · 녹화본",
+    // TODO 대표님 확인: 강의자료 제공 여부, 녹화·다시보기 제공 여부
+    a: null,
+  },
+  {
+    q: "1부 · 2부 부분 수강",
+    // TODO 대표님 확인: 1부만/2부만 수강 가능 여부와 가격
+    a: null,
+  },
+  {
+    q: "증빙 (세금계산서 · 현금영수증)",
+    // TODO 대표님 확인: 발행 가능 여부와 신청 방법
+    a: null,
+  },
+];
+const SO_FAQ_SHOWN = SO_FAQ.filter((f): f is { q: string; a: string } => f.a !== null);
 
 // ── 이미지 컴포넌트 (gx-class 의 GxImg 와 같은 방식) ─────────────────────────
 /** 하이드레이션 전에 이미 로드·실패가 끝난 이미지도 상태를 반영한다 */
@@ -320,7 +373,18 @@ const SO_STYLE = `
 .so-tags{margin:0 0 26px;display:grid;gap:5px;word-break:keep-all}
 .so-tags p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:#D3DCD7}
 .so-tags span{display:inline-block}
-.so-hero-meta{margin:0 0 30px;font-size:16px;font-weight:700;line-height:1.7;color:#fff}
+.so-hero-info{margin:0 0 26px}
+.so-hero-meta{margin:0 0 4px;font-size:16px;font-weight:700;line-height:1.7;color:#fff}
+.so-nb{white-space:nowrap}
+.so-hero-price{margin:0 0 4px;font-size:15px;font-weight:800;line-height:1.7;color:var(--g)}
+/* 대상 칩 — 탭. 아래 패널은 선택한 대상의 '가져갈 것' */
+.so-chips{margin:0 0 30px}
+.so-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.so-chip{appearance:none;cursor:pointer;font:inherit;font-size:14px;font-weight:800;color:#D3DCD7;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);padding:9px 16px;border-radius:50px;transition:background-color .2s,border-color .2s,color .2s}
+.so-chip.is-on{color:#fff;background:var(--g);border-color:var(--g)}
+.so-chip:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.so-chip-panel{margin:0;min-height:3.5em;font-size:15.5px;line-height:1.7;color:#E4EBE7}
+.so-chip-panel b{display:block;margin:0 0 2px;font-size:12.5px;font-weight:800;letter-spacing:.04em;color:var(--g)}
 .so-hero-meta span{color:var(--g);margin-right:10px}
 .so-cta{display:inline-flex;align-items:center;justify-content:center;max-width:100%;padding:17px 34px;border-radius:50px;background:var(--g);color:#fff;font-size:17px;font-weight:800;text-decoration:none;box-shadow:0 10px 26px rgba(34,181,115,.28)}
 /* 강사 카드 2장 — 같은 크기·같은 배경·같은 캡션. 두 사진 모두 배경 제거본(contain, 아래 정렬) */
@@ -345,16 +409,26 @@ const SO_STYLE = `
 }
 
 /* 2. 세일즈 축 문제 제기 */
-.so-talks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:44px 0 0}
-.so-talk{min-width:0;display:flex;flex-direction:column;gap:12px}
+/* 하수↔고수 대조 — 한 줄이 좌(이렇게 말하면)·우(이렇게 바뀝니다) 두 칸. 모바일은 위아래로 쌓는다 */
+.so-vs{display:grid;gap:22px;margin:44px 0 0}
+.so-vs-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.so-vs-cell{min-width:0;display:flex;flex-direction:column;gap:10px}
+.so-vs-tag{align-self:flex-start;font-size:12.5px;font-weight:800;letter-spacing:.02em;color:#7A7A7A}
+.so-vs-r .so-vs-tag{color:#0B6B3A}
+.so-vs-pro{flex:1 1 auto;border-radius:18px;padding:22px 20px;font-size:17px;font-weight:800;line-height:1.6;background:var(--dark);color:#fff;box-shadow:0 8px 24px rgba(20,20,20,.12)}
+.so-vs-tease{flex:1 1 auto;display:flex;align-items:center;border-radius:18px;padding:22px 20px;font-size:16px;font-weight:800;line-height:1.6;color:#0B6B3A;background:rgba(34,181,115,.1);border:1px dashed rgba(34,181,115,.55)}
+/* 4. 운영 고통 장면 — problem 의 말풍선과 같은 스타일 */
+.so-pains{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 56px}
+.so-pains .so-bubble{margin:0}
 .so-bubble{flex:1 1 auto;position:relative;background:#fff;border:1px solid rgba(20,20,20,.08);border-radius:18px;padding:22px 20px;font-size:17px;font-weight:700;line-height:1.6;box-shadow:0 8px 24px rgba(20,20,20,.06)}
 .so-bubble::after{content:"";position:absolute;left:26px;bottom:-9px;width:16px;height:16px;background:#fff;border-right:1px solid rgba(20,20,20,.08);border-bottom:1px solid rgba(20,20,20,.08);transform:rotate(45deg)}
 .so-diag{align-self:flex-start;margin-top:8px;font-size:13px;font-weight:700;color:#6E6E6E;background:#E6E6E6;padding:7px 14px;border-radius:50px}
 .so-versus{display:grid;gap:12px;max-width:760px;margin:44px auto 0}
 .so-versus-row{background:var(--dark);color:#fff;border-radius:16px;padding:22px 24px;font-size:18px;font-weight:700;line-height:1.7;text-align:center}
 .so-versus-row mark{background:none;color:var(--g);font-weight:900}
-@media(max-width:860px){.so-talks{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:640px){.so-bubble{font-size:16px}.so-versus-row{font-size:16px;padding:18px 16px}}
+@media(max-width:860px){.so-pains{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.so-vs{gap:26px}.so-vs-row{grid-template-columns:minmax(0,1fr);gap:14px}}
+@media(max-width:640px){.so-bubble{font-size:16px}.so-vs-pro{font-size:16px}.so-versus-row{font-size:16px;padding:18px 16px}}
 
 /* 3. 황현진 소개 */
 .so-prof{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0 auto}
@@ -506,6 +580,25 @@ const SO_STYLE = `
 .so-table td{font-weight:700}
 .so-table td.is-pending{color:#8a8a8a;font-weight:600}
 @media(max-width:640px){.so-table th,.so-table td{padding:15px 14px;font-size:15px}.so-table th{width:32%}}
+/* FAQ — 아코디언(details) */
+.so-faq{max-width:640px;margin:40px auto 0}
+.so-faq-h{margin:0 0 12px;font-size:18px;font-weight:800;text-align:center}
+.so-faq-item{background:#fff;border:1px solid rgba(20,20,20,.1);border-radius:14px;margin:0 0 10px;overflow:hidden}
+.so-faq-item summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;font-size:16px;font-weight:800}
+.so-faq-item summary::-webkit-details-marker{display:none}
+.so-faq-item summary::after{content:"+";font-size:20px;font-weight:900;color:var(--g)}
+.so-faq-item[open] summary::after{content:"−"}
+.so-faq-item summary:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
+.so-faq-item p{margin:0;padding:0 18px 16px;font-size:15.5px;line-height:1.7;color:#3A3A3A}
+/* 모바일 하단 고정 CTA — 768px 미만에서만. 숨김일 때는 포커스도 못 받게 visibility 로 접는다 */
+.so-sticky{display:none}
+@media(max-width:767px){
+  .so-sticky{display:block;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(10,10,10,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transform:translateY(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
+  .so-sticky.is-on{transform:none;visibility:visible;transition-delay:0s}
+  .so-sticky-cta{display:flex;width:100%;padding:15px 20px;box-shadow:none}
+  .so-apply{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+}
+@media(prefers-reduced-motion:reduce){.so-sticky,.so-sticky.is-on{transition:none}}
 `;
 
 export default function SalesOps() {
@@ -515,6 +608,12 @@ export default function SalesOps() {
   const sliderRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeVid, setActiveVid] = useState(0);
+
+  // 히어로 대상 칩 — 선택한 대상의 "가져갈 것"을 보여 준다 (기본: 첫 칩)
+  const [needIdx, setNeedIdx] = useState(0);
+
+  // 모바일 하단 고정 CTA — 히어로가 보이는 동안과 신청 섹션에 닿은 뒤(들어왔거나 이미 지나친 뒤)에는 숨긴다
+  const [stickyOn, setStickyOn] = useState(false);
 
   // 운영 시스템 3D 원통 — idx 는 계속 늘어나는 회전 카운터(역회전 방지), active 는 idx % 4
   const sysStageRef = useRef<HTMLDivElement>(null);
@@ -665,6 +764,39 @@ export default function SalesOps() {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  useEffect(() => {
+    const hero = document.getElementById("so-hero");
+    const apply = document.getElementById("so-apply");
+    if (!hero || !apply) return;
+    // 상태는 요소의 현재 위치로 다시 읽는다. IntersectionObserver 는 경계를 '넘는 순간'만 알려 주어서
+    // 앵커 이동처럼 한 번에 크게 점프하면(신청 섹션을 지나친 상태에서 위로 되돌아갈 때) 놓칠 수 있다.
+    // 그래서 옵저버가 깨우면 위치를 다시 읽고, 스크롤·크기 변화에서도 같은 계산을 한다.
+    const sync = () => {
+      const vh = window.innerHeight;
+      const h = hero.getBoundingClientRect();
+      const a = apply.getBoundingClientRect();
+      const heroIn = h.bottom > 0 && h.top < vh; // 히어로가 화면에 보이는 동안
+      const applyHide = a.top < vh; // 신청 섹션이 들어왔거나(보이는 중) 이미 지나쳤다
+      setStickyOn(!heroIn && !applyHide);
+    };
+    let raf = 0;
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; sync(); });
+    };
+    const io = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(schedule, { threshold: 0 });
+    io?.observe(hero);
+    io?.observe(apply);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    sync();
+    return () => {
+      io?.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   const placeKnown = !soIsPending(SO_PLACE);
 
   return (
@@ -685,17 +817,45 @@ export default function SalesOps() {
                 </p>
               ))}
             </div>
-            <p className="so-hero-meta">
-              <span>{SO_DATE}</span>
-              {SO_TIME}
+            <div className="so-hero-info">
+              <p className="so-hero-meta">
+                <span>{SO_DATE}</span>
+                {SO_TIME}
+              </p>
+              <p className="so-hero-price">
+                <span className="so-nb">스토리 인증 시 {soFormatPrice(SO_PRICE_STORY)}</span>{" "}
+                <span className="so-nb">(정가 {soFormatPrice(SO_PRICE_NORMAL)})</span> ·{" "}
+                <span className="so-nb">정원 {soFormatCapacity(SO_CAPACITY)}</span>
+              </p>
               {placeKnown && (
-                <>
-                  <br />
+                <p className="so-hero-meta">
                   <span>장소</span>
                   {SO_PLACE}
-                </>
+                </p>
               )}
-            </p>
+            </div>
+            <div className="so-chips" data-track-section="target">
+              <div className="so-chip-row" role="tablist" aria-label="대상별 가져갈 것">
+                {SO_NEEDS.map((nd, i) => (
+                  <button
+                    type="button"
+                    key={nd.chip}
+                    role="tab"
+                    id={`so-chip-${i}`}
+                    aria-selected={i === needIdx}
+                    aria-controls="so-chip-panel"
+                    className={`so-chip${i === needIdx ? " is-on" : ""}`}
+                    onClick={() => setNeedIdx(i)}
+                  >
+                    {nd.chip}
+                  </button>
+                ))}
+              </div>
+              <p className="so-chip-panel" id="so-chip-panel" role="tabpanel" aria-labelledby={`so-chip-${needIdx}`}>
+                <b>가져갈 것</b>
+                {SO_NEEDS[needIdx].body}
+              </p>
+            </div>
             <a className="so-cta" href="#so-apply" onClick={scrollToApply}>
               세미나 신청하기
             </a>
@@ -739,11 +899,18 @@ export default function SalesOps() {
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">아직도 이런 상담을 반복하고 계신다면</h2>
 
-          <div className="so-talks so-stagger">
+          <div className="so-vs so-stagger">
             {SO_TALKS.map((t) => (
-              <div className="so-talk so-reveal" key={t.line}>
-                <p className="so-bubble">{t.line}</p>
-                <span className="so-diag">{t.diag}</span>
+              <div className="so-vs-row so-reveal" key={t.line}>
+                <div className="so-vs-cell so-vs-l">
+                  <span className="so-vs-tag">이렇게 말하면</span>
+                  <p className="so-bubble">{t.line}</p>
+                  <span className="so-diag">{t.diag}</span>
+                </div>
+                <div className="so-vs-cell so-vs-r">
+                  <span className="so-vs-tag">이렇게 바뀝니다</span>
+                  {t.pro ? <p className="so-vs-pro">{t.pro}</p> : <p className="so-vs-tease">→ 2부에서 공개</p>}
+                </div>
               </div>
             ))}
           </div>
@@ -851,6 +1018,13 @@ export default function SalesOps() {
       {/* ── 4. 운영 축 문제 제기 ── */}
       <section data-track-section="ops" className="so-sec so-white">
         <div className="so-wrap">
+          <div className="so-pains so-stagger">
+            {SO_OPS_PAINS.map((line) => (
+              <p className="so-bubble so-reveal" key={line}>
+                {line}
+              </p>
+            ))}
+          </div>
           <h2 className="so-h2 so-reveal">회원은 사람을 보고 등록하고, 시스템을 보고 재등록합니다</h2>
           <div className="so-op-body so-reveal">
             <p>상담도, CS도, 재등록도, 직원 교육도 원장 한 사람을 거친다면 원장이 빠지는 날 매출도 같이 빠집니다.</p>
@@ -955,22 +1129,6 @@ export default function SalesOps() {
                 ))}
               </ul>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 6. 이런 분들께 필요합니다 ── */}
-      <section data-track-section="target" className="so-sec so-white">
-        <div className="so-wrap">
-          <h2 className="so-h2 so-reveal">이런 분들께 필요합니다</h2>
-          <div className="so-needs so-stagger">
-            {SO_NEEDS.map((n, i) => (
-              <div className="so-need so-reveal" key={n.who}>
-                <div className="so-need-n">{i + 1}</div>
-                <h3 className="so-need-who">{n.who}</h3>
-                <p className="so-need-body">{n.body}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -1083,10 +1241,33 @@ export default function SalesOps() {
               </tr>
             </tbody>
           </table>
+          {SO_FAQ_SHOWN.length > 0 && (
+            <div className="so-faq so-reveal">
+              <h3 className="so-faq-h">자주 확인하시는 내용</h3>
+              {SO_FAQ_SHOWN.map((f) => (
+                <details className="so-faq-item" key={f.q}>
+                  <summary>{f.q}</summary>
+                  <p>{f.a}</p>
+                </details>
+              ))}
+            </div>
+          )}
           {/* 결제 카드 2종 — 스토리 인증가 / 정상가 */}
           <SalesOpsPay />
         </div>
       </section>
+
+      {/* 모바일 하단 고정 CTA — 잔여석 표기는 실제 숫자 연동 전까지 넣지 않는다 */}
+      <div className={`so-sticky${stickyOn ? " is-on" : ""}`} aria-hidden={!stickyOn}>
+        <a
+          className="so-cta so-sticky-cta"
+          href="#so-apply"
+          onClick={scrollToApply}
+          tabIndex={stickyOn ? 0 : -1}
+        >
+          {soFormatPrice(SO_PRICE_STORY)} 신청하기
+        </a>
+      </div>
     </div>
   );
 }
