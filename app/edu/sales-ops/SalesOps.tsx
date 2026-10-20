@@ -348,7 +348,7 @@ const SO_STYLE = `
 .so-wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .so-narrow{max-width:820px}
 /* 히어로 아래는 전부 밝은 배경 — 흰색 / 연회색(#F6F7F5)을 번갈아. 글자 크기는 24(제목)·16(본문)·13(보조·라벨) 세 단계만 쓴다 */
-.so-sec{padding:64px 0}
+.so-sec{padding:64px 0;border-top:1px solid var(--line)}
 .so-white{background:#fff;color:var(--ink)}
 .so-alt{background:var(--alt);color:var(--ink)}
 .so-h2{font-size:24px;font-weight:700;line-height:1.5;text-align:left;margin:0 0 16px;max-width:34em}
