@@ -78,6 +78,10 @@ const SOP_RAW = `
 .sop-pay{display:block;width:100%;min-height:56px;margin-top:18px;padding:16px 20px;border:0;border-radius:50px;background:var(--sop-acc);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer;transition:opacity .2s,background-color .2s}
 .sop-pay:hover{opacity:.92}
 .sop-pay.is-dark{background:var(--sop-ink)}
+.sop-fs{display:block;min-width:0;margin:0;padding:0;border:0}
+.sop-fs:disabled .sop-pay{opacity:.4;cursor:not-allowed}
+.sop-fs:disabled .sop-input,.sop-fs:disabled .sop-role span{background:#f1f1ef;cursor:not-allowed}
+.sop-closed{margin:0 0 14px;padding:14px 16px;border-radius:12px;background:#fdecea;border:1px solid #f3b8b1;color:#b3261e;font-size:15px;font-weight:800;text-align:center}
 .sop-pay:disabled{background:#CFCFCF;color:#fff;cursor:not-allowed;opacity:1}
 .sop-err{margin:12px 0 0;font-size:13.5px;font-weight:700;line-height:1.5;color:var(--sop-hot);text-align:center}
 .sop-refund{margin:16px 0 0;font-size:12.5px;line-height:1.6;color:var(--sop-muted);text-align:center}
@@ -97,23 +101,38 @@ const SOP_STYLE = SOP_RAW.replace(/(^|[\n{}])(\s*)\.sop-/g, "$1$2.sop .sop-");
 type Props = {
   /** true 면 화면 폭과 관계없이 카드를 위아래로 쌓는다 (좁은 단일 컬럼 페이지용) */
   stack?: boolean;
+  /** 부모(히어로 직책 버튼)가 골라 준 역할 — n 이 바뀔 때마다 ROLES 중 하나일 때만 그 값으로 맞춘다. 이후 직접 바꾸면 그 값을 쓴다 */
+  presetRole?: { value: string; n: number };
+  /** true 면 신청 폼·결제 버튼을 모두 비활성화하고 disabledMessage 를 보여 준다 (마감·매진) */
+  disabled?: boolean;
+  disabledMessage?: string;
   /** 부모 페이지의 포인트 색을 맞추고 싶을 때 (예: 시안 페이지의 블루) */
   accent?: string;
   accentDark?: string;
   accentSoft?: string;
 };
 
-export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: Props) {
+export default function SalesOpsPay({ stack, accent, accentDark, accentSoft, presetRole, disabled, disabledMessage }: Props) {
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [center, setCenter] = useState("");
   const [role, setRole] = useState("");
+  // presetRole.n 이 바뀔 때마다 한 번 맞춘다 (렌더 중 상태 맞춤 — 이펙트로 하면 한 박자 늦게 깜빡인다)
+  const [appliedPresetN, setAppliedPresetN] = useState(0);
+  if (presetRole && presetRole.n !== appliedPresetN) {
+    setAppliedPresetN(presetRole.n);
+    if ((ROLES as readonly string[]).includes(presetRole.value)) setRole(presetRole.value);
+  }
   const [error, setError] = useState<{ card: "story" | "normal"; msg: string } | null>(null);
   const [posterOk, setPosterOk] = useState(true);
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [coarse, setCoarse] = useState(false);
+  // 모바일 저장 결과 안내 문구 (저장이 시작됐는지 화면에서 알 수 없어서 다음 행동을 알려 준다)
+  const [saveMsg, setSaveMsg] = useState("");
+  // 모바일에서 공유 시트에 바로 넘길 포스터 파일 — 눌렀을 때 내려받기를 기다리면 iOS 가 '사용자 동작'으로 인정하지 않는다
+  const posterFileRef = useRef<File | null>(null);
 
   const posterRef = useRef<HTMLImageElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -129,12 +148,85 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  // 터치 기기에서는 포스터를 미리 받아 둔다 (아래 onSavePoster 가 눌린 즉시 공유 시트를 열 수 있게)
+  useEffect(() => {
+    if (!coarse || !posterOk) return;
+    let alive = true;
+    fetch(POSTER_SRC)
+      .then((r) => (r.ok ? r.blob() : null))
+      .then((blob) => {
+        if (alive && blob) posterFileRef.current = new File([blob], POSTER_FILENAME, { type: blob.type || "image/jpeg" });
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [coarse, posterOk]);
+
   // 서버 렌더된 <img> 는 하이드레이션 전에 이미 실패했을 수 있어 onError 를 놓친다 — 마운트 시 한 번 더 확인
   useEffect(() => {
     const img = posterRef.current;
     if (img && img.complete && img.naturalWidth === 0) setPosterOk(false);
     if (img && img.complete && img.naturalWidth > 0) setPosterLoaded(true);
   }, []);
+
+  /**
+   * 포스터 저장 — PC 는 링크의 download 속성 그대로. 터치 기기에서는 여기서 처리한다.
+   *  · iOS 사파리: 공유 시트(files)로 넘긴다 → '이미지 저장'으로 사진 앨범에 들어간다.
+   *    (download 로 받으면 사진이 아니라 '파일' 앱으로 들어가 저장된 줄 모른다)
+   *  · 안드로이드 크롬: Blob 주소로 내려받는다 (다운로드 폴더·갤러리에 저장).
+   *  · 인앱 브라우저(카카오톡·인스타그램·네이버 등)는 내려받기를 막는 일이 많아 공유 시트가 되면 그걸 쓰고,
+   *    안 되면 포스터를 길게 눌러 저장하도록 안내한다.
+   *  어느 쪽이든 끝나면 다음 행동을 문구로 알려 준다.
+   */
+  const onSavePoster = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!posterOk) {
+      e.preventDefault();
+      return;
+    }
+    if (!coarse) return; // PC — download 링크 기본 동작
+    e.preventDefault();
+    setSaveMsg("");
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const inApp = /KAKAOTALK|Instagram|NAVER|FBAN|FBAV|Line\/|DaumApps|; wv\)/i.test(ua);
+    const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
+    const file = posterFileRef.current;
+    const hint = "저장이 안 되면 위 포스터를 길게 눌러 '이미지 저장'(또는 '사진에 추가')을 선택해주세요.";
+
+    const canShareFile = !!file && typeof nav.canShare === "function" && nav.canShare({ files: [file] }) && typeof nav.share === "function";
+    if (canShareFile && file && (isIOS || inApp)) {
+      // 눌린 즉시 호출해야 한다 (await 를 앞에 두지 않는다)
+      nav.share({ files: [file], title: "세미나 안내 포스터" }).catch((err: unknown) => {
+        if ((err as { name?: string })?.name === "AbortError") {
+          setSaveMsg(""); // 사용자가 공유 시트를 닫았다 — 기본 안내로 되돌린다
+          return;
+        }
+        setSaveMsg(hint);
+      });
+      setSaveMsg("공유 창에서 '이미지 저장'을 눌러주세요.");
+      return;
+    }
+
+    // 공유 시트를 못 쓰거나 안드로이드 크롬 — Blob 주소로 내려받는다
+    const save = async () => {
+      try {
+        const blob = file ?? (await (await fetch(POSTER_SRC)).blob());
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = POSTER_FILENAME;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 15000);
+        setSaveMsg(inApp ? hint : "다운로드 폴더(갤러리)에 저장됩니다. " + hint);
+      } catch {
+        setSaveMsg(hint);
+      }
+    };
+    void save();
+  };
 
   const validateCommon = (): string | null => {
     if (name.trim().length < 2) {
@@ -155,6 +247,7 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
   };
 
   const go = (card: "story" | "normal") => {
+    if (disabled) return; // 마감·매진 — 버튼도 비활성이지만 한 번 더 막는다
     const common = validateCommon();
     if (common) {
       setError({ card, msg: common });
@@ -182,6 +275,13 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
   return (
     <div className="sop" style={themeStyle}>
       <style>{SOP_STYLE}</style>
+      {disabled && (
+        <p className="sop-closed" role="alert">
+          {disabledMessage || "신청이 마감되었습니다"}
+        </p>
+      )}
+      {/* fieldset disabled — 안의 입력·버튼이 한꺼번에 비활성화된다 */}
+      <fieldset className="sop-fs" disabled={!!disabled}>
 
       {/* 공통 신청자 정보 */}
       <div className="sop-box">
@@ -298,11 +398,14 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
               target={coarse ? "_blank" : undefined}
               rel={coarse ? "noopener noreferrer" : undefined}
               aria-disabled={!posterOk}
+              onClick={onSavePoster}
             >
               포스터 저장하기
             </a>
             {coarse && posterOk && (
-              <p className="sop-dl-note">새 탭에서 포스터가 열리면 이미지를 길게 눌러 저장해주세요.</p>
+              <p className="sop-dl-note" role="status">
+                {saveMsg || "버튼이 안 되면 위 포스터를 길게 눌러 '이미지 저장'을 선택해주세요."}
+              </p>
             )}
           </div>
 
@@ -329,6 +432,7 @@ export default function SalesOpsPay({ stack, accent, accentDark, accentSoft }: P
           {error?.card === "normal" && <p className="sop-err">{error.msg}</p>}
         </div>
       </div>
+      </fieldset>
     </div>
   );
 }

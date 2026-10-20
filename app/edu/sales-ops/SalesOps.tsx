@@ -6,9 +6,10 @@
 //  · 구조·스타일은 /edu/gx-class 를 따른다. 주입 HTML 없이 전부 React 렌더,
 //    클래스 접두사 so-, 상수 접두사 SO_.
 //  · 일자·장소·정원·가격은 lib/salesOps.ts 상수만 수정한다 (장소·정원·가격은 TODO).
-//  · 9섹션: 히어로(가격 한 줄 + 대상 칩) → 세일즈 문제(하수↔고수 대조) → 황현진 소개(저서·영상)
-//    → 운영 문제 → 김재강 소개 → 커리큘럼 → 변화 → 클로징 → 신청(FAQ 포함).
-//  · 모바일(768px 미만)은 하단 고정 CTA 가 붙는다 — 히어로가 보이는 동안과 신청 섹션에 닿은 뒤에는 숨는다.
+//  · 섹션: 히어로(직책 아코디언 → 신청 폼 역할 연동) → 세일즈 문제(하수↔고수 대조) → 황현진 소개(저서 3D 슬라이드·영상)
+//    → 운영(김재강 소개 → 고통 말풍선 → 원칙 → GROW SYSTEM) → 커리큘럼 → 변화 → 클로징 → 신청(FAQ 포함).
+//  · 하단 고정 바: 마감 카운트다운 + 잔여석(실제 결제 완료 건수) + 좌석 신청하기. 마감·매진이면 신청 폼·결제도 막는다
+//    (서버의 결제 승인도 같은 조건으로 거부 — lib/seminarSeats.ts).
 //  · 영상(SALES SALON)은 3번 섹션 안에 있다. 자체 호스팅이며 인스타그램 임베드·링크는
 //    이 페이지 어디에도 두지 않는다 (외부 이탈 방지).
 //  · 애니메이션 fail-safe: 기본은 전부 표시. 이펙트가 루트에 so-anim 을 붙인 뒤에만
@@ -124,14 +125,14 @@ const SO_OPS_CARDS = [
   },
   {
     label: "시스템",
-    title: "맡겨도 돌아가는 센터",
-    body: "FC · 매니저 역할 분담과 원장 없이 돌아가는 업무 기준",
+    title: "맡겨도 흔들리지 않는 센터",
+    body: "FC·매니저에게 맡길 일과 원장이 볼 숫자를 나누는 기준",
   },
 ];
 
 // 4. 운영 축 — 운영 시스템 화면 3D 원통 슬라이드 (public/edu/sales-ops/ops/)
 const SO_SYS_LABEL = "GROW SYSTEM";
-const SO_SYS_TITLE = "원장이 없어도 센터가 돌아가는 이유";
+const SO_SYS_TITLE = "원장이 자리를 비워도, 숫자가 지켜지는 이유";
 const SO_SYS_SUB = "더그로우가 운영하는 센터에서 매일 쓰는 운영 시스템 화면입니다";
 const SO_SYS_SCREENS = [
   { src: "/edu/sales-ops/ops/ops-01-promo.webp", name: "홍보일지", desc: "어디에 무엇을 뿌렸는지, 지도로 기록" },
@@ -141,22 +142,37 @@ const SO_SYS_SCREENS = [
 ];
 const SO_SYS_ROTATE_MS = 3500;
 
-// 대상별 "가져갈 것" — 히어로의 칩 3개가 이 순서로 탭이 된다 (기본 선택은 첫 칩)
-const SO_NEEDS = [
+// 히어로 직책 아코디언 — 누르면 속마음·가져갈 것 3개·CTA 가 펼쳐진다 (한 번에 하나, 처음엔 모두 닫힘).
+// role: 신청 폼의 역할 선택값 (components/edu/SalesOpsPay.tsx 의 ROLES 와 같은 문자열)
+const SO_ROLES = [
   {
-    chip: "강사·트레이너",
-    who: "강사 · 트레이너",
-    body: "'영업'이라는 부담 대신, 전문가로서 당당하게 권하는 법",
+    id: "trainer",
+    button: "강사·트레이너분이라면?",
+    role: "트레이너 · 강사",
+    quote: "권하는 게 영업처럼 느껴져, 자꾸 말을 아끼고 있다면",
+    take: [
+      "'영업'이라는 부담 대신, 전문가로서 당당하게 권하는 법",
+      "회원의 마음을 여는 질문 한 줄",
+      "몰입시키는 한 줄 권유화법",
+    ],
   },
   {
-    chip: "실장·팀장",
-    who: "실장 · 팀장",
-    body: "상담 등록률과 재등록을 끌어올리는 실전 화법과 관리 루틴",
+    id: "manager",
+    button: "실장·팀장분이라면?",
+    role: "관리자 · 팀장 · 실장",
+    quote: "상담은 매번 열심인데, 등록률은 매번 들쭉날쭉하다면",
+    take: ["상담 등록률을 끌어올리는 실전 화법", "재등록이 결정되는 첫 4주 관리 루틴", "이탈을 막는 응대 기준"],
   },
   {
-    chip: "원장·점장",
-    who: "원장 · 점장",
-    body: "숫자로 읽는 센터, 맡겨도 돌아가는 운영 구조",
+    id: "owner",
+    button: "원장·점장분이라면?",
+    role: "대표 · 원장",
+    quote: "하루만 자리를 비워도 센터가 흔들린다면",
+    take: [
+      "유효회원·객단가·상담 성공률·유지율을 한 장으로 읽는 운영판",
+      "FC·매니저에게 맡길 일과 원장이 볼 숫자를 나누는 기준",
+      "대표가 자리를 비워도 유지되는 루틴",
+    ],
   },
 ];
 
@@ -188,7 +204,7 @@ const SO_PARTS = [
         name: "위임의 기술",
         points: [
           "FC·매니저 역할 분담과 판단 기준",
-          "대표가 없어도 돌아가는 업무 분장",
+          "대표가 매일 붙잡고 있지 않아도 되는 업무 분장",
           "재등록은 첫 4주에 정해진다",
         ],
         quotes: [] as string[],
@@ -231,7 +247,7 @@ const SO_CHANGES = [
     items: [
       "내 센터의 숫자를 한 장으로 읽게 됩니다",
       "관리자에게 무엇을 맡길지 기준이 생깁니다",
-      "대표가 빠져도 돌아가는 루틴을 가져갑니다",
+      "대표가 자리를 비워도 유지되는 루틴을 가져갑니다",
     ],
   },
   {
@@ -360,20 +376,31 @@ const SO_STYLE = `
 /* 1. 히어로 */
 .so-hero{background:var(--dark);color:#fff;padding:72px 0 80px;overflow:hidden}
 .so-hero-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
-.so-hero-copy{min-width:0}
+.so-hero-copy{min-width:0;text-align:center}
 .so-h1{font-size:46px;font-weight:900;line-height:1.28;margin:0 0 16px}
 .so-hero-sub{font-size:19px;line-height:1.6;color:#C8D3CD;margin:0 0 26px}
 .so-tags{margin:0 0 26px;display:grid;gap:5px;word-break:keep-all}
 .so-tags p{margin:0;font-size:13.5px;font-weight:700;line-height:1.55;color:#D3DCD7}
 .so-tags span{display:inline-block}
 /* 대상 칩 — 탭. 아래 패널은 선택한 대상의 '가져갈 것' */
-.so-chips{margin:0 0 30px}
-.so-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
-.so-chip{appearance:none;cursor:pointer;font:inherit;font-size:14px;font-weight:800;color:#D3DCD7;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);padding:9px 16px;border-radius:50px;transition:background-color .2s,border-color .2s,color .2s}
-.so-chip.is-on{color:#fff;background:var(--g);border-color:var(--g)}
-.so-chip:focus-visible{outline:2px solid var(--g);outline-offset:2px}
-.so-chip-panel{margin:0;min-height:3.5em;font-size:15.5px;line-height:1.7;color:#E4EBE7}
-.so-chip-panel b{display:block;margin:0 0 2px;font-size:12.5px;font-weight:800;letter-spacing:.04em;color:var(--g)}
+/* 직책 아코디언 — 세로로 쌓은 버튼 3개(가로 100%·높이 52px 이상), 누르면 바로 아래가 펼쳐진다 */
+.so-acc{display:grid;gap:10px;margin:0 0 30px;text-align:left}
+.so-acc-item{border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.05);overflow:hidden}
+.so-acc-item.is-open{border-color:var(--g);background:rgba(34,181,115,.08)}
+.so-acc-btn{appearance:none;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;padding:12px 18px;border:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:800;text-align:left;cursor:pointer}
+.so-acc-btn:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
+.so-acc-ico{flex:0 0 auto;color:var(--g);font-size:18px;line-height:1;transition:transform .2s ease}
+.so-acc-item.is-open .so-acc-ico{transform:rotate(180deg)}
+.so-acc-panel{padding:4px 18px 20px;animation:so-acc-in .25s ease}
+.so-acc-panel[hidden]{display:none}
+@keyframes so-acc-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.so-acc-quote{margin:0 0 16px;font-size:15.5px;font-weight:700;line-height:1.7;color:#fff}
+.so-acc-take{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:10px;text-align:left}
+.so-acc-take li{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;color:#E4EBE7}
+.so-acc-n{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--g);color:#fff;font-size:12.5px;font-weight:900}
+.so-acc-cta{appearance:none;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:12px 16px;border:0;border-radius:50px;background:var(--g);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+.so-acc-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.so-acc-panel{animation:none}.so-acc-ico{transition:none}}
 /* 강사 카드 2장 — 같은 크기·같은 배경·같은 캡션. 두 사진 모두 배경 제거본(contain, 아래 정렬) */
 .so-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:520px;margin:0 auto;min-width:0}
 .so-person{min-width:0;aspect-ratio:4/5;border-radius:20px;background:radial-gradient(120% 90% at 50% 18%,rgba(34,181,115,.34) 0%,rgba(34,181,115,.08) 55%,rgba(255,255,255,.03) 100%);border:1px solid rgba(34,181,115,.22)}
@@ -426,16 +453,23 @@ const SO_STYLE = `
 .so-bio{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .so-bio li{position:relative;padding-left:18px;font-size:16px;line-height:1.65;color:#D3DCD7}
 .so-bio li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--g)}
-.so-sub-h{font-size:22px;font-weight:800;text-align:center;margin:72px 0 28px}
-.so-books{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
-.so-book{min-width:0}
-.so-book .so-media{aspect-ratio:374/552;border-radius:8px;background:#161616;box-shadow:0 14px 34px rgba(0,0,0,.5)}
-.so-book-t{margin:14px 2px 0;text-align:center;font-size:14.5px;font-weight:700;line-height:1.5;color:#E4EBE7}
+/* 저서 — 1열 무한 자동 슬라이드(왼쪽으로 천천히), 가운데는 크고 선명하게·양옆은 안쪽으로 기울여 작게(3D) */
+.so-bs{margin-top:72px}
+.so-bs-label{margin:0 0 6px;text-align:center;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--g)}
+.so-bs-stage{position:relative;perspective:900px;overflow:hidden;padding:20px 0 30px;-webkit-user-select:none;user-select:none}
+.so-bs-track{position:relative;display:flex;gap:18px;width:max-content;will-change:transform}
+.so-bs-item{flex:0 0 auto;height:140px;border-radius:5px;background:#161616;transform-style:preserve-3d;will-change:transform,opacity;pointer-events:none}
+.so-bs-item img{display:block;height:100%;width:auto;max-width:none;border-radius:5px;-webkit-user-drag:none}
 @media(max-width:860px){.so-prof{grid-template-columns:minmax(0,1fr);gap:28px}.so-prof-h{font-size:22px;text-align:center}}
-@media(max-width:640px){.so-books{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}.so-sub-h{margin-top:56px;font-size:19px}}
+@media(max-width:640px){.so-bs{margin-top:56px}}
 
 /* 3-2. 영상 (SALES SALON) */
 .so-vid{margin-top:84px}
+.so-vid-head{margin:0 0 26px;text-align:center}
+.so-vid-lbl{margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--g)}
+.so-vid-title{margin:0 0 8px;font-size:24px;font-weight:800;line-height:1.4;color:#fff;text-wrap:balance}
+.so-vid-sub{margin:0;font-size:14.5px;line-height:1.6;color:#98A39D}
+@media(max-width:640px){.so-vid-title{font-size:20px}}
 .so-vid-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
 .so-vid-card{position:relative;min-width:0;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#000}
 .so-vid-card video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
@@ -505,6 +539,7 @@ const SO_STYLE = `
 @media(prefers-reduced-motion:reduce){.so-cyl-cap-in{animation:none}}
 
 /* 5. 김재강 소개 */
+.so-kim-wrap{margin:0 0 72px}
 .so-kim{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0 auto}
 .so-kim-photo{width:100%;max-width:340px;margin:0 auto;aspect-ratio:3/4;border-radius:22px;background:#e9e4d3}
 .so-kim-role{display:inline-block;margin:0 0 12px;font-size:14px;font-weight:800;color:#0B6B3A;background:rgba(34,181,115,.14);padding:7px 14px;border-radius:50px}
@@ -594,6 +629,113 @@ const SO_STYLE = `
 @media(prefers-reduced-motion:reduce){.so-bar,.so-bar.is-on{transition:none}}
 `;
 
+/**
+ * 저서 표지 1열 무한 자동 슬라이드 (3D).
+ *  · 표지 목록을 3번 복제해 이어 붙이고, 한 벌 길이만큼 흐르면 처음으로 되돌려 끊김이 없다. 왼쪽으로 천천히.
+ *  · 가운데 표지는 scale 1 + 짙은 그림자, 양옆으로 갈수록 rotateY ±25deg · scale .85 · opacity .7 (연속 보간).
+ *  · 변형은 requestAnimationFrame 에서 DOM 에 직접 쓴다 (React 재렌더 없음). 화면 밖에서는 멈춘다.
+ *  · 마우스를 올리거나 터치하는 동안 일시정지, prefers-reduced-motion 이면 흐르지 않고 정지.
+ */
+function BookSlider({ books }: { books: { src: string; title: string }[] }) {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    const track = trackRef.current;
+    if (!stage || !track) return;
+    const items = Array.from(track.children) as HTMLElement[];
+    const n = books.length;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const SPEED = 26; // px/초 — 천천히
+    let offset = 0;
+    let last = 0;
+    let raf = 0;
+    let paused = false;
+    let visible = true;
+
+    const apply = () => {
+      const first = items[0];
+      if (!first) return;
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 18;
+      const period = (first.offsetWidth + gap) * n; // 한 벌의 길이
+      const shift = reduced ? 0 : offset % period;
+      track.style.transform = `translate3d(${-shift}px,0,0)`;
+      const cx = stage.clientWidth / 2;
+      items.forEach((el) => {
+        const x = el.offsetLeft - shift + el.offsetWidth / 2; // 이 표지의 가운데가 무대 안 어디인지
+        const t = Math.min(1, Math.abs(x - cx) / cx); // 0(가운데) ~ 1(가장자리)
+        const dir = x < cx ? 1 : -1; // 왼쪽 표지는 오른쪽을, 오른쪽 표지는 왼쪽을 향해 기운다
+        el.style.transform = `rotateY(${dir * 25 * t}deg) scale(${1 - 0.15 * t})`;
+        el.style.opacity = String(1 - 0.3 * t);
+        el.style.boxShadow = `0 ${8 + 14 * (1 - t)}px ${16 + 22 * (1 - t)}px rgba(0,0,0,${0.28 + 0.32 * (1 - t)})`;
+      });
+    };
+
+    const tick = (now: number) => {
+      const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
+      last = now;
+      if (visible && !paused) offset += SPEED * dt;
+      if (visible) apply();
+      raf = requestAnimationFrame(tick);
+    };
+
+    apply();
+    if (!reduced) raf = requestAnimationFrame(tick);
+
+    const pause = () => {
+      paused = true;
+    };
+    const resume = () => {
+      paused = false;
+    };
+    const onEnter = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") pause();
+    };
+    const onLeave = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") resume();
+    };
+    stage.addEventListener("pointerenter", onEnter);
+    stage.addEventListener("pointerleave", onLeave);
+    stage.addEventListener("touchstart", pause, { passive: true });
+    stage.addEventListener("touchend", resume, { passive: true });
+    stage.addEventListener("touchcancel", resume, { passive: true });
+    window.addEventListener("resize", apply);
+    const io = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+    });
+    io?.observe(stage);
+    return () => {
+      cancelAnimationFrame(raf);
+      stage.removeEventListener("pointerenter", onEnter);
+      stage.removeEventListener("pointerleave", onLeave);
+      stage.removeEventListener("touchstart", pause);
+      stage.removeEventListener("touchend", resume);
+      stage.removeEventListener("touchcancel", resume);
+      window.removeEventListener("resize", apply);
+      io?.disconnect();
+    };
+  }, [books.length]);
+
+  return (
+    <div className="so-bs so-reveal">
+      <p className="so-bs-label">황현진 대표 저서</p>
+      <div className="so-bs-stage" ref={stageRef} role="group" aria-label="황현진 대표 저서 표지">
+        <div className="so-bs-track" ref={trackRef}>
+          {[0, 1, 2].flatMap((copy) =>
+            books.map((b) => (
+              <div className="so-bs-item" key={`${copy}-${b.src}`} aria-hidden={copy > 0 ? true : undefined}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={b.src} alt={copy === 0 ? `${b.title} 표지` : ""} draggable={false} loading="lazy" />
+              </div>
+            )),
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SalesOps() {
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -602,8 +744,9 @@ export default function SalesOps() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeVid, setActiveVid] = useState(0);
 
-  // 히어로 대상 칩 — 선택한 대상의 "가져갈 것"을 보여 준다 (기본: 첫 칩)
-  const [needIdx, setNeedIdx] = useState(0);
+  // 히어로 직책 아코디언 — 열린 항목(없으면 null, 처음엔 모두 닫힘)과, CTA 가 신청 폼 역할을 맞추는 신호(n 이 매번 바뀐다)
+  const [openRole, setOpenRole] = useState<number | null>(null);
+  const [preset, setPreset] = useState<{ value: string; n: number } | undefined>(undefined);
 
   // 하단 고정 바 — 페이지에 들어오면 계속 보이고, 신청 섹션에 닿으면(들어왔거나 이미 지나친 뒤) 숨긴다
   const [barOn, setBarOn] = useState(true);
@@ -762,6 +905,12 @@ export default function SalesOps() {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // 아코디언 CTA — 신청 폼의 역할을 그 직책으로 맞추고 신청 섹션으로 스크롤
+  const pickRole = (role: string) => {
+    setPreset((p) => ({ value: role, n: (p?.n ?? 0) + 1 }));
+    document.getElementById("so-apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   useEffect(() => {
     const apply = document.getElementById("so-apply");
     if (!apply) return;
@@ -823,6 +972,10 @@ export default function SalesOps() {
     };
   }, []);
 
+  // 마감 시각이 지났거나 잔여석이 0 이면 신청 폼·결제를 막는다. 잔여석을 못 가져온 경우(seats=null)는 막지 않는다.
+  const soldOut = seats !== null && seats <= 0;
+  const formOff = closed || soldOut;
+
   return (
     <div ref={rootRef} className="so">
       <style dangerouslySetInnerHTML={{ __html: SO_STYLE }} />
@@ -844,27 +997,41 @@ export default function SalesOps() {
                 </p>
               ))}
             </div>
-            <div className="so-chips" data-track-section="target">
-              <div className="so-chip-row" role="tablist" aria-label="대상별 가져갈 것">
-                {SO_NEEDS.map((nd, i) => (
-                  <button
-                    type="button"
-                    key={nd.chip}
-                    role="tab"
-                    id={`so-chip-${i}`}
-                    aria-selected={i === needIdx}
-                    aria-controls="so-chip-panel"
-                    className={`so-chip${i === needIdx ? " is-on" : ""}`}
-                    onClick={() => setNeedIdx(i)}
-                  >
-                    {nd.chip}
-                  </button>
-                ))}
-              </div>
-              <p className="so-chip-panel" id="so-chip-panel" role="tabpanel" aria-labelledby={`so-chip-${needIdx}`}>
-                <b>가져갈 것</b>
-                {SO_NEEDS[needIdx].body}
-              </p>
+            <div className="so-acc" data-track-section="target">
+              {SO_ROLES.map((r, i) => {
+                const open = openRole === i;
+                return (
+                  <div className={`so-acc-item${open ? " is-open" : ""}`} key={r.id}>
+                    <button
+                      type="button"
+                      className="so-acc-btn"
+                      id={`so-acc-b-${i}`}
+                      aria-expanded={open}
+                      aria-controls={`so-acc-p-${i}`}
+                      onClick={() => setOpenRole(open ? null : i)}
+                    >
+                      <span>{r.button}</span>
+                      <span className="so-acc-ico" aria-hidden="true">
+                        ▾
+                      </span>
+                    </button>
+                    <div className="so-acc-panel" id={`so-acc-p-${i}`} role="region" aria-labelledby={`so-acc-b-${i}`} hidden={!open}>
+                      <p className="so-acc-quote">“{r.quote}”</p>
+                      <ol className="so-acc-take">
+                        {r.take.map((t, k) => (
+                          <li key={t}>
+                            <span className="so-acc-n">{k + 1}</span>
+                            {t}
+                          </li>
+                        ))}
+                      </ol>
+                      <button type="button" className="so-acc-cta" onClick={() => pickRole(r.role)}>
+                        이 3가지 가져가기 · 좌석 신청 →
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -956,25 +1123,15 @@ export default function SalesOps() {
             </div>
           </div>
 
-          <h3 className="so-sub-h so-reveal">저서</h3>
-          <div className="so-books so-stagger">
-            {SO_IMG.books.map((b) => (
-              <div className="so-book so-reveal" key={b.src}>
-                <div className="so-media">
-                  <SoImg
-                    src={b.src}
-                    alt={`${b.title} 표지`}
-                    sizes="(max-width: 640px) 45vw, 240px"
-                    fit="contain"
-                  />
-                </div>
-                <p className="so-book-t">{b.title}</p>
-              </div>
-            ))}
-          </div>
+          <BookSlider books={SO_IMG.books} />
 
           {/* 기존 SALES SALON 영상 섹션 — 새로 만들지 않고 이 안으로 옮겼다 */}
           <div className="so-vid">
+            <div className="so-vid-head so-reveal">
+              <p className="so-vid-lbl">세일즈 맛보기</p>
+              <h3 className="so-vid-title">현장에서 바로 쓰는 한 문장, 먼저 들어보세요</h3>
+              <p className="so-vid-sub">황현진 대표의 실제 강의 중 일부입니다.</p>
+            </div>
             <div
               className="so-vid-grid"
               ref={sliderRef}
@@ -1022,9 +1179,27 @@ export default function SalesOps() {
         </div>
       </section>
 
-      {/* ── 4. 운영 축 문제 제기 ── */}
+      {/* ── 4. 운영 축 — 김재강 소개 → 고통 말풍선 → 원칙 → 카드 → GROW SYSTEM ── */}
       <section data-track-section="ops" className="so-sec so-white">
         <div className="so-wrap">
+          {/* 김재강 대표 소개 (예전에는 별도 섹션이었다 — 고통 말풍선 바로 위로 옮겼다) */}
+          <div className="so-kim-wrap" data-track-section="kim">
+            <div className="so-kim so-reveal">
+              <div className="so-kim-photo so-media">
+                <SoImg src={SO_IMG.kim} alt="김재강 대표" sizes="340px" position="center 18%" />
+              </div>
+              <div>
+                <span className="so-kim-role">{SO_KIM_ROLE}</span>
+                <h2 className="so-kim-name">김재강</h2>
+                <p className="so-kim-bio">{SO_KIM_BIO}</p>
+                <ul className="so-kim-stats">
+                  {SO_KIM_STATS.map((s) => (
+                    <li key={s}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
           <div className="so-pains so-stagger">
             {SO_OPS_PAINS.map((line) => (
               <p className="so-bubble so-reveal" key={line}>
@@ -1034,7 +1209,7 @@ export default function SalesOps() {
           </div>
           <h2 className="so-h2 so-reveal">회원은 사람을 보고 등록하고, 시스템을 보고 재등록합니다</h2>
           <div className="so-op-body so-reveal">
-            <p>상담도, CS도, 재등록도, 직원 교육도 원장 한 사람을 거친다면 원장이 빠지는 날 매출도 같이 빠집니다.</p>
+            <p>상담도, CS도, 재등록도, 직원 교육도 원장 한 사람을 거친다면 원장이 자리를 비우는 날 매출도 같이 흔들립니다.</p>
             <p>1부에서는 500개 이상 센터 대표님들과 함께하면서 정리한 운영 · CS · 시스템 기준을 그대로 공개합니다.</p>
             <p className="so-op-em">감이 아니라 숫자로, 사람이 아니라 구조로.</p>
           </div>
@@ -1109,32 +1284,6 @@ export default function SalesOps() {
                   onClick={() => goToSys(i)}
                 />
               ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 5. 김재강 대표 소개 ── */}
-      <section data-track-section="kim" className="so-sec so-cream">
-        <div className="so-wrap">
-          <div className="so-kim so-reveal">
-            <div className="so-kim-photo so-media">
-              <SoImg
-                src={SO_IMG.kim}
-                alt="김재강 대표"
-                sizes="340px"
-                position="center 18%"
-              />
-            </div>
-            <div>
-              <span className="so-kim-role">{SO_KIM_ROLE}</span>
-              <h2 className="so-kim-name">김재강</h2>
-              <p className="so-kim-bio">{SO_KIM_BIO}</p>
-              <ul className="so-kim-stats">
-                {SO_KIM_STATS.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>
@@ -1260,7 +1409,11 @@ export default function SalesOps() {
             </div>
           )}
           {/* 결제 카드 2종 — 스토리 인증가 / 정상가 */}
-          <SalesOpsPay />
+          <SalesOpsPay
+            presetRole={preset}
+            disabled={formOff}
+            disabledMessage={closed ? "신청이 마감되었습니다" : "정원이 마감되었습니다"}
+          />
         </div>
       </section>
 
@@ -1279,9 +1432,9 @@ export default function SalesOps() {
             </p>
             {seats !== null && <p className="so-bar-seats">잔여 {seats}석</p>}
           </div>
-          {closed ? (
+          {formOff ? (
             <button type="button" className="so-bar-btn" disabled>
-              좌석 신청하기
+              {closed ? "좌석 신청하기" : "정원 마감"}
             </button>
           ) : (
             <a className="so-bar-btn" href="#so-apply" onClick={scrollToApply} tabIndex={barOn ? 0 : -1}>

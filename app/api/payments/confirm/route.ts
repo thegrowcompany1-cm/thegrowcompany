@@ -17,6 +17,7 @@ import { NextResponse } from "next/server";
 import { fetchProductBySlug, parseOrderIdSlug } from "@/lib/products";
 import { sendPaymentToSheet } from "@/lib/paymentSheet";
 import { SO_PRODUCT_STORY, soResolveLanding } from "@/lib/salesOps";
+import { seminarClosedReason } from "@/lib/seminarSeats";
 
 // Buffer(Basic 인증 헤더) 사용 — Node 런타임 고정
 export const runtime = "nodejs";
@@ -111,6 +112,17 @@ export async function POST(request: Request) {
       "AMOUNT_MISMATCH",
       "결제 금액이 상품 가격과 일치하지 않습니다.",
     );
+  }
+
+  // ── 세미나 마감·매진 확인 ─────────────────────────────────────────────────
+  // 화면에서 막아 두었지만 직접 결제 주소로 들어오는 경우를 위해 서버에서도 한 번 더 본다.
+  // 승인(돈이 빠지는 단계) 전이라 거부해도 결제되지 않는다. 이미 결제 완료된 건·잔여석 조회 실패는 통과.
+  const closedReason = await seminarClosedReason(product.slug, paymentKey);
+  if (closedReason === "closed") {
+    return fail(409, "SEMINAR_CLOSED", "신청이 마감되었습니다.");
+  }
+  if (closedReason === "soldout") {
+    return fail(409, "SEMINAR_SOLD_OUT", "정원이 마감되었습니다.");
   }
 
   // ── 승인 요청 ─────────────────────────────────────────────────────────────
