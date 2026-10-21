@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import DiagnosisIntro from "./DiagnosisIntro";
+import MentorScrollButton from "./MentorScrollButton";
 import VideoReviewPair from "@/components/VideoReviewPair";
 import LogoMarquee from "@/components/LogoMarquee";
 import { SITE_URL } from "@/lib/site";
@@ -95,6 +96,7 @@ export default function DiagnosisPage() {
       {/* ── 1. 인트로 (질문 → 답변 인터랙션) ── */}
       <section className="mx-auto max-w-6xl px-4 pt-8 pb-10 sm:px-6 sm:pt-12 sm:pb-14 lg:px-8">
         <DiagnosisIntro />
+        <MentorScrollButton />
       </section>
 
       {/* ── 2. 작동 방식 3스텝 ── */}
@@ -142,7 +144,7 @@ export default function DiagnosisPage() {
       </section>
 
       {/* ── 5. 멘토 선택 그리드 ── */}
-      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
+      <section id="mentors" className="mx-auto max-w-6xl scroll-mt-28 px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
         <p className="mb-3 text-center text-xs font-bold uppercase tracking-widest text-[#22B573]">
           헬스장 솔루션 · 필라테스 솔루션
         </p>
