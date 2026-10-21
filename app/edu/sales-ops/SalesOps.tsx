@@ -757,18 +757,25 @@ export default function SalesOps() {
   const [activeRole, setActiveRole] = useState(0);
 
   // 히어로 시퀀스 — stage 0(숨김) → 1 제목 크게 → 2 제목 퇴장 → 3 부제 1행 → 4 부제 2행 → 5 작은 제목 → 6 대상 띠·강사 카드(최종).
-  // 탭·스크롤·키 입력이나 모션 줄이기, 같은 세션 재방문이면 바로 6. 스크립트가 안 돌면 noscript 스타일로 최종 상태가 보인다.
+  //  · 페이지를 열 때마다 재생한다 (같은 세션 재방문이라고 건너뛰지 않는다). ?hero=replay 가 있으면 어떤 조건에서도 재생(디버그).
+  //  · 로드 시점에 이미 히어로 높이의 절반 이상 내려가 있으면(새로고침 스크롤 복원 등) 바로 최종 상태.
+  //  · 모션 줄이기면 바로 최종 상태.
+  //  · 건너뛰기: 탭(pointerdown) · 휠 · 키 입력 · 시작 위치에서 60px 이상 스크롤. touchmove 와 미세 스크롤은 무시한다 —
+  //    모바일 주소창이 접히며 생기는 몇 px 스크롤이나 손가락이 살짝 닿는 것으로 꺼지지 않게.
+  //  · 스크립트가 안 돌면 noscript 스타일로 최종 상태가 보인다.
   const [heroStage, setHeroStage] = useState(0);
   const [heroInstant, setHeroInstant] = useState(false);
   useEffect(() => {
-    let seen = false;
+    let replay = false;
     try {
-      seen = window.sessionStorage.getItem("tgc:so:hero") === "1";
-      window.sessionStorage.setItem("tgc:so:hero", "1");
+      replay = new URLSearchParams(window.location.search).get("hero") === "replay";
     } catch {
-      /* 저장소가 막혀 있으면 매번 재생 */
+      /* 주소를 못 읽으면 일반 재생 */
     }
-    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const heroH = document.getElementById("so-hero")?.offsetHeight ?? 0;
+    const startY = window.scrollY;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!replay && (reduced || (heroH > 0 && startY >= heroH / 2))) {
       setHeroInstant(true);
       setHeroStage(6);
       return;
@@ -783,9 +790,9 @@ export default function SalesOps() {
       off();
     };
     const onScroll = () => {
-      if (window.scrollY > 8) skip();
+      if (Math.abs(window.scrollY - startY) >= 60) skip();
     };
-    const evs = ["pointerdown", "wheel", "touchmove", "keydown"] as const;
+    const evs = ["pointerdown", "wheel", "keydown"] as const;
     const off = () => {
       evs.forEach((e) => window.removeEventListener(e, skip));
       window.removeEventListener("scroll", onScroll);
