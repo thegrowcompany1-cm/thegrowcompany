@@ -380,11 +380,24 @@ const SO_STYLE = `
 .so-media.is-broken img{visibility:hidden}
 
 /* 1. 히어로 */
-.so-hero{background:var(--dark);color:#fff;padding:72px 0 80px;overflow:hidden}
-.so-hero-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
+.so-hero{position:relative;display:flex;align-items:center;background:var(--dark);color:#fff;padding:72px 0 80px;overflow:hidden;min-height:max(520px,calc(100svh - 80px - var(--so-bar-h)))}
+@media(min-width:1024px){.so-hero{min-height:max(520px,calc(100svh - 96px - var(--so-bar-h)))}}
+.so-hero-in{width:100%;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
 .so-hero-copy{min-width:0;text-align:center}
-.so-h1{font-size:46px;font-weight:900;line-height:1.28;margin:0 0 16px}
-.so-hero-sub{font-size:19px;line-height:1.6;color:#C8D3CD;margin:0 0 26px}
+/* 시퀀스 — 높이는 처음부터 확보(opacity·transform 만 바꾼다). 장식용 제목은 가운데에 겹쳐 떴다 사라진다 */
+.so-ghost{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;font-size:46px;font-weight:900;line-height:1.28;pointer-events:none;opacity:0;transform:translateY(12px)}
+.so-hero.is-s1 .so-ghost{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+.so-hero.is-s2 .so-ghost{opacity:0;transform:translateY(-12px);filter:blur(4px);transition:opacity .5s ease,transform .5s ease,filter .5s ease}
+.so-hl,.so-sub1,.so-sub2{opacity:0;transform:translateY(12px)}
+.so-late{opacity:0;transform:translateY(28px)}
+.so-hero.is-s3 .so-sub1,.so-hero.is-s4 .so-sub2,.so-hero.is-s5 .so-hl{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+.so-hero.is-s6 .so-late{opacity:1;transform:none;transition:opacity .7s ease,transform .7s ease}
+.so-hero.is-instant *{transition:none!important}
+@media(prefers-reduced-motion:reduce){.so-ghost,.so-hl,.so-sub1,.so-sub2,.so-late{transition:none!important}}
+.so-hl{margin:0 0 10px;font-size:15px;font-weight:700;line-height:1.4;color:#22B573}
+.so-hero-sub{margin:0 0 26px}
+.so-sub1{display:block;margin:0 0 6px;font-size:24px;font-weight:700;line-height:1.4;color:#C8D3CD}
+.so-sub2{display:block;font-size:46px;font-weight:900;line-height:1.28;text-wrap:balance}
 /* 대상 안내 — 가운데가 은은하게 밝고 양쪽으로 사라지는 띠(위아래 1px 선). 좁은 화면(단일 컬럼)에서는 화면 가로 꽉 차게 */
 .so-tags{position:relative;margin:0 0 26px;padding:14px 0;display:grid;gap:5px;word-break:keep-all;background:linear-gradient(90deg,transparent 0%,rgba(34,181,115,.18) 50%,transparent 100%)}
 .so-tags::before,.so-tags::after{content:"";position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(34,181,115,.4) 50%,transparent 100%)}
@@ -394,7 +407,8 @@ const SO_STYLE = `
 .so-tags span{display:inline-block}
 /* 대상 칩 — 탭. 아래 패널은 선택한 대상의 '가져갈 것' */
 /* 직책 탭 — 가로 한 줄 pill 3개 + 아래 패널 1개 */
-.so-tabs{margin:0 0 30px;text-align:left}
+.so-tabsec{background:var(--dark);color:#fff;padding:64px 0}
+.so-tabs{max-width:560px;margin:0 auto;text-align:left}
 .so-tabs-hint{margin:0 0 10px;text-align:center;font-size:13px;line-height:1.4;color:#8F9A94}
 .so-tabs-row{display:flex;gap:8px;margin:0 0 12px}
 .so-tab{appearance:none;flex:1 1 0;min-width:0;min-height:44px;padding:0 4px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:transparent;color:#D3DCD7;font:inherit;font-size:14px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;text-align:center;cursor:pointer;transition:background-color .2s,border-color .2s,color .2s}
@@ -419,8 +433,8 @@ const SO_STYLE = `
 @media(max-width:860px){
   .so-hero{padding:52px 0 76px}
   .so-hero-in{grid-template-columns:minmax(0,1fr);gap:48px}
-  .so-h1{font-size:32px}
-  .so-hero-sub{font-size:16px}
+  .so-ghost,.so-sub2{font-size:32px}
+  .so-sub1{font-size:19px}
   .so-tags{width:100vw;margin-left:calc(50% - 50vw)}
   .so-people{max-width:460px}
 }
@@ -742,6 +756,50 @@ export default function SalesOps() {
   // 신청 폼 역할은 탭을 고르는 것만으로는 바뀌지 않고 CTA 를 눌렀을 때만 맞춰진다.
   const [activeRole, setActiveRole] = useState(0);
 
+  // 히어로 시퀀스 — stage 0(숨김) → 1 제목 크게 → 2 제목 퇴장 → 3 부제 1행 → 4 부제 2행 → 5 작은 제목 → 6 대상 띠·강사 카드(최종).
+  // 탭·스크롤·키 입력이나 모션 줄이기, 같은 세션 재방문이면 바로 6. 스크립트가 안 돌면 noscript 스타일로 최종 상태가 보인다.
+  const [heroStage, setHeroStage] = useState(0);
+  const [heroInstant, setHeroInstant] = useState(false);
+  useEffect(() => {
+    let seen = false;
+    try {
+      seen = window.sessionStorage.getItem("tgc:so:hero") === "1";
+      window.sessionStorage.setItem("tgc:so:hero", "1");
+    } catch {
+      /* 저장소가 막혀 있으면 매번 재생 */
+    }
+    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setHeroInstant(true);
+      setHeroStage(6);
+      return;
+    }
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const STEPS: [number, number][] = [[60, 1], [1400, 2], [1900, 3], [2400, 4], [3200, 5], [3600, 6]];
+    STEPS.forEach(([ms, st]) => timers.push(setTimeout(() => setHeroStage(st), ms)));
+    const skip = () => {
+      timers.forEach(clearTimeout);
+      setHeroInstant(true);
+      setHeroStage(6);
+      off();
+    };
+    const onScroll = () => {
+      if (window.scrollY > 8) skip();
+    };
+    const evs = ["pointerdown", "wheel", "touchmove", "keydown"] as const;
+    const off = () => {
+      evs.forEach((e) => window.removeEventListener(e, skip));
+      window.removeEventListener("scroll", onScroll);
+    };
+    evs.forEach((e) => window.addEventListener(e, skip, { passive: true }));
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      timers.forEach(clearTimeout);
+      off();
+    };
+  }, []);
+  const heroCls =
+    "so-hero" + [1, 2, 3, 4, 5, 6].filter((n) => heroStage >= n).map((n) => ` is-s${n}`).join("") + (heroInstant ? " is-instant" : "");
+
   // 사이트 우하단 팝업(components/SeminarPopup.tsx)에서 /edu/sales-ops?from=popup 으로 들어온 경우만 true.
   // 결제 신청 정보의 landing 을 "popup-sales-ops" 로 남겨 시트·GA 의 랜딩 열에서 팝업 유입을 구분한다.
   const [fromPopup, setFromPopup] = useState(false);
@@ -1025,22 +1083,69 @@ export default function SalesOps() {
       <style dangerouslySetInnerHTML={{ __html: SO_STYLE }} />
 
       {/* ── 1. 히어로 ── */}
-      <section data-track-section="hero" className="so-hero" id="so-hero">
+      <section data-track-section="hero" className={heroCls} id="so-hero">
+        {/* 장식용 복제본 — 처음 1.4초 동안만 화면 가운데에 크게 떴다가 사라진다 */}
+        <div className="so-ghost" aria-hidden="true">
+          피트니스 성장
+          <br />
+          마스터키 세미나
+        </div>
+        <noscript>
+          <style>{`.so-hl,.so-sub1,.so-sub2,.so-late{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <div className="so-wrap so-hero-in">
           <div className="so-hero-copy">
-            <h1 className="so-h1">
-              피트니스 성장
-              <br />
-              마스터키 세미나
-            </h1>
-            <p className="so-hero-sub">운영과 세일즈, 센터 매출을 여는 두 개의 열쇠</p>
-            <div className="so-tags">
+            {/* 최종 상태의 작은 제목 라벨 — h1 은 원문 그대로. 처음 크게 뜨는 제목은 위의 장식용 복제본(so-ghost) */}
+            <h1 className="so-hl">피트니스 성장 마스터키 세미나</h1>
+            <p className="so-hero-sub">
+              <span className="so-sub1">운영과 세일즈,</span>
+              <span className="so-sub2">센터 매출을 여는 두 개의 열쇠</span>
+            </p>
+            <div className="so-tags so-late">
               {SO_TARGET_LINES.map(([a, b]) => (
                 <p key={a}>
                   {a} <span>{b}</span>
                 </p>
               ))}
             </div>
+          </div>
+
+          <div className="so-people so-late">
+            <div className="so-person so-media">
+              <SoImg
+                src={SO_IMG.hwang}
+                alt="황현진 대표"
+                sizes="(max-width: 860px) 230px, 260px"
+                fit="contain"
+                position="center bottom"
+                priority
+              />
+              <p className="so-person-cap">
+                <b>황현진</b>
+                리얼세일즈(주) 대표
+              </p>
+            </div>
+            <div className="so-person so-media">
+              <SoImg
+                src={SO_IMG.kimHero}
+                alt="김재강 대표"
+                sizes="(max-width: 860px) 230px, 260px"
+                fit="contain"
+                position="center bottom"
+                priority
+              />
+              <p className="so-person-cap">
+                <b>김재강</b>
+                (주)더그로우컴퍼니 대표이사
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 1-2. 직책 탭 — 히어로 밖, 바로 다음 섹션 (다크 배경 이어서) ── */}
+      <section className="so-tabsec">
+        <div className="so-wrap">
             <div className="so-tabs" data-track-section="target">
               <p className="so-tabs-hint">내 직책을 눌러보세요</p>
               <div className="so-tabs-row" role="tablist" aria-label="직책 선택">
@@ -1087,38 +1192,6 @@ export default function SalesOps() {
                 })}
               </div>
             </div>
-          </div>
-
-          <div className="so-people">
-            <div className="so-person so-media">
-              <SoImg
-                src={SO_IMG.hwang}
-                alt="황현진 대표"
-                sizes="(max-width: 860px) 230px, 260px"
-                fit="contain"
-                position="center bottom"
-                priority
-              />
-              <p className="so-person-cap">
-                <b>황현진</b>
-                리얼세일즈(주) 대표
-              </p>
-            </div>
-            <div className="so-person so-media">
-              <SoImg
-                src={SO_IMG.kimHero}
-                alt="김재강 대표"
-                sizes="(max-width: 860px) 230px, 260px"
-                fit="contain"
-                position="center bottom"
-                priority
-              />
-              <p className="so-person-cap">
-                <b>김재강</b>
-                (주)더그로우컴퍼니 대표이사
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
