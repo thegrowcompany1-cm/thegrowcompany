@@ -6,9 +6,9 @@
 //  · 구조·스타일은 /edu/gx-class 를 따른다. 주입 HTML 없이 전부 React 렌더,
 //    클래스 접두사 so-, 상수 접두사 SO_.
 //  · 일자·장소·정원·가격은 lib/salesOps.ts 상수만 수정한다 (장소·정원·가격은 TODO).
-//  · 섹션: 히어로(직책 아코디언 → 신청 폼 역할 연동) → 세일즈 문제(하수↔고수 대조) → 황현진 소개(저서 3D 슬라이드·영상)
+//  · 섹션: 히어로(직책 탭 3개 + 가져갈 것 패널) → 세일즈 문제(하수↔고수 대조) → 황현진 소개(저서 3D 슬라이드·영상)
 //    → 운영(김재강 소개 → 고통 말풍선 → 원칙 → GROW SYSTEM) → 커리큘럼 → 변화 → 클로징 → 신청(FAQ 포함).
-//  · 하단 고정 바: 마감 카운트다운 + 잔여석(실제 결제 완료 건수) + 좌석 신청하기. 마감·매진이면 신청 폼·결제도 막는다
+//  · 하단 고정 바: 마감 카운트다운 + "현재 신청 가능!"(잔여석이 1 이상이거나 못 가져온 경우) + 내 자리 확보하기. 마감·매진이면 신청 폼·결제도 막는다
 //    (서버의 결제 승인도 같은 조건으로 거부 — lib/seminarSeats.ts).
 //  · 영상(SALES SALON)은 3번 섹션 안에 있다. 자체 호스팅이며 인스타그램 임베드·링크는
 //    이 페이지 어디에도 두지 않는다 (외부 이탈 방지).
@@ -402,8 +402,6 @@ const SO_STYLE = `
 .so-tp-take{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:10px;text-align:left}
 .so-tp-take li{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;color:#E4EBE7}
 .so-tp-n{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--g);color:#fff;font-size:12.5px;font-weight:900}
-.so-tp-cta{appearance:none;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:12px 16px;border:0;border-radius:50px;background:var(--g);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer}
-.so-tp-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.so-tp,.so-tab{transition:none}}
 /* 강사 카드 2장 — 같은 크기·같은 배경·같은 캡션. 두 사진 모두 배경 제거본(contain, 아래 정렬) */
 .so-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:520px;margin:0 auto;min-width:0}
@@ -608,9 +606,9 @@ const SO_STYLE = `
 .so-bar-in{max-width:880px;margin:0 auto;min-height:var(--so-bar-h);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
 .so-bar-txt{min-width:0;color:var(--ink)}
 .so-bar-cd{margin:0;font-size:16px;font-weight:700;line-height:1.35;white-space:nowrap;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
-.so-bar-cd .so-bar-num{display:inline-block;color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
-.so-bar-cd .so-bar-ms{display:inline-block;margin-left:1px;font-size:14px;font-weight:400;color:var(--sub);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
-.so-bar-seats{margin:1px 0 0;font-size:13px;font-weight:400;line-height:1.4;color:var(--sub);font-variant-numeric:tabular-nums}
+.so-bar-cd .so-bar-num{display:inline-block;color:#D92D20;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.so-bar-cd .so-bar-ms{display:inline-block;margin-left:1px;font-size:14px;font-weight:400;color:rgba(217,45,32,.6);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.so-bar-seats{margin:1px 0 0;font-size:13px;font-weight:700;line-height:1.4;color:#007A14;font-variant-numeric:tabular-nums}
 .so-bar-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:0;border-radius:50px;background:var(--cta);color:#fff;font:inherit;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer}
 .so-bar-btn:disabled{background:#E6E8E6;color:var(--sub);cursor:not-allowed}
 @media(max-width:380px){.so-bar-cd{font-size:14px}.so-bar-cd .so-bar-ms{font-size:13px}.so-bar-btn{padding:0 16px;font-size:14px}}
@@ -737,7 +735,6 @@ export default function SalesOps() {
   // 히어로 직책 탭 — 선택된 탭(기본 0 = 강사·트레이너)과, CTA 가 신청 폼 역할을 맞추는 신호(n 이 매번 바뀐다).
   // 신청 폼 역할은 탭을 고르는 것만으로는 바뀌지 않고 CTA 를 눌렀을 때만 맞춰진다.
   const [activeRole, setActiveRole] = useState(0);
-  const [preset, setPreset] = useState<{ value: string; n: number } | undefined>(undefined);
 
   // 사이트 우하단 팝업(components/SeminarPopup.tsx)에서 /edu/sales-ops?from=popup 으로 들어온 경우만 true.
   // 결제 신청 정보의 landing 을 "popup-sales-ops" 로 남겨 시트·GA 의 랜딩 열에서 팝업 유입을 구분한다.
@@ -950,11 +947,6 @@ export default function SalesOps() {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // 아코디언 CTA — 신청 폼의 역할을 그 직책으로 맞추고 신청 섹션으로 스크롤
-  const pickRole = (role: string) => {
-    setPreset((p) => ({ value: role, n: (p?.n ?? 0) + 1 }));
-    document.getElementById("so-apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   useEffect(() => {
     const apply = document.getElementById("so-apply");
@@ -1084,9 +1076,6 @@ export default function SalesOps() {
                           </li>
                         ))}
                       </ol>
-                      <button type="button" className="so-tp-cta" onClick={() => pickRole(r.role)} tabIndex={on ? 0 : -1}>
-                        이 3가지 가져가기 · 좌석 신청 →
-                      </button>
                     </div>
                   );
                 })}
@@ -1472,7 +1461,6 @@ export default function SalesOps() {
           {/* 결제 카드 2종 — 스토리 인증가 / 정상가 */}
           <div onClickCapture={onPayCapture} onClick={onPayBubble}>
             <SalesOpsPay
-              presetRole={preset}
               disabled={formOff}
               disabledMessage={closed ? "신청이 마감되었습니다" : "정원이 마감되었습니다"}
             />
@@ -1480,7 +1468,7 @@ export default function SalesOps() {
         </div>
       </section>
 
-      {/* 하단 고정 바 — 마감 카운트다운 + 잔여석(실데이터일 때만) + 좌석 신청하기 */}
+      {/* 하단 고정 바 — 마감 카운트다운 + "현재 신청 가능!"(마감·매진 전) + 내 자리 확보하기 */}
       <div className={`so-bar${barOn ? " is-on" : ""}`} aria-hidden={!barOn}>
         <div className="so-bar-in">
           <div className="so-bar-txt">
@@ -1494,15 +1482,15 @@ export default function SalesOps() {
                 </>
               )}
             </p>
-            {seats !== null && <p className="so-bar-seats">잔여 {seats}석</p>}
+            {!formOff && <p className="so-bar-seats">현재 신청 가능!</p>}
           </div>
           {formOff ? (
             <button type="button" className="so-bar-btn" disabled>
-              {closed ? "좌석 신청하기" : "정원 마감"}
+              {closed ? "내 자리 확보하기" : "정원 마감"}
             </button>
           ) : (
             <a className="so-bar-btn" href="#so-apply" onClick={scrollToApply} tabIndex={barOn ? 0 : -1}>
-              좌석 신청하기
+              내 자리 확보하기
             </a>
           )}
         </div>

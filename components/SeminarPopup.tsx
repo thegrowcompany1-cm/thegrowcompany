@@ -50,28 +50,28 @@ function writeStore(kind: "session" | "local", key: string, value: string) {
 }
 
 const CSS = `
-.smp{position:fixed;right:24px;bottom:calc(24px + var(--smp-lift,0px));z-index:45;width:320px;max-width:calc(100vw - 32px);padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#161616;color:#EEEEEE;font-family:inherit;word-break:keep-all;opacity:0;transform:translateY(24px);visibility:hidden;transition:opacity .4s ease,transform .4s ease,bottom .25s ease,visibility 0s linear .4s}
+.smp{position:fixed;right:24px;bottom:calc(24px + var(--smp-lift,0px));z-index:45;width:320px;max-width:calc(100vw - 32px);padding:12px;border:1px solid #E5E5E5;border-radius:16px;background:#FFFFFF;box-shadow:0 8px 24px rgba(0,0,0,.18);color:#333333;font-family:inherit;word-break:keep-all;opacity:0;transform:translateY(24px);visibility:hidden;transition:opacity .4s ease,transform .4s ease,bottom .25s ease,visibility 0s linear .4s}
 .smp.is-on{opacity:1;transform:none;visibility:visible;transition-delay:0s}
 .smp *{box-sizing:border-box}
 .smp-row{display:flex;align-items:center;gap:8px}
 .smp-av{flex:0 0 auto;display:flex;padding-left:0}
-.smp-av img{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #161616;background:#2A2A2A;display:block}
+.smp-av img{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #FFFFFF;background:#EEEEEE;display:block}
 .smp-av img+img{margin-left:-16px}
 .smp-tx{min-width:0;flex:1}
-.smp-eb{margin:0;padding-right:30px;font-size:12px;font-weight:700;line-height:1.35;color:#2FBF5F}
-.smp-ti{margin:1px 0 0;font-size:17px;font-weight:900;line-height:1.3;color:#FFFFFF}
-.smp-su{margin:1px 0 0;font-size:12px;line-height:1.4;color:#BDBDBD;letter-spacing:-.04em;white-space:nowrap}
+.smp-eb{margin:0;padding-right:30px;font-size:12px;font-weight:700;line-height:1.35;color:#007A14}
+.smp-ti{margin:1px 0 0;font-size:17px;font-weight:900;line-height:1.3;color:#111111}
+.smp-su{margin:1px 0 0;font-size:12px;line-height:1.4;color:#555555;letter-spacing:-.04em;white-space:nowrap}
 .smp-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
 .smp-go{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:8px;background:#009519;color:#fff;font-size:13px;font-weight:800;text-decoration:none}
 .smp-go::after{content:"";position:absolute;inset:0;border-radius:16px}
-.smp-go:focus-visible{outline:2px solid #2FBF5F;outline-offset:3px}
-.smp-skip{position:relative;z-index:2;height:28px;padding:0 4px;border:0;background:none;color:#9A9A9A;font:inherit;font-size:12px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.smp-skip:hover{color:#EEEEEE}
-.smp-x{position:absolute;top:0;right:0;z-index:3;width:44px;height:44px;border:0;background:none;color:#BDBDBD;cursor:pointer;display:grid;place-items:center}
-.smp-x:hover{color:#fff}
+.smp-go:focus-visible{outline:2px solid #111111;outline-offset:3px}
+.smp-skip{position:relative;z-index:2;height:28px;padding:0 4px;border:0;background:none;color:#777777;font:inherit;font-size:12px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.smp-skip:hover{color:#111111}
+.smp-x{position:absolute;top:0;right:0;z-index:3;width:44px;height:44px;border:0;background:none;color:#666666;cursor:pointer;display:grid;place-items:center}
+.smp-x:hover{color:#111111}
 .smp-x svg{width:14px;height:14px}
-.smp button:focus-visible{outline:2px solid #2FBF5F;outline-offset:-2px;border-radius:8px}
-@media(max-width:639px){.smp{right:16px;left:16px;width:auto;max-width:340px;margin-left:auto;margin-right:auto;bottom:calc(16px + var(--smp-lift,0px) + env(safe-area-inset-bottom))}}
+.smp button:focus-visible{outline:2px solid #111111;outline-offset:-2px;border-radius:8px}
+@media(max-width:639px){.smp{right:16px;left:16px;width:auto;max-width:340px;margin-left:auto;margin-right:auto;bottom:calc(28px + var(--smp-lift,0px) + env(safe-area-inset-bottom))}}
 @media(max-width:359px){.smp-su{white-space:normal}}
 @media(prefers-reduced-motion:reduce){.smp,.smp.is-on{transition:none;transform:none}}
 `;
