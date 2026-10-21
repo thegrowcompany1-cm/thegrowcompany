@@ -5,6 +5,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  SO_CAPACITY,
+  SO_DATE,
+  SO_PRICE_NORMAL,
+  SO_PRICE_STORY,
+  SO_TIME,
+  soFormatCapacity,
+  soFormatPrice,
+} from "@/lib/salesOps";
 
 const LINE1 = "그로우 에듀.";
 const LINE2 = "체육시설업 종사자를 위한 성장 교육입니다.";
@@ -17,7 +26,31 @@ const STATS = [
   { target: 200, suffix: "회+", label: "창업 경험사례" },
 ];
 
-const COURSES = [
+const COURSES: {
+  href: string;
+  img: string;
+  alt: string;
+  title: string;
+  target: string;
+  points: string[];
+  badge: string;
+  imgPos?: string;
+}[] = [
+  {
+    // 일자·시간·가격·정원은 lib/salesOps.ts 상수로 출력한다 (하드코딩 금지). 포스터가 세로형(4:5)이라 16:9 카드에서는 제목·강사 영역이 보이게 위치를 조정한다.
+    href: "/edu/sales-ops",
+    img: "/edu/sales-ops/poster.jpg",
+    alt: "피트니스 성장 마스터키 세미나 포스터",
+    imgPos: "50% 28%",
+    title: "피트니스 성장 마스터키 세미나",
+    target: `강사·실장·원장·점장 · ${SO_DATE} ${SO_TIME}`,
+    points: [
+      "1부 김재강 대표 운영치트키 — 숫자·위임의 기술",
+      "2부 황현진 대표 매출치트키 — 권유·호감의 기술",
+      `스토리 인증 시 ${soFormatPrice(SO_PRICE_STORY)} (정가 ${soFormatPrice(SO_PRICE_NORMAL)})`,
+    ],
+    badge: `총 4시간 · ${soFormatCapacity(SO_CAPACITY)} 한정`,
+  },
   {
     href: "/edu/startup-class",
     img: "/startup/startupjk.png",
@@ -237,6 +270,7 @@ export default function EduHub() {
                     src={c.img}
                     alt={c.alt}
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    style={c.imgPos ? { objectPosition: c.imgPos } : undefined}
                   />
                 ) : (
                   <div
