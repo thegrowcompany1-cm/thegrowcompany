@@ -744,7 +744,25 @@ const HHJ_CSS = `
 @media(min-width:1024px){.hhj-wrap{padding:0 32px}}
 .hhj-sec{padding:56px 0}
 @media(min-width:640px){.hhj-sec{padding:80px 0}}
-.hhj-sec--alt{background:var(--bg2)}
+/* 다크/화이트 교차 — 같은 색 섹션은 한 덩어리로 묶고 구분선 없이 여백(64px)으로만 나눈다 */
+.hhj-blk{padding:64px 0}
+.hhj-blk .hhj-sec{padding:0}
+.hhj-blk .hhj-sec+.hhj-sec{margin-top:64px}
+.hhj-light{--tx:#111111;--sub:#333333;--sub2:#666666;--card:#F5F5F5;--chip:#F0F0F0;--gt:#007A14;--line:transparent;background:#FFFFFF;color:#111111}
+.hhj-light .hhj-stat span,.hhj-light .hhj-vid-cap,.hhj-light .hhj-left small,.hhj-light .hhj-scene-l{color:#666666}
+.hhj-light .hhj-chips li{color:#333333}
+.hhj-light .hhj-check:hover{border-color:#CCCCCC}
+.hhj-light .hhj-check-ic{border-color:#CCCCCC}
+.hhj-light .hhj-check.is-on{border-color:var(--g)}
+.hhj-light .hhj-check.is-on .hhj-check-ic{border-color:var(--g)}
+.hhj-light .hhj-bad{color:#111111}
+.hhj-light .is-fixed .hhj-bad{color:#999999}
+.hhj-light .hhj-strike{background-image:linear-gradient(#999999,#999999)}
+.hhj-light .hhj-fix-in{background:#EAF6EC}
+.hhj-light .hhj-good{color:#0B3D17}
+.hhj-light .hhj-note{color:#2E6B3F}
+.hhj-light .is-fixed .hhj-sw{background:#2A2A2A;color:#EEEEEE}
+.hhj-light .hhj-left{border:0;box-shadow:inset 4px 0 0 var(--g)}
 .hhj-eyebrow{margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gt)}
 .hhj-h2{margin:0 0 16px;max-width:22em;font-size:clamp(24px,3.4vw,36px);font-weight:900;line-height:1.35;letter-spacing:-.02em;color:var(--tx)}
 .hhj-bt{display:flex;align-items:center;gap:12px;margin:0 0 20px}
@@ -1090,8 +1108,9 @@ export default function HwangHyunjinDiagnosisPage() {
         </div>
       </section>
 
+      <div className="hhj-blk hhj-light">
       {/* 2. 오픈루프 */}
-      <section className="hhj-sec hhj-sec--alt">
+      <section className="hhj-sec">
         <div className="hhj-wrap">
           <p className="hhj-eyebrow">OPEN LOOP</p>
           <h2 className="hhj-h2">등록률이 낮은 센터의 상담에는 공통으로 들어가는 &lsquo;한 문장&rsquo;이 있습니다.</h2>
@@ -1129,8 +1148,11 @@ export default function HwangHyunjinDiagnosisPage() {
         </div>
       </section>
 
+      </div>
+
+      <div className="hhj-blk">
       {/* 4. 방치 비용 */}
-      <section className="hhj-sec hhj-sec--alt">
+      <section className="hhj-sec">
         <div className="hhj-wrap">
           <div className="hhj-card">
             <p className="hhj-eyebrow">그대로 두면</p>
@@ -1155,8 +1177,11 @@ export default function HwangHyunjinDiagnosisPage() {
         </div>
       </section>
 
+      </div>
+
+      <div className="hhj-blk hhj-light">
       {/* 6. 권위 */}
-      <section className="hhj-sec hhj-sec--alt">
+      <section className="hhj-sec">
         <div className="hhj-wrap">
           <div className="hhj-bt">
             <h2>세일즈작가 황현진</h2>
@@ -1192,7 +1217,7 @@ export default function HwangHyunjinDiagnosisPage() {
       </section>
 
       {/* 7. 교정본 (오픈루프 닫기) */}
-      <section className="hhj-sec hhj-sec--alt">
+      <section className="hhj-sec">
         <div className="hhj-wrap">
           <p className="hhj-eyebrow">교정본 · 그 한 문장</p>
           <h2 className="hhj-h2">
@@ -1250,7 +1275,7 @@ export default function HwangHyunjinDiagnosisPage() {
       </section>
 
       {/* 9. 솔루션 */}
-      <section className="hhj-sec hhj-sec--alt">
+      <section className="hhj-sec">
         <div className="hhj-wrap">
           <div className="hhj-bt">
             <h2>솔루션 · 우리 센터 상담 대본 개발</h2>
@@ -1297,7 +1322,7 @@ export default function HwangHyunjinDiagnosisPage() {
       </section>
 
       {/* 11. 솔직히 */}
-      <section className="hhj-sec hhj-sec--alt">
+      <section className="hhj-sec">
         <div className="hhj-wrap">
           <div className="hhj-card">
             <p className="hhj-eyebrow">솔직히 말씀드리면</p>
@@ -1311,6 +1336,8 @@ export default function HwangHyunjinDiagnosisPage() {
           </div>
         </div>
       </section>
+
+      </div>
 
       {/* 12. 신청 — 하단 상담폼 */}
       <section className="hhj-formsec" id="hhj-form-bottom">
