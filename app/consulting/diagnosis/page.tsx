@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import MentorImage from "@/components/MentorImage";
 import DiagnosisIntro from "./DiagnosisIntro";
 import VideoReviewPair from "@/components/VideoReviewPair";
 import LogoMarquee from "@/components/LogoMarquee";
@@ -19,6 +20,7 @@ const CONSULTANTS = [
   { slug: "gu-jinwan", name: "구진완", field: "매장 운영 개선 · 조직 성장", img: "/consultants/gu-jinwan.png" },
   { slug: "heo-junyoung", name: "허준영", field: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg" },
   { slug: "hwang-hyunjin", name: "황현진", field: "상담 등록률 · 세일즈 화법", img: "/consultants/hwang-hyunjin.png" },
+  { slug: "park-gukjin", name: "박국진", field: "자금 · 보증", img: "/consultants/park-gukjin.jpg" },
 ];
 
 // 자체 호스팅 영상 후기 (유튜브 미사용) — video-raw 원본을 720p CRF28 로 인코딩한 것
@@ -158,10 +160,9 @@ export default function DiagnosisPage() {
               className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] transition-all duration-200 hover:-translate-y-1 hover:border-[#22B573] hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
             >
               <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1c1c]">
-                <Image
+                <MentorImage
                   src={c.img}
                   alt={`${c.name} 헬스장·필라테스 운영 진단 멘토`}
-                  fill
                   className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
                   sizes="(min-width: 1024px) 33vw, 50vw"
                 />

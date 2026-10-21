@@ -11,6 +11,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
+import MentorImage from "@/components/MentorImage";
 import Link from "next/link";
 
 type Card = {
@@ -92,6 +93,7 @@ const groups: Group[] = [
       { title: "구진완 멘토", desc: "매장 운영 개선 · 조직 성장", img: "/consultants/gu-jinwan.png", href: "/consulting/diagnosis/gu-jinwan", photo: true },
       { title: "허준영 멘토", desc: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
       { title: "황현진 멘토", desc: "상담 등록률 · 세일즈 화법", img: "/consultants/hwang-hyunjin.png", href: "/consulting/diagnosis/hwang-hyunjin", photo: true },
+      { title: "박국진 멘토", desc: "자금 · 보증", img: "/consultants/park-gukjin.jpg", href: "/consulting/diagnosis/park-gukjin", photo: true },
     ],
   },
   {
@@ -117,10 +119,9 @@ function ServiceCard({ card }: { card: Card }) {
       */}
       <div className="relative aspect-square w-full overflow-hidden bg-[#2a2a2a]">
         {card.photo ? (
-          <Image
+          <MentorImage
             src={card.img}
             alt={`${card.title} - 더그로우컴퍼니 헬스장·필라테스 피트니스 솔루션`}
-            fill
             className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
             style={{ objectPosition: card.objectPosition ?? "center top", filter: "brightness(0.9)" }}
             sizes="(min-width: 1024px) 25vw, 50vw"
