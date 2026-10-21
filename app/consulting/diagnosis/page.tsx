@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import DiagnosisIntro from "./DiagnosisIntro";
-import MentorScrollButton from "./MentorScrollButton";
 import VideoReviewPair from "@/components/VideoReviewPair";
 import LogoMarquee from "@/components/LogoMarquee";
 import { SITE_URL } from "@/lib/site";
@@ -96,7 +95,6 @@ export default function DiagnosisPage() {
       {/* ── 1. 인트로 (질문 → 답변 인터랙션) ── */}
       <section className="mx-auto max-w-6xl px-4 pt-8 pb-10 sm:px-6 sm:pt-12 sm:pb-14 lg:px-8">
         <DiagnosisIntro />
-        <MentorScrollButton />
       </section>
 
       {/* ── 2. 작동 방식 3스텝 ── */}

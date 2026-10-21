@@ -4,6 +4,7 @@
 // 외부 라이브러리 없음. setInterval/rAF/IntersectionObserver 는 언마운트 시 전부 정리.
 
 import { useEffect, useRef, useState } from "react";
+import { TYPE_CURSOR_CSS, useTypewriter, type TypeStep } from "@/lib/useTypewriter";
 import Link from "next/link";
 import {
   SO_CAPACITY,
@@ -17,8 +18,14 @@ import {
 
 const LINE1 = "그로우 에듀.";
 const LINE2 = "체육시설업 종사자를 위한 성장 교육입니다.";
-const TYPE_SPEED = 70; // ms/글자
 const LINE_PAUSE = 500; // 줄 사이 멈춤
+const START_DELAY = 300; // 첫 글자 전 지연
+// 타이핑 단계 — 속도(70ms/글자)와 커서 모양은 lib/useTypewriter.ts 공용값
+const TYPE_STEPS: TypeStep[] = [
+  { type: "type", key: "l1", text: LINE1 },
+  { type: "wait", ms: LINE_PAUSE },
+  { type: "type", key: "l2", text: LINE2 },
+];
 
 const STATS = [
   { target: 800, suffix: "명+", label: "누적 수강생" },
@@ -107,56 +114,14 @@ const COURSES: {
   },
 ];
 
-const CURSOR_STYLE = `
-@keyframes eduBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
-.edu-cursor{display:inline-block;color:#22B573;font-weight:400;animation:eduBlink 1s steps(1) infinite}
-`;
+const CURSOR_STYLE = TYPE_CURSOR_CSS;
 
 export default function EduHub() {
-  const [t1, setT1] = useState("");
-  const [t2, setT2] = useState("");
-  const [done, setDone] = useState(false);
+  const { texts, done } = useTypewriter(TYPE_STEPS, { startDelay: START_DELAY });
+  const t1 = texts.l1;
+  const t2 = texts.l2;
   const [counts, setCounts] = useState<number[]>([0, 0, 0]);
   const statsRef = useRef<HTMLDivElement>(null);
-
-  // 타이핑 인트로 (setInterval + 지연, 언마운트 시 정리)
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | null = null;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    let i1 = 0;
-    let i2 = 0;
-
-    const typeLine2 = () => {
-      interval = setInterval(() => {
-        i2 += 1;
-        setT2(LINE2.slice(0, i2));
-        if (i2 >= LINE2.length) {
-          if (interval) clearInterval(interval);
-          interval = null;
-          setDone(true);
-        }
-      }, TYPE_SPEED);
-    };
-
-    const typeLine1 = () => {
-      interval = setInterval(() => {
-        i1 += 1;
-        setT1(LINE1.slice(0, i1));
-        if (i1 >= LINE1.length) {
-          if (interval) clearInterval(interval);
-          interval = null;
-          timers.push(setTimeout(typeLine2, LINE_PAUSE));
-        }
-      }, TYPE_SPEED);
-    };
-
-    timers.push(setTimeout(typeLine1, 300));
-
-    return () => {
-      if (interval) clearInterval(interval);
-      timers.forEach((t) => clearTimeout(t));
-    };
-  }, []);
 
   // 숫자 카운터 (뷰포트 진입 시 1회, rAF 카운트업 — observer/raf 정리)
   useEffect(() => {
