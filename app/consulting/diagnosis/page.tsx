@@ -198,22 +198,6 @@ export default function DiagnosisPage() {
           </div>
         </div>
       </section>
-
-      {/* ── 6. 클로징 CTA ── */}
-      <section className="border-t border-white/10 bg-[#0d0d0d] px-4 py-16 text-center sm:py-20">
-        <div className="mx-auto max-w-2xl">
-          <p className="text-lg font-bold leading-relaxed text-white sm:text-xl">
-            어떤 멘토가 맞을지 고민된다면,<br />
-            편하게 남겨주세요. 상황에 맞는 전문가를 연결해 드립니다.
-          </p>
-          <Link
-            href="/consulting/diagnosis/kim-jaegang"
-            className="mt-8 inline-flex items-center justify-center rounded-full bg-[#22B573] px-8 py-4 text-base font-extrabold text-white transition-colors hover:bg-[#1c9e63]"
-          >
-            무료 상담 신청하기
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }
