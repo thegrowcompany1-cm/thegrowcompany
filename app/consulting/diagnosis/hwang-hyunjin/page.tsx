@@ -1,18 +1,16 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 진단 멘토 상세페이지 — 황현진 (세일즈 파트) · 개인 브랜딩(대본 톤, DESIGN.md 2층)
-//  구조: [상단 바 → 히어로 → 프롤로그 → 목차] → 상단 상담폼 → 챕터 1~4 · 영상 · 책장 · 에필로그
-//   → [하단 상담폼(-bottom id)] → ConsultantCarousel → 추천 카드 → 서명 줄
-//  · 클래스 접두사 hhj-, 스타일은 이 파일의 HHJ_CSS(사이트의 so-/sop- 방식과 같다)
-//  · 글꼴 Noto Serif KR · Nanum Pen Script 는 이 페이지에서만 로드 (본문은 사이트 기본 Noto Sans KR)
-//  · 상담폼(FORM_HTML)은 허준영 페이지와 같은 구조를 그대로 쓴다 — 감싸는 상자만 2층 톤
+// 진단 멘토 상세페이지 — 황현진 (세일즈 파트) · v2: 더그로우 메인 톤(DESIGN.md 1층) + 설득 구조
+//  구조: 히어로 → 오픈루프 → 공감 → 방치 비용 → 뒤집기 → 권위 → 상단 상담폼 → 교정본 → 영상 → 솔루션 → 대상 → 솔직히
+//   → 신청(하단 상담폼, -bottom id) → ConsultantCarousel → 추천 카드. 모바일 하단 고정 CTA.
+//  · 클래스 접두사 hhj-, 스타일은 이 파일의 HHJ_CSS(사이트의 so-/sop- 방식과 같다). 글꼴은 사이트 기본 Noto Sans KR.
+//  · 상담폼(FORM_HTML)은 허준영 페이지와 같은 구조·원래 초록을 그대로 쓴다.
 //  · mounted 클라이언트 전용 폼 렌더 + suppressHydrationWarning, innerHTML <script> 는 주입 이펙트가 재생성
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Noto_Serif_KR, Nanum_Pen_Script } from "next/font/google";
 import Link from "next/link";
 import ConsultantCarousel from "@/components/ConsultantCarousel";
 import { SITE_URL } from "@/lib/site";
@@ -644,11 +642,9 @@ const FORM_HTML_BOTTOM = FORM_HTML
   // 상단/하단 폼이 서로 다른 iframe 을 쓰도록 따로 바꾼다.
   .replace(/diag_iframe_top/g, "diag_iframe_bottom");
 
-// ─── 개인 브랜딩(대본 톤) — DESIGN.md 2층 ─────────────────────────────────────
-// 흰 종이 · 먹 · 빨간 교정펜. 상세 영역은 주입 HTML 이 아니라 JSX 로 쓴다(폼만 FORM_HTML 주입 유지).
-// 글꼴은 이 페이지에서만 불러온다(전역 layout 금지). 본문은 사이트 기본 Noto Sans KR.
-const serif = Noto_Serif_KR({ weight: ["700", "900"], subsets: ["latin"], display: "swap", variable: "--font-hhj-serif" });
-const pen = Nanum_Pen_Script({ weight: "400", subsets: ["latin"], display: "swap", variable: "--font-hhj-pen" });
+// ─── v2: 더그로우 메인 톤(DESIGN.md 1층) + 설득 구조 ───────────────────────────
+// 바탕 #111 · 카드 #161616/16px · 글꼴은 사이트 기본 Noto Sans KR 만(이 페이지 전용 글꼴 없음) · 포인트 #009519(작은 글씨는 #2FBF5F).
+// 구조: 히어로 단언 → 오픈루프 → 공감 → 방치 비용 → 뒤집기 → 권위 → (상단 폼) → 루프 닫기(교정본) → 영상 → 솔루션 → 대상 → 솔직히 → 신청
 
 // 영상 제목 — 값이 있을 때만 캡션을 보여준다. TODO 대표님 입력 (영상 순서: sales-01 ~ sales-04)
 const VIDEO_TITLES: string[] = ["", "", "", ""];
@@ -657,7 +653,7 @@ const VIDEOS = [1, 2, 3, 4].map((n) => ({
   poster: `/edu/sales-ops/videos/sales-0${n}.jpg`,
 }));
 
-// 강의·컨설팅 기업 — 텍스트 칩 (로고 이미지는 쓰지 않는다)
+// 기업 칩 — 텍스트만 (로고 이미지는 쓰지 않는다)
 const COMPANY_CHIPS = [
   "아모레퍼시픽",
   "LG유플러스",
@@ -666,10 +662,8 @@ const COMPANY_CHIPS = [
   "마세라티",
   "신한은행",
   "삼성생명",
-  "삼성증권",
   "바디프랜드",
   "암웨이",
-  "메리케이 코리아",
   "CGV",
 ];
 
@@ -680,20 +674,25 @@ const BOOKS = [
   { src: "/edu/sales-ops/salesbook4.png", title: "설득의 정석" },
 ];
 
-// 목차 — 3번만 빨간색. 마지막 줄은 번호 대신 +
-const CONTENTS = [
-  { no: "1", title: "생방송에서 검증한 언어", label: "홈쇼핑", href: "#hhj-ch1", red: false },
-  { no: "2", title: "20만 명의 세일즈 현장", label: "15년", href: "#hhj-ch2", red: false },
-  { no: "3", title: "피트니스 상담실, 교정본", label: "빨간펜", href: "#hhj-ch3", red: true },
-  { no: "4", title: "우리 센터의 대본 쓰기", label: "솔루션", href: "#hhj-ch4", red: false },
-  { no: "+", title: "책장 · 에필로그", label: "저서 7권", href: "#hhj-shelf", red: false },
+// 공감 체크 카드
+const CHECKS = [
+  "가격을 물으면 할인부터 꺼낸다",
+  "\"생각해볼게요\" 한마디에 상담이 끝난다",
+  "트레이너가 PT 권유를 '영업'이라 느껴 말을 아낀다",
+  "회원이 반문하면 설명이 길어지고, 길수록 멀어진다",
 ];
 
-const RECORDS = [
-  { big: "2년", small: "연속 홈쇼핑 최다매출" },
-  { big: "기네스", small: "홈쇼핑 기네스 기록" },
-  { big: "2013", small: "한국강사협회 명강사" },
-  { big: "대상", small: "2013 전국 강연콘테스트" },
+const STATS = [
+  { to: 15, suffix: "년", label: "세일즈 교육" },
+  { to: 20, suffix: "만+", label: "교육한 영업인" },
+  { to: 2, suffix: "년 연속", label: "홈쇼핑 최다매출" },
+  { to: 7, suffix: "권", label: "세일즈·설득 저서" },
+];
+
+const HISTORY = [
+  "현) 리얼세일즈 주식회사 대표 · 세일즈학교 교장",
+  "전) NS홈쇼핑 쇼핑호스트 — 홈쇼핑 기네스 기록",
+  "2013 한국강사협회 '명강사' · 전국 강연콘테스트 대상",
 ];
 
 // 교정본 — 하수 문장 → 고수 문장. TODO 황현진 대표 확인: 3번 하수 문장(운동할 시간 없으시면 주말에라도 오세요)은 이 페이지에서 새로 쓴 문장
@@ -721,153 +720,153 @@ const SCENES = [
   },
 ];
 
-const SCRIPT_STEPS = [
-  { no: "#1", name: "듣기", body: "실제 상담 흐름과 자주 듣는 반문을 함께 듣고, 새는 문장을 찾습니다." },
-  { no: "#2", name: "쓰기", body: "첫마디·권유·반론 극복·클로징, 단계별 세일즈 언어 세트를 씁니다." },
-  { no: "#3", name: "연습", body: "FC·트레이너가 대본을 자기 말로 바꿔 쓰도록 롤플레이로 훈련합니다." },
-  { no: "#4", name: "잇기", body: "만기 전 상담과 재등록 권유까지, 같은 언어로 잇습니다." },
+const SOLUTION_STEPS = [
+  { no: "01", name: "상담 듣기", body: "실제 상담 흐름과 자주 듣는 반문을 함께 듣고, 새는 문장을 찾습니다." },
+  { no: "02", name: "대본 쓰기", body: "첫마디·권유·반론 극복·클로징, 단계별 세일즈 언어 세트를 씁니다." },
+  { no: "03", name: "롤플레이 훈련", body: "FC·트레이너가 대본을 자기 말로 바꿔 쓰도록 롤플레이로 훈련합니다." },
+  { no: "04", name: "재등록까지 잇기", body: "만기 전 상담과 재등록 권유까지, 같은 언어로 잇습니다." },
+];
+
+const FITS = [
+  "상담·FC 직원마다 등록률이 크게 다른 센터",
+  "PT 권유를 트레이너가 어려워하는 센터",
+  "직원이 자주 바뀌어 상담을 매번 새로 가르치는 센터",
 ];
 
 const HHJ_CSS = `
-.hhj{--ink:#1C1A17;--sub:#6B6358;--line:#CFC6B8;--card:#F6F6F4;--red:#C8321F;--serif:var(--font-hhj-serif),'Noto Serif KR',serif;--pen:var(--font-hhj-pen),'Nanum Pen Script',cursive;color:var(--ink);background:#fff;font-size:16px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}
+.hhj{--bg:#111111;--bg2:#0A0A0A;--card:#161616;--chip:#1E1E1E;--tx:#EEEEEE;--sub:#BDBDBD;--sub2:#9A9A9A;--g:#009519;--gt:#2FBF5F;--line:rgba(255,255,255,.1);background:var(--bg);color:var(--tx);font-family:inherit;font-size:16px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
 .hhj *{box-sizing:border-box}
-.hhj [id]{scroll-margin-top:112px}
-.hhj a:focus-visible,.hhj button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.hhj [id]{scroll-margin-top:104px}
+.hhj a:focus-visible,.hhj button:focus-visible{outline:2px solid var(--gt);outline-offset:3px}
 .hhj a,.hhj button{touch-action:manipulation}
-.hhj-wrap{max-width:1152px;margin:0 auto;padding:0 20px}
+.hhj-wrap{max-width:1152px;margin:0 auto;padding:0 16px}
 @media(min-width:640px){.hhj-wrap{padding:0 24px}}
 @media(min-width:1024px){.hhj-wrap{padding:0 32px}}
-.hhj-sec{padding:72px 0}
-@media(max-width:640px){.hhj-sec{padding:56px 0}}
-.hhj-label{display:block;margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--sub)}
-.hhj-h2{margin:0 0 20px;font-family:var(--serif);font-weight:900;font-size:clamp(26px,3.4vw,38px);line-height:1.35;letter-spacing:-.02em}
-.hhj-p{margin:0 0 16px;max-width:34em}
-.hhj-pen{font-family:var(--pen);font-weight:400;color:var(--red);line-height:1.2}
+.hhj-sec{padding:56px 0}
+@media(min-width:640px){.hhj-sec{padding:80px 0}}
+.hhj-sec--alt{background:var(--bg2)}
+.hhj-eyebrow{margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gt)}
+.hhj-h2{margin:0 0 16px;max-width:22em;font-size:clamp(24px,3.4vw,36px);font-weight:900;line-height:1.35;letter-spacing:-.02em;color:var(--tx)}
+.hhj-bt{display:flex;align-items:center;gap:12px;margin:0 0 20px}
+.hhj-bt::before{content:"";flex:0 0 4px;height:20px;border-radius:999px;background:var(--g)}
+.hhj-bt h2{margin:0;font-size:clamp(22px,3vw,30px);font-weight:900;line-height:1.35;letter-spacing:-.02em}
+.hhj-p{margin:0 0 16px;max-width:34em;color:var(--sub)}
+.hhj-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+@media(min-width:640px){.hhj-card{padding:32px}}
+.hhj-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:54px;padding:0 28px;border:0;border-radius:12px;background:var(--g);color:#fff;font:inherit;font-size:19px;font-weight:900;text-decoration:none;cursor:pointer;transition:background-color .2s}
+.hhj-cta:hover{background:#007a14}
 
-/* 1. 상단 바 */
-.hhj-bar{border-bottom:1px solid var(--ink)}
-.hhj-bar-in{display:flex;align-items:baseline;justify-content:space-between;padding-top:18px;padding-bottom:14px}
-.hhj-bar b{font-family:var(--serif);font-weight:900;font-size:20px;letter-spacing:-.02em}
-.hhj-bar span{font-size:13px;font-weight:700;letter-spacing:.22em;color:var(--sub)}
+/* 1. 히어로 — 모바일은 사진을 화면 가득 깔고 아래 60% 를 #111 로 녹인다. 데스크톱은 좌 텍스트 / 우 사진 카드 */
+.hhj-hero{position:relative;overflow:hidden;min-height:720px;display:flex;align-items:flex-end}
+.hhj-hero-in{width:100%;padding-top:470px;padding-bottom:48px}
+.hhj-hero-text{position:relative;z-index:1}
+.hhj-hero-photo{position:absolute;inset:0}
+.hhj-hero-photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(to bottom,rgba(17,17,17,0) 0%,rgba(17,17,17,.92) 28%,#111111 52%)}
+.hhj-h1{margin:0 0 20px;font-size:clamp(34px,5.6vw,60px);font-weight:900;line-height:1.2;letter-spacing:-.03em}
+.hhj-sub{margin:0 0 28px;max-width:28em;font-size:17px;color:var(--sub)}
+@media(min-width:1024px){
+  .hhj-hero{display:block;min-height:0;padding:72px 0}
+  .hhj-hero-in{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:56px;align-items:center;padding-top:0;padding-bottom:0}
+  .hhj-hero-photo{position:relative;inset:auto;order:2;aspect-ratio:4/5;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+  .hhj-hero-photo::after{display:none}
+}
 
-/* 2. 히어로 */
-.hhj-hero{padding:48px 0 72px}
-.hhj-hero-in{display:grid;grid-template-columns:minmax(0,1fr);gap:56px;align-items:center}
-@media(min-width:1024px){.hhj-hero-in{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:64px}}
-.hhj-eyebrow{margin:0 0 20px;font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--sub)}
-.hhj-h1{margin:0 0 24px;font-family:var(--serif);font-weight:900;font-size:clamp(34px,5.4vw,60px);line-height:1.22;letter-spacing:-.03em}
-.hhj-sub{margin:0 0 32px;max-width:30em;font-size:17px;color:var(--ink)}
-.hhj-cta{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;border:1px solid var(--ink);background:var(--ink);color:#fff;font:inherit;font-size:16px;font-weight:700;cursor:pointer;border-radius:0}
-.hhj-cta:hover{background:#fff;color:var(--ink)}
-.hhj-cta-note{margin:12px 0 0;font-size:13px;color:var(--sub)}
-.hhj-photo-wrap{position:relative;max-width:440px;width:100%;margin:28px 0 0}
-@media(min-width:1024px){.hhj-photo-wrap{margin:28px 0 24px auto}}
-.hhj-photo{position:relative;aspect-ratio:4/5;border:1px solid var(--ink);background:var(--card);overflow:hidden}
-.hhj-photo-hand{position:absolute;left:4px;top:-52px;display:flex;align-items:flex-end;gap:6px;font-size:34px}
-.hhj-photo-hand svg{width:54px;height:40px;margin-bottom:-14px}
-.hhj-hist{position:absolute;right:-8px;bottom:-24px;max-width:260px;border:1px solid var(--ink);background:#fff;padding:14px 16px;font-size:13px;line-height:1.65}
-.hhj-hist b{display:block;font-weight:700}
-@media(max-width:640px){.hhj-hist{right:8px;bottom:-28px;max-width:230px}}
+/* 3. 공감 체크 */
+.hhj-checks{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:24px 0 0}
+@media(min-width:768px){.hhj-checks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hhj-check{display:flex;align-items:center;gap:14px;width:100%;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--tx);font:inherit;font-size:16px;font-weight:600;text-align:left;cursor:pointer;transition:border-color .2s}
+.hhj-check:hover{border-color:rgba(255,255,255,.3)}
+.hhj-check-ic{flex:0 0 26px;width:26px;height:26px;display:grid;place-items:center;border:2px solid #4a4a4a;border-radius:50%;color:transparent;transition:background-color .2s,border-color .2s}
+.hhj-check-ic svg{width:14px;height:14px}
+.hhj-check.is-on{border-color:var(--g)}
+.hhj-check.is-on .hhj-check-ic{background:var(--g);border-color:var(--g);color:#fff}
+.hhj-count{margin:20px 0 0;font-size:16px;font-weight:700;color:var(--gt)}
 
-/* 3. PROLOGUE */
-.hhj-pro{border-top:1px solid var(--ink)}
-.hhj-pro-q{margin:0 0 20px;max-width:22em;font-family:var(--serif);font-weight:700;font-size:clamp(24px,3.4vw,36px);line-height:1.45;letter-spacing:-.02em}
-.hhj-pro-p{margin:0 0 20px;max-width:30em;font-size:18px}
-.hhj-mark{box-shadow:inset 0 -.45em 0 rgba(255,238,88,.55)}
-.hhj-pro-sign{font-size:34px}
+/* 4. 방치 비용 · 11. 솔직히 */
+.hhj-card .hhj-h2{max-width:24em}
 
-/* 4. CONTENTS */
-.hhj-toc{margin:0;padding:0;list-style:none;border-top:1px solid var(--ink)}
-.hhj-toc li{border-bottom:1px solid var(--line)}
-.hhj-toc a{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:20px 4px;color:var(--ink);text-decoration:none}
-.hhj-toc a:hover .hhj-toc-t{text-decoration:underline;text-underline-offset:4px}
-.hhj-toc-n{font-family:var(--serif);font-weight:900;font-size:22px;font-variant-numeric:tabular-nums}
-.hhj-toc-t{font-family:var(--serif);font-weight:700;font-size:clamp(18px,2.4vw,24px)}
-.hhj-toc-l{font-size:13px;color:var(--sub)}
-.hhj-toc .is-red .hhj-toc-n,.hhj-toc .is-red .hhj-toc-t{color:var(--red)}
+/* 5. 뒤집기 */
+.hhj-old{margin:0 0 12px;font-size:18px;color:var(--sub2);text-decoration:line-through}
+.hhj-em{color:var(--gt)}
 
-/* 폼 래퍼 — 기능은 그대로, 감싸는 상자만 2층 톤 */
-.hhj-formsec{padding:0 0 72px}
-.hhj-formbox{max-width:840px;margin:0 auto;border:1px solid var(--ink);border-radius:0;background:#fff;box-shadow:none;overflow:hidden}
-.hhj-formsec--bottom{border-top:1px solid var(--ink);padding:72px 0}
-.hhj-formsec--bottom .hhj-h2{text-align:left;max-width:840px;margin:0 auto 24px}
-/* 상담폼 색을 대본 톤으로 — 이 페이지 한정 덮어쓰기(FORM_HTML 원문·다른 멘토 페이지는 그대로) */
-.hhj .hhj-formbox .consult-form-wrapper{max-width:none}
-.hhj .hhj-formbox .form-header{background:#1C1A17;background-image:none}
-.hhj .hhj-formbox .form-header h2{color:#FFFFFF}
-.hhj .hhj-formbox .form-submit button{background:#C8321F;border-radius:0}
-.hhj .hhj-formbox .form-submit button:hover{background:#9E2516;box-shadow:none}
-.hhj .hhj-formbox .form-submit button:disabled{background:#CFC6B8;cursor:not-allowed}
-.hhj .hhj-formbox input[type="checkbox"],.hhj .hhj-formbox input[type="radio"]{accent-color:#1C1A17}
+/* 6. 권위 */
+.hhj-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:28px 0 0;max-width:640px}
+.hhj-stat{padding:22px 20px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.hhj-stat b{display:block;font-size:clamp(26px,3.6vw,36px);font-weight:900;line-height:1.15;color:var(--gt);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hhj-stat span{display:block;margin-top:6px;font-size:13px;color:var(--sub)}
+.hhj-hist{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:10px;max-width:40em}
+.hhj-hist li{position:relative;padding-left:16px;color:var(--tx)}
+.hhj-hist li::before{content:"";position:absolute;left:0;top:.8em;width:6px;height:6px;border-radius:50%;background:var(--g)}
+.hhj-chips{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 0;padding:0;list-style:none}
+.hhj-chips li{padding:8px 16px;border-radius:999px;background:var(--chip);font-size:14px;font-weight:600;color:var(--tx)}
+.hhj-books{display:flex;gap:14px;margin:28px 0 0;padding:0 0 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.hhj-books img{flex:0 0 auto;display:block;height:180px;width:auto;border-radius:6px;scroll-snap-align:start;background:var(--chip)}
 
-/* 5. CHAPTER 1 — 페이지 유일의 다크 섹션 */
-.hhj-dark{background:#1C1A17;color:#F6F6F4}
-.hhj-dark .hhj-label{color:#CFC6B8}
-.hhj-dark .hhj-p{color:#E7E1D6}
-.hhj-recs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:36px 0 0;max-width:720px;border-top:1px solid #6B6358;border-left:1px solid #6B6358}
-.hhj-rec{padding:24px 20px;border-right:1px solid #6B6358;border-bottom:1px solid #6B6358}
-.hhj-rec b{display:block;font-variant-numeric:tabular-nums;font-family:var(--serif);font-weight:900;font-size:clamp(28px,4vw,40px);line-height:1.15}
-.hhj-rec span{display:block;margin-top:8px;font-size:13px;color:#CFC6B8}
+/* 상담폼 래퍼 — 폼 내부는 다른 멘토 페이지와 같은 원래 초록. 감싸는 상자만 둥글게 */
+.hhj-formbox{max-width:840px;margin:0 auto;border-radius:16px;overflow:hidden}
+.hhj-formsec{padding:56px 0}
+@media(min-width:640px){.hhj-formsec{padding:72px 0}}
+.hhj-formsec .hhj-h2{max-width:26em}
 
-/* 6. CHAPTER 2 */
-.hhj-chips{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 12px;padding:0;list-style:none}
-.hhj-chips li{border:1px solid var(--ink);padding:8px 14px;font-size:14px;font-weight:600}
-.hhj-small{margin:0;font-size:13px;color:var(--sub)}
-
-/* 7. CHAPTER 3 — 교정본 */
-.hhj-scenes{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;margin:32px 0 0}
+/* 7. 교정본 */
+.hhj-scenes{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin:32px 0 0}
 @media(min-width:900px){.hhj-scenes{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.hhj-scene{display:flex;flex-direction:column;border:1px solid var(--ink);background:var(--card);padding:24px 22px}
-.hhj-scene-head{display:flex;align-items:baseline;gap:12px;margin:0 0 20px;padding:0 0 14px;border-bottom:1px solid var(--line)}
-.hhj-scene-n{font-family:var(--serif);font-weight:900;font-size:26px}
-.hhj-scene-l{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--sub)}
-.hhj-bad{margin:0;font-size:17px;font-weight:700;line-height:1.75}
-.hhj-strike{background-image:linear-gradient(var(--red),var(--red));background-repeat:no-repeat;background-position:0 58%;background-size:0% 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background-size .4s ease-out}
+.hhj-scene{display:flex;flex-direction:column;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.hhj-scene-l{margin:0 0 14px;font-size:13px;font-weight:700;color:var(--sub2)}
+.hhj-scene-l b{margin-right:8px;font-size:15px;font-weight:900;color:var(--gt)}
+.hhj-bad{margin:0;font-size:17px;font-weight:700;line-height:1.7;color:var(--tx);transition:color .4s ease}
+.hhj-strike{background-image:linear-gradient(#9A9A9A,#9A9A9A);background-repeat:no-repeat;background-position:0 58%;background-size:0% 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background-size .4s ease-out}
+.is-fixed .hhj-bad{color:var(--sub2)}
 .is-fixed .hhj-strike{background-size:100% 2px}
-.hhj-fix{min-height:0;margin:14px 0 0;max-height:0;opacity:0;overflow:hidden;transform:translateY(6px);transition:opacity .4s ease .25s,transform .4s ease .25s,max-height .4s ease .25s}
-.is-fixed .hhj-fix{max-height:320px;opacity:1;transform:none}
-.hhj-good{margin:0 0 10px;font-size:28px}
-.hhj-note{margin:0;font-size:14px;line-height:1.65;color:var(--sub)}
-.hhj-pen-btn{align-self:flex-start;margin-top:auto;padding:10px 16px;border:1px solid var(--ink);background:#fff;color:var(--ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer;border-radius:0}
-.hhj-pen-btn:hover{background:var(--ink);color:#fff}
-.hhj-scene-body{margin:0 0 24px}
-.hhj-after{margin:32px 0 0;max-width:34em;font-family:var(--serif);font-weight:700;font-size:20px;line-height:1.6}
-.hhj-after small{display:block;margin-top:8px;font-family:inherit;font-size:13px;font-weight:400;color:var(--sub)}
-@media(prefers-reduced-motion:reduce){.hhj-strike,.hhj-fix{transition:none}}
+.hhj-fix{max-height:0;margin:0;opacity:0;overflow:hidden;transition:opacity .4s ease .2s,max-height .4s ease .2s,margin .4s ease .2s}
+.is-fixed .hhj-fix{max-height:360px;margin:14px 0 0;opacity:1}
+.hhj-fix-in{padding:16px;border-radius:12px;background:#0F2416}
+.hhj-good{margin:0 0 8px;font-size:18px;font-weight:900;line-height:1.55;color:#FFFFFF}
+.hhj-note{margin:0;font-size:14px;line-height:1.65;color:#A7D8B5}
+.hhj-sw{margin-top:20px;min-height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--g);color:#fff;font:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:background-color .2s}
+.hhj-sw:hover{background:#007a14}
+.is-fixed .hhj-sw{background:#2A2A2A;color:var(--tx)}
+.is-fixed .hhj-sw:hover{background:#363636}
+.hhj-after{margin:16px 0 0;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--card);font-size:18px;font-weight:700;line-height:1.6}
+@media(prefers-reduced-motion:reduce){.hhj-strike,.hhj-fix,.hhj-bad,.hhj-check,.hhj-check-ic,.hhj-sw,.hhj-cta{transition:none}}
 
 /* 8. 영상 */
 .hhj-vids{display:flex;gap:16px;margin:28px 0 0;padding:0 0 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 .hhj-vid{flex:0 0 min(260px,72vw);scroll-snap-align:start}
-.hhj-vid-card{position:relative;aspect-ratio:9/16;border:1px solid var(--ink);background:var(--card);overflow:hidden}
+.hhj-vid-card{position:relative;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:var(--card)}
 .hhj-vid-card video{display:block;width:100%;height:100%;object-fit:cover}
 .hhj-vid-cap{margin:8px 0 0;font-size:13px;color:var(--sub)}
 
-/* 9. CHAPTER 4 — 대본 형식 박스 */
-.hhj-script{margin:28px 0 12px;max-width:760px;border:1px solid var(--ink);background:#fff}
-.hhj-script-row{display:grid;grid-template-columns:48px 72px minmax(0,1fr);gap:12px;align-items:baseline;padding:18px 20px;border-top:1px dashed var(--line)}
-.hhj-script-row:first-child{border-top:0}
-.hhj-script-no{font-family:var(--serif);font-weight:900;font-size:18px}
-.hhj-script-name{font-family:var(--serif);font-weight:700;font-size:18px}
-.hhj-script-body{margin:0}
-@media(max-width:640px){.hhj-script-row{grid-template-columns:40px minmax(0,1fr)}.hhj-script-body{grid-column:2}}
+/* 9. 솔루션 */
+.hhj-steps{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:28px 0 16px}
+@media(min-width:640px){.hhj-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1024px){.hhj-steps{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.hhj-step{padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.hhj-step-no{display:block;margin:0 0 10px;font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--gt)}
+.hhj-step h3{margin:0 0 8px;font-size:18px;font-weight:700}
+.hhj-step p{margin:0;font-size:14px;line-height:1.7;color:var(--sub)}
+.hhj-left{margin:0;padding:24px;border:1px solid var(--g);border-radius:16px;background:var(--card)}
+.hhj-left b{display:block;margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--gt)}
+.hhj-left p{margin:0 0 8px;color:var(--tx)}
+.hhj-left small{display:block;font-size:13px;color:var(--sub)}
 
-/* 10. BOOKSHELF */
-.hhj-shelf{--gap:clamp(10px,3vw,28px);display:flex;align-items:flex-end;justify-content:center;gap:var(--gap);padding:0 16px;border-bottom:6px solid var(--ink)}
-.hhj-shelf img{display:block;width:calc((100% - 3 * var(--gap)) / 4);max-width:170px;height:auto;background:var(--card)}
-.hhj-books{margin:20px 0 0;max-width:46em;font-size:15px}
-.hhj-books small{display:block;margin-top:6px;font-size:13px;color:var(--sub)}
+/* 10. 대상 */
+.hhj-fits{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:12px;max-width:40em}
+.hhj-fits li{display:flex;align-items:flex-start;gap:12px;font-size:17px;font-weight:600}
+.hhj-fits svg{flex:0 0 24px;width:24px;height:24px;margin-top:2px;color:var(--gt)}
 
-/* 11. EPILOGUE */
-.hhj-epi{border:1px solid var(--ink);background:#fff;padding:44px 40px}
-@media(max-width:640px){.hhj-epi{padding:32px 20px}}
-.hhj-epi-h{margin:0 0 16px;max-width:20em;font-family:var(--serif);font-weight:900;font-size:clamp(24px,3.2vw,34px);line-height:1.4;letter-spacing:-.02em}
-.hhj-epi-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;margin-top:12px;border:1px solid var(--red);background:var(--red);color:#fff;font:inherit;font-size:16px;font-weight:700;text-decoration:none;border-radius:0}
-.hhj-epi-btn:hover{background:#fff;color:var(--red)}
+/* 11. 솔직히 */
+.hhj-link{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-weight:700;color:var(--gt);text-decoration:none}
+.hhj-link:hover{text-decoration:underline;text-underline-offset:4px}
 
-/* 12. 서명 */
-.hhj-signoff{border-top:1px solid var(--ink);padding:28px 0 40px}
-.hhj-signoff p{margin:0;font-size:13px;color:var(--sub)}
-.hhj-signoff .hhj-pen{display:block;margin-top:4px;font-size:34px}
+/* 모바일 고정 CTA */
+.hhj-stick{position:fixed;left:0;right:0;bottom:0;z-index:40;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(17,17,17,.97);border-top:1px solid var(--line);transform:translateY(100%);visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s}
+.hhj-stick.is-on{transform:none;visibility:visible;transition-delay:0s}
+.hhj-stick .hhj-cta{width:100%}
+@media(min-width:1024px){.hhj-stick{display:none}}
+@media(prefers-reduced-motion:reduce){.hhj-stick,.hhj-stick.is-on{transition:none}}
+.hhj-spacer{height:84px}
+@media(min-width:1024px){.hhj-spacer{display:none}}
 `;
 
 const smoothTo = (id: string) => {
@@ -876,6 +875,46 @@ const smoothTo = (id: string) => {
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
 };
+
+/** 뷰포트에 들어올 때 1회 카운트업 (모션 줄이기·옵저버 없음이면 최종값 그대로) */
+function CountUp({ to, suffix }: { to: number; suffix: string }) {
+  const ref = useRef<HTMLElement>(null);
+  const [v, setV] = useState(to);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let done = false;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || done) return;
+        done = true;
+        io.disconnect();
+        const t0 = performance.now();
+        setV(0);
+        const step = (t: number) => {
+          const p = Math.min((t - t0) / 1300, 1);
+          setV(Math.round(to * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [to]);
+  return (
+    <b ref={ref}>
+      {v}
+      {suffix}
+    </b>
+  );
+}
 
 function Scene({
   s,
@@ -890,33 +929,40 @@ function Scene({
 }) {
   return (
     <div ref={cardRef} className={`hhj-scene${fixed ? " is-fixed" : ""}`}>
-      <div className="hhj-scene-head">
-        <span className="hhj-scene-n">{s.n}</span>
-        <span className="hhj-scene-l">장면 · {s.label}</span>
-      </div>
-      <div className="hhj-scene-body">
-        <p className="hhj-bad">
-          <span className="hhj-strike">{s.bad}</span>
-        </p>
-        <div className="hhj-fix" aria-live="polite" aria-hidden={!fixed}>
-          <p className="hhj-pen hhj-good">{s.good}</p>
+      <p className="hhj-scene-l">
+        <b>{s.n}</b>장면 · {s.label}
+      </p>
+      <p className="hhj-bad">
+        <span className="hhj-strike">{s.bad}</span>
+      </p>
+      <div className="hhj-fix" aria-live="polite" aria-hidden={!fixed}>
+        <div className="hhj-fix-in">
+          <p className="hhj-good">{s.good}</p>
           <p className="hhj-note">{s.note}</p>
         </div>
       </div>
-      <button type="button" className="hhj-pen-btn" onClick={onToggle}>
-        {fixed ? "원래 문장 보기" : "빨간펜으로 고치기"}
+      <button type="button" className="hhj-sw" onClick={onToggle}>
+        {fixed ? "원래 문장 보기" : "세일즈작가의 문장으로 바꾸기"}
       </button>
     </div>
   );
 }
 
+const CheckSvg = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 12.5l4.5 4.5L19 7.5" />
+  </svg>
+);
+
 export default function HwangHyunjinDiagnosisPage() {
   const [mounted, setMounted] = useState(false);
-  // 교정본 카드 — 첫 카드는 처음부터 고쳐진 상태. 나머지는 화면에 들어오면 1회 자동 교정(직접 누른 카드는 건드리지 않는다)
+  const [checked, setChecked] = useState<boolean[]>(CHECKS.map(() => false));
+  // 교정본 카드 — 첫 카드는 처음부터 바뀐 상태. 나머지는 화면에 들어오면 1회 자동 변경(직접 누른 카드는 건드리지 않는다)
   const [fixed, setFixed] = useState<boolean[]>([true, false, false]);
   const handled = useRef<boolean[]>([true, false, false]);
   const sceneEls = useRef<(HTMLDivElement | null)[]>([]);
   const videoEls = useRef<(HTMLVideoElement | null)[]>([]);
+  const [stickOn, setStickOn] = useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
   const bottomFormRef = useRef<HTMLDivElement>(null);
@@ -969,7 +1015,7 @@ export default function HwangHyunjinDiagnosisPage() {
     return () => injected.forEach((s) => s.remove());
   }, [mounted]);
 
-  // 교정본: 카드가 60% 이상 보이면 1회 자동 교정 (IntersectionObserver 가 없으면 하지 않는다)
+  // 교정본: 카드가 60% 이상 보이면 1회 자동 변경
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
@@ -989,6 +1035,24 @@ export default function HwangHyunjinDiagnosisPage() {
     return () => io.disconnect();
   }, []);
 
+  // 모바일 고정 CTA — 히어로와 두 폼 영역이 보이는 동안은 숨긴다
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const visible = new Set<string>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) visible.add(e.target.id);
+        else visible.delete(e.target.id);
+      });
+      setStickOn(visible.size === 0);
+    });
+    ["hhj-hero", "hhj-form-top", "hhj-form-bottom"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+    return () => io.disconnect();
+  }, []);
+
   const toggleScene = (i: number) => {
     handled.current[i] = true;
     setFixed((f) => f.map((v, j) => (j === i ? !v : v)));
@@ -1001,99 +1065,146 @@ export default function HwangHyunjinDiagnosisPage() {
     });
   };
 
+  const hitCount = checked.filter(Boolean).length;
+
   return (
-    <div className={`hhj ${serif.variable} ${pen.variable} overflow-x-hidden`}>
+    <div className="hhj overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: HHJ_CSS }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SERVICE_SCHEMA) }} />
 
-      {/* 1. 상단 바 */}
-      <div className="hhj-bar">
-        <div className="hhj-wrap hhj-bar-in">
-          <b>황현진</b>
-          <span>SALES WRITER</span>
-        </div>
-      </div>
-
-      {/* 2. 히어로 */}
-      <section className="hhj-hero">
+      {/* 1. 히어로 */}
+      <section className="hhj-hero" id="hhj-hero">
         <div className="hhj-wrap hhj-hero-in">
-          <div>
-            <p className="hhj-eyebrow">진단솔루션 · 세일즈 파트</p>
+          <div className="hhj-hero-text">
+            <p className="hhj-eyebrow">진단솔루션 · 세일즈 파트 | 황현진 멘토</p>
             <h1 className="hhj-h1">
-              상담은 말에서 새고,
+              같은 회원, 같은 가격.
               <br />
-              말에서 다시 삽니다.
+              등록은 상담 대본이
+              <br />
+              결정합니다.
             </h1>
-            <p className="hhj-sub">세일즈인의 성공 대본을 쓰는 세일즈작가 황현진이, 우리 센터의 상담 대본을 다시 씁니다.</p>
-            <button type="button" className="hhj-cta" onClick={() => smoothTo("hhj-form-top")}>
-              우리 센터 대본 진단받기
+            <p className="hhj-sub">홈쇼핑 생방송에서 검증한 설득 언어로, 우리 센터의 상담 대본을 함께 씁니다.</p>
+            <button type="button" className="hhj-cta" onClick={() => smoothTo("hhj-form-bottom")}>
+              무료 대본 진단 받아보기 →
             </button>
-            <p className="hhj-cta-note">무료 상담 · 더그로우컴퍼니 진단솔루션</p>
           </div>
-          <div className="hhj-photo-wrap">
-            <div className="hhj-photo-hand hhj-pen" aria-hidden="true">
-              세일즈작가
-              <svg viewBox="0 0 54 40" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 6c18 0 36 6 42 26" />
-                <path d="M36 28l10 5 3-11" />
-              </svg>
-            </div>
-            <div className="hhj-photo">
-              <Image
-                src={MAIN_IMAGE}
-                alt="세일즈작가 황현진 상담·세일즈 진단 멘토"
-                fill
-                priority
-                className="object-cover object-top"
-                sizes="(min-width: 1024px) 440px, 100vw"
-              />
-            </div>
-            <div className="hhj-hist">
-              <b>현) 리얼세일즈(주) 대표</b>
-              <b>전) NS홈쇼핑 쇼핑호스트</b>
-              2년 연속 홈쇼핑 최다매출 기록
-            </div>
+          <div className="hhj-hero-photo">
+            <Image
+              src={MAIN_IMAGE}
+              alt="세일즈작가 황현진 상담·세일즈 진단 멘토"
+              fill
+              priority
+              className="object-cover"
+              style={{ objectPosition: "50% 10%" }}
+              sizes="(min-width: 1024px) 480px, 100vw"
+            />
           </div>
         </div>
       </section>
 
-      {/* 3. PROLOGUE */}
-      <section className="hhj-sec hhj-pro" id="hhj-prologue">
+      {/* 2. 오픈루프 */}
+      <section className="hhj-sec hhj-sec--alt">
         <div className="hhj-wrap">
-          <span className="hhj-label">PROLOGUE</span>
-          <p className="hhj-pro-q">시대가 아무리 변해도 모든 기회는 사람을 통해 옵니다.</p>
-          <p className="hhj-pro-p">
-            그리고 성과는, 손에 잡히는 도구 — <span className="hhj-mark">말과 화법</span>을 쥐었을 때 나옵니다.
-          </p>
-          <p className="hhj-pen hhj-pro-sign">— 황현진</p>
+          <p className="hhj-eyebrow">OPEN LOOP</p>
+          <h2 className="hhj-h2">등록률이 낮은 센터의 상담에는 공통으로 들어가는 &lsquo;한 문장&rsquo;이 있습니다.</h2>
+          <p className="hhj-p">시설 문제도, 가격 문제도 아닙니다. 그 문장이 무엇인지는 이 페이지 중간, 교정본에서 직접 보여드리겠습니다.</p>
         </div>
       </section>
 
-      {/* 4. CONTENTS */}
-      <section className="hhj-sec" style={{ paddingTop: 8 }}>
+      {/* 3. 공감 */}
+      <section className="hhj-sec">
         <div className="hhj-wrap">
-          <span className="hhj-label">CONTENTS</span>
-          <ol className="hhj-toc">
-            {CONTENTS.map((c) => (
-              <li key={c.no} className={c.red ? "is-red" : undefined}>
-                <a
-                  href={c.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    smoothTo(c.href.slice(1));
-                  }}
-                >
-                  <span className="hhj-toc-n">{c.no}</span>
-                  <span className="hhj-toc-t">{c.title}</span>
-                  <span className="hhj-toc-l">{c.label}</span>
-                </a>
-              </li>
+          <div className="hhj-bt">
+            <h2>오늘 상담실에서 나온 말</h2>
+          </div>
+          <p className="hhj-p">몇 개가 우리 센터 얘기인지 세어보세요.</p>
+          <div className="hhj-checks">
+            {CHECKS.map((c, i) => (
+              <button
+                key={c}
+                type="button"
+                role="checkbox"
+                aria-checked={checked[i]}
+                className={`hhj-check${checked[i] ? " is-on" : ""}`}
+                onClick={() => setChecked((s) => s.map((v, j) => (j === i ? !v : v)))}
+              >
+                <span className="hhj-check-ic">
+                  <CheckSvg />
+                </span>
+                {c}
+              </button>
             ))}
-          </ol>
+          </div>
+          <p className="hhj-count" aria-live="polite">
+            {hitCount}개 해당
+          </p>
         </div>
       </section>
 
-      {/* 상단 상담폼 — 목차 다음. 히어로 CTA 가 여기로 스크롤한다 */}
+      {/* 4. 방치 비용 */}
+      <section className="hhj-sec hhj-sec--alt">
+        <div className="hhj-wrap">
+          <div className="hhj-card">
+            <p className="hhj-eyebrow">그대로 두면</p>
+            <h2 className="hhj-h2">상담을 잘하는 직원 한 명이 나가면, 등록률도 그 직원과 함께 나갑니다.</h2>
+            <p className="hhj-p" style={{ marginBottom: 0 }}>
+              센터의 상담 실력이 &lsquo;사람&rsquo;에 들어 있고 &lsquo;문장&rsquo;으로 남아 있지 않기 때문입니다. 새 직원이 올 때마다 처음부터 다시 배웁니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. 뒤집기 */}
+      <section className="hhj-sec">
+        <div className="hhj-wrap">
+          <p className="hhj-old">상담을 잘하려면 말을 잘해야 한다</p>
+          <h2 className="hhj-h2">
+            아닙니다.
+            <br />
+            <span className="hhj-em">대본이 있는 센터</span>가 이깁니다.
+          </h2>
+          <p className="hhj-p">말재주는 사람마다 다르지만, 대본은 누가 읽어도 같은 결과를 냅니다. 그래서 세일즈작가가 필요합니다.</p>
+        </div>
+      </section>
+
+      {/* 6. 권위 */}
+      <section className="hhj-sec hhj-sec--alt">
+        <div className="hhj-wrap">
+          <div className="hhj-bt">
+            <h2>세일즈작가 황현진</h2>
+          </div>
+          <p className="hhj-p">
+            홈쇼핑 쇼핑호스트 시절 기록적인 매출로 검증한 &lsquo;실전 설득 언어&rsquo;를 바탕으로, 15년간 20만여 명의 영업인과 기업의 세일즈 현장을 바꿔 왔습니다.
+          </p>
+          <div className="hhj-stats">
+            {STATS.map((s) => (
+              <div className="hhj-stat" key={s.label}>
+                <CountUp to={s.to} suffix={s.suffix} />
+                <span>{s.label}</span>
+              </div>
+            ))}
+          </div>
+          <ul className="hhj-hist">
+            {HISTORY.map((h) => (
+              <li key={h}>{h}</li>
+            ))}
+          </ul>
+          <ul className="hhj-chips" aria-label="강의·컨설팅 기업 일부">
+            {COMPANY_CHIPS.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ul>
+          <div className="hhj-books" role="group" aria-label="황현진 저서 표지">
+            {BOOKS.map((b) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={b.src} src={b.src} alt={`${b.title} 표지`} width={371} height={548} loading="lazy" draggable={false} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 상단 상담폼 — 권위 섹션 다음 (원래 초록 폼 그대로) */}
       <section className="hhj-formsec" id="hhj-form-top">
         <div className="hhj-wrap">
           <div className="hhj-formbox">
@@ -1106,45 +1217,16 @@ export default function HwangHyunjinDiagnosisPage() {
         </div>
       </section>
 
-      {/* 5. CHAPTER 1 — 페이지 유일의 다크 섹션 */}
-      <section className="hhj-sec hhj-dark" id="hhj-ch1">
+      {/* 7. 교정본 (오픈루프 닫기) */}
+      <section className="hhj-sec hhj-sec--alt">
         <div className="hhj-wrap">
-          <span className="hhj-label">CHAPTER 1</span>
-          <h2 className="hhj-h2">생방송에서 검증한 언어</h2>
-          <p className="hhj-p">홈쇼핑 쇼핑호스트 시절 기록적인 매출을 달성하며 검증된 &lsquo;실전 설득 언어&rsquo;를, 현장의 대본으로 옮겨 씁니다.</p>
-          <div className="hhj-recs">
-            {RECORDS.map((r) => (
-              <div className="hhj-rec" key={r.big}>
-                <b>{r.big}</b>
-                <span>{r.small}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 6. CHAPTER 2 */}
-      <section className="hhj-sec" id="hhj-ch2">
-        <div className="hhj-wrap">
-          <span className="hhj-label">CHAPTER 2</span>
-          <h2 className="hhj-h2">20만 명의 세일즈 현장</h2>
-          <p className="hhj-p">
-            지난 15년, 20만여 명의 영업인과 기업의 세일즈 현장을 바꿔 왔습니다. 업종이 달라도 막히는 지점은 같았습니다 — 손에 쥔 &lsquo;말&rsquo;이 없다는 것.
-          </p>
-          <ul className="hhj-chips">
-            {COMPANY_CHIPS.map((c) => (
-              <li key={c}>{c}</li>
-            ))}
-          </ul>
-          <p className="hhj-small">강의·컨설팅 기업 일부</p>
-        </div>
-      </section>
-
-      {/* 7. CHAPTER 3 — 교정본 (시그니처) */}
-      <section className="hhj-sec" id="hhj-ch3" style={{ paddingTop: 0 }}>
-        <div className="hhj-wrap">
-          <span className="hhj-label">CHAPTER 3</span>
-          <h2 className="hhj-h2">피트니스 상담실, 교정본</h2>
+          <p className="hhj-eyebrow">교정본 · 그 한 문장</p>
+          <h2 className="hhj-h2">
+            같은 상황,
+            <br />
+            다른 한 문장.
+          </h2>
+          <p className="hhj-p">앞에서 말한 &lsquo;한 문장&rsquo;은 이런 말들입니다. 눌러서 세일즈작가의 문장으로 바꿔 보세요.</p>
           <div className="hhj-scenes">
             {SCENES.map((s, i) => (
               <Scene
@@ -1158,18 +1240,16 @@ export default function HwangHyunjinDiagnosisPage() {
               />
             ))}
           </div>
-          <p className="hhj-after">
-            회원은 &lsquo;좋은 사람&rsquo;이 권하는 &lsquo;좋아 보이는 것&rsquo;을 선택합니다.
-            <small>— 2부 매출치트키, 호감의 기술</small>
-          </p>
+          <p className="hhj-after">회원은 &lsquo;좋은 사람&rsquo;이 권하는 &lsquo;좋아 보이는 것&rsquo;을 선택합니다.</p>
         </div>
       </section>
 
       {/* 8. 영상 */}
-      <section className="hhj-sec" style={{ paddingTop: 0 }}>
+      <section className="hhj-sec">
         <div className="hhj-wrap">
-          <span className="hhj-label">SALES SALON</span>
-          <h2 className="hhj-h2">말 한 줄이 상담을 바꾸는 장면</h2>
+          <div className="hhj-bt">
+            <h2>말 한 줄이 상담을 바꾸는 장면</h2>
+          </div>
           <div className="hhj-vids" role="group" aria-label="황현진 멘토 세일즈 화법 영상">
             {VIDEOS.map((v, i) => (
               <div className="hhj-vid" key={v.src}>
@@ -1195,71 +1275,75 @@ export default function HwangHyunjinDiagnosisPage() {
         </div>
       </section>
 
-      {/* 9. CHAPTER 4 */}
-      <section className="hhj-sec" id="hhj-ch4" style={{ borderTop: "1px solid var(--ink)" }}>
+      {/* 9. 솔루션 */}
+      <section className="hhj-sec hhj-sec--alt">
         <div className="hhj-wrap">
-          <span className="hhj-label">CHAPTER 4</span>
-          <h2 className="hhj-h2">우리 센터의 대본 쓰기</h2>
+          <div className="hhj-bt">
+            <h2>솔루션 · 우리 센터 상담 대본 개발</h2>
+          </div>
           <p className="hhj-p">
-            스펙이 아닌 스토리로. 상담 → 권유 → 반론 → 클로징까지, 각 단계마다 5~6문장의 &lsquo;세일즈 언어 한 세트&rsquo;를 우리 센터 상품과 회원에 맞춰 함께 씁니다.
+            스펙이 아닌 스토리로. 상담 → 권유 → 반론 → 클로징까지, 단계마다 5~6문장의 &lsquo;세일즈 언어 한 세트&rsquo;를 우리 센터 상품과 회원에 맞춰 함께 씁니다.
           </p>
-          <div className="hhj-script">
-            {SCRIPT_STEPS.map((s) => (
-              <div className="hhj-script-row" key={s.no}>
-                <span className="hhj-script-no">{s.no}</span>
-                <span className="hhj-script-name">{s.name}</span>
-                <p className="hhj-script-body">{s.body}</p>
+          <div className="hhj-steps">
+            {SOLUTION_STEPS.map((s) => (
+              <div className="hhj-step" key={s.no}>
+                <span className="hhj-step-no">{s.no}</span>
+                <h3>{s.name}</h3>
+                <p>{s.body}</p>
               </div>
             ))}
           </div>
-          {/* TODO 대표님 확인: 진단 횟수·기간 */}
-          <p className="hhj-small">진행 방식은 센터 상황에 맞춰 협의 후 정합니다 · 대본은 세일즈노트·포켓북으로 제작 가능(선택, 제작비 별도)</p>
+          <div className="hhj-left">
+            <b>남는 것</b>
+            <p>직원이 바뀌어도 그대로 쓰는 센터의 상담 대본. 원하면 세일즈노트·포켓북으로 제작합니다(선택, 제작비 별도).</p>
+            {/* TODO 대표님 확인: 진단 횟수·기간 */}
+            <small>진행 방식은 센터 상황에 맞춰 협의 후 정합니다</small>
+          </div>
         </div>
       </section>
 
-      {/* 10. BOOKSHELF */}
-      <section className="hhj-sec" id="hhj-shelf" style={{ paddingTop: 0 }}>
+      {/* 10. 대상 */}
+      <section className="hhj-sec">
         <div className="hhj-wrap">
-          <span className="hhj-label">BOOKSHELF</span>
-          <div className="hhj-shelf">
-            {BOOKS.map((b) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={b.src} src={b.src} alt={`${b.title} 표지`} width={371} height={548} loading="lazy" draggable={false} />
+          <div className="hhj-bt">
+            <h2>이런 센터에 맞습니다</h2>
+          </div>
+          <ul className="hhj-fits">
+            {FITS.map((f) => (
+              <li key={f}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" strokeWidth="1.8" />
+                  <path d="M7.5 12.5l3 3 6-6.5" />
+                </svg>
+                {f}
+              </li>
             ))}
-          </div>
-          <p className="hhj-books">
-            《팔리는 한 문장은 다르다》 《잘 파는 사람은 이렇게 팝니다》 《세일즈, 말부터 바꿔라》 《설득의 정석》 《세일즈문법》 외
-            <small>세일즈·설득 저서 7권</small>
-          </p>
+          </ul>
         </div>
       </section>
 
-      {/* 11. EPILOGUE */}
-      <section className="hhj-sec" style={{ paddingTop: 0 }}>
+      {/* 11. 솔직히 */}
+      <section className="hhj-sec hhj-sec--alt">
         <div className="hhj-wrap">
-          <div className="hhj-epi">
-            <span className="hhj-label">EPILOGUE</span>
-            <p className="hhj-epi-h">잘하는 직원이 나가도, 센터의 언어는 남습니다.</p>
-            <p className="hhj-p">지금 우리 센터 상담에서 어떤 문장이 새는지, 무료 상담으로 먼저 들어 보겠습니다.</p>
-            <a
-              className="hhj-epi-btn"
-              href="#hhj-form-bottom"
-              onClick={(e) => {
-                e.preventDefault();
-                smoothTo("hhj-form-bottom");
-              }}
-            >
-              무료 대본 진단 신청
-            </a>
+          <div className="hhj-card">
+            <p className="hhj-eyebrow">솔직히 말씀드리면</p>
+            <h2 className="hhj-h2">대본만으로 모든 매출 문제가 풀리지는 않습니다.</h2>
+            <p className="hhj-p">
+              가격 구조, 인력 배치, 재등록 관리처럼 운영에서 새는 곳은 따로 있습니다. 그래서 황현진 멘토는 더그로우 진단솔루션의 세일즈 파트를 맡고, 운영은 다른 멘토들과 함께 봅니다.
+            </p>
+            <Link href="/consulting/diagnosis" className="hhj-link">
+              진단솔루션 멘토 전체 보기 →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ── 하단 상담폼 ── */}
-      <section className="hhj-formsec hhj-formsec--bottom" id="hhj-form-bottom">
+      {/* 12. 신청 — 하단 상담폼 */}
+      <section className="hhj-formsec" id="hhj-form-bottom">
         <div className="hhj-wrap">
-          <h2 className="hhj-h2">지금, 무료 상담으로 시작합니다.</h2>
-          <div className="hhj-formbox">
+          <h2 className="hhj-h2">우리 센터 상담에서 어떤 문장이 새는지, 먼저 들어보겠습니다.</h2>
+          <p className="hhj-p">무료 상담 · 더그로우컴퍼니 진단솔루션</p>
+          <div className="hhj-formbox" style={{ marginTop: 24 }}>
             {mounted ? (
               <div ref={bottomFormRef} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: FORM_HTML_BOTTOM }} />
             ) : (
@@ -1269,10 +1353,9 @@ export default function HwangHyunjinDiagnosisPage() {
         </div>
       </section>
 
-      {/* ───────────────── 다른 멘토 확인 ───────────────── */}
+      {/* 13. 다른 멘토 확인 → 추천 서비스 */}
       <ConsultantCarousel currentSlug="hwang-hyunjin" />
 
-      {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}
       <section className="w-full bg-[#f8f9fa]">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
           <h2 className="mb-8 text-center text-xl font-extrabold text-[#1a1a1a] sm:mb-12 sm:text-2xl">이런 서비스도 있어요</h2>
@@ -1285,12 +1368,12 @@ export default function HwangHyunjinDiagnosisPage() {
         </div>
       </section>
 
-      {/* 서명 줄 */}
-      <div className="hhj-signoff">
-        <div className="hhj-wrap">
-          <p>더그로우컴퍼니 진단솔루션 · 세일즈 파트</p>
-          <span className="hhj-pen">황현진</span>
-        </div>
+      {/* 모바일 고정 CTA 가 푸터를 가리지 않도록 */}
+      <div className="hhj-spacer" aria-hidden="true" />
+      <div className={`hhj-stick${stickOn ? " is-on" : ""}`} aria-hidden={!stickOn}>
+        <button type="button" className="hhj-cta" tabIndex={stickOn ? 0 : -1} onClick={() => smoothTo("hhj-form-bottom")}>
+          무료 대본 진단 받아보기 →
+        </button>
       </div>
     </div>
   );
