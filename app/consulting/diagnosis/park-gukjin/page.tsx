@@ -190,7 +190,8 @@ const FORM_HTML = `<div class="consult-form-wrapper">
     <input type="hidden" name="source" value="진단상담">
     <input type="hidden" name="token" value="grow2026secure">
     <input type="hidden" name="consultant" value="park-gukjin">
-    <input type="hidden" name="consultField" value="자금·보증">
+    <!-- 시트에는 consultField 만 남는다고 보고, 제출 때 답변 전체를 이 값에 합쳐 보낸다 (스크립트가 죽어도 기본값 전송) -->
+    <input type="hidden" name="consultField" class="diag-h-cfield" value="자금진단">
 
     <!-- 전송용 조립 필드 — 제출 핸들러가 검증 통과 후 값을 넣고 disabled 를 푼다.
          기본이 disabled 인 이유: 스크립트가 죽은 폴백 경로에서 화면 입력칸(phone1~3 / phoneConfirm1~3)의 값이 그대로 가게 하려는 것. -->
@@ -442,6 +443,11 @@ const FORM_HTML = `<div class="consult-form-wrapper">
         if (hid.phoneCheck2) hid.phoneCheck2.value = c2;
         if (hid.phoneCheck3) hid.phoneCheck3.value = c3;
 
+        // 업종·업력·연매출·기존대출·목적을 consultField 한 칸에 합친다. 개별 필드는 그대로 같이 간다.
+        var checkedVal = function(n){ var r = q('[name="' + n + '"]:checked'); return r ? r.value : ''; };
+        var cf = q('.diag-h-cfield');
+        if (cf) cf.value = '자금진단 | 업종: ' + val('[name="industry"]').trim() + ' | 업력: ' + checkedVal('bizAge') + ' | 연매출: ' + checkedVal('revenue') + ' | 기존대출: ' + checkedVal('hasLoan') + ' | 목적: ' + checkedVal('fundPurpose');
+
         setHidDisabled(false);
         if (submitBtn){ submitBtn.disabled = true; submitBtn.textContent = '전송중...'; }
         if (!iframe) throw new Error('diag iframe not found');
@@ -460,6 +466,7 @@ const FORM_HTML = `<div class="consult-form-wrapper">
           }
           alert('자금진단 신청이 정상적으로 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다.');
           form.reset();
+          if (cf) cf.value = '자금진단';
           restoreForm();
         };
         iframe.addEventListener('load', onLoad);
@@ -958,7 +965,6 @@ export default function ParkGukjinDiagnosisPage() {
   const [photoErr, setPhotoErr] = useState(false);
   const [stickOn, setStickOn] = useState(false);
 
-  const formRef = useRef<HTMLDivElement>(null);
   const bottomFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -993,21 +999,13 @@ export default function ParkGukjinDiagnosisPage() {
 
   useEffect(() => {
     if (!mounted) return;
-    const container = formRef.current;
-    if (!container) return;
-    const injected = injectContainer(container);
-    return () => injected.forEach((s) => s.remove());
-  }, [mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
     const container = bottomFormRef.current;
     if (!container) return;
     const injected = injectContainer(container);
     return () => injected.forEach((s) => s.remove());
   }, [mounted]);
 
-  // 모바일 고정 CTA — 히어로와 두 폼 영역이 보이는 동안은 숨긴다
+  // 모바일 고정 CTA — 히어로와 하단 신청 영역이 보이는 동안은 숨긴다
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const visible = new Set<string>();
@@ -1018,7 +1016,7 @@ export default function ParkGukjinDiagnosisPage() {
       });
       setStickOn(visible.size === 0);
     });
-    ["pgj-hero", "pgj-form-top", "apply"].forEach((id) => {
+    ["pgj-hero", "apply"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) io.observe(el);
     });
@@ -1056,7 +1054,7 @@ export default function ParkGukjinDiagnosisPage() {
         <div className="pgj-wrap">
           <p className="pgj-open-l">같은 업종, 비슷한 매출의 두 대표가 있습니다.</p>
           <p className="pgj-open-l">한 명은 보증서를 받았고, 한 명은 신청조차 하지 않았습니다.</p>
-          <p className="pgj-open-l pgj-open-em">차이는 조건이 아니었습니다. 알고 있었느냐, 하나였습니다.</p>
+          <p className="pgj-open-l pgj-open-em">차이는 조건이 아니었습니다. 알고 있었느냐, 몰랐느냐였습니다.</p>
         </div>
       </section>
 
@@ -1122,15 +1120,11 @@ export default function ParkGukjinDiagnosisPage() {
           </div>
         </section>
 
-        <section className="pgj-sec" id="pgj-form-top">
+        <section className="pgj-sec">
           <div className="pgj-wrap">
-            <div className="pgj-formbox">
-              {mounted ? (
-                <div ref={formRef} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: FORM_HTML }} />
-              ) : (
-                <div ref={formRef} suppressHydrationWarning />
-              )}
-            </div>
+            <button type="button" className="pgj-cta" onClick={() => smoothTo("apply")}>
+              우리 사업장 자금진단 신청하기 →
+            </button>
           </div>
         </section>
 
