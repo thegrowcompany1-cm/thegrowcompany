@@ -717,6 +717,63 @@ const DETAIL_HTML_1 = `<div class="kjk">
 .kjk-prog-list li b{color:#fff;font-weight:800;margin-right:4px}
 </style>
 
+<style>
+/* ── 다크/화이트 교차: 긴 설명 섹션만 화이트 (황현진 페이지와 같은 토큰). 짧은 선언·클로징은 다크 그대로 ── */
+.kjk .kjk-sec.kjk-light{background:#FFFFFF;color:#333333;padding-top:64px;padding-bottom:64px}
+.kjk .kjk-sec.kjk-light + .kjk-sec.kjk-light{padding-top:0}
+.kjk .kjk-light .kjk-h2{color:#111111}
+.kjk .kjk-light .kjk-h2 em,.kjk .kjk-light .kjk-accent em,.kjk .kjk-light .kjk-lead em,.kjk .kjk-light .kjk-note em,.kjk .kjk-light .kjk-kw,.kjk .kjk-light .kjk-punch{color:#007A14}
+.kjk .kjk-light .kjk-lead,.kjk .kjk-light .kjk-note,.kjk .kjk-light .kjk-mqcap{color:#333333}
+.kjk .kjk-light .kjk-lead strong,.kjk .kjk-light .kjk-accent,.kjk .kjk-light .kjk-sub{color:#111111}
+.kjk .kjk-light .kjk-vline{background:#009519}
+.kjk .kjk-light .kjk-eyebrow i{background:#009519}
+.kjk .kjk-light .kjk-eyebrow span{color:#666666}
+.kjk .kjk-light .kjk-point,.kjk .kjk-light .kjk-hole4{background:#F5F5F5;border:0;border-radius:16px;box-shadow:inset 3px 0 0 #009519}
+.kjk .kjk-light .kjk-point h3,.kjk .kjk-light .kjk-who-item h3{color:#111111}
+.kjk .kjk-light .kjk-point p,.kjk .kjk-light .kjk-who-item p,.kjk .kjk-light .kjk-hole4 p{color:#333333}
+.kjk .kjk-light .kjk-hole4 h4{color:#007A14}
+.kjk .kjk-light .kjk-card{background:#F5F5F5;color:#333333;border-radius:16px}
+.kjk .kjk-light .kjk-card h4{color:#666666}
+.kjk .kjk-light .kjk-card h3{color:#111111}
+.kjk .kjk-light .kjk-card p{color:#333333}
+.kjk .kjk-light .kjk-trust{background:transparent;border:0;gap:12px}
+.kjk .kjk-light .kjk-trust div{background:#F5F5F5;border-radius:16px;color:#333333}
+.kjk .kjk-light .kjk-trust b{color:#007A14}
+.kjk .kjk-light .kjk-nums{background:transparent;border:0;gap:12px}
+.kjk .kjk-light .kjk-num-card{background:#F5F5F5;border-radius:16px}
+.kjk .kjk-light .kjk-num-card b,.kjk .kjk-light .kjk-stat b,.kjk .kjk-light .kjk-who-num{color:#007A14}
+.kjk .kjk-light .kjk-num-card span,.kjk .kjk-light .kjk-stat span{color:#666666}
+.kjk .kjk-light .kjk-who-item{background:#F5F5F5;border:0;border-radius:16px}
+.kjk .kjk-light .kjk-prog-item{border-top-color:#E5E5E5}
+.kjk .kjk-light .kjk-prog-label{color:#007A14}
+.kjk .kjk-light .kjk-prog-body{color:#333333}
+.kjk .kjk-light .kjk-prog-list li{color:#333333}
+.kjk .kjk-light .kjk-prog-list li b{color:#111111}
+.kjk .kjk-light .kjk-price{border-top-color:#E5E5E5;color:#007A14}
+.kjk .kjk-light .kjk-mq-track img,.kjk .kjk-light .kjk-strip img{background:#F0F0F0}
+.kjk .kjk-light .kjk-check{background:#F5F5F5;border-color:transparent}
+.kjk .kjk-light .kjk-check span{color:#333333}
+.kjk .kjk-light .kjk-check::before{border-color:#CCCCCC}
+.kjk .kjk-light .kjk-check.is-on{border-color:#009519}
+.kjk .kjk-light .kjk-check.is-on::before{background:#009519;border-color:#009519}
+.kjk .kjk-light .kjk-check.is-on::after{color:#FFFFFF}
+.kjk .kjk-light .kjk-cmp2-card{border-radius:16px}
+.kjk .kjk-light .kjk-cmp2-card--bad{background:#F5F5F5;border:0}
+.kjk .kjk-light .kjk-cmp2-card--good{background:#F5F5F5;border:2px solid #009519}
+.kjk .kjk-light .kjk-cmp2-card--bad .kjk-cmp2-tag{color:#666666}
+.kjk .kjk-light .kjk-cmp2-card--good .kjk-cmp2-tag{color:#007A14}
+.kjk .kjk-light .kjk-cmp2-card--bad li{color:#666666}
+.kjk .kjk-light .kjk-cmp2-card--good li{color:#333333}
+.kjk .kjk-light .kjk-cmp2-card--bad li::before{color:#999999}
+.kjk .kjk-light .kjk-cmp2-card--good li::before{color:#007A14}
+.kjk .kjk-light .kjk-web-card{filter:none;opacity:.55;box-shadow:none}
+.kjk .kjk-light .kjk-web-card.is-adjacent{opacity:.8}
+.kjk .kjk-light .kjk-web-card.is-front{opacity:1}
+.kjk .kjk-light .kjk-web-dot{background:#CCCCCC}
+.kjk .kjk-light .kjk-web-dot.active{background:#009519}
+.kjk .kjk-light .kjk-web-nav{box-shadow:none;border:1px solid #CCCCCC}
+</style>
+
 <!-- STEP 01 · EMPATHY -->
 <section class="kjk-sec">
   <div class="kjk-inner">
@@ -733,7 +790,7 @@ const DETAIL_HTML_1 = `<div class="kjk">
 // STEP 02 이후 상세 (문제 → 해결 → 설득 → CTA + 슬라이더 script)
 const DETAIL_HTML_2 = `<div class="kjk">
 <!-- STEP 02 · PROBLEM -->
-<section class="kjk-sec kjk-sec--alt">
+<section class="kjk-sec kjk-sec--alt kjk-light">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>STEP 02 · PROBLEM</span></div>
     <h2 class="kjk-h2">진짜 위기는 매출이 아니라,<br><em>'운영의 눈멀음'</em>입니다.</h2>
@@ -756,7 +813,7 @@ const DETAIL_HTML_2 = `<div class="kjk">
 </section>
 
 <!-- STEP 03 · SOLUTION -->
-<section class="kjk-sec">
+<section class="kjk-sec kjk-light">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>STEP 03 · SOLUTION</span></div>
     <h2 class="kjk-h2">감이 아니라 <em>구조</em>로<br>돌아가게 만듭니다.</h2>
@@ -788,7 +845,7 @@ const DETAIL_HTML_2 = `<div class="kjk">
 </section>
 
 <!-- STEP 04-1 · PROOF (카톡 후기) -->
-<section class="kjk-sec kjk-sec--alt">
+<section class="kjk-sec kjk-sec--alt kjk-light">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>STEP 04 · REAL TALK</span></div>
     <h2 class="kjk-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
@@ -808,7 +865,7 @@ const DETAIL_HTML_2 = `<div class="kjk">
 </section>
 
 <!-- STEP 04-2 · PROOF (인증사진 무한 마퀴) -->
-<section class="kjk-sec">
+<section class="kjk-sec kjk-light">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>PROOF · CERTIFIED</span></div>
     <h2 class="kjk-h2">함께한 대표님들이<br><em>증명</em>합니다.</h2>
@@ -868,7 +925,7 @@ const DETAIL_HTML_2 = `<div class="kjk">
 </section>
 
 <!-- STEP 04-4 · PROOF (추천 대상) -->
-<section class="kjk-sec">
+<section class="kjk-sec kjk-light">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>PROOF · FOR YOU</span></div>
     <h2 class="kjk-h2">이런 분들에게<br>추천합니다.</h2>
@@ -896,7 +953,7 @@ const DETAIL_HTML_2 = `<div class="kjk">
 </section>
 
 <!-- STEP 04-6 · PROGRAM (박스 없이 다크 톤) -->
-<section class="kjk-sec">
+<section class="kjk-sec kjk-light">
   <div class="kjk-inner">
     <div class="kjk-eyebrow"><i></i><span>PROGRAM</span></div>
     <h2 class="kjk-h2">김재강 멘토의 솔루션:<br>멈추지 않는 <em>관리자 자립의 기술</em></h2>

@@ -723,6 +723,63 @@ const DETAIL_HTML = `<div class="gjw">
 @media(max-width:640px){.gjw-trust{grid-template-columns:1fr}.gjw-price{font-size:22px;text-align:center}}
 </style>
 
+<style>
+/* ── 다크/화이트 교차: 긴 설명 섹션만 화이트 (황현진 페이지와 같은 토큰). 짧은 선언·클로징은 다크 그대로 ── */
+.gjw .gjw-sec.gjw-light{background:#FFFFFF;color:#333333;padding-top:64px;padding-bottom:64px}
+.gjw .gjw-sec.gjw-light + .gjw-sec.gjw-light{padding-top:0}
+.gjw .gjw-light .gjw-h2{color:#111111}
+.gjw .gjw-light .gjw-h2 em,.gjw .gjw-light .gjw-accent em,.gjw .gjw-light .gjw-lead em,.gjw .gjw-light .gjw-note em,.gjw .gjw-light .gjw-kw,.gjw .gjw-light .gjw-punch{color:#007A14}
+.gjw .gjw-light .gjw-lead,.gjw .gjw-light .gjw-note,.gjw .gjw-light .gjw-mqcap{color:#333333}
+.gjw .gjw-light .gjw-lead strong,.gjw .gjw-light .gjw-accent,.gjw .gjw-light .gjw-sub{color:#111111}
+.gjw .gjw-light .gjw-vline{background:#009519}
+.gjw .gjw-light .gjw-eyebrow i{background:#009519}
+.gjw .gjw-light .gjw-eyebrow span{color:#666666}
+.gjw .gjw-light .gjw-point,.gjw .gjw-light .gjw-hole4{background:#F5F5F5;border:0;border-radius:16px;box-shadow:inset 3px 0 0 #009519}
+.gjw .gjw-light .gjw-point h3,.gjw .gjw-light .gjw-who-item h3{color:#111111}
+.gjw .gjw-light .gjw-point p,.gjw .gjw-light .gjw-who-item p,.gjw .gjw-light .gjw-hole4 p{color:#333333}
+.gjw .gjw-light .gjw-hole4 h4{color:#007A14}
+.gjw .gjw-light .gjw-card{background:#F5F5F5;color:#333333;border-radius:16px}
+.gjw .gjw-light .gjw-card h4{color:#666666}
+.gjw .gjw-light .gjw-card h3{color:#111111}
+.gjw .gjw-light .gjw-card p{color:#333333}
+.gjw .gjw-light .gjw-trust{background:transparent;border:0;gap:12px}
+.gjw .gjw-light .gjw-trust div{background:#F5F5F5;border-radius:16px;color:#333333}
+.gjw .gjw-light .gjw-trust b{color:#007A14}
+.gjw .gjw-light .gjw-nums{background:transparent;border:0;gap:12px}
+.gjw .gjw-light .gjw-num-card{background:#F5F5F5;border-radius:16px}
+.gjw .gjw-light .gjw-num-card b,.gjw .gjw-light .gjw-stat b,.gjw .gjw-light .gjw-who-num{color:#007A14}
+.gjw .gjw-light .gjw-num-card span,.gjw .gjw-light .gjw-stat span{color:#666666}
+.gjw .gjw-light .gjw-who-item{background:#F5F5F5;border:0;border-radius:16px}
+.gjw .gjw-light .gjw-prog-item{border-top-color:#E5E5E5}
+.gjw .gjw-light .gjw-prog-label{color:#007A14}
+.gjw .gjw-light .gjw-prog-body{color:#333333}
+.gjw .gjw-light .gjw-prog-list li{color:#333333}
+.gjw .gjw-light .gjw-prog-list li b{color:#111111}
+.gjw .gjw-light .gjw-price{border-top-color:#E5E5E5;color:#007A14}
+.gjw .gjw-light .gjw-mq-track img,.gjw .gjw-light .gjw-strip img{background:#F0F0F0}
+.gjw .gjw-light .gjw-check{background:#F5F5F5;border-color:transparent}
+.gjw .gjw-light .gjw-check span{color:#333333}
+.gjw .gjw-light .gjw-check::before{border-color:#CCCCCC}
+.gjw .gjw-light .gjw-check.is-on{border-color:#009519}
+.gjw .gjw-light .gjw-check.is-on::before{background:#009519;border-color:#009519}
+.gjw .gjw-light .gjw-check.is-on::after{color:#FFFFFF}
+.gjw .gjw-light .gjw-cmp2-card{border-radius:16px}
+.gjw .gjw-light .gjw-cmp2-card--bad{background:#F5F5F5;border:0}
+.gjw .gjw-light .gjw-cmp2-card--good{background:#F5F5F5;border:2px solid #009519}
+.gjw .gjw-light .gjw-cmp2-card--bad .gjw-cmp2-tag{color:#666666}
+.gjw .gjw-light .gjw-cmp2-card--good .gjw-cmp2-tag{color:#007A14}
+.gjw .gjw-light .gjw-cmp2-card--bad li{color:#666666}
+.gjw .gjw-light .gjw-cmp2-card--good li{color:#333333}
+.gjw .gjw-light .gjw-cmp2-card--bad li::before{color:#999999}
+.gjw .gjw-light .gjw-cmp2-card--good li::before{color:#007A14}
+.gjw .gjw-light .gjw-web-card{filter:none;opacity:.55;box-shadow:none}
+.gjw .gjw-light .gjw-web-card.is-adjacent{opacity:.8}
+.gjw .gjw-light .gjw-web-card.is-front{opacity:1}
+.gjw .gjw-light .gjw-web-dot{background:#CCCCCC}
+.gjw .gjw-light .gjw-web-dot.active{background:#009519}
+.gjw .gjw-light .gjw-web-nav{box-shadow:none;border:1px solid #CCCCCC}
+</style>
+
 <!-- 1. 공감 -->
 <section class="gjw-sec">
   <div class="gjw-inner">
@@ -735,7 +792,7 @@ const DETAIL_HTML = `<div class="gjw">
 </section>
 
 <!-- 2. 문제 -->
-<section class="gjw-sec gjw-sec--alt">
+<section class="gjw-sec gjw-sec--alt gjw-light">
   <div class="gjw-inner">
     <h2 class="gjw-h2">결정 앞에서 멈춰 서게 만드는 건<br>실력이 아니라 <em>'불확실성'</em>입니다.</h2>
     <div class="gjw-points">
@@ -757,7 +814,7 @@ const DETAIL_HTML = `<div class="gjw">
 </section>
 
 <!-- 3. 해결 -->
-<section class="gjw-sec">
+<section class="gjw-sec gjw-light">
   <div class="gjw-inner">
     <h2 class="gjw-h2">오답을 지우면,<br><em>정답이 남습니다.</em></h2>
     <div class="gjw-grid">
@@ -788,7 +845,7 @@ const DETAIL_HTML = `<div class="gjw">
 </section>
 
 <!-- 4-1. 카톡 후기 (손으로 넘기는 가로 스크롤 스트립) -->
-<section class="gjw-sec gjw-sec--alt">
+<section class="gjw-sec gjw-sec--alt gjw-light">
   <div class="gjw-inner">
     <h2 class="gjw-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
   </div>
@@ -807,7 +864,7 @@ const DETAIL_HTML = `<div class="gjw">
 </section>
 
 <!-- 4-2. 인증사진 마퀴 -->
-<section class="gjw-sec">
+<section class="gjw-sec gjw-light">
   <div class="gjw-inner">
     <h2 class="gjw-h2">함께한 대표님들이<br><em>증명</em>합니다.</h2>
   </div>
@@ -840,7 +897,7 @@ const DETAIL_HTML = `<div class="gjw">
 </section>
 
 <!-- 4-3. 추천 대상 -->
-<section class="gjw-sec gjw-sec--alt">
+<section class="gjw-sec gjw-sec--alt gjw-light">
   <div class="gjw-inner">
     <h2 class="gjw-h2">이런 분들에게<br>추천합니다.</h2>
     <div class="gjw-who">
@@ -871,7 +928,7 @@ const DETAIL_HTML = `<div class="gjw">
 </section>
 
 <!-- 4-5. 프로그램 (유료 진단) -->
-<section class="gjw-sec gjw-sec--alt">
+<section class="gjw-sec gjw-sec--alt gjw-light">
   <div class="gjw-inner">
     <h2 class="gjw-h2">구진완 멘토의 통찰:<br><em>비즈니스 오답 지우기</em> 60분</h2>
     <div class="gjw-prog">

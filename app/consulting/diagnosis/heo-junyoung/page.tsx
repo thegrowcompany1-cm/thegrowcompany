@@ -812,6 +812,63 @@ const DETAIL_HTML = `<div class="hjy">
 #hjyLectureMarquee .hjy-mq-track img{height:200px}
 </style>
 
+<style>
+/* ── 다크/화이트 교차: 긴 설명 섹션만 화이트 (황현진 페이지와 같은 토큰). 짧은 선언·클로징은 다크 그대로 ── */
+.hjy .hjy-sec.hjy-light{background:#FFFFFF;color:#333333;padding-top:64px;padding-bottom:64px}
+.hjy .hjy-sec.hjy-light + .hjy-sec.hjy-light{padding-top:0}
+.hjy .hjy-light .hjy-h2{color:#111111}
+.hjy .hjy-light .hjy-h2 em,.hjy .hjy-light .hjy-accent em,.hjy .hjy-light .hjy-lead em,.hjy .hjy-light .hjy-note em,.hjy .hjy-light .hjy-kw,.hjy .hjy-light .hjy-punch{color:#007A14}
+.hjy .hjy-light .hjy-lead,.hjy .hjy-light .hjy-note,.hjy .hjy-light .hjy-mqcap{color:#333333}
+.hjy .hjy-light .hjy-lead strong,.hjy .hjy-light .hjy-accent,.hjy .hjy-light .hjy-sub{color:#111111}
+.hjy .hjy-light .hjy-vline{background:#009519}
+.hjy .hjy-light .hjy-eyebrow i{background:#009519}
+.hjy .hjy-light .hjy-eyebrow span{color:#666666}
+.hjy .hjy-light .hjy-point,.hjy .hjy-light .hjy-hole4{background:#F5F5F5;border:0;border-radius:16px;box-shadow:inset 3px 0 0 #009519}
+.hjy .hjy-light .hjy-point h3,.hjy .hjy-light .hjy-who-item h3{color:#111111}
+.hjy .hjy-light .hjy-point p,.hjy .hjy-light .hjy-who-item p,.hjy .hjy-light .hjy-hole4 p{color:#333333}
+.hjy .hjy-light .hjy-hole4 h4{color:#007A14}
+.hjy .hjy-light .hjy-card{background:#F5F5F5;color:#333333;border-radius:16px}
+.hjy .hjy-light .hjy-card h4{color:#666666}
+.hjy .hjy-light .hjy-card h3{color:#111111}
+.hjy .hjy-light .hjy-card p{color:#333333}
+.hjy .hjy-light .hjy-trust{background:transparent;border:0;gap:12px}
+.hjy .hjy-light .hjy-trust div{background:#F5F5F5;border-radius:16px;color:#333333}
+.hjy .hjy-light .hjy-trust b{color:#007A14}
+.hjy .hjy-light .hjy-nums{background:transparent;border:0;gap:12px}
+.hjy .hjy-light .hjy-num-card{background:#F5F5F5;border-radius:16px}
+.hjy .hjy-light .hjy-num-card b,.hjy .hjy-light .hjy-stat b,.hjy .hjy-light .hjy-who-num{color:#007A14}
+.hjy .hjy-light .hjy-num-card span,.hjy .hjy-light .hjy-stat span{color:#666666}
+.hjy .hjy-light .hjy-who-item{background:#F5F5F5;border:0;border-radius:16px}
+.hjy .hjy-light .hjy-prog-item{border-top-color:#E5E5E5}
+.hjy .hjy-light .hjy-prog-label{color:#007A14}
+.hjy .hjy-light .hjy-prog-body{color:#333333}
+.hjy .hjy-light .hjy-prog-list li{color:#333333}
+.hjy .hjy-light .hjy-prog-list li b{color:#111111}
+.hjy .hjy-light .hjy-price{border-top-color:#E5E5E5;color:#007A14}
+.hjy .hjy-light .hjy-mq-track img,.hjy .hjy-light .hjy-strip img{background:#F0F0F0}
+.hjy .hjy-light .hjy-check{background:#F5F5F5;border-color:transparent}
+.hjy .hjy-light .hjy-check span{color:#333333}
+.hjy .hjy-light .hjy-check::before{border-color:#CCCCCC}
+.hjy .hjy-light .hjy-check.is-on{border-color:#009519}
+.hjy .hjy-light .hjy-check.is-on::before{background:#009519;border-color:#009519}
+.hjy .hjy-light .hjy-check.is-on::after{color:#FFFFFF}
+.hjy .hjy-light .hjy-cmp2-card{border-radius:16px}
+.hjy .hjy-light .hjy-cmp2-card--bad{background:#F5F5F5;border:0}
+.hjy .hjy-light .hjy-cmp2-card--good{background:#F5F5F5;border:2px solid #009519}
+.hjy .hjy-light .hjy-cmp2-card--bad .hjy-cmp2-tag{color:#666666}
+.hjy .hjy-light .hjy-cmp2-card--good .hjy-cmp2-tag{color:#007A14}
+.hjy .hjy-light .hjy-cmp2-card--bad li{color:#666666}
+.hjy .hjy-light .hjy-cmp2-card--good li{color:#333333}
+.hjy .hjy-light .hjy-cmp2-card--bad li::before{color:#999999}
+.hjy .hjy-light .hjy-cmp2-card--good li::before{color:#007A14}
+.hjy .hjy-light .hjy-web-card{filter:none;opacity:.55;box-shadow:none}
+.hjy .hjy-light .hjy-web-card.is-adjacent{opacity:.8}
+.hjy .hjy-light .hjy-web-card.is-front{opacity:1}
+.hjy .hjy-light .hjy-web-dot{background:#CCCCCC}
+.hjy .hjy-light .hjy-web-dot.active{background:#009519}
+.hjy .hjy-light .hjy-web-nav{box-shadow:none;border:1px solid #CCCCCC}
+</style>
+
 <!-- 섹션 1 — 오프닝 (좌측 정렬) -->
 <section class="hjy-sec tl">
   <div class="hjy-inner">
@@ -823,7 +880,7 @@ const DETAIL_HTML = `<div class="hjy">
 </section>
 
 <!-- 섹션 2 — 문제 (체크리스트 + 구멍 4개) -->
-<section class="hjy-sec hjy-sec--alt">
+<section class="hjy-sec hjy-sec--alt hjy-light">
   <div class="hjy-inner">
     <h2 class="hjy-h2">몇 개가 해당되는지,<br>눌러서 세어보세요.</h2>
     <div class="hjy-checks">
@@ -847,7 +904,7 @@ const DETAIL_HTML = `<div class="hjy">
 </section>
 
 <!-- 섹션 3 — 가이드 (공감 → 권위, 좌측 정렬) -->
-<section class="hjy-sec tl">
+<section class="hjy-sec tl hjy-light">
   <div class="hjy-inner">
     <h2 class="hjy-h2">저도 20억을 태워보고 알았습니다.</h2>
     <p class="hjy-lead">광고에 누적 20억 이상 집행하며 확인했습니다.<br>광고를 잘해서 매출이 오른 센터보다,<br><mark>상담·재등록·비용 구조</mark>를 고쳐서 오른 센터가 더 많았습니다.</p>
@@ -874,7 +931,7 @@ const DETAIL_HTML = `<div class="hjy">
 </section>
 
 <!-- 섹션 3.5 — 웹사이트 제작 (web-carousel.html 이식, hjy-web- 접두사) -->
-<section class="hjy-sec hjy-sec--alt tl">
+<section class="hjy-sec hjy-sec--alt tl hjy-light">
   <div class="hjy-inner">
     <h2 class="hjy-h2">유입의 시작은 홈페이지입니다.<br>그래서 직접 만들고, 직접 운영합니다.</h2>
     <p class="hjy-lead">피트니스 전문 웹사이트 제작 — 광고를 아는 사람이 만드는 홈페이지는 다릅니다.</p>
@@ -948,7 +1005,7 @@ const DETAIL_HTML = `<div class="hjy">
 </section>
 
 <!-- 섹션 4 — 계획 (좌측 정렬) -->
-<section class="hjy-sec hjy-sec--alt tl">
+<section class="hjy-sec hjy-sec--alt tl hjy-light">
   <div class="hjy-inner">
     <h2 class="hjy-h2">허준영 멘토의 솔루션:<br>1인샵부터 다지점까지, <em>규모 맞춤 마케팅 마스터</em></h2>
     <p class="hjy-lead">광고 대행사는 유입만 봅니다.<br>운영 멘토는 내부만 봅니다.<br>매출은 그 사이에서 샙니다.</p>
@@ -976,7 +1033,7 @@ const DETAIL_HTML = `<div class="hjy">
 </section>
 
 <!-- 섹션 5 — 실패 vs 성공 (좌우 2단, 실패 먼저) -->
-<section class="hjy-sec">
+<section class="hjy-sec hjy-light">
   <div class="hjy-inner">
     <h2 class="hjy-h2" style="text-align:center">한 달 뒤,<br>두 가지 미래가 있습니다.</h2>
     <div class="hjy-cmp2">

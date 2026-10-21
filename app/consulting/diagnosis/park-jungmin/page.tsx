@@ -703,6 +703,63 @@ const DETAIL_HTML = `<div class="pjm">
 .pjm-prog-list li b{color:#fff;font-weight:800;margin-right:4px}
 </style>
 
+<style>
+/* ── 다크/화이트 교차: 긴 설명 섹션만 화이트 (황현진 페이지와 같은 토큰). 짧은 선언·클로징은 다크 그대로 ── */
+.pjm .pjm-sec.pjm-light{background:#FFFFFF;color:#333333;padding-top:64px;padding-bottom:64px}
+.pjm .pjm-sec.pjm-light + .pjm-sec.pjm-light{padding-top:0}
+.pjm .pjm-light .pjm-h2{color:#111111}
+.pjm .pjm-light .pjm-h2 em,.pjm .pjm-light .pjm-accent em,.pjm .pjm-light .pjm-lead em,.pjm .pjm-light .pjm-note em,.pjm .pjm-light .pjm-kw,.pjm .pjm-light .pjm-punch{color:#007A14}
+.pjm .pjm-light .pjm-lead,.pjm .pjm-light .pjm-note,.pjm .pjm-light .pjm-mqcap{color:#333333}
+.pjm .pjm-light .pjm-lead strong,.pjm .pjm-light .pjm-accent,.pjm .pjm-light .pjm-sub{color:#111111}
+.pjm .pjm-light .pjm-vline{background:#009519}
+.pjm .pjm-light .pjm-eyebrow i{background:#009519}
+.pjm .pjm-light .pjm-eyebrow span{color:#666666}
+.pjm .pjm-light .pjm-point,.pjm .pjm-light .pjm-hole4{background:#F5F5F5;border:0;border-radius:16px;box-shadow:inset 3px 0 0 #009519}
+.pjm .pjm-light .pjm-point h3,.pjm .pjm-light .pjm-who-item h3{color:#111111}
+.pjm .pjm-light .pjm-point p,.pjm .pjm-light .pjm-who-item p,.pjm .pjm-light .pjm-hole4 p{color:#333333}
+.pjm .pjm-light .pjm-hole4 h4{color:#007A14}
+.pjm .pjm-light .pjm-card{background:#F5F5F5;color:#333333;border-radius:16px}
+.pjm .pjm-light .pjm-card h4{color:#666666}
+.pjm .pjm-light .pjm-card h3{color:#111111}
+.pjm .pjm-light .pjm-card p{color:#333333}
+.pjm .pjm-light .pjm-trust{background:transparent;border:0;gap:12px}
+.pjm .pjm-light .pjm-trust div{background:#F5F5F5;border-radius:16px;color:#333333}
+.pjm .pjm-light .pjm-trust b{color:#007A14}
+.pjm .pjm-light .pjm-nums{background:transparent;border:0;gap:12px}
+.pjm .pjm-light .pjm-num-card{background:#F5F5F5;border-radius:16px}
+.pjm .pjm-light .pjm-num-card b,.pjm .pjm-light .pjm-stat b,.pjm .pjm-light .pjm-who-num{color:#007A14}
+.pjm .pjm-light .pjm-num-card span,.pjm .pjm-light .pjm-stat span{color:#666666}
+.pjm .pjm-light .pjm-who-item{background:#F5F5F5;border:0;border-radius:16px}
+.pjm .pjm-light .pjm-prog-item{border-top-color:#E5E5E5}
+.pjm .pjm-light .pjm-prog-label{color:#007A14}
+.pjm .pjm-light .pjm-prog-body{color:#333333}
+.pjm .pjm-light .pjm-prog-list li{color:#333333}
+.pjm .pjm-light .pjm-prog-list li b{color:#111111}
+.pjm .pjm-light .pjm-price{border-top-color:#E5E5E5;color:#007A14}
+.pjm .pjm-light .pjm-mq-track img,.pjm .pjm-light .pjm-strip img{background:#F0F0F0}
+.pjm .pjm-light .pjm-check{background:#F5F5F5;border-color:transparent}
+.pjm .pjm-light .pjm-check span{color:#333333}
+.pjm .pjm-light .pjm-check::before{border-color:#CCCCCC}
+.pjm .pjm-light .pjm-check.is-on{border-color:#009519}
+.pjm .pjm-light .pjm-check.is-on::before{background:#009519;border-color:#009519}
+.pjm .pjm-light .pjm-check.is-on::after{color:#FFFFFF}
+.pjm .pjm-light .pjm-cmp2-card{border-radius:16px}
+.pjm .pjm-light .pjm-cmp2-card--bad{background:#F5F5F5;border:0}
+.pjm .pjm-light .pjm-cmp2-card--good{background:#F5F5F5;border:2px solid #009519}
+.pjm .pjm-light .pjm-cmp2-card--bad .pjm-cmp2-tag{color:#666666}
+.pjm .pjm-light .pjm-cmp2-card--good .pjm-cmp2-tag{color:#007A14}
+.pjm .pjm-light .pjm-cmp2-card--bad li{color:#666666}
+.pjm .pjm-light .pjm-cmp2-card--good li{color:#333333}
+.pjm .pjm-light .pjm-cmp2-card--bad li::before{color:#999999}
+.pjm .pjm-light .pjm-cmp2-card--good li::before{color:#007A14}
+.pjm .pjm-light .pjm-web-card{filter:none;opacity:.55;box-shadow:none}
+.pjm .pjm-light .pjm-web-card.is-adjacent{opacity:.8}
+.pjm .pjm-light .pjm-web-card.is-front{opacity:1}
+.pjm .pjm-light .pjm-web-dot{background:#CCCCCC}
+.pjm .pjm-light .pjm-web-dot.active{background:#009519}
+.pjm .pjm-light .pjm-web-nav{box-shadow:none;border:1px solid #CCCCCC}
+</style>
+
 <!-- 1. 공감 -->
 <section class="pjm-sec">
   <div class="pjm-inner">
@@ -715,7 +772,7 @@ const DETAIL_HTML = `<div class="pjm">
 </section>
 
 <!-- 2. 문제 -->
-<section class="pjm-sec pjm-sec--alt">
+<section class="pjm-sec pjm-sec--alt pjm-light">
   <div class="pjm-inner">
     <h2 class="pjm-h2">대표님의 현장은<br>늘 혹독한 겨울에 머물러 있습니다.</h2>
     <div class="pjm-points">
@@ -737,7 +794,7 @@ const DETAIL_HTML = `<div class="pjm">
 </section>
 
 <!-- 3. 해결 -->
-<section class="pjm-sec">
+<section class="pjm-sec pjm-light">
   <div class="pjm-inner">
     <h2 class="pjm-h2">운영을 대신하지 않습니다.<br>스스로 열매 맺는 <em>'성장 뿌리'</em>를 심습니다.</h2>
     <div class="pjm-grid">
@@ -767,7 +824,7 @@ const DETAIL_HTML = `<div class="pjm">
 </section>
 
 <!-- 4-1. 카톡 후기 (손으로 넘기는 가로 스크롤 스트립) -->
-<section class="pjm-sec pjm-sec--alt">
+<section class="pjm-sec pjm-sec--alt pjm-light">
   <div class="pjm-inner">
     <h2 class="pjm-h2">현장에서 도착한<br><em>진짜 메시지</em>들입니다.</h2>
   </div>
@@ -781,7 +838,7 @@ const DETAIL_HTML = `<div class="pjm">
 </section>
 
 <!-- 4-2. 인증사진 마퀴 -->
-<section class="pjm-sec">
+<section class="pjm-sec pjm-light">
   <div class="pjm-inner">
     <h2 class="pjm-h2">함께한 대표님들이<br><em>증명</em>합니다.</h2>
   </div>
@@ -812,7 +869,7 @@ const DETAIL_HTML = `<div class="pjm">
 </section>
 
 <!-- 4-2. 추천 대상 -->
-<section class="pjm-sec">
+<section class="pjm-sec pjm-light">
   <div class="pjm-inner">
     <h2 class="pjm-h2">이런 고민을 가진 분들에게<br>추천합니다.</h2>
     <div class="pjm-who">
@@ -841,7 +898,7 @@ const DETAIL_HTML = `<div class="pjm">
 </section>
 
 <!-- 4-4. 프로그램 -->
-<section class="pjm-sec">
+<section class="pjm-sec pjm-light">
   <div class="pjm-inner">
     <h2 class="pjm-h2">박정민 멘토의 솔루션:<br><em>적신호를 초록불로</em> 바꾸는 현장 시스템</h2>
     <div class="pjm-prog">

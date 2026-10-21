@@ -699,6 +699,63 @@ const DETAIL_HTML = `<div class="ksh">
 .ksh-prog-list li b{color:#fff;font-weight:800;margin-right:4px}
 </style>
 
+<style>
+/* ── 다크/화이트 교차: 긴 설명 섹션만 화이트 (황현진 페이지와 같은 토큰). 짧은 선언·클로징은 다크 그대로 ── */
+.ksh .ksh-sec.ksh-light{background:#FFFFFF;color:#333333;padding-top:64px;padding-bottom:64px}
+.ksh .ksh-sec.ksh-light + .ksh-sec.ksh-light{padding-top:0}
+.ksh .ksh-light .ksh-h2{color:#111111}
+.ksh .ksh-light .ksh-h2 em,.ksh .ksh-light .ksh-accent em,.ksh .ksh-light .ksh-lead em,.ksh .ksh-light .ksh-note em,.ksh .ksh-light .ksh-kw,.ksh .ksh-light .ksh-punch{color:#007A14}
+.ksh .ksh-light .ksh-lead,.ksh .ksh-light .ksh-note,.ksh .ksh-light .ksh-mqcap{color:#333333}
+.ksh .ksh-light .ksh-lead strong,.ksh .ksh-light .ksh-accent,.ksh .ksh-light .ksh-sub{color:#111111}
+.ksh .ksh-light .ksh-vline{background:#009519}
+.ksh .ksh-light .ksh-eyebrow i{background:#009519}
+.ksh .ksh-light .ksh-eyebrow span{color:#666666}
+.ksh .ksh-light .ksh-point,.ksh .ksh-light .ksh-hole4{background:#F5F5F5;border:0;border-radius:16px;box-shadow:inset 3px 0 0 #009519}
+.ksh .ksh-light .ksh-point h3,.ksh .ksh-light .ksh-who-item h3{color:#111111}
+.ksh .ksh-light .ksh-point p,.ksh .ksh-light .ksh-who-item p,.ksh .ksh-light .ksh-hole4 p{color:#333333}
+.ksh .ksh-light .ksh-hole4 h4{color:#007A14}
+.ksh .ksh-light .ksh-card{background:#F5F5F5;color:#333333;border-radius:16px}
+.ksh .ksh-light .ksh-card h4{color:#666666}
+.ksh .ksh-light .ksh-card h3{color:#111111}
+.ksh .ksh-light .ksh-card p{color:#333333}
+.ksh .ksh-light .ksh-trust{background:transparent;border:0;gap:12px}
+.ksh .ksh-light .ksh-trust div{background:#F5F5F5;border-radius:16px;color:#333333}
+.ksh .ksh-light .ksh-trust b{color:#007A14}
+.ksh .ksh-light .ksh-nums{background:transparent;border:0;gap:12px}
+.ksh .ksh-light .ksh-num-card{background:#F5F5F5;border-radius:16px}
+.ksh .ksh-light .ksh-num-card b,.ksh .ksh-light .ksh-stat b,.ksh .ksh-light .ksh-who-num{color:#007A14}
+.ksh .ksh-light .ksh-num-card span,.ksh .ksh-light .ksh-stat span{color:#666666}
+.ksh .ksh-light .ksh-who-item{background:#F5F5F5;border:0;border-radius:16px}
+.ksh .ksh-light .ksh-prog-item{border-top-color:#E5E5E5}
+.ksh .ksh-light .ksh-prog-label{color:#007A14}
+.ksh .ksh-light .ksh-prog-body{color:#333333}
+.ksh .ksh-light .ksh-prog-list li{color:#333333}
+.ksh .ksh-light .ksh-prog-list li b{color:#111111}
+.ksh .ksh-light .ksh-price{border-top-color:#E5E5E5;color:#007A14}
+.ksh .ksh-light .ksh-mq-track img,.ksh .ksh-light .ksh-strip img{background:#F0F0F0}
+.ksh .ksh-light .ksh-check{background:#F5F5F5;border-color:transparent}
+.ksh .ksh-light .ksh-check span{color:#333333}
+.ksh .ksh-light .ksh-check::before{border-color:#CCCCCC}
+.ksh .ksh-light .ksh-check.is-on{border-color:#009519}
+.ksh .ksh-light .ksh-check.is-on::before{background:#009519;border-color:#009519}
+.ksh .ksh-light .ksh-check.is-on::after{color:#FFFFFF}
+.ksh .ksh-light .ksh-cmp2-card{border-radius:16px}
+.ksh .ksh-light .ksh-cmp2-card--bad{background:#F5F5F5;border:0}
+.ksh .ksh-light .ksh-cmp2-card--good{background:#F5F5F5;border:2px solid #009519}
+.ksh .ksh-light .ksh-cmp2-card--bad .ksh-cmp2-tag{color:#666666}
+.ksh .ksh-light .ksh-cmp2-card--good .ksh-cmp2-tag{color:#007A14}
+.ksh .ksh-light .ksh-cmp2-card--bad li{color:#666666}
+.ksh .ksh-light .ksh-cmp2-card--good li{color:#333333}
+.ksh .ksh-light .ksh-cmp2-card--bad li::before{color:#999999}
+.ksh .ksh-light .ksh-cmp2-card--good li::before{color:#007A14}
+.ksh .ksh-light .ksh-web-card{filter:none;opacity:.55;box-shadow:none}
+.ksh .ksh-light .ksh-web-card.is-adjacent{opacity:.8}
+.ksh .ksh-light .ksh-web-card.is-front{opacity:1}
+.ksh .ksh-light .ksh-web-dot{background:#CCCCCC}
+.ksh .ksh-light .ksh-web-dot.active{background:#009519}
+.ksh .ksh-light .ksh-web-nav{box-shadow:none;border:1px solid #CCCCCC}
+</style>
+
 <!-- 1. 공감 -->
 <section class="ksh-sec">
   <div class="ksh-inner">
@@ -711,7 +768,7 @@ const DETAIL_HTML = `<div class="ksh">
 </section>
 
 <!-- 2. 문제 -->
-<section class="ksh-sec ksh-sec--alt">
+<section class="ksh-sec ksh-sec--alt ksh-light">
   <div class="ksh-inner">
     <h2 class="ksh-h2">성장이 멈춘 이유는<br>의지나 실력 부족이 아닙니다.</h2>
     <div class="ksh-points">
@@ -733,7 +790,7 @@ const DETAIL_HTML = `<div class="ksh">
 </section>
 
 <!-- 3. 해결 -->
-<section class="ksh-sec">
+<section class="ksh-sec ksh-light">
   <div class="ksh-inner">
     <h2 class="ksh-h2">피트니스 센터의<br><em>'운영 OS'</em>를 설치해 드립니다.</h2>
     <p class="ksh-lead">사람이 아니라 구조를 바꿉니다.</p>
@@ -803,7 +860,7 @@ const DETAIL_HTML = `<div class="ksh">
 </section>
 
 <!-- 4-2. 추천 대상 -->
-<section class="ksh-sec">
+<section class="ksh-sec ksh-light">
   <div class="ksh-inner">
     <h2 class="ksh-h2">이런 고민을 가진 분들에게<br>추천합니다.</h2>
     <div class="ksh-who">
@@ -833,7 +890,7 @@ const DETAIL_HTML = `<div class="ksh">
 </section>
 
 <!-- 4-4. 프로그램 -->
-<section class="ksh-sec">
+<section class="ksh-sec ksh-light">
   <div class="ksh-inner">
     <h2 class="ksh-h2">김승호 멘토의 솔루션:<br>멈추지 않는 <em>운영 OS 설계</em></h2>
     <div class="ksh-prog">
