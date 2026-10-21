@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import MetaPixel from "@/components/MetaPixel";
 import ScrollDepthTracker from "@/components/ScrollDepthTracker";
 import VisitTracker from "@/components/VisitTracker";
+import SeminarPopup from "@/components/SeminarPopup";
 import { SITE_URL, SITE_NAME, OG_IMAGE } from "@/lib/site";
 
 const notoSansKR = Noto_Sans_KR({
@@ -128,6 +129,8 @@ export default function RootLayout({
         <ScrollDepthTracker />
         {/* 자체 익명 방문 추적 — /admin/ga 의 실시간 방문자·여정·섹션 이탈. /admin 과 봇은 제외 (components/VisitTracker.tsx) */}
         <VisitTracker />
+        {/* 세미나 우하단 팝업 — /edu/sales-ops*·/checkout·/admin 제외, SO_POPUP_END 이후 자동 종료 (lib/salesOps.ts) */}
+        <SeminarPopup />
       </body>
       {/* GA4 (gtag.js) — 측정 ID 가 설정된 경우에만 로드 */}
       {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}

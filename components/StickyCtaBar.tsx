@@ -61,6 +61,7 @@ export default function StickyCtaBar({
       <button
         type="button"
         onClick={scrollToTarget}
+        data-sticky-cta=""
         aria-label={label}
         aria-hidden={!visible}
         tabIndex={visible ? 0 : -1}

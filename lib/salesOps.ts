@@ -26,6 +26,8 @@ export const SO_DEADLINE_ISO = "2026-11-21T13:00:00+09:00";
 export const SO_DEADLINE_MS = Date.parse(SO_DEADLINE_ISO);
 /** 잔여석 집계 시작 시각(KST) — 상품을 연 날. 이전 거래는 세지 않는다 */
 export const SO_SALES_FROM = "2026-10-15T00:00:00";
+/** 사이트 전체 팝업 노출 종료 시각 — 이후에는 팝업을 아예 렌더링하지 않는다 */
+export const SO_POPUP_END = "2026-11-21T17:00:00+09:00";
 /* ▲▲ 여기까지 ▲▲ */
 
 /** 신청 폼의 역할 선택값 중 대표·원장 — components/edu/SalesOpsPay.tsx 의 ROLES 와 같은 문자열이어야 한다 */
@@ -38,6 +40,8 @@ export const SO_PRODUCT_STORY = "sales-ops-story";
 /** 랜딩 구분값 — 어느 신청 페이지에서 결제까지 왔는지 (시트 "랜딩" 열, GA4·메타 이벤트의 landing) */
 export const SO_LANDING_V1 = "sales-ops";
 export const SO_LANDING_V3 = "sales-ops3";
+/** 사이트 전체 우하단 팝업(components/SeminarPopup.tsx)을 거쳐 신청 페이지에 온 경우 */
+export const SO_LANDING_POPUP = "popup-sales-ops";
 
 /**
  * 결제 상품 슬러그와 (있다면) 신청 페이지가 남긴 랜딩 값으로 최종 랜딩을 정한다.

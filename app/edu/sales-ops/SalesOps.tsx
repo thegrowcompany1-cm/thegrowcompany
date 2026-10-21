@@ -21,9 +21,13 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
+import { clearCheckoutPrefill, readCheckoutPrefill, saveCheckoutPrefill } from "@/lib/products";
 import {
   SO_CAPACITY,
   SO_DEADLINE_MS,
+  SO_LANDING_POPUP,
+  SO_PRODUCT_NORMAL,
+  SO_PRODUCT_STORY,
   SO_DATE,
   SO_PLACE,
   SO_PRICE_NORMAL,
@@ -735,6 +739,34 @@ export default function SalesOps() {
   const [activeRole, setActiveRole] = useState(0);
   const [preset, setPreset] = useState<{ value: string; n: number } | undefined>(undefined);
 
+  // 사이트 우하단 팝업(components/SeminarPopup.tsx)에서 /edu/sales-ops?from=popup 으로 들어온 경우만 true.
+  // 결제 신청 정보의 landing 을 "popup-sales-ops" 로 남겨 시트·GA 의 랜딩 열에서 팝업 유입을 구분한다.
+  const [fromPopup, setFromPopup] = useState(false);
+  useEffect(() => {
+    try {
+      setFromPopup(new URLSearchParams(window.location.search).get("from") === "popup");
+    } catch {
+      /* 주소를 못 읽으면 일반 유입으로 본다 */
+    }
+  }, []);
+  // SalesOpsPay 가 버튼 클릭 때 신청 정보를 sessionStorage 에 저장한 직후(버블 단계), 방금 저장된 값에 landing 을 덧붙인다.
+  // 검증에 걸려 저장이 안 된 클릭이면 아무것도 덧붙이지 않는다.
+  const onPayBubble = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!fromPopup) return;
+    const btn = (e.target as HTMLElement).closest(".sop-pay") as HTMLButtonElement | null;
+    if (!btn || btn.disabled) return;
+    const slug = btn.closest(".sop-card.is-story") ? SO_PRODUCT_STORY : SO_PRODUCT_NORMAL;
+    const pre = readCheckoutPrefill(slug);
+    if (pre) saveCheckoutPrefill(slug, { ...pre, landing: SO_LANDING_POPUP });
+  };
+  const onPayCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    // 다른 랜딩에서 남은 값이 섞이지 않게 클릭 직전에 이전 값을 지운다
+    if (fromPopup && (e.target as HTMLElement).closest(".sop-pay")) {
+      clearCheckoutPrefill(SO_PRODUCT_STORY);
+      clearCheckoutPrefill(SO_PRODUCT_NORMAL);
+    }
+  };
+
   // 하단 고정 바 — 페이지에 들어오면 계속 보이고, 신청 섹션에 닿으면(들어왔거나 이미 지나친 뒤) 숨긴다
   const [barOn, setBarOn] = useState(true);
   // 마감 카운트다운 — 숫자는 requestAnimationFrame 으로 DOM 에 직접 쓴다(재렌더 없이). 마감이 지나면 closed
@@ -1438,11 +1470,13 @@ export default function SalesOps() {
             </div>
           )}
           {/* 결제 카드 2종 — 스토리 인증가 / 정상가 */}
-          <SalesOpsPay
-            presetRole={preset}
-            disabled={formOff}
-            disabledMessage={closed ? "신청이 마감되었습니다" : "정원이 마감되었습니다"}
-          />
+          <div onClickCapture={onPayCapture} onClick={onPayBubble}>
+            <SalesOpsPay
+              presetRole={preset}
+              disabled={formOff}
+              disabledMessage={closed ? "신청이 마감되었습니다" : "정원이 마감되었습니다"}
+            />
+          </div>
         </div>
       </section>
 

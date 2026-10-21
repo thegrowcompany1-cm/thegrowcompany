@@ -1371,7 +1371,7 @@ export default function HwangHyunjinDiagnosisPage() {
 
       {/* 모바일 고정 CTA 가 푸터를 가리지 않도록 */}
       <div className="hhj-spacer" aria-hidden="true" />
-      <div className={`hhj-stick${stickOn ? " is-on" : ""}`} aria-hidden={!stickOn}>
+      <div className={`hhj-stick${stickOn ? " is-on" : ""}`} data-sticky-cta="" aria-hidden={!stickOn}>
         <button type="button" className="hhj-cta" tabIndex={stickOn ? 0 : -1} onClick={() => smoothTo("hhj-form-bottom")}>
           무료 대본 진단 받아보기 →
         </button>
