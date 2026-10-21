@@ -347,7 +347,7 @@ function SoImg({
 }
 
 const SO_STYLE = `
-.so{--g:#22B573;--gt:#167A44;--cta:#178048;--ink:#1A1A1A;--sub:#5F6368;--line:#E6E8E6;--alt:#F6F7F5;--tint:#EAF7EF;--dark:#0A0A0A;font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-.01em;color:var(--ink);background:#fff;width:100%;max-width:100%;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere;font-size:16px;line-height:1.7}
+.so{--g:#22B573;--gt:#167A44;--cta:#178048;--ink:#1A1A1A;--sub:#5F6368;--line:#E6E8E6;--alt:#F1F3EF;--tint:#EAF7EF;--dark:#0A0A0A;font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-.01em;color:var(--ink);background:#fff;width:100%;max-width:100%;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere;font-size:16px;line-height:1.7}
 .so *{box-sizing:border-box}
 .so-wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .so-narrow{max-width:820px}
@@ -355,6 +355,11 @@ const SO_STYLE = `
 .so-sec{padding:64px 0;border-top:1px solid var(--line)}
 .so-white{background:#fff;color:var(--ink)}
 .so-alt{background:var(--alt);color:var(--ink)}
+/* 김재강 프로필(진한 회백) · 커리큘럼(다크 #111) · 클로징(다크 #0A0A0A) · 신청(연한 초록 틴트) — 경계는 직선 */
+.so-kimsec{background:#EEF1EC;color:var(--ink)}
+.so-dk1{background:#111111;color:#FFFFFF}
+.so-dk2{background:#0A0A0A;color:#FFFFFF}
+.so-tint{background:var(--tint);color:var(--ink)}
 .so-h2{font-size:24px;font-weight:700;line-height:1.5;text-align:left;margin:0 0 16px;max-width:34em}
 .so-h2 em{font-style:normal;color:var(--gt)}
 .so-h2,.so-prof-h,.so-closing p{text-wrap:balance}
@@ -527,7 +532,7 @@ const SO_STYLE = `
 @media(prefers-reduced-motion:reduce){.so-cyl-cap-in{animation:none}}
 
 /* 5. 김재강 소개 */
-.so-kim-wrap{margin:0 0 56px}
+.so-kim-wrap{margin:0}
 .so-kim{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center;max-width:920px;margin:0}
 .so-kim-photo{width:100%;max-width:340px;margin:0;aspect-ratio:3/4;border-radius:14px;background:var(--alt);border:1px solid var(--line)}
 .so-kim-role{display:block;margin:0 0 8px;font-size:13px;font-weight:600;color:var(--sub)}
@@ -546,21 +551,21 @@ const SO_STYLE = `
 
 /* 7. 커리큘럼 */
 .so-parts{display:grid;gap:16px;max-width:900px;margin:32px 0 0}
-.so-part{min-width:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 24px}
+.so-part{min-width:0;background:#1A1A1A;border:0;border-radius:16px;padding:28px 24px}
 .so-part-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 6px}
-.so-part-time{font-size:13px;font-weight:600;color:var(--ink);background:#EEF0EE;padding:6px 12px;border-radius:50px}
-.so-part-speaker{font-size:16px;font-weight:400;color:var(--sub)}
+.so-part-time{font-size:13px;font-weight:700;color:#22B573;background:rgba(34,181,115,.14);padding:6px 12px;border-radius:50px}
+.so-part-speaker{font-size:16px;font-weight:400;color:#BDBDBD}
 .so-part-title{font-size:24px;font-weight:700;line-height:1.5;margin:8px 0 8px}
 .so-keys{display:grid;gap:0}
-.so-key{min-width:0;padding:20px 0 4px;border-top:1px solid var(--line);margin-top:16px}
+.so-key{min-width:0;padding:20px 0 4px;border-top:1px solid rgba(255,255,255,.1);margin-top:16px}
 .so-key-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:0 0 12px}
-.so-key-tag{font-size:13px;font-weight:600;color:var(--gt)}
+.so-key-tag{font-size:13px;font-weight:700;color:#22B573}
 .so-key-name{font-size:16px;font-weight:700}
 .so-key ul{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px;max-width:34em}
-.so-key li{position:relative;padding-left:16px;font-size:16px;line-height:1.7;color:var(--ink)}
-.so-key li::before{content:"";position:absolute;left:0;top:.7em;width:6px;height:6px;border-radius:50%;background:#9AA0A6}
+.so-key li{position:relative;padding-left:16px;font-size:16px;line-height:1.7;color:#BDBDBD}
+.so-key li::before{content:"";position:absolute;left:0;top:.7em;width:6px;height:6px;border-radius:50%;background:#22B573}
 .so-qs{display:grid;gap:10px;margin:0 0 16px;max-width:34em}
-.so-q{margin:0;padding:14px 16px;border-radius:14px;background:var(--tint);font-size:16px;font-weight:700;line-height:1.7;color:var(--ink)}
+.so-q{margin:0;padding:14px 16px;border-radius:14px;background:#262626;font-size:16px;font-weight:700;line-height:1.7;color:#FFFFFF}
 @media(max-width:640px){.so-part{padding:24px 16px}}
 
 /* 8. 듣고 나면 달라지는 것 */
@@ -577,7 +582,8 @@ const SO_STYLE = `
 .so-closing{text-align:left}
 .so-closing p{margin:0;font-size:24px;font-weight:700;line-height:1.6}
 .so-closing .so-gap{margin-top:32px}
-.so-closing .so-hl{color:var(--gt)}
+.so-closing .so-hl{color:#22B573}
+.so-dk1 .so-h2 em{color:#22B573}
 @media(max-width:640px){.so-closing .so-gap{margin-top:24px}}
 
 /* 10. 신청 */
@@ -1230,10 +1236,10 @@ export default function SalesOps() {
       </section>
 
       {/* ── 4. 운영 축 — 김재강 소개 → 고통 말풍선 → 원칙 → 카드 → GROW SYSTEM ── */}
-      <section data-track-section="ops" className="so-sec so-white">
+      {/* 김재강 대표 소개 — 운영 섹션 안에 있던 것을 독립 섹션으로 분리 (진한 회백 배경으로 앞뒤와 구분) */}
+      <section data-track-section="kim" className="so-sec so-kimsec">
         <div className="so-wrap">
-          {/* 김재강 대표 소개 (예전에는 별도 섹션이었다 — 고통 말풍선 바로 위로 옮겼다) */}
-          <div className="so-kim-wrap" data-track-section="kim">
+          <div className="so-kim-wrap">
             <div className="so-kim so-reveal">
               <div className="so-kim-photo so-media">
                 <SoImg src={SO_IMG.kim} alt="김재강 대표" sizes="340px" position="center 18%" />
@@ -1250,6 +1256,11 @@ export default function SalesOps() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section data-track-section="ops" className="so-sec so-white">
+        <div className="so-wrap">
           <div className="so-pains so-stagger">
             {SO_OPS_PAINS.map((line) => (
               <p className="so-bubble so-reveal" key={line}>
@@ -1340,7 +1351,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 7. 커리큘럼 · 타임테이블 ── */}
-      <section data-track-section="curriculum" className="so-sec so-alt">
+      <section data-track-section="curriculum" className="so-sec so-dk1">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">
             커리큘럼 · <em>타임테이블</em>
@@ -1403,7 +1414,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 9. 클로징 ── */}
-      <section data-track-section="closing" className="so-sec so-alt">
+      <section data-track-section="closing" className="so-sec so-dk2">
         <div className="so-wrap so-narrow so-closing">
           {SO_CLOSING.map((group, gi) => (
             <div className={gi > 0 ? "so-gap so-reveal" : "so-reveal"} key={gi}>
@@ -1418,7 +1429,7 @@ export default function SalesOps() {
       </section>
 
       {/* ── 10. 신청 ── */}
-      <section data-track-section="form" className="so-sec so-white so-apply" id="so-apply">
+      <section data-track-section="form" className="so-sec so-tint so-apply" id="so-apply">
         <div className="so-wrap">
           <h2 className="so-h2 so-reveal">세미나 신청 안내</h2>
           <table className="so-table so-reveal">
