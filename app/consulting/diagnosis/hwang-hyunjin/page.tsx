@@ -791,6 +791,14 @@ const HHJ_CSS = `
 .hhj-formbox{max-width:840px;margin:0 auto;border:1px solid var(--ink);border-radius:0;background:#fff;box-shadow:none;overflow:hidden}
 .hhj-formsec--bottom{border-top:1px solid var(--ink);padding:72px 0}
 .hhj-formsec--bottom .hhj-h2{text-align:left;max-width:840px;margin:0 auto 24px}
+/* 상담폼 색을 대본 톤으로 — 이 페이지 한정 덮어쓰기(FORM_HTML 원문·다른 멘토 페이지는 그대로) */
+.hhj .hhj-formbox .consult-form-wrapper{max-width:none}
+.hhj .hhj-formbox .form-header{background:#1C1A17;background-image:none}
+.hhj .hhj-formbox .form-header h2{color:#FFFFFF}
+.hhj .hhj-formbox .form-submit button{background:#C8321F;border-radius:0}
+.hhj .hhj-formbox .form-submit button:hover{background:#9E2516;box-shadow:none}
+.hhj .hhj-formbox .form-submit button:disabled{background:#CFC6B8;cursor:not-allowed}
+.hhj .hhj-formbox input[type="checkbox"],.hhj .hhj-formbox input[type="radio"]{accent-color:#1C1A17}
 
 /* 5. CHAPTER 1 — 페이지 유일의 다크 섹션 */
 .hhj-dark{background:#1C1A17;color:#F6F6F4}
