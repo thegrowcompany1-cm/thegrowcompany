@@ -2,7 +2,7 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 진단 멘토 상세페이지 — 황현진 (세일즈 파트) · v2: 더그로우 메인 톤(DESIGN.md 1층) + 설득 구조
-//  구조: 히어로 → 오픈루프 → 공감 → 방치 비용 → 뒤집기 → 권위 → 상단 상담폼 → 교정본 → 영상 → 솔루션 → 대상 → 솔직히
+//  구조: 히어로 → 오픈루프 → 공감 → 방치 비용 → 뒤집기 → 권위 → 교정본 → 영상 → 솔루션 → 대상 → 솔직히
 //   → 신청(하단 상담폼, -bottom id) → ConsultantCarousel → 추천 카드. 모바일 하단 고정 CTA.
 //  · 클래스 접두사 hhj-, 스타일은 이 파일의 HHJ_CSS(사이트의 so-/sop- 방식과 같다). 글꼴은 사이트 기본 Noto Sans KR.
 //  · 상담폼(FORM_HTML)은 허준영 페이지와 같은 구조·원래 초록을 그대로 쓴다.
@@ -644,7 +644,7 @@ const FORM_HTML_BOTTOM = FORM_HTML
 
 // ─── v2: 더그로우 메인 톤(DESIGN.md 1층) + 설득 구조 ───────────────────────────
 // 바탕 #111 · 카드 #161616/16px · 글꼴은 사이트 기본 Noto Sans KR 만(이 페이지 전용 글꼴 없음) · 포인트 #009519(작은 글씨는 #2FBF5F).
-// 구조: 히어로 단언 → 오픈루프 → 공감 → 방치 비용 → 뒤집기 → 권위 → (상단 폼) → 루프 닫기(교정본) → 영상 → 솔루션 → 대상 → 솔직히 → 신청
+// 구조: 히어로 단언 → 오픈루프 → 공감 → 방치 비용 → 뒤집기 → 권위 → 루프 닫기(교정본) → 영상 → 솔루션 → 대상 → 솔직히 → 신청
 
 // 영상 제목 — 값이 있을 때만 캡션을 보여준다. TODO 대표님 입력 (영상 순서: sales-01 ~ sales-04)
 const VIDEO_TITLES: string[] = ["", "", "", ""];
@@ -964,7 +964,6 @@ export default function HwangHyunjinDiagnosisPage() {
   const videoEls = useRef<(HTMLVideoElement | null)[]>([]);
   const [stickOn, setStickOn] = useState(false);
 
-  const formRef = useRef<HTMLDivElement>(null);
   const bottomFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -996,15 +995,6 @@ export default function HwangHyunjinDiagnosisPage() {
     });
     return injected;
   };
-
-  // 상단 상담폼 주입
-  useEffect(() => {
-    if (!mounted) return;
-    const container = formRef.current;
-    if (!container) return;
-    const injected = injectContainer(container);
-    return () => injected.forEach((s) => s.remove());
-  }, [mounted]);
 
   // 하단 상담폼 주입 (id 는 이미 -bottom 접미사라 상단과 충돌 없음)
   useEffect(() => {
@@ -1046,7 +1036,7 @@ export default function HwangHyunjinDiagnosisPage() {
       });
       setStickOn(visible.size === 0);
     });
-    ["hhj-hero", "hhj-form-top", "hhj-form-bottom"].forEach((id) => {
+    ["hhj-hero", "hhj-form-bottom"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) io.observe(el);
     });
@@ -1085,9 +1075,6 @@ export default function HwangHyunjinDiagnosisPage() {
               결정합니다.
             </h1>
             <p className="hhj-sub">홈쇼핑 생방송에서 검증한 설득 언어로, 우리 센터의 상담 대본을 함께 씁니다.</p>
-            <button type="button" className="hhj-cta" onClick={() => smoothTo("hhj-form-bottom")}>
-              무료 대본 진단 받아보기 →
-            </button>
           </div>
           <div className="hhj-hero-photo">
             <Image
@@ -1200,19 +1187,6 @@ export default function HwangHyunjinDiagnosisPage() {
               // eslint-disable-next-line @next/next/no-img-element
               <img key={b.src} src={b.src} alt={`${b.title} 표지`} width={371} height={548} loading="lazy" draggable={false} />
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 상단 상담폼 — 권위 섹션 다음 (원래 초록 폼 그대로) */}
-      <section className="hhj-formsec" id="hhj-form-top">
-        <div className="hhj-wrap">
-          <div className="hhj-formbox">
-            {mounted ? (
-              <div ref={formRef} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: FORM_HTML }} />
-            ) : (
-              <div ref={formRef} suppressHydrationWarning />
-            )}
           </div>
         </div>
       </section>
