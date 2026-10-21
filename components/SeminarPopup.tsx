@@ -16,12 +16,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  SO_LANDING_POPUP,
-  SO_POPUP_END,
-  SO_PRICE_STORY,
-  soFormatPrice,
-} from "@/lib/salesOps";
+import { SO_LANDING_POPUP, SO_POPUP_END } from "@/lib/salesOps";
 import { so3FbCustom, so3Ga } from "@/lib/salesOps3Track";
 
 const EXCLUDE = ["/edu/sales-ops", "/edu/sales-ops2", "/edu/sales-ops3", "/checkout", "/admin"];
@@ -186,7 +181,7 @@ export default function SeminarPopup() {
           <div className="smp-tx">
             <p className="smp-eb">11.21 SAT · 운영 × 세일즈 특강</p>
             <p className="smp-ti">피트니스 성장 마스터키</p>
-            <p className="smp-su">김재강 × 황현진 · 스토리 인증 시 {soFormatPrice(SO_PRICE_STORY)}</p>
+            <p className="smp-su">김재강 × 황현진</p>
           </div>
         </div>
         <div className="smp-foot">
