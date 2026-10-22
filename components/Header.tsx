@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import AuthNav from "./AuthNav";
 
 // SNS 링크
@@ -119,6 +120,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
@@ -137,6 +139,26 @@ export default function Header() {
   }, [mobileOpen]);
 
   const hoveredItem = navItems.find((n) => n.label === hoveredLabel) ?? null;
+
+  // 광고 전용 랜딩(/edu/sales-ops3)은 메뉴·로고 링크 없이 로고만 보여 준다
+  if (pathname === "/edu/sales-ops3") {
+    return (
+      <header className="sticky top-0 z-50 bg-[#111111] border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-start h-20 lg:h-24">
+            <Image
+              src="/logos/thegrow-logo.png"
+              alt="더그로우컴퍼니 로고"
+              width={210}
+              height={60}
+              className="h-[72px] lg:h-20 w-auto object-contain"
+              priority
+            />
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header

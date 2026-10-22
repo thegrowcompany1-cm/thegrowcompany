@@ -149,13 +149,13 @@ const STYLE = `
 /* 3. 비포·애프터 */
 .so3-ba{display:grid;gap:14px;margin-top:32px}
 .so3-card{padding:22px 18px;border-radius:10px;background:#1c1c1c;border:1px solid var(--ln)}
-.so3-old{font-size:16px;line-height:1.55;font-weight:500;color:#8A8A8A;text-decoration:line-through}
+.so3-old{font-size:16px;line-height:1.55;font-weight:500;color:#B8B8B8;text-decoration:line-through;text-decoration-color:#E5484D;text-decoration-thickness:2px}
 .so3-arrow{display:block;width:1px;height:20px;margin:12px auto;background:var(--g)}
 .so3-new{font-size:20px;line-height:1.45;font-weight:900;color:var(--g)}
-.so3-blur{position:relative;height:64px;border-radius:8px;overflow:hidden}
-.so3-blur i{position:absolute;left:10%;right:10%;height:12px;border-radius:6px;background:var(--g);filter:blur(7px);opacity:.9}
-.so3-blur i:nth-child(1){top:12px}.so3-blur i:nth-child(2){top:30px;right:25%}.so3-blur i:nth-child(3){top:48px;right:40%}
-.so3-blur-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff}
+.so3-lock{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:64px;border-radius:12px;background:rgba(34,181,115,.12);border:1px dashed #22B573;color:#22B573;font-size:16px;font-weight:700}
+.so3-lock svg{flex:0 0 auto;width:16px;height:16px}
+.so3-end{margin-top:40px;display:grid;gap:10px;font-size:20px;line-height:1.4;font-weight:800}
+.so3-end b{color:#22B573;font-weight:800}
 
 /* 5·7. 증거 */
 .so3-pf{position:relative;aspect-ratio:4/5;width:62%;margin:28px auto 0}
@@ -481,22 +481,25 @@ export default function SalesOps3() {
                 {c.after ? (
                   <p className="so3-new">{c.after}</p>
                 ) : (
-                  <div className="so3-blur">
-                    <div aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
-                    </div>
-                    <p className="so3-blur-t">2부 현장에서만 공개합니다</p>
+                  <div className="so3-lock">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <rect x="4" y="10.5" width="16" height="10.5" rx="2.5" fill="#22B573" />
+                      <path d="M8 10.5V7.5a4 4 0 018 0v3" fill="none" stroke="#22B573" strokeWidth="2.4" strokeLinecap="round" />
+                    </svg>
+                    <span>2부 현장에서만 공개합니다</span>
                   </div>
                 )}
               </div>
             ))}
           </div>
-          <p className="so3-tx so3-gap">하수는 주장만 하지만, 고수는 주목시킵니다.</p>
-          <p className="so3-tx" style={{ marginTop: 6 }}>
-            하수는 이성을 향하지만, 고수는 감정을 공략합니다.
-          </p>
+          <div className="so3-end">
+            <p>
+              하수는 주장만 하지만, 고수는 <b>주목시킵니다</b>.
+            </p>
+            <p>
+              하수는 이성을 향하지만, 고수는 <b>감정을 공략합니다</b>.
+            </p>
+          </div>
         </section>
 
         {/* 4. 반론 ① 강사 */}
