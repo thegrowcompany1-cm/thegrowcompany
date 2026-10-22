@@ -164,14 +164,23 @@ const STYLE = `
 .so3-ck svg{flex:0 0 auto;width:22px;height:22px;margin-top:1px}
 .so3-sec-t{font-size:20px;font-weight:800;margin-top:44px}
 .so3-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px auto 0}
-.so3-books{max-width:360px}
-.so3-books .so3-im{aspect-ratio:374/552;background:#1c1c1c;border-radius:4px}
+.so3-books{display:flex;justify-content:center;gap:2.5%;margin-top:20px}
+.so3-books>div{flex:0 0 22%;aspect-ratio:374/552;background:#1c1c1c;border-radius:3px}
 .so3-vg{max-width:360px}
-.so3-vbtn{display:block;position:relative;width:100%;aspect-ratio:9/16;padding:0;border:0;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;color:#fff}
+.so3-vbtn{display:block;position:relative;width:100%;aspect-ratio:3/4;padding:0;border:0;border-radius:8px;overflow:hidden;background:#000;cursor:pointer;color:#fff}
 .so3-vbtn::after{content:"";position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(0,0,0,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 6.5v11l9-5.5z' fill='%23fff'/%3E%3C/svg%3E") center/26px no-repeat}
-.so3-vid{display:block;width:100%;aspect-ratio:9/16;border-radius:8px;background:#000;object-fit:cover}
+.so3-vid{display:block;width:100%;aspect-ratio:3/4;border-radius:8px;background:#000;object-fit:cover}
 .so3-vt{margin-top:8px;font-size:14px;line-height:1.45;font-weight:500;color:#D3DCD7}
-.so3-sg{max-width:none}
+.so3-sl{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 20px;scroll-padding:0 20px;scrollbar-width:none;overscroll-behavior-x:contain}
+.so3-sl::-webkit-scrollbar{display:none}
+.so3-sl>div{flex:0 0 78%;scroll-snap-align:start;text-align:center}
+.so3-dots{display:flex;justify-content:center;margin-top:10px}
+.so3-dot{width:26px;height:26px;padding:0;border:0;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.so3-dot::before{content:"";width:8px;height:8px;border-radius:50%;background:#C9C9C9}
+.so3-dot.is-on::before{width:20px;border-radius:4px;background:var(--g)}
+.so3-pay:not(.is-open) .sop-card:not(.is-story){display:none}
+.so3-more{display:inline-block;margin-top:16px;padding:8px 4px;border:0;background:none;color:#C8D3CD;font:inherit;font-size:15px;font-weight:600;text-decoration:underline;cursor:pointer}
+.so3-ap .sop-box{scroll-margin-top:80px}
 .so3-sbtn{display:block;position:relative;width:100%;aspect-ratio:4/3;padding:0;border:1px solid #E3E3E3;border-radius:6px;overflow:hidden;background:#0F1413;cursor:zoom-in}
 .so3-sn{margin-top:8px;font-size:15px;font-weight:800;color:#111}
 .so3-sd{margin-top:2px;font-size:14px;line-height:1.45;font-weight:500;color:#555}
@@ -271,6 +280,28 @@ export default function SalesOps3() {
   const [zoom, setZoom] = useState<number | null>(null);
   const [barOn, setBarOn] = useState(true);
   const [closed, setClosed] = useState(false);
+  const [normalOpen, setNormalOpen] = useState(false);
+  const [slide, setSlide] = useState(0);
+  const slRef = useRef<HTMLDivElement>(null);
+  const onSlide = () => {
+    const el = slRef.current;
+    if (!el) return;
+    const w = (el.children[0] as HTMLElement | undefined)?.offsetWidth ?? 1;
+    setSlide(Math.min(SCREENS.length - 1, Math.max(0, Math.round(el.scrollLeft / (w + 12)))));
+  };
+  const goSlide = (i: number) => {
+    const el = slRef.current;
+    const card = el?.children[i] as HTMLElement | undefined;
+    if (el && card) el.scrollTo({ left: card.offsetLeft - 20, behavior: "smooth" });
+  };
+  // 마지막 버튼: 신청자 정보 폼 상단으로 이동 후 이름 입력에 포커스
+  const toForm = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const input = document.getElementById("sop-name") as HTMLInputElement | null;
+    if (!input) return;
+    e.preventDefault();
+    (input.closest(".sop-box") ?? input).scrollIntoView({ block: "start" });
+    input.focus({ preventScroll: true });
+  };
 
   // ── 측정: view_item (진입 1회) ──
   const viewedRef = useRef(false);
@@ -499,10 +530,10 @@ export default function SalesOps3() {
               </li>
             ))}
           </ul>
-          <div className="so3-g2 so3-books">
+          <div className="so3-books">
             {IMG.books.map((src, i) => (
               <div className="so3-im" key={src}>
-                <Image src={src} alt={`황현진 저서 ${i + 1}권 표지`} fill sizes="(max-width: 480px) 40vw, 180px" style={{ objectFit: "contain" }} />
+                <Image src={src} alt={`황현진 저서 ${i + 1}권 표지`} fill sizes="(max-width: 480px) 22vw, 106px" style={{ objectFit: "contain" }} />
               </div>
             ))}
           </div>
@@ -558,17 +589,22 @@ export default function SalesOps3() {
             ))}
           </ul>
           <p className="so3-sec-t">GROW SYSTEM</p>
-          <div className="so3-wt" style={{ margin: "20px -20px 0", padding: "20px" }}>
-            <div className="so3-g2 so3-sg" style={{ marginTop: 0 }}>
+          <div className="so3-wt" style={{ margin: "20px -20px 0", padding: "20px 0" }}>
+            <div className="so3-sl" ref={slRef} onScroll={onSlide} role="group" aria-label="GROW SYSTEM 화면">
               {SCREENS.map((s, i) => (
                 <div key={s.src}>
                   <button type="button" className="so3-sbtn" onClick={() => setZoom(i)} aria-label={`${s.name} 확대 보기`} onContextMenu={(e) => e.preventDefault()}>
-                    <Image src={s.src} alt={s.name} fill sizes="(max-width: 480px) 45vw, 220px" style={{ objectFit: "contain" }} />
+                    <Image src={s.src} alt={s.name} fill sizes="(max-width: 480px) 78vw, 360px" style={{ objectFit: "contain" }} />
                     <span className="so3-mark" aria-hidden="true">© THE GROW</span>
                   </button>
                   <p className="so3-sn">{s.name}</p>
                   <p className="so3-sd">{s.desc}</p>
                 </div>
+              ))}
+            </div>
+            <div className="so3-dots">
+              {SCREENS.map((s, i) => (
+                <button key={s.name} type="button" className={"so3-dot" + (i === slide ? " is-on" : "")} aria-label={`${s.name} 보기`} aria-current={i === slide ? "true" : undefined} onClick={() => goSlide(i)} />
               ))}
             </div>
           </div>
@@ -647,9 +683,14 @@ export default function SalesOps3() {
               <b>{soFormatPrice(SO_PRICE_STORY)}</b>
             </div>
           </div>
-          <div onClickCapture={onPayCapture} onClick={onPayBubble}>
+          <div className={"so3-pay" + (normalOpen ? " is-open" : "")} onClickCapture={onPayCapture} onClick={onPayBubble}>
             <SalesOpsPay stack disabled={closed} disabledMessage="신청이 마감되었습니다" />
           </div>
+          {!normalOpen && !closed && (
+            <button type="button" className="so3-more" onClick={() => setNormalOpen(true)}>
+              인증 없이 정상가 {soFormatPrice(SO_PRICE_NORMAL)}으로 결제하기 ›
+            </button>
+          )}
           <div className="so3-cd">
             <p className="so3-cdn" aria-live="off">
               {countdown}
@@ -662,7 +703,9 @@ export default function SalesOps3() {
               신청 마감
             </span>
           ) : (
-            <Cta />
+            <a className="so3-btn" href="#sop-name" onClick={toForm}>
+              {CTA_TEXT}
+            </a>
           )}
         </section>
       </div>
