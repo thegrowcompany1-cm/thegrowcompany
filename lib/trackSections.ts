@@ -8,8 +8,7 @@ export const TRACK_SECTION_ORDER: Record<string, string[]> = {
   "/edu/fc-class": ["hero", "problem", "solution", "instructor", "curriculum", "review", "result", "gallery", "feedback", "target", "benefit", "faq", "price"],
   "/edu/gx-class": ["hero", "stats", "problem", "loop", "solution", "reframe", "system", "proof", "story", "result", "newconv", "revenue", "rejoin", "community", "price"],
   "/edu/sales-ops": ["hero", "target", "problem", "hwang", "kim", "ops", "curriculum", "change", "closing", "form"],
-  // case · takeaway 는 내용이 확정되기 전에는 화면에 없다 (있으면 problem 과 hwang 사이 / ops 와 curriculum 사이)
-  "/edu/sales-ops3": ["hero", "keys", "funnel", "problem", "belief", "case", "hwang", "kim", "ops", "takeaway", "curriculum", "value", "target", "faq", "form", "closing"],
+  "/edu/sales-ops3": ["hero", "enemy", "problem", "belief", "hwang", "owner", "kim", "target", "ticket", "curriculum", "form"],
   "/edu/diagnostic-consultant": ["hero", "problem", "solution", "income", "review", "field", "skill", "proof", "target", "program", "curriculum", "instructor", "verify", "cert", "contract", "chat", "selection", "faq", "form"],
 };
 
@@ -48,6 +47,9 @@ export const TRACK_SECTION_LABEL: Record<string, string> = {
   keys: "열쇠 전환",
   funnel: "매출 새는 곳",
   belief: "신념 깨기",
+  enemy: "적 설정",
+  owner: "원장 반론",
+  ticket: "입장권",
   case: "사례 Before·After",
   hwang: "황현진 소개",
   kim: "김재강 소개",
