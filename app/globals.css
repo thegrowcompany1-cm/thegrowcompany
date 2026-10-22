@@ -94,3 +94,16 @@ body {
   background: #111111;
   color: #EEEEEE;
 }
+
+/* 메인 홈 그로우 에듀 카드 — 형광 반짝임 상태 문구 */
+@keyframes edu-neon-pulse {
+  0%, 100% { text-shadow: 0 0 4px #39ff14, 0 0 10px rgba(57, 255, 20, 0.6); opacity: 1; }
+  50% { text-shadow: 0 0 2px rgba(57, 255, 20, 0.4); opacity: 0.55; }
+}
+.edu-neon {
+  color: #39ff14;
+  animation: edu-neon-pulse 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .edu-neon { animation: none; text-shadow: 0 0 6px rgba(57, 255, 20, 0.7); }
+}

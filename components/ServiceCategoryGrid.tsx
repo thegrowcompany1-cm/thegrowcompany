@@ -13,6 +13,11 @@
 import Image from "next/image";
 import MentorImage from "@/components/MentorImage";
 import Link from "next/link";
+import { SO_DATE } from "@/lib/salesOps";
+
+// 세미나 일자 표기 — lib/salesOps.ts 상수에서 만든다 ("2026.11.21(토)" → "11월 21일(토)")
+const soDay = SO_DATE.match(/\d+\.(\d+)\.(\d+)\((.)\)/);
+const SO_DAY_LABEL = soDay ? `${Number(soDay[1])}월 ${Number(soDay[2])}일(${soDay[3]})` : SO_DATE;
 
 type Card = {
   /** 상품 식별자 — 표시명이 바뀌어도 유지되는 안정적인 키 */
@@ -24,6 +29,7 @@ type Card = {
   accent?: boolean; // 카드 안에 초록(#009519) 악센트 바 표시 여부
   photo?: boolean; // img 파일이 실제로 존재하여 placeholder 대신 사진을 표시할지 여부
   objectPosition?: string; // 사진 노출 위치 (기본: top). 천장이 많은 사진은 아래쪽으로 내림
+  status?: { text: string; glow?: boolean }; // 제목 아래 상태 문구 (glow: 형광 반짝임)
   href?: string; // 설정 시 카드 클릭하면 해당 상세페이지로 이동
 };
 
@@ -100,11 +106,11 @@ const groups: Group[] = [
     category: "그로우 에듀",
     desc: "피트니스 업계에 도움이 필요한 세미나를 진행합니다.",
     cards: [
-      { title: "운영/세일즈 서울세미나", img: "/edu/sales-ops/poster.jpg", href: "/edu/sales-ops", photo: true, objectPosition: "50% 28%" }, // 운영/세일즈 서울세미나 카드 이미지
-      { title: "창업 세미나", img: "/edu/edustartup.jpg", href: "/edu/startup-class", photo: true, objectPosition: "center 78%" }, // 창업 세미나 카드 이미지
-      { title: "정규 FC 세미나", img: "/edu/edufc.jpg", href: "/edu/fc-class", photo: true, objectPosition: "center 78%" }, // 정규 FC 세미나 카드 이미지
-      { title: "그룹운동 비즈니스 클래스", img: "/edu/gx-class/gx-community-group.jpg", href: "/edu/gx-class", photo: true }, // 그룹운동 비즈니스 클래스 카드 이미지
-      { title: "진단 컨설턴트 양성과정", img: "/edu/dcc/field.jpg", href: "/edu/diagnostic-consultant", photo: true }, // 진단 컨설턴트 양성과정 카드 이미지
+      { title: "운영/세일즈 서울세미나", img: "/edu/sales-ops/poster.jpg", href: "/edu/sales-ops", photo: true, objectPosition: "50% 28%", status: { text: SO_DAY_LABEL, glow: true } }, // 운영/세일즈 서울세미나 카드 이미지
+      { title: "창업 세미나", img: "/edu/edustartup.jpg", href: "/edu/startup-class", photo: true, status: { text: "준비중" }, objectPosition: "center 78%" }, // 창업 세미나 카드 이미지
+      { title: "정규 FC 세미나", img: "/edu/edufc.jpg", href: "/edu/fc-class", photo: true, status: { text: "준비중" }, objectPosition: "center 78%" }, // 정규 FC 세미나 카드 이미지
+      { title: "그룹운동 비즈니스 클래스", img: "/edu/gx-class/gx-community-group.jpg", href: "/edu/gx-class", photo: true, status: { text: "준비중" } }, // 그룹운동 비즈니스 클래스 카드 이미지
+      { title: "진단 컨설턴트 양성과정", img: "/edu/dcc/field.jpg", href: "/edu/diagnostic-consultant", photo: true, status: { text: "(모집중)", glow: true } }, // 진단 컨설턴트 양성과정 카드 이미지
     ],
   },
 ];
@@ -156,6 +162,17 @@ function ServiceCard({ card }: { card: Card }) {
             {card.title}
           </h4>
         </div>
+        {card.status && (
+          <p
+            className={
+              card.status.glow
+                ? "edu-neon mt-1.5 text-sm font-black sm:text-base"
+                : "mt-1.5 text-sm font-bold text-[#8A8A8A] sm:text-base"
+            }
+          >
+            {card.status.text}
+          </p>
+        )}
         {card.desc && (
           <p className="break-keep mt-1.5 text-xs leading-relaxed text-[#999999] sm:text-[13px]">
             {card.desc}
