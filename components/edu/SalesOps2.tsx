@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { whenFbReady } from "@/lib/metaPixel";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
-import { SO_PRICE_NORMAL, SO_PRICE_STORY } from "@/lib/salesOps";
+import {
+  SO_LANDING_V2,
+  SO_PRICE_NORMAL,
+  SO_PRICE_STORY,
+  SO_PRODUCT_NORMAL,
+  SO_PRODUCT_STORY,
+} from "@/lib/salesOps";
+import { clearCheckoutPrefill, readCheckoutPrefill, saveCheckoutPrefill } from "@/lib/products";
 
 /*
  * /edu/sales-ops2 — 리얼세일즈 측 기획안 시안(_ref/sales-ops2/l0.html)을 그대로 옮긴 페이지.
@@ -373,6 +381,38 @@ export default function SalesOps2() {
   const [motion, setMotion] = useState(false);
   const [stickyHidden, setStickyHidden] = useState(true);
 
+  // 메타 ViewContent — 진입 1회
+  const viewedRef = useRef(false);
+  useEffect(() => {
+    if (viewedRef.current) return;
+    viewedRef.current = true;
+    whenFbReady(() =>
+      window.__tgcFbTrack?.("ViewContent", {
+      content_name: "피트니스 성장 마스터키 세미나",
+      content_ids: [SO_LANDING_V2],
+      value: SO_PRICE_NORMAL,
+      currency: "KRW",
+      landing: SO_LANDING_V2,
+    }),
+    );
+  }, []);
+
+  // 결제 버튼 클릭: 신청 정보에 landing="sales-ops2" 를 덧붙인다 (SalesOpsPay 는 수정하지 않는다).
+  // 캡처 단계에서 다른 랜딩의 잔여 값을 지우고, 버블 단계에서 방금 저장된 값에 덧붙인다.
+  const onPayCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest(".sop-pay")) {
+      clearCheckoutPrefill(SO_PRODUCT_STORY);
+      clearCheckoutPrefill(SO_PRODUCT_NORMAL);
+    }
+  };
+  const onPayBubble = (e: React.MouseEvent<HTMLDivElement>) => {
+    const btn = (e.target as HTMLElement).closest(".sop-pay") as HTMLButtonElement | null;
+    if (!btn || btn.disabled) return;
+    const slug = btn.closest(".sop-card.is-story") ? SO_PRODUCT_STORY : SO_PRODUCT_NORMAL;
+    const pre = readCheckoutPrefill(slug);
+    if (pre) saveCheckoutPrefill(slug, { ...pre, landing: SO_LANDING_V2 });
+  };
+
   // ① 채널 태그: ?utm_source=thegrow | realsales (또는 ?src=) → 숨은 필드
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
@@ -730,7 +770,9 @@ export default function SalesOps2() {
             <div className="so2-form-card so2-pay-card" id="formCard">
               <input type="hidden" name="src" id="src" value={src} readOnly />
               <input type="hidden" name="campaign" id="campaign" value={campaign} readOnly />
-              <SalesOpsPay stack accent="#3563F0" accentDark="#2A53D6" accentSoft="#EEF2FE" />
+              <div onClickCapture={onPayCapture} onClick={onPayBubble}>
+                <SalesOpsPay stack accent="#3563F0" accentDark="#2A53D6" accentSoft="#EEF2FE" />
+              </div>
             </div>
             <p className="so2-soft">강의 후 2~3일 안에 12월 체험단 신청을 따로 안내드립니다.</p>
           </div>

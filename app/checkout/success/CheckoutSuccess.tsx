@@ -181,6 +181,21 @@ export default function CheckoutSuccess() {
         },
         { eventID: payment.orderId },
       );
+      // 세미나(sales-ops 계열)는 등록완료도 보낸다 — 위 Purchase 와 같은 1회 가드 안
+      if (payment.productSlug === SO_PRODUCT_NORMAL || payment.productSlug === SO_PRODUCT_STORY) {
+        window.__tgcFbTrack(
+          "CompleteRegistration",
+          {
+            content_name: payment.orderName,
+            content_ids: [payment.productSlug],
+            value: payment.amount,
+            currency: "KRW",
+            status: true,
+            ...(payment.landing ? { landing: payment.landing } : {}),
+          },
+          { eventID: `${payment.orderId}-reg` },
+        );
+      }
     }
 
     const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })

@@ -39,6 +39,7 @@ export const SO_PRODUCT_STORY = "sales-ops-story";
 
 /** 랜딩 구분값 — 어느 신청 페이지에서 결제까지 왔는지 (시트 "랜딩" 열, GA4·메타 이벤트의 landing) */
 export const SO_LANDING_V1 = "sales-ops";
+export const SO_LANDING_V2 = "sales-ops2";
 export const SO_LANDING_V3 = "sales-ops3";
 /** 사이트 전체 우하단 팝업(components/SeminarPopup.tsx)을 거쳐 신청 페이지에 온 경우 */
 export const SO_LANDING_POPUP = "popup-sales-ops";

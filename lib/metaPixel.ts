@@ -19,9 +19,12 @@ export const PIXEL_MAP: Record<string, string> = {
   "/consulting/startup": "1556215626187598", // 창업 솔루션
   "/consulting/outsourcing": "747849161675945", // 매장 위탁
   "/edu/gx-class": "1112480951354351", // 그룹운동 비즈니스 클래스
+  // 성장 마스터키 세미나 — 정규 FC 2 픽셀 (prefix 는 경로 경계 기준이라 3개 모두 명시)
+  "/edu/sales-ops": "1016101377452945",
+  "/edu/sales-ops2": "1016101377452945",
+  "/edu/sales-ops3": "1016101377452945",
   // 결제 흐름 — prefix 매칭이라 /checkout/success, /checkout/fail 도 이 픽셀을 탄다.
-  // 현재 광고 집행 상품이 gx-class 뿐이라 단순 매핑.
-  // 창업·FC 광고 시 product 슬러그별 분기 필요
+  // 기본값은 gx-class 픽셀. 상품별 분기는 아래 PRODUCT_PIXEL_MAP / resolveCheckoutPixel 이 한다.
   "/checkout": "1112480951354351",
 
   // 아래는 픽셀 발급 후 주석을 풀고 ID 를 채우면 바로 적용된다.
@@ -29,6 +32,57 @@ export const PIXEL_MAP: Record<string, string> = {
   // "/consulting/diagnosis": "",    // 진단 솔루션 (멘토 하위 페이지 전체) — 픽셀 발급 후 입력
   // "/edu": "",                     // 그로우 에듀 (세미나 전체) — 픽셀 발급 후 입력
 };
+
+/** 결제 상품 슬러그 → 픽셀 ID. /checkout 은 이 값으로 픽셀을 고르고, 없으면 PIXEL_MAP["/checkout"] 기본값 */
+export const PRODUCT_PIXEL_MAP: Record<string, string> = {
+  "sales-ops": "1016101377452945",
+  "sales-ops-story": "1016101377452945",
+  "gx-class": "1112480951354351",
+  "gx-class-early": "1112480951354351",
+};
+
+/** /checkout 에서 고른 픽셀을 /checkout/success · /checkout/fail 까지 넘기는 sessionStorage 키 */
+export const CHECKOUT_PIXEL_KEY = "tgc:checkoutPixel";
+
+/**
+ * /checkout 계열 경로의 픽셀 ID.
+ *  · /checkout?product=<슬러그> — 슬러그 매핑이 있으면 그 픽셀을 쓰고 sessionStorage 에 저장, 없으면 저장값을 지운다
+ *  · /checkout/success · /checkout/fail — 저장된 값을 쓴다
+ *  · 어느 쪽도 없으면 기본값(getPixelId) 유지
+ */
+export function resolveCheckoutPixel(pathname: string, search: string): string | null {
+  const path = normalize(pathname);
+  let stored: string | null = null;
+  try {
+    if (path === "/checkout") {
+      const slug = new URLSearchParams(search).get("product") ?? "";
+      const mapped = PRODUCT_PIXEL_MAP[slug];
+      if (mapped) window.sessionStorage.setItem(CHECKOUT_PIXEL_KEY, mapped);
+      else window.sessionStorage.removeItem(CHECKOUT_PIXEL_KEY);
+      stored = mapped ?? null;
+    } else {
+      stored = window.sessionStorage.getItem(CHECKOUT_PIXEL_KEY);
+    }
+  } catch {
+    // 저장소를 쓸 수 없으면 기본값
+  }
+  return stored || getPixelId(pathname);
+}
+
+/**
+ * 메타 전송 헬퍼(window.__tgcFbTrack)가 준비되면 cb 를 부른다 (최대 약 5초).
+ * 페이지의 마운트 effect 는 레이아웃의 MetaPixel effect 보다 먼저 돌아 헬퍼가 아직 없을 수 있다 —
+ * 진입 시점 이벤트(ViewContent 등)는 이 함수로 보낸다.
+ */
+export function whenFbReady(cb: () => void): void {
+  if (typeof window === "undefined") return;
+  let tries = 0;
+  const poll = () => {
+    if (typeof window.__tgcFbTrack === "function") cb();
+    else if (++tries < 50) window.setTimeout(poll, 100);
+  };
+  poll();
+}
 
 /** 경로 끝의 슬래시를 떼어 "/a/b/" 와 "/a/b" 를 같게 본다 (루트는 "/" 유지) */
 function normalize(pathname: string): string {

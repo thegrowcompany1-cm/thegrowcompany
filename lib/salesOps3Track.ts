@@ -7,6 +7,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { SO_LANDING_V3 } from "@/lib/salesOps";
+import { whenFbReady } from "@/lib/metaPixel";
 
 type Gtag = (...args: unknown[]) => void;
 
@@ -19,15 +20,11 @@ export function so3Ga(event: string, params: Record<string, unknown> = {}): void
 /** 메타 표준 이벤트 (예: ViewContent) */
 export function so3Fb(event: string, params: Record<string, unknown> = {}): void {
   if (typeof window === "undefined") return;
-  if (typeof window.__tgcFbTrack === "function") {
-    window.__tgcFbTrack(event, { landing: SO_LANDING_V3, ...params });
-  }
+  whenFbReady(() => window.__tgcFbTrack?.(event, { landing: SO_LANDING_V3, ...params }));
 }
 
 /** 메타 커스텀 이벤트 (예: ApplySectionView) */
 export function so3FbCustom(event: string, params: Record<string, unknown> = {}): void {
   if (typeof window === "undefined") return;
-  if (typeof window.__tgcFbTrackCustom === "function") {
-    window.__tgcFbTrackCustom(event, { landing: SO_LANDING_V3, ...params });
-  }
+  whenFbReady(() => window.__tgcFbTrackCustom?.(event, { landing: SO_LANDING_V3, ...params }));
 }

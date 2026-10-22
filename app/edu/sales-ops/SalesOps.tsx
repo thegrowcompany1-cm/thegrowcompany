@@ -20,12 +20,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { whenFbReady } from "@/lib/metaPixel";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
 import { clearCheckoutPrefill, readCheckoutPrefill, saveCheckoutPrefill } from "@/lib/products";
 import {
   SO_CAPACITY,
   SO_DEADLINE_MS,
   SO_LANDING_POPUP,
+  SO_LANDING_V1,
   SO_PRODUCT_NORMAL,
   SO_PRODUCT_STORY,
   SO_DATE,
@@ -810,6 +812,21 @@ export default function SalesOps() {
   // 사이트 우하단 팝업(components/SeminarPopup.tsx)에서 /edu/sales-ops?from=popup 으로 들어온 경우만 true.
   // 결제 신청 정보의 landing 을 "popup-sales-ops" 로 남겨 시트·GA 의 랜딩 열에서 팝업 유입을 구분한다.
   const [fromPopup, setFromPopup] = useState(false);
+  // 메타 ViewContent — 진입 1회 (landing 값은 GA·시트와 같은 구분값)
+  const viewedRef = useRef(false);
+  useEffect(() => {
+    if (viewedRef.current) return;
+    viewedRef.current = true;
+    whenFbReady(() =>
+      window.__tgcFbTrack?.("ViewContent", {
+      content_name: "피트니스 성장 마스터키 세미나",
+      content_ids: [SO_LANDING_V1],
+      value: SO_PRICE_NORMAL,
+      currency: "KRW",
+      landing: SO_LANDING_V1,
+    }),
+    );
+  }, []);
   useEffect(() => {
     try {
       setFromPopup(new URLSearchParams(window.location.search).get("from") === "popup");

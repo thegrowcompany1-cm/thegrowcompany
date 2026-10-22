@@ -18,10 +18,10 @@
 //
 // GA4(@next/third-parties GoogleAnalytics)와는 서로 독립적으로 동작한다.
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
-import { getPixelId } from "@/lib/metaPixel";
+import { getPixelId, resolveCheckoutPixel } from "@/lib/metaPixel";
 
 declare global {
   interface Window {
@@ -58,7 +58,19 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
 export default function MetaPixel() {
   const pathname = usePathname() ?? "/";
-  const pixelId = getPixelId(pathname);
+  // /checkout 계열은 상품 슬러그(주소·sessionStorage)를 읽어야 픽셀이 정해진다. 브라우저에서 읽을 때까지
+  // (첫 렌더) 픽셀을 비워 두어, 기본 픽셀로 PageView 가 먼저 나가지 않게 한다.
+  const isCheckout = pathname === "/checkout" || pathname.startsWith("/checkout/");
+  const [checkoutPixel, setCheckoutPixel] = useState<{ path: string; id: string | null } | null>(null);
+  useEffect(() => {
+    if (!isCheckout) return;
+    setCheckoutPixel({ path: pathname, id: resolveCheckoutPixel(pathname, window.location.search) });
+  }, [isCheckout, pathname]);
+  const pixelId = isCheckout
+    ? checkoutPixel?.path === pathname
+      ? checkoutPixel.id
+      : null
+    : getPixelId(pathname);
 
   // 이미 init 한 픽셀 / 이미 PageView 를 보낸 (픽셀+경로)
   const initedRef = useRef<Set<string>>(new Set());
