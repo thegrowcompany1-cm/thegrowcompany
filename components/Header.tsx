@@ -92,7 +92,7 @@ const navItems: NavItem[] = [
     desc: "피트니스 실무 중심 맞춤별 교육 프로그램",
     external: false,
     children: [
-      { label: "성장 마스터키 세미나", href: "/edu/sales-ops" },
+      { label: "운영/세일즈 서울세미나", href: "/edu/sales-ops" },
       { label: "창업 세미나", href: "/edu/startup-class" },
       { label: "정규 FC 세미나", href: "/edu/fc-class" },
       { label: "그룹운동 비즈니스 클래스", href: "/edu/gx-class" },
