@@ -270,13 +270,13 @@ export default function GaDashboard() {
       ) : null}
 
       <div role="tabpanel">
-        {tab === "live" && <LiveTab from={from} to={to} />}
+        {tab === "live" && <LiveTab />}
         {tab === "weekly" && <WeeklyTab />}
         {needsReport && !showReport && !repErr && <Skel h={160} />}
         {needsReport && showReport && report && (
           <div style={{ opacity: repLoading ? 0.55 : 1, transition: "opacity .2s" }}>
             {tab === "daily" && <DailyTab report={report} onPickDay={(d) => go(d, d, compare)} />}
-            {tab === "landing" && <LandingTab report={report} />}
+            {tab === "landing" && <LandingTab report={report} from={from} to={to} />}
             {tab === "search" && <SearchTab report={report} from={from} to={to} />}
             {tab === "ai" && <AiTab report={report} />}
             {tab === "channel" && <ChannelTab report={report} />}

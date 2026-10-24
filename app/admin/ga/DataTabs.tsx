@@ -14,6 +14,7 @@ import {
 } from "@/lib/gaTypes";
 import { isWeekend, weekdayKo } from "@/lib/gaRange";
 import { VERDICT_LABEL, aiInsight, buildChannelCompare, channelInsight, judgeLanding, landingInsight, searchInsight } from "@/lib/gaInsights";
+import LandingFunnel from "./LandingFunnel";
 import { Empty, ErrBox, Insight, Skel, fetchJson, mmss, num, pct, type ApiError } from "./ga-shared";
 
 function Badge({ row }: { row: LandingRow }) {
@@ -194,7 +195,7 @@ export function DailyTab({ report, onPickDay }: { report: ReportPayload; onPickD
 }
 
 // ── 랜딩 성과 ────────────────────────────────────────────────────────────────
-export function LandingTab({ report }: { report: ReportPayload }) {
+export function LandingTab({ report, from, to }: { report: ReportPayload; from: string; to: string }) {
   return (
     <div>
       <section className="ga-card">
@@ -203,6 +204,7 @@ export function LandingTab({ report }: { report: ReportPayload }) {
         <LandingTable rows={report.landings} empty="이 기간의 랜딩 데이터가 없습니다." />
         <p className="ga-sub" style={{ marginTop: 10 }}>{BADGE_GUIDE}</p>
       </section>
+      <LandingFunnel from={from} to={to} />
     </div>
   );
 }
