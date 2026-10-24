@@ -8,7 +8,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { funnelDrop } from "@/lib/gaInsights";
-import { TRACK_SECTION_LABEL } from "@/lib/trackSections";
+import { SECTION_TRACK_FIX_DATE, TRACK_SECTION_LABEL } from "@/lib/trackSections";
 import { Empty, ErrBox, Insight, Skel, fetchJson, num, pct, type ApiError } from "./ga-shared";
 
 type FunnelRes = {
@@ -17,7 +17,7 @@ type FunnelRes = {
   paths: { path: string; sessions: number }[];
   path?: string;
   totalSessions?: number;
-  rows?: { section: string; sessions: number; rate: number }[];
+  rows?: { section: string; sessions: number; direct: number; rate: number }[];
 };
 type ExitsRes = { ok: true; sessions: number; exited: number; top: { path: string; section: string; count: number }[] };
 
@@ -108,6 +108,11 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                 )}
               </span>
             </div>
+            {from < SECTION_TRACK_FIX_DATE && (
+              <p className="ga-notice" role="note">
+                {SECTION_TRACK_FIX_DATE.replace(/-/g, ".")} 이전 데이터는 화면 높이의 2배가 넘는 긴 섹션이 과소 기록됐습니다 — 이 날짜 이전을 포함한 기간의 긴 섹션(신청 폼 등) 수치는 실제보다 낮게 보일 수 있습니다.
+              </p>
+            )}
             <Insight text={funnelInsight} />
             {funnelErr && !funnel ? (
               funnelErr.code === "TRACK_NOT_READY" ? null : <ErrBox title="퍼널을 불러오지 못했습니다" err={funnelErr} />
@@ -130,7 +135,7 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                       <span className="ga-fbar-name" title={r.section}>{TRACK_SECTION_LABEL[r.section] ?? r.section}</span>
                       <span className="ga-fbar-track"><i style={{ width: `${Math.max(2, r.rate * 100)}%` }} /></span>
                       <span className="ga-fbar-r">
-                        <span className="ga-fbar-v">도달 {num(r.sessions)}명 · {Math.round(r.rate * 100)}%</span>
+                        <span className="ga-fbar-v" title={`직접 기록 ${num(r.direct)}명 (이 섹션을 직접 본 것으로 기록된 세션)`}>도달 {num(r.sessions)}명 · {Math.round(r.rate * 100)}%</span>
                         <span className="ga-fbar-d" title="직전 섹션 대비">
                           {dr === null ? "–" : dr > 0 ? `−${(dr * 100).toFixed(0)}%p` : dr < 0 ? `+${(-dr * 100).toFixed(0)}%p` : "0%p"}
                         </span>
@@ -138,7 +143,7 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                     </div>
                   );
                 })}
-                <p className="ga-sub">기준: 이 랜딩에 들어온 {num(funnel.totalSessions ?? 0)}세션 중 섹션을 50% 이상 본 세션 · 빨강 = 직전 대비 가장 크게 떨어진 구간 · 주황 = 20%p 이상 하락</p>
+                <p className="ga-sub">기준: 이 랜딩에 들어온 {num(funnel.totalSessions ?? 0)}세션 중 그 섹션 또는 그보다 뒤 섹션을 본 세션 (섹션은 절반 또는 화면 절반 이상 보였을 때 기록) · 빨강 = 직전 대비 가장 크게 떨어진 구간 · 주황 = 20%p 이상 하락</p>
               </div>
             )}
           </section>

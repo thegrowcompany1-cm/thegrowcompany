@@ -10,7 +10,8 @@
 //    이름·전화·이메일 등 개인정보는 읽지도 보내지도 않는다. IP 는 서버도 저장하지 않는다.
 //  · 전송: 진입 시 start, 15초마다 ping, 이탈(pagehide·경로 이동) 시 end — 이탈은
 //    navigator.sendBeacon(text/plain JSON). 모두 POST /api/track.
-//  · 섹션: [data-track-section="이름"] 요소가 50% 이상 보이면 한 번만 기록한다.
+//  · 섹션: [data-track-section="이름"] 요소의 "보이는 높이"가 min(섹션 높이의 50%, 화면 높이의 50%) 이상이면
+//    섹션당 한 번만 기록한다. (화면 높이의 2배가 넘는 긴 섹션은 비율 50% 가 영영 차지 않아 예전에는 기록되지 않았다 — 2026-10-25 수정)
 //  · 체류 시간은 탭이 보이는 동안만 센다 (백그라운드 탭은 세지 않는다).
 //  · 쿠키를 쓰지 않는다. localStorage 를 쓸 수 없는 환경이면 조용히 아무것도 하지 않는다.
 //  · 중복 방지 가드: 인앱 브라우저(인스타그램 등)에서 진입 때 이 코드가 두 번 실행돼 같은 페이지의
@@ -261,7 +262,7 @@ export default function VisitTracker() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    // 섹션 50% 노출 — 같은 섹션은 한 번만
+    // 섹션 노출 — 같은 섹션은 한 번만. 보이는 높이가 min(섹션 50%, 화면 50%) 이상일 때 기록한다.
     const io =
       typeof IntersectionObserver === "undefined"
         ? null
@@ -271,6 +272,9 @@ export default function VisitTracker() {
                 if (!en.isIntersecting) continue;
                 const name = en.target.getAttribute("data-track-section");
                 if (!name) continue;
+                const viewH = en.rootBounds?.height ?? window.innerHeight;
+                const need = Math.min(en.boundingClientRect.height * 0.5, viewH * 0.5);
+                if (en.intersectionRect.height < need) continue;
                 lastSection = name;
                 if (seen.has(name)) continue;
                 seen.add(name);
@@ -278,7 +282,7 @@ export default function VisitTracker() {
                 send({ type: "section", ...base, path: pathname, section: name });
               }
             },
-            { threshold: 0.5 },
+            { threshold: [0, 0.25, 0.5, 0.75, 1] },
           );
     const watched = new WeakSet<Element>();
     const scan = () => {

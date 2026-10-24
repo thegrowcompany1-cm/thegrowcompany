@@ -12,7 +12,8 @@ import {
   type LandingRow,
   type ReportPayload,
 } from "@/lib/gaTypes";
-import { isWeekend, weekdayKo } from "@/lib/gaRange";
+import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { isWeekend, todayKst, weekdayKo } from "@/lib/gaRange";
 import { VERDICT_LABEL, aiInsight, buildChannelCompare, channelInsight, judgeLanding, landingInsight, searchInsight } from "@/lib/gaInsights";
 import LandingFunnel from "./LandingFunnel";
 import { Empty, ErrBox, Insight, Skel, fetchJson, mmss, num, pct, type ApiError } from "./ga-shared";
@@ -70,6 +71,122 @@ function csvCell(v: string | number) {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
+// ── 일별 추이 차트 (일별 탭 전용) ─────────────────────────────────────────────
+type ChartMetric = "both" | "users" | "sessions" | "engagementRate" | "keyEvents";
+const CHART_OPTIONS: { key: ChartMetric; label: string }[] = [
+  { key: "both", label: "사용자 · 세션" },
+  { key: "users", label: "사용자" },
+  { key: "sessions", label: "세션" },
+  { key: "engagementRate", label: "참여율" },
+  { key: "keyEvents", label: "키 이벤트" },
+];
+type Raw = { users: number; sessions: number; engagementRate: number; keyEvents: number };
+
+/**
+ * 오늘은 아직 집계 중이라 값이 작다. 확정된 날은 실선(__d), 어제→오늘 구간은 점선(__p)으로 따로 그리고,
+ * y축은 0 부터 시작해 오늘 값이 축 범위를 흔들지 않게 한다. 툴팁은 원본 값(raw)으로 직접 그린다.
+ */
+function TrendChart({ report }: { report: ReportPayload }) {
+  const [metric, setMetric] = useState<ChartMetric>("both");
+  const today = todayKst();
+  const hasToday = report.daily.some((d) => d.date === today);
+
+  const lines = useMemo(() => {
+    if (metric === "both")
+      return [
+        { key: "users" as const, name: "사용자", color: "#22B573" },
+        { key: "sessions" as const, name: "세션", color: "#60a5fa" },
+      ];
+    const o = CHART_OPTIONS.find((c) => c.key === metric)!;
+    return [{ key: metric as keyof Raw, name: o.label, color: metric === "keyEvents" ? "#fbbf24" : metric === "engagementRate" ? "#c084fc" : "#22B573" }];
+  }, [metric]);
+
+  const data = useMemo(() => {
+    const days = [...report.daily].sort((a, b) => (a.date < b.date ? -1 : 1));
+    const todayIdx = days.findIndex((d) => d.date === today);
+    return days.map((d, i) => {
+      const row: Record<string, number | string | null | Raw> = { date: d.date, raw: { users: d.users, sessions: d.sessions, engagementRate: d.engagementRate, keyEvents: d.keyEvents } };
+      for (const l of lines) {
+        const v = d[l.key];
+        row[`${l.key}__d`] = i === todayIdx ? null : v;
+        row[`${l.key}__p`] = todayIdx >= 0 && (i === todayIdx || i === todayIdx - 1) ? v : null;
+      }
+      return row;
+    });
+  }, [report.daily, lines, today]);
+
+  const fmt = (k: keyof Raw, v: number) => (k === "engagementRate" ? pct(v) : num(v));
+
+  return (
+    <section className="ga-card">
+      <div className="ga-row">
+        <h3 className="ga-h" style={{ margin: 0 }}>일별 추이 <span className="ga-sub">· {report.from === report.to ? report.from : `${report.from} ~ ${report.to}`}</span></h3>
+        <select className="ga-select" aria-label="차트 지표" value={metric} onChange={(e) => setMetric(e.target.value as ChartMetric)}>
+          {CHART_OPTIONS.map((o) => (
+            <option key={o.key} value={o.key}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+      <div className="ga-chart">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
+            <CartesianGrid stroke="rgba(255,255,255,.08)" vertical={false} />
+            <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5)} stroke="#777" fontSize={11} minTickGap={24} />
+            <YAxis
+              stroke="#777"
+              fontSize={11}
+              domain={[0, "auto"]}
+              allowDecimals={metric === "engagementRate"}
+              tickFormatter={metric === "engagementRate" ? (v: number) => `${Math.round(v * 100)}%` : undefined}
+            />
+            <Tooltip
+              content={({ active, payload, label }) => {
+                if (!active || !payload?.length) return null;
+                const raw = (payload[0].payload as { raw: Raw }).raw;
+                return (
+                  <div style={{ background: "#1c1c1c", border: "1px solid rgba(255,255,255,.15)", borderRadius: 10, padding: "8px 12px", fontSize: 12 }}>
+                    <p style={{ margin: 0, color: "#fff", fontWeight: 800 }}>{String(label)}{label === today ? " · 집계 중" : ""}</p>
+                    {lines.map((l) => (
+                      <p key={l.key} style={{ margin: "4px 0 0", color: l.color }}>{l.name} : {fmt(l.key, raw[l.key])}</p>
+                    ))}
+                  </div>
+                );
+              }}
+            />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+            {hasToday && (
+              <ReferenceLine x={today} stroke="rgba(255,255,255,.25)" strokeDasharray="3 3" label={{ value: "집계 중", position: "insideTopRight", fill: "#fde68a", fontSize: 11 }} />
+            )}
+            {lines.map((l) => (
+              <Line key={`${l.key}__d`} type="monotone" dataKey={`${l.key}__d`} name={l.name} stroke={l.color} strokeWidth={2.2} dot={report.daily.length <= 2} isAnimationActive={false} />
+            ))}
+            {hasToday &&
+              lines.map((l) => (
+                <Line
+                  key={`${l.key}__p`}
+                  type="linear"
+                  dataKey={`${l.key}__p`}
+                  stroke={l.color}
+                  strokeWidth={2.2}
+                  strokeDasharray="5 4"
+                  legendType="none"
+                  isAnimationActive={false}
+                  dot={(p: { cx?: number; cy?: number; payload?: { date: string }; index?: number }) =>
+                    p.payload?.date === today && p.cx !== undefined && p.cy !== undefined ? (
+                      <circle key={`pd-${l.key}`} cx={p.cx} cy={p.cy} r={4} fill="#141414" stroke={l.color} strokeWidth={2} />
+                    ) : (
+                      <g key={`pe-${l.key}-${p.index}`} />
+                    )
+                  }
+                />
+              ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </section>
+  );
+}
+
 export function DailyTab({ report, onPickDay }: { report: ReportPayload; onPickDay: (date: string) => void }) {
   const [track, setTrack] = useState<TrackDaily | null>(null);
   const [trackErr, setTrackErr] = useState<ApiError | null>(null);
@@ -114,6 +231,7 @@ export function DailyTab({ report, onPickDay }: { report: ReportPayload; onPickD
 
   return (
     <div>
+      <TrendChart report={report} />
       <section className="ga-card">
         <div className="ga-row">
           <h2 className="ga-h" style={{ margin: 0 }}>일별 보기 <span className="ga-sub">· 최신 날짜가 위 · 행을 누르면 그날 하루만 봅니다</span></h2>

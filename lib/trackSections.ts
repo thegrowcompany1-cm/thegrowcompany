@@ -2,6 +2,9 @@
 // /admin/ga 의 "섹션 도달 퍼널"이 이 순서로 막대를 그린다. 랜딩에 섹션을 추가·삭제하면 여기도 같이 고친다.
 // 값은 각 랜딩 컴포넌트의 data-track-section 과 같아야 한다 (Chrome 으로 DOM 순서를 읽어 맞췄다).
 
+/** 섹션 도달 측정 수정 배포일 (KST) — 이 날 이전 데이터는 화면 높이 2배가 넘는 긴 섹션이 과소 기록됐다 */
+export const SECTION_TRACK_FIX_DATE = "2026-10-25";
+
 export const TRACK_SECTION_ORDER: Record<string, string[]> = {
   "/consulting/startup": ["hero", "review", "empathy", "solution", "process", "proof", "faq", "form"],
   "/consulting/outsourcing": ["hero", "empathy", "video", "proof", "compare", "solution", "process", "aftercare", "review", "faq", "form"],

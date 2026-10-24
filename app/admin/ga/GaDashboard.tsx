@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 마케팅 인사이트 대시보드 (클라이언트)
 //
-//  · 상단: 기간 선택(프리셋 + 달력) · 직전 기간 비교 · 핵심 지표 · 일별 추이(지표 선택).
+//  · 상단: 기간 선택(프리셋 + 달력) · 직전 기간 비교 · 요약 띠. 일별 추이 차트는 "일별" 탭에서만 보인다.
 //    선택한 기간은 URL 쿼리(?from=YYYY-MM-DD&to=YYYY-MM-DD&compare=1)에 저장돼 새로고침·링크 공유에도 유지된다.
 //    기간을 바꿀 때마다 history 에 쌓으므로 브라우저 뒤로가기로 이전 기간으로 돌아온다.
 //  · 하위 탭: 실시간 방문자 / 일별 / 랜딩 성과 / 검색·SEO / AI 유입(AEO) / 채널 비교 — 모두 같은 기간을 쓴다.
@@ -11,17 +11,16 @@
 //  · 차트는 recharts. CSS 클래스 접두사 ga-.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { parseRange, presetRange, rangeLength, todayKst, weekdayKo } from "@/lib/gaRange";
-import type { ReportPayload, Totals } from "@/lib/gaTypes";
+import type { ReportPayload } from "@/lib/gaTypes";
 import { AiTab, ChannelTab, DailyTab, LandingTab, SearchTab } from "./DataTabs";
 import LiveTab from "./LiveTab";
 import WeeklyTab from "./WeeklyTab";
 import RangePicker from "./RangePicker";
 import SummaryStrip from "./SummaryStrip";
-import { Delta, ErrBox, GA_STYLE, Skel, fetchJson, mmss, num, pct, type ApiError } from "./ga-shared";
+import { ErrBox, GA_STYLE, Skel, fetchJson, type ApiError } from "./ga-shared";
 
 const TABS = [
   { key: "live", label: "실시간 방문자" },
@@ -33,15 +32,6 @@ const TABS = [
   { key: "weekly", label: "주간 리포트" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
-
-type ChartMetric = "both" | "users" | "sessions" | "engagementRate" | "keyEvents";
-const CHART_OPTIONS: { key: ChartMetric; label: string }[] = [
-  { key: "both", label: "사용자 · 세션" },
-  { key: "users", label: "사용자" },
-  { key: "sessions", label: "세션" },
-  { key: "engagementRate", label: "참여율" },
-  { key: "keyEvents", label: "키 이벤트" },
-];
 
 const fmtDay = (d: string) => `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}(${weekdayKo(d)})`;
 function periodText(from: string, to: string) {
@@ -71,7 +61,6 @@ export default function GaDashboard() {
   );
 
   const [tab, setTab] = useState<TabKey>(() => (TABS.some((t) => t.key === sp.get("tab")) ? (sp.get("tab") as TabKey) : "live"));
-  const [metric, setMetric] = useState<ChartMetric>("both");
 
   const [report, setReport] = useState<ReportPayload | null>(null);
   const [repErr, setRepErr] = useState<ApiError | null>(null);
@@ -98,6 +87,46 @@ export default function GaDashboard() {
   }, [from, to, compare]);
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [stuck, setStuck] = useState(false);
+
+  // 고정 헤더가 위에 붙은 상태에서만 아래 그림자를 준다
+  useEffect(() => {
+    const el = stickyRef.current;
+    if (!el) return;
+    let raf = 0;
+    const sync = () => {
+      raf = 0;
+      const top = parseFloat(getComputedStyle(el).top) || 0;
+      setStuck(el.getBoundingClientRect().top <= top + 0.5 && window.scrollY > 0);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(sync);
+    };
+    sync();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // 탭을 바꾸면 새 탭 내용의 시작 위치로 — 이전 탭을 깊이 내려 보던 중이었을 때만 (맨 위에서는 움직이지 않는다)
+  const firstTab = useRef(true);
+  useEffect(() => {
+    if (firstTab.current) {
+      firstTab.current = false;
+      return;
+    }
+    const panel = panelRef.current;
+    const sticky = stickyRef.current;
+    if (!panel || !sticky) return;
+    const edge = sticky.getBoundingClientRect().bottom + 8;
+    if (panel.getBoundingClientRect().top < edge) window.scrollTo({ top: window.scrollY + panel.getBoundingClientRect().top - edge, behavior: "auto" });
+  }, [tab]);
 
   // 사이트 상단 헤더(sticky) 높이만큼 비워서 고정 헤더가 그 밑에 붙게 한다
   useEffect(() => {
@@ -141,37 +170,14 @@ export default function GaDashboard() {
     };
   }, []);
 
-  const chartLines = useMemo(() => {
-    if (metric === "both")
-      return [
-        { key: "users", name: "사용자", color: "#22B573" },
-        { key: "sessions", name: "세션", color: "#60a5fa" },
-      ];
-    const o = CHART_OPTIONS.find((c) => c.key === metric)!;
-    return [{ key: metric, name: o.label, color: metric === "keyEvents" ? "#fbbf24" : metric === "engagementRate" ? "#c084fc" : "#22B573" }];
-  }, [metric]);
-
   const needsReport = tab !== "live" && tab !== "weekly";
   const showReport = report && report.from === from && report.to === to;
-
-  const kpis: { l: string; v: string; cur: number; prev?: number; kind: "rel" | "pp" }[] = report
-    ? (() => {
-        const t: Totals = report.totals;
-        const p = report.prev?.totals;
-        return [
-          { l: "사용자", v: num(t.users), cur: t.users, prev: p?.users, kind: "rel" as const },
-          { l: "세션", v: num(t.sessions), cur: t.sessions, prev: p?.sessions, kind: "rel" as const },
-          { l: "참여율", v: pct(t.engagementRate), cur: t.engagementRate, prev: p?.engagementRate, kind: "pp" as const },
-          { l: "평균 세션 시간", v: mmss(t.avgSessionDuration), cur: t.avgSessionDuration, prev: p?.avgSessionDuration, kind: "rel" as const },
-        ];
-      })()
-    : [];
 
   return (
     <div className="ga" ref={rootRef}>
       <style dangerouslySetInnerHTML={{ __html: GA_STYLE }} />
 
-      <div className="ga-sticky">
+      <div className={"ga-sticky" + (stuck ? " is-stuck" : "")} ref={stickyRef}>
         <RangePicker from={from} to={to} onChange={(f, t) => go(f, t, compare)} />
         <div className="ga-tabbar">
           <div className="ga-tabs" role="tablist" aria-label="분석 항목">
@@ -213,63 +219,9 @@ export default function GaDashboard() {
         </div>
       )}
 
-      <SummaryStrip report={report} compare={compare} loading={repLoading} />
+      <SummaryStrip report={report} compare={compare} loading={repLoading} from={from} to={to} />
 
-      {repLoading && !report ? (
-        <div className="ga-card" aria-busy="true">
-          <Skel h={80} />
-          <div style={{ height: 14 }} />
-          <Skel h={240} />
-        </div>
-      ) : report ? (
-        <div style={{ opacity: repLoading ? 0.55 : 1, transition: "opacity .2s" }} aria-busy={repLoading}>
-          <section className="ga-kpis" aria-label="핵심 지표">
-            {kpis.map((k) => (
-              <div className="ga-card" key={k.l} style={{ marginTop: 0 }}>
-                <p className="ga-kpi-l">{k.l}</p>
-                <p className="ga-kpi-v">{k.v}</p>
-                {compare && <Delta cur={k.cur} prev={k.prev} kind={k.kind} />}
-              </div>
-            ))}
-          </section>
-
-          <section className="ga-card">
-            <div className="ga-row">
-              <h3 className="ga-h" style={{ margin: 0 }}>일별 추이 <span className="ga-sub">· {periodText(from, to)}</span></h3>
-              <select className="ga-select" aria-label="차트 지표" value={metric} onChange={(e) => setMetric(e.target.value as ChartMetric)}>
-                {CHART_OPTIONS.map((o) => (
-                  <option key={o.key} value={o.key}>{o.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="ga-chart">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={report.daily} margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
-                  <CartesianGrid stroke="rgba(255,255,255,.08)" vertical={false} />
-                  <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5)} stroke="#777" fontSize={11} minTickGap={24} />
-                  <YAxis
-                    stroke="#777"
-                    fontSize={11}
-                    allowDecimals={metric === "engagementRate"}
-                    tickFormatter={metric === "engagementRate" ? (v: number) => `${Math.round(v * 100)}%` : undefined}
-                  />
-                  <Tooltip
-                    contentStyle={{ background: "#1c1c1c", border: "1px solid rgba(255,255,255,.15)", borderRadius: 10, fontSize: 12 }}
-                    labelStyle={{ color: "#fff" }}
-                    formatter={(v) => (metric === "engagementRate" ? pct(Number(v)) : num(Number(v)))}
-                  />
-                  <Legend wrapperStyle={{ fontSize: 12 }} />
-                  {chartLines.map((l) => (
-                    <Line key={l.key} type="monotone" dataKey={l.key} name={l.name} stroke={l.color} strokeWidth={2.2} dot={report.daily.length <= 2} />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-        </div>
-      ) : null}
-
-      <div role="tabpanel">
+      <div role="tabpanel" ref={panelRef}>
         {tab === "live" && <LiveTab />}
         {tab === "weekly" && <WeeklyTab />}
         {needsReport && !showReport && !repErr && <Skel h={160} />}

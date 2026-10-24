@@ -6,7 +6,7 @@
 //  · view=journey  session=<id> 한 세션의 페이지별 여정
 //  · view=funnel   path=<경로>&from&to  섹션 도달 퍼널 (도달 세션 ÷ 그 경로에 들어온 세션)
 //  · view=exits    이탈 지점 Top (페이지, 마지막 섹션) — from/to 가 없으면 최근 24시간
-//  · view=daily    from&to  날짜별 방문 수와 유입 구성 (일별 보기 · 유입 분류)
+//  · view=daily    from&to  날짜별 방문 수와 유입 구성 (일별 보기 · 유입 분류) + stay(20초 이상 머문 방문 수)
 //  · from/to 는 KST 날짜(YYYY-MM-DD). from 00:00:00 ~ to 23:59:59.999 KST 로 거른다. 잘못된 값은 400.
 //  · 테이블이 아직 없으면(마이그레이션 전) 안내 메시지를 돌려준다.
 //  · 같은 session_id + path 로 3초 안에 들어온 visits 행은 한 번의 방문으로 묶어 센다 (lib/trackDedupe.ts).
@@ -196,11 +196,14 @@ export async function GET(request: Request) {
       st === "paid_meta" ? "meta" : st.startsWith("organic_") ? "organic" : st === "ai" ? "ai" : st === "direct" ? "direct" : "other";
     const seenSession = new Set<string>(); // 날짜별로 한 세션은 한 번만 센다
     const total = { sessions: new Set<string>(), meta: 0, organic: 0, ai: 0, direct: 0, other: 0 };
+    const stay = { visits: 0, over20: 0 }; // 방문(세션+경로, 3초 묶음) 중 20초 이상 머문 비율의 분모·분자
     for (const v of dedupeVisits(all.rows)) {
       const date = kstDateOf(v.entered_at);
       const day = days.get(date);
       if (!day) continue;
       day.visits += 1;
+      stay.visits += 1;
+      if ((v.duration_sec ?? 0) >= 20) stay.over20 += 1;
       const sk = `${date}|${v.session_id}`;
       if (!seenSession.has(sk)) {
         seenSession.add(sk);
@@ -218,6 +221,7 @@ export async function GET(request: Request) {
         from: period.from,
         to: period.to,
         days: [...days.values()],
+        stay,
         sources: { sessions: total.sessions.size, meta: total.meta, organic: total.organic, ai: total.ai, direct: total.direct, other: total.other },
         capped: all.capped,
       },

@@ -7,6 +7,7 @@
 //    Intl(Asia/Seoul)로 한다 — 브라우저 시간대가 달라도 같은 날이 선택된다.
 //  · 오늘 이후 날짜는 선택할 수 없고, 범위는 최대 1년(366일)이다. 넘으면 적용 버튼이 막히고 안내가 뜬다.
 //  · 모바일(640px 이하)에서는 한 달만, 그 이상에서는 두 달을 보여준다.
+//  · 768px 미만에서는 프리셋 줄 대신 "📅 9/28~10/25 ▾" 한 줄 버튼만 두고, 누르면 프리셋·달력이 담긴 시트가 열린다.
 //  · 팝오버는 바깥을 누르거나 Esc 로 닫는다.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -36,6 +37,8 @@ export default function RangePicker({ from, to, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<DateRange | undefined>(undefined);
   const [months, setMonths] = useState(2);
+  const [isMobile, setIsMobile] = useState(false);
+  const [sheet, setSheet] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   // 화면 폭에 따라 보이는 달 수 (모바일 1개월)
@@ -44,7 +47,14 @@ export default function RangePicker({ from, to, onChange }: Props) {
     const update = () => setMonths(mq.matches ? 1 : 2);
     update();
     mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
+    const mm = window.matchMedia("(max-width: 767px)");
+    const updateM = () => setIsMobile(mm.matches);
+    updateM();
+    mm.addEventListener("change", updateM);
+    return () => {
+      mq.removeEventListener("change", update);
+      mm.removeEventListener("change", updateM);
+    };
   }, []);
 
   // 바깥 클릭·Esc 로 닫기
@@ -92,29 +102,32 @@ export default function RangePicker({ from, to, onChange }: Props) {
     setOpen(false);
   };
 
-  return (
-    <div className="ga-range" ref={wrapRef}>
-      <div className="ga-presets" role="group" aria-label="기간 선택">
-        {PRESET_ORDER.map((k: PresetKey) => (
-          <button
-            key={k}
-            type="button"
-            aria-pressed={active === k}
-            onClick={() => {
-              const r = presetRange(k, today);
-              setOpen(false);
-              onChange(r.from, r.to);
-            }}
-          >
-            {PRESET_LABEL[k]}
-          </button>
-        ))}
-        <button type="button" aria-pressed={active === null || open} aria-expanded={open} aria-haspopup="dialog" onClick={() => (open ? setOpen(false) : openCustom())}>
-          직접 선택
+  const short = (d: string) => `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}`;
+  const rangeLabel = from === to ? short(from) : `${short(from)}~${short(to)}`;
+  const presetButtons = (
+    <>
+      {PRESET_ORDER.map((k: PresetKey) => (
+        <button
+          key={k}
+          type="button"
+          aria-pressed={active === k}
+          onClick={() => {
+            const r = presetRange(k, today);
+            setOpen(false);
+            setSheet(false);
+            onChange(r.from, r.to);
+          }}
+        >
+          {PRESET_LABEL[k]}
         </button>
-      </div>
+      ))}
+      <button type="button" aria-pressed={active === null || open} aria-expanded={open} aria-haspopup="dialog" onClick={() => (open ? setOpen(false) : openCustom())}>
+        직접 선택
+      </button>
+    </>
+  );
 
-      {open && (
+  const calendar = open ? (
         <div className="ga-cal" role="dialog" aria-label="기간 직접 선택">
           <DayPicker
             mode="range"
@@ -140,10 +153,36 @@ export default function RangePicker({ from, to, onChange }: Props) {
               <button type="button" onClick={() => setOpen(false)}>
                 취소
               </button>
-              <button type="button" className="is-primary" disabled={!canApply} onClick={apply}>
+              <button type="button" className="is-primary" disabled={!canApply} onClick={() => { apply(); setSheet(false); }}>
                 적용
               </button>
             </span>
+          </div>
+        </div>
+  ) : null;
+
+  return (
+    <div className="ga-range" ref={wrapRef}>
+      <div className="ga-presets" role="group" aria-label="기간 선택">
+        {presetButtons}
+      </div>
+      <button type="button" className="ga-rbtn" aria-haspopup="dialog" aria-expanded={sheet} onClick={() => setSheet(true)}>
+        <span aria-hidden="true">📅</span> {rangeLabel} <span aria-hidden="true">▾</span>
+      </button>
+
+      {!isMobile && calendar}
+
+      {isMobile && sheet && (
+        <div className="ga-sheet-bg" onClick={() => { setSheet(false); setOpen(false); }}>
+          <div className="ga-sheet" role="dialog" aria-label="기간 선택" onClick={(e) => e.stopPropagation()}>
+            <div className="ga-sheet-head">
+              <b>기간 선택</b>
+              <button type="button" aria-label="닫기" onClick={() => { setSheet(false); setOpen(false); }}>×</button>
+            </div>
+            <div className="ga-sheet-presets" role="group" aria-label="기간 프리셋">
+              {presetButtons}
+            </div>
+            {calendar}
           </div>
         </div>
       )}

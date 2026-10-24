@@ -2,14 +2,16 @@
 
 // 오늘 한눈에 — 모든 탭 위에 보이는 요약 띠 (카드 5개 + 자동 코멘트 1줄)
 //  · 지금 접속은 GA4 실시간 API(60초 갱신), 나머지는 기간 리포트에서 가져온다 (API 변경 없음).
-//  · 20초 이상 머문 비율은 GA 가 직접 주지 않아, 참여 세션 비율(GA 기준 10초 이상 · 전환 · 2페이지 이상)로 대신 보여준다.
+//  · 20초 이상 머문 비율은 자체 방문 추적 기준이다 (같은 세션+경로 3초 묶음 방문 중 duration_sec >= 20).
+//    자체 추적 데이터가 없는 기간은 GA 참여율로 대체하고 "(GA 기준)" 을 붙인다.
 
 import { useEffect, useMemo, useState } from "react";
 import { buildChannelCompare } from "@/lib/gaInsights";
 import type { ReportPayload } from "@/lib/gaTypes";
-import { Delta, fetchJson, num, pct } from "./ga-shared";
+import { Delta, fetchJson, mmss, num, pct } from "./ga-shared";
 
 type Rt = { ok: true; total: number };
+type TrackStay = { ok: true; stay: { visits: number; over20: number } };
 
 /** 가장 중요한 변화 1개 (비교 켜짐) 또는 가장 큰 유입 채널 (비교 꺼짐) */
 function comment(report: ReportPayload): string | null {
@@ -40,8 +42,24 @@ function comment(report: ReportPayload): string | null {
   return `${top.label.replace(/ \(.*\)$/, "")}이 세션의 ${((top.sessions / total) * 100).toFixed(0)}%로 가장 큰 유입 채널입니다`;
 }
 
-export default function SummaryStrip({ report, compare, loading }: { report: ReportPayload | null; compare: boolean; loading: boolean }) {
+export default function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPayload | null; compare: boolean; loading: boolean; from: string; to: string }) {
   const [rt, setRt] = useState<number | null>(null);
+  const [stay, setStay] = useState<{ key: string; visits: number; over20: number } | null>(null);
+
+  // 20초 이상 머문 비율 — 자체 추적 (기간이 바뀔 때마다)
+  useEffect(() => {
+    const ctrl = new AbortController();
+    (async () => {
+      try {
+        const d = await fetchJson<TrackStay>(`/api/admin/track?view=daily&from=${from}&to=${to}`, ctrl.signal);
+        if (d.ok && d.stay) setStay({ key: `${from}|${to}`, ...d.stay });
+        else setStay(null);
+      } catch {
+        if (!ctrl.signal.aborted) setStay(null);
+      }
+    })();
+    return () => ctrl.abort();
+  }, [from, to]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -75,6 +93,8 @@ export default function SummaryStrip({ report, compare, loading }: { report: Rep
   const p = compare ? report?.prev?.totals : undefined;
   const note = report ? comment(report) : null;
   const dash = <>-</>;
+  const own = stay && stay.key === `${from}|${to}` && stay.visits > 0 ? stay : null;
+  const ownRate = own ? own.over20 / own.visits : null;
 
   return (
     <section aria-label="오늘 한눈에" style={{ opacity: loading ? 0.6 : 1, transition: "opacity .2s" }}>
@@ -88,11 +108,14 @@ export default function SummaryStrip({ report, compare, loading }: { report: Rep
           <p className="ga-sc-l">방문 세션</p>
           <p className="ga-sc-v">{t ? <>{num(t.sessions)}<small>세션</small></> : dash}</p>
           {t && p && <Delta cur={t.sessions} prev={p.sessions} kind="rel" label="" />}
+          {t && <p className="ga-sc-s">사용자 {num(t.users)}명 · 평균 {mmss(t.avgSessionDuration)}</p>}
         </div>
-        <div className="ga-sc" title="GA 기준 참여 세션 — 10초 이상 머문 · 전환 · 2페이지 이상">
-          <p className="ga-sc-l">머문 세션 비율</p>
-          <p className="ga-sc-v">{t ? pct(t.engagementRate) : dash}</p>
-          {t && p ? <Delta cur={t.engagementRate} prev={p.engagementRate} kind="pp" label="" /> : <p className="ga-sc-s">참여 세션 기준 (10초 이상)</p>}
+        <div className="ga-sc" title="자체 방문 추적 기준 — 같은 세션·경로 3초 묶음 방문 중 20초 이상 머문 비율. 추적 데이터가 없는 기간은 GA 참여율로 대신 보여줍니다">
+          <p className="ga-sc-l">20초 이상 머문 비율{t && ownRate === null ? " (GA 기준)" : ""}</p>
+          <p className="ga-sc-v">{ownRate !== null ? pct(ownRate) : t ? pct(t.engagementRate) : dash}</p>
+          {ownRate !== null && t && <p className="ga-sc-s">GA 참여율 {pct(t.engagementRate)}</p>}
+          {ownRate === null && t && p && <Delta cur={t.engagementRate} prev={p.engagementRate} kind="pp" label="" />}
+          {ownRate === null && t && !p && <p className="ga-sc-s">GA 참여 세션 기준 (10초 이상)</p>}
         </div>
         <div className="ga-sc">
           <p className="ga-sc-l">키 이벤트 (문의·결제)</p>

@@ -60,7 +60,7 @@ export type FunnelResult =
       error: null;
       paths: FunnelPath[];
       /** path 를 줬을 때만 */
-      detail?: { path: string; totalSessions: number; rows: { section: string; sessions: number; rate: number }[] };
+      detail?: { path: string; totalSessions: number; rows: { section: string; sessions: number; direct: number; rate: number }[] };
       capped: boolean;
     };
 
@@ -86,16 +86,23 @@ export async function funnelData(db: SupabaseClient, since: string, until: strin
     db.from("section_views").select("session_id, section").eq("path", path).gte("seen_at", since).lte("seen_at", until).order("seen_at", { ascending: false }).range(f, t),
   );
   if (sv.error) return { error: sv.error };
-  const reached = new Map<string, Set<string>>();
+  const reached = new Map<string, Set<string>>(); // 직접 기록된 섹션별 세션
+  const deepest = new Map<string, number>(); // 세션별 가장 뒤 섹션의 순서 번호
+  const order = TRACK_SECTION_ORDER[path] ?? [];
+  const orderIdx = new Map(order.map((s, i) => [s, i]));
   for (const r of sv.rows) {
     if (!reached.has(r.section)) reached.set(r.section, new Set());
     reached.get(r.section)!.add(r.session_id);
+    const i = orderIdx.get(r.section);
+    if (i !== undefined && i > (deepest.get(r.session_id) ?? -1)) deepest.set(r.session_id, i);
   }
-  const order = TRACK_SECTION_ORDER[path] ?? [...reached.keys()];
-  // 페이지에 없는(숨겨진) 섹션은 도달 0 이어도 막대를 그리지 않는다 — 한 번도 안 본 섹션은 제외
+  // 도달 = 그 섹션 또는 그보다 뒤 섹션을 본 세션 (뒤를 봤으면 앞도 지나간 것으로 본다) → 단조 감소.
+  // 직접 기록 수는 direct 로 함께 돌려준다. 한 번도 안 본(도달 0) 섹션은 막대를 그리지 않는다.
+  const cumulative = order.map(() => 0);
+  for (const i of deepest.values()) for (let k = 0; k <= i; k++) cumulative[k] += 1;
   const rows = order
-    .filter((s) => reached.has(s))
-    .map((s) => ({ section: s, sessions: reached.get(s)!.size }))
+    .map((s, i) => ({ section: s, sessions: cumulative[i], direct: reached.get(s)?.size ?? 0 }))
+    .filter((r) => r.sessions > 0)
     .map((r) => ({ ...r, rate: total > 0 ? Math.min(1, r.sessions / total) : 0 }));
   return { error: null, paths, detail: { path, totalSessions: total, rows }, capped: pv.capped || sv.capped };
 }

@@ -224,7 +224,9 @@ export const GA_STYLE = `
 .ga-empty-t{margin:0;font-size:14px;font-weight:700;color:#d0d0d0}
 .ga-empty-h{margin:0;font-size:12px;color:#8b8b8b}
 /* 고정 헤더 */
-.ga-sticky{position:sticky;top:var(--ga-top,0px);z-index:30;margin:0 0 16px;padding:12px 0 0;background:rgba(10,10,10,.82);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+.ga-sticky{position:sticky;top:var(--ga-top,0px);z-index:30;margin:0 0 16px;padding:12px 0 0;background:#0a0a0a;border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 -2px 0 #0a0a0a;transition:box-shadow .15s}
+.ga-sticky.is-stuck{box-shadow:0 -2px 0 #0a0a0a,0 8px 16px -6px rgba(0,0,0,.7)}
+@media(prefers-reduced-motion:reduce){.ga-sticky{transition:none}}
 .ga-sticky .ga-range{margin:0 0 4px}
 .ga-tabbar{display:flex;align-items:center;gap:12px}
 .ga-tabbar .ga-tabs{flex:1;min-width:0;margin:0;border-bottom:0}
@@ -244,13 +246,13 @@ export const GA_STYLE = `
 .ga-md .ga-table-wrap{margin:0 0 12px}
 /* 오늘 한눈에 */
 .ga-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.ga-sc{background:#141414;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;min-width:0}
+.ga-sc{background:#141414;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;min-width:0}
 .ga-sc-l{margin:0;font-size:12px;font-weight:700;color:#9a9a9a}
-.ga-sc-v{margin:6px 0 0;font-size:26px;font-weight:900;line-height:1.15;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ga-sc-v{margin:4px 0 0;font-size:24px;font-weight:900;line-height:1.15;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ga-sc-v small{margin-left:3px;font-size:13px;font-weight:700;color:#9a9a9a}
 .ga-sc-v.is-live{color:#22B573}
-.ga-sc .ga-delta{margin-top:6px}
-.ga-sc-s{margin:6px 0 0;font-size:12px;color:#8b8b8b}
+.ga-sc .ga-delta{margin-top:4px}
+.ga-sc-s{margin:4px 0 0;font-size:12px;color:#8b8b8b}
 .ga-strip-note{margin:12px 0 16px;font-size:13px;line-height:1.6;color:#d6f5e6}
 /* 표 공통 */
 .ga-table-wrap{max-height:560px;overflow:auto}
@@ -286,7 +288,7 @@ export const GA_STYLE = `
 .ga-presets{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .ga-presets::-webkit-scrollbar{display:none}
 .ga-period{display:none}.ga-period-m{display:block}
-.ga-sc{padding:14px}.ga-sc-v{font-size:22px}
+.ga-sc-v{font-size:22px}
 .ga-fbar{grid-template-columns:76px minmax(0,1fr);row-gap:2px}
 .ga-fbar-r{display:flex;grid-column:1/-1;justify-content:space-between;gap:8px;padding-left:2px}
 .ga-fbar-v,.ga-fbar-d{text-align:left}
@@ -306,5 +308,24 @@ export const GA_STYLE = `
 .ga-table tr[data-open="1"]:not(.is-click):has(td:nth-child(5))::after{content:"접기"}
 .ga-table tr.is-weekend,.ga-table tr.is-weekend td{background:rgba(255,255,255,.06)}
 .ga-mix{margin-left:0}
+}
+/* 기간 바 — 768px 미만: 한 줄 버튼 + 탭 가로 스크롤, 고정 영역 56px 이하 */
+.ga-rbtn{display:none}
+.ga-sheet-bg,.ga-sheet{display:none}
+@media(max-width:767px){
+.ga-sticky{display:flex;align-items:center;gap:8px;padding:6px 0}
+.ga-sticky .ga-range{flex:0 0 auto;margin:0}
+.ga-presets{display:none}
+.ga-rbtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:none;color:#fff;font:inherit;font-size:13px;font-weight:800;white-space:nowrap;cursor:pointer}
+.ga-tabbar{flex:1;min-width:0}
+.ga-tabs button{padding:10px 12px;font-size:13.5px}
+.ga-sheet-bg{display:flex;position:fixed;inset:0;z-index:70;align-items:flex-end;background:rgba(0,0,0,.6)}
+.ga-sheet{display:block;width:100%;max-height:88vh;overflow-y:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;background:#1a1a1a;border-top:1px solid rgba(255,255,255,.18)}
+.ga-sheet-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;font-size:15px}
+.ga-sheet-head button{width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+.ga-sheet-presets{display:flex;flex-wrap:wrap;gap:8px}
+.ga-sheet-presets button{appearance:none;border:1px solid rgba(255,255,255,.16);background:none;color:#b8b8b8;font:inherit;font-size:13px;font-weight:800;padding:8px 14px;border-radius:999px;cursor:pointer;min-height:38px}
+.ga-sheet-presets button[aria-pressed="true"]{background:#22B573;border-color:#22B573;color:#fff}
+.ga-sheet .ga-cal{position:static;margin:14px 0 0;padding:0;border:0;box-shadow:none;background:none;max-width:none}
 }
 `;
