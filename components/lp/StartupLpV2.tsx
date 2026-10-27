@@ -130,10 +130,13 @@ const STYLE = `
 
 /* 1 히어로 */
 .lp2-badge{display:table;margin:0 auto 22px;padding:7px 16px;border:1px solid rgba(255,255,255,.35);border-radius:50px;font-size:14px;font-weight:700;color:#e8e8e8}
-.lp2-hero-ph{position:relative;margin-top:34px;border-radius:24px;overflow:hidden;background:#f2f2f2}
-.lp2-hero-ph img{display:block;width:100%;aspect-ratio:1/1.05;object-fit:cover;object-position:50% 12%}
-.lp2-hero-ph::after{content:'';position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(to bottom,rgba(10,10,10,0),rgba(10,10,10,.96))}
-.lp2-hero-cta{position:relative;z-index:2;margin-top:-92px;padding:0 14px}
+.lp2-hero-ph{position:relative;margin:34px -20px 0;overflow:hidden;background:#0A0A0A}
+.lp2-hero-ph img{display:block;width:100%;aspect-ratio:1/1.05;object-fit:cover;object-position:50% 12%;filter:grayscale(.15) contrast(1.05)}
+.lp2-hero-ph::before,.lp2-hero-ph::after{content:'';position:absolute;left:0;right:0;z-index:1;pointer-events:none}
+.lp2-hero-ph::before{top:0;height:20%;background:linear-gradient(to bottom,#0A0A0A,rgba(10,10,10,0))}
+.lp2-hero-ph::after{bottom:0;height:45%;background:linear-gradient(to bottom,rgba(10,10,10,0),#0A0A0A 92%)}
+@media(min-width:481px){.lp2-hero-ph{margin-left:0;margin-right:0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}}
+.lp2-hero-cta{position:relative;z-index:2;margin-top:-92px;padding:0}
 
 /* 2 경고 */
 .lp2-alert{background:#fff;color:#111;border-radius:14px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.45)}
@@ -415,6 +418,8 @@ export default function StartupLpV2() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [heroCtaVisible, setHeroCtaVisible] = useState(true);
+  const heroCtaRef = useRef<HTMLButtonElement>(null);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const formBoxRef = useRef<HTMLDivElement>(null);
@@ -452,14 +457,23 @@ export default function StartupLpV2() {
     };
   }, []);
 
-  // 하단 고정 바 — 폼이 화면에 보이면 숨김
+  // 하단 고정 바 — 히어로 CTA 또는 폼이 화면에 보이면 숨김 (둘 다 안 보일 때만 표시)
   useEffect(() => {
-    const el = formBoxRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver((entries) => setFormVisible(entries[0].isIntersecting), { threshold: 0.05 });
-    io.observe(el);
-    return () => io.disconnect();
+    if (typeof IntersectionObserver === "undefined") return;
+    const watch = (el: Element | null, set: (v: boolean) => void) => {
+      if (!el) return null;
+      const io = new IntersectionObserver((entries) => set(entries[entries.length - 1].isIntersecting), { threshold: 0.05 });
+      io.observe(el);
+      return io;
+    };
+    const a = watch(heroCtaRef.current, setHeroCtaVisible);
+    const b = watch(formBoxRef.current, setFormVisible);
+    return () => {
+      a?.disconnect();
+      b?.disconnect();
+    };
   }, []);
+  const barHidden = heroCtaVisible || formVisible;
 
   const scrollToForm = useCallback(() => {
     document.getElementById("consulting-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -567,7 +581,7 @@ export default function StartupLpV2() {
               <img src={CEO_PHOTO} alt="김재강 대표" />
             </div>
             <div className="lp2-hero-cta">
-              <button type="button" className="lp2-btn" onClick={scrollToForm}>
+              <button ref={heroCtaRef} type="button" className="lp2-btn" onClick={scrollToForm}>
                 {CTA_LABEL}
               </button>
             </div>
@@ -1048,8 +1062,8 @@ export default function StartupLpV2() {
       <div className="lp2-bar-space" aria-hidden="true" />
 
       {/* 하단 고정 바 — 폼이 화면에 보이면 숨김 */}
-      <div className={`lp2-bar${formVisible ? " is-hidden" : ""}`} aria-hidden={formVisible}>
-        <button type="button" className="lp2-btn" onClick={scrollToForm} tabIndex={formVisible ? -1 : 0}>
+      <div className={`lp2-bar${barHidden ? " is-hidden" : ""}`} aria-hidden={barHidden}>
+        <button type="button" className="lp2-btn" onClick={scrollToForm} tabIndex={barHidden ? -1 : 0}>
           {CTA_LABEL}
         </button>
       </div>
