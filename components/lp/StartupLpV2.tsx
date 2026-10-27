@@ -24,8 +24,7 @@ const FORM_TOKEN = "grow2026secure";
 const FORM_TARGET = "lps_hidden_iframe";
 const CTA_LABEL = "창업 정보 받아보기";
 
-const CEO_PHOTO = "/consultants/kim-jaegang.jpg";
-// 히어로용 누끼(투명 PNG) — 블랙 배경에 그대로 올린다
+// 대표 누끼(투명 PNG) — 히어로·권위 섹션에서 블랙 배경에 그대로 올린다
 const CEO_CUTOUT = "/consultants/kim-jaegang-cutout.png";
 
 const VIDEO_MAIN = { src: "/reviews/review-3.mp4", poster: "/reviews/review-3.jpg", caption: "일주일 만에 매출 8,300만원, 두번째 창업" };
@@ -196,8 +195,10 @@ const STYLE = `
 .lp2-chk svg{flex:0 0 30px;width:30px;height:30px;margin-top:1px}
 
 /* 8 권위 */
-.lp2-auth-ph{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;object-position:50% 14%;border-radius:22px;margin-top:34px}
-.lp2-auth-name{margin-top:14px;text-align:center;font-size:20px;font-weight:800}
+.lp2-auth-ph{position:relative;margin-top:30px;background:var(--bk);overflow:hidden}
+.lp2-auth-ph img{display:block;width:100%;height:auto}
+.lp2-auth-ph::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(to bottom,rgba(10,10,10,0),#0A0A0A 94%);pointer-events:none}
+.lp2-auth-name{margin-top:-6px;position:relative;text-align:center;font-size:20px;font-weight:800}
 .lp2-num{margin-top:30px;text-align:center;line-height:1}
 .lp2-num b{font-size:76px;font-weight:900;letter-spacing:-0.04em;color:var(--gl)}
 .lp2-num span{font-size:30px;font-weight:900;color:var(--gl);margin-left:4px}
@@ -752,7 +753,10 @@ export default function StartupLpV2() {
               <Hl>결과</Hl>로 증명합니다
             </h2>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="lp2-auth-ph" src={CEO_PHOTO} alt="김재강 대표" loading="lazy" />
+            <div className="lp2-auth-ph">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={CEO_CUTOUT} alt="김재강 대표" width={1000} height={1333} loading="lazy" />
+            </div>
             <p className="lp2-auth-name">김재강 대표</p>
             <p className="lp2-num">
               <b>300</b>
