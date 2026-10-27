@@ -25,6 +25,8 @@ const FORM_TARGET = "lps_hidden_iframe";
 const CTA_LABEL = "창업 정보 받아보기";
 
 const CEO_PHOTO = "/consultants/kim-jaegang.jpg";
+// 히어로용 누끼(투명 PNG) — 블랙 배경에 그대로 올린다
+const CEO_CUTOUT = "/consultants/kim-jaegang-cutout.png";
 
 const VIDEO_MAIN = { src: "/reviews/review-3.mp4", poster: "/reviews/review-3.jpg", caption: "일주일 만에 매출 8,300만원, 두번째 창업" };
 const VIDEO_PAIR = [
@@ -131,10 +133,8 @@ const STYLE = `
 /* 1 히어로 */
 .lp2-badge{display:table;margin:0 auto 22px;padding:7px 16px;border:1px solid rgba(255,255,255,.35);border-radius:50px;font-size:14px;font-weight:700;color:#e8e8e8}
 .lp2-hero-ph{position:relative;margin:34px -20px 0;overflow:hidden;background:#0A0A0A}
-.lp2-hero-ph img{display:block;width:100%;aspect-ratio:1/1.05;object-fit:cover;object-position:50% 12%;filter:grayscale(.15) contrast(1.05)}
-.lp2-hero-ph::before,.lp2-hero-ph::after{content:'';position:absolute;left:0;right:0;z-index:1;pointer-events:none}
-.lp2-hero-ph::before{top:0;height:20%;background:linear-gradient(to bottom,#0A0A0A,rgba(10,10,10,0))}
-.lp2-hero-ph::after{bottom:0;height:45%;background:linear-gradient(to bottom,rgba(10,10,10,0),#0A0A0A 92%)}
+.lp2-hero-ph img{display:block;width:100%;height:auto}
+.lp2-hero-ph::after{content:'';position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(to bottom,rgba(10,10,10,0),#0A0A0A 92%);pointer-events:none}
 @media(min-width:481px){.lp2-hero-ph{margin-left:0;margin-right:0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}}
 .lp2-hero-cta{position:relative;z-index:2;margin-top:-92px;padding:0}
 
@@ -578,7 +578,7 @@ export default function StartupLpV2() {
             </h1>
             <div className="lp2-hero-ph">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={CEO_PHOTO} alt="김재강 대표" />
+              <img src={CEO_CUTOUT} alt="김재강 대표" width={1000} height={1333} />
             </div>
             <div className="lp2-hero-cta">
               <button ref={heroCtaRef} type="button" className="lp2-btn" onClick={scrollToForm}>
