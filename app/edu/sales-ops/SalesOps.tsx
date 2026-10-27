@@ -809,7 +809,7 @@ export default function SalesOps() {
   const heroCls =
     "so-hero" + [1, 2, 3, 4, 5, 6].filter((n) => heroStage >= n).map((n) => ` is-s${n}`).join("") + (heroInstant ? " is-instant" : "");
 
-  // 사이트 우하단 팝업(components/SeminarPopup.tsx)에서 /edu/sales-ops?from=popup 으로 들어온 경우만 true.
+  // 사이트 중앙 포스터 모달(components/SeminarPosterModal.tsx)에서 /edu/sales-ops?from=popup 으로 들어온 경우만 true.
   // 결제 신청 정보의 landing 을 "popup-sales-ops" 로 남겨 시트·GA 의 랜딩 열에서 팝업 유입을 구분한다.
   const [fromPopup, setFromPopup] = useState(false);
   // 메타 ViewContent — 진입 1회 (landing 값은 GA·시트와 같은 구분값)
