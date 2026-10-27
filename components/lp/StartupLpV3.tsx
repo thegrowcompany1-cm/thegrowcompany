@@ -231,7 +231,6 @@ const STYLE = `
 .lp3-stage.is-on i{background:var(--gr);border-color:var(--gr);color:#fff}
 .lp3-stage-msg{margin-top:22px;padding:18px 20px;border-radius:14px;background:#0A0A0A;color:#fff;font-size:18px;font-weight:800;line-height:1.5;text-align:center;letter-spacing:-0.02em}
 .lp3-stage-msg small{display:block;margin-top:6px;font-size:14px;font-weight:600;color:var(--gl);letter-spacing:0}
-.lp3-skip{display:block;margin:20px auto 0;background:none;border:none;color:rgba(255,255,255,.85);font-family:inherit;font-size:15px;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 
 .lp3-form-blk{padding:56px 20px 70px;scroll-margin-top:80px}
 .lp3-form-t{font-size:22px;font-weight:900;text-align:center;letter-spacing:-0.03em;margin-bottom:26px}
@@ -387,7 +386,6 @@ export default function StartupLpV3() {
   const [activeVid, setActiveVid] = useState<string | null>(null);
   const [heroPlaying, setHeroPlaying] = useState(false);
   const [stage, setStage] = useState<number | null>(null);
-  const [formOpen, setFormOpen] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [heroBtnVisible, setHeroBtnVisible] = useState(true);
@@ -453,10 +451,9 @@ export default function StartupLpV3() {
     document.getElementById("consulting-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // 단계 선택 — 맞춤 문구 + 폼 펼침, 재선택 가능. GA4 stage_select
+  // 단계 선택 — 맞춤 문구만 바뀐다(폼은 항상 보임), 재선택 가능. GA4 stage_select
   const pickStage = (i: number) => {
     setStage(i);
-    setFormOpen(true);
     const w = window as Win;
     if (typeof w.gtag === "function") w.gtag("event", "stage_select", { stage: STAGES[i].label });
     window.setTimeout(() => stageMsgRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
@@ -832,143 +829,136 @@ export default function StartupLpV3() {
                 <small>아래 연락처를 남겨주시면 이 단계에 맞춰 보내드립니다</small>
               </div>
             )}
-            {!formOpen && (
-              <button type="button" className="lp3-skip" onClick={() => setFormOpen(true)}>
-                단계를 고르지 않고 바로 신청하기
-              </button>
-            )}
           </div>
         </div>
 
-        {formOpen && (
-          <div className="lp3-form-blk lp3-wh">
-            <div className="lp3-c">
-              {sent ? (
-                <div className="lp3-done" role="status">
-                  <b>정상적으로 접수되었습니다.</b>
-                  신청 후 24시간 이내 담당자가 연락드립니다.
-                </div>
-              ) : (
-                <>
-                  <p className="lp3-form-t">{stage !== null ? STAGES[stage].label : "창업 정보 받아보기"}</p>
-                  <form id="lpsStartupForm" action={FORM_ACTION} method="POST" target={FORM_TARGET} onSubmit={onSubmit}>
-                    <div className="lp3-grp">
-                      <label className="lp3-label">
-                        희망 업종을 선택해주세요. <span className="lp3-req">*</span>
-                      </label>
-                      <select name="industry" className="lp3-in-f" required defaultValue="">
-                        <option value="">(선택)</option>
-                        <option value="헬스장">헬스장</option>
-                        <option value="필라테스">필라테스</option>
-                        <option value="PT 스튜디오">PT 스튜디오</option>
-                        <option value="요가">요가</option>
-                        <option value="기타">기타</option>
-                      </select>
-                    </div>
+        <div className="lp3-form-blk lp3-wh">
+          <div className="lp3-c">
+            {sent ? (
+              <div className="lp3-done" role="status">
+                <b>정상적으로 접수되었습니다.</b>
+                신청 후 24시간 이내 담당자가 연락드립니다.
+              </div>
+            ) : (
+              <>
+                <p className="lp3-form-t">{stage !== null ? STAGES[stage].label : "창업 정보 받아보기"}</p>
+                <form id="lpsStartupForm" action={FORM_ACTION} method="POST" target={FORM_TARGET} onSubmit={onSubmit}>
+                  <div className="lp3-grp">
+                    <label className="lp3-label">
+                      희망 업종을 선택해주세요. <span className="lp3-req">*</span>
+                    </label>
+                    <select name="industry" className="lp3-in-f" required defaultValue="">
+                      <option value="">(선택)</option>
+                      <option value="헬스장">헬스장</option>
+                      <option value="필라테스">필라테스</option>
+                      <option value="PT 스튜디오">PT 스튜디오</option>
+                      <option value="요가">요가</option>
+                      <option value="기타">기타</option>
+                    </select>
+                  </div>
 
-                    <div className="lp3-grp">
-                      <label className="lp3-label">
-                        선호 희망 지역을 알려주세요.
-                        <br />
-                        <small>(입지 상권을 함께 봐드립니다.)</small>
-                      </label>
-                      <input type="text" name="area" className="lp3-in-f" placeholder="예) 서울 마포구, 경기 남부, 부산 서면 인근 등" />
-                    </div>
+                  <div className="lp3-grp">
+                    <label className="lp3-label">
+                      선호 희망 지역을 알려주세요.
+                      <br />
+                      <small>(입지 상권을 함께 봐드립니다.)</small>
+                    </label>
+                    <input type="text" name="area" className="lp3-in-f" placeholder="예) 서울 마포구, 경기 남부, 부산 서면 인근 등" />
+                  </div>
 
-                    <div className="lp3-grp">
-                      <label className="lp3-label">
-                        이름을 입력해주세요. <span className="lp3-req">*</span>
-                      </label>
-                      <input type="text" name="name" className="lp3-in-f" required />
-                    </div>
+                  <div className="lp3-grp">
+                    <label className="lp3-label">
+                      이름을 입력해주세요. <span className="lp3-req">*</span>
+                    </label>
+                    <input type="text" name="name" className="lp3-in-f" required />
+                  </div>
 
-                    <div className="lp3-grp">
-                      <label className="lp3-label">
-                        연락처를 입력해주세요. <span className="lp3-req">*</span>
-                      </label>
-                      <div className="lp3-phone">
-                        {(["phone1", "phone2", "phone3"] as const).map((n, i) => (
-                          <span key={n} style={{ display: "contents" }}>
-                            {i > 0 && <span>-</span>}
-                            <input
-                              ref={(el) => {
-                                phoneRefs.current[i] = el;
-                              }}
-                              type="text"
-                              inputMode="numeric"
-                              name={n}
-                              className="lp3-in-f"
-                              maxLength={i === 0 ? 3 : 4}
-                              required
-                              onChange={onPhoneInput(i)}
-                            />
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="lp3-grp">
-                      <label className="lp3-label">
-                        연락처를 입력해주세요(중복확인). <span className="lp3-req">*</span>
-                      </label>
-                      <div className="lp3-phone">
-                        {(["phoneCheck1", "phoneCheck2", "phoneCheck3"] as const).map((n, i) => (
-                          <span key={n} style={{ display: "contents" }}>
-                            {i > 0 && <span>-</span>}
-                            <input
-                              ref={(el) => {
-                                phoneRefs.current[3 + i] = el;
-                              }}
-                              type="text"
-                              inputMode="numeric"
-                              name={n}
-                              className="lp3-in-f"
-                              maxLength={i === 0 ? 3 : 4}
-                              required
-                              onChange={onPhoneInput(3 + i)}
-                            />
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="lp3-grp">
-                      <label className="lp3-label">
-                        신청 경로를 알려주세요. <span className="lp3-req">*</span>
-                      </label>
-                      {[
-                        ["네이버 검색(창업, 창업솔루션 등)", "네이버 검색 (창업, 창업솔루션 등)"],
-                        ["인스타/페이스북 광고", "인스타/페이스북 광고"],
-                        ["네이버 블로그", "네이버 블로그"],
-                        ["지인 소개/아카데미 수강생", "지인 소개 / 아카데미 수강생"],
-                        ["기타", "기타"],
-                      ].map(([value, text], i) => (
-                        <label key={value} className="lp3-radio">
-                          <input type="radio" name="route" value={value} required={i === 0} />
-                          <span>{text}</span>
-                        </label>
+                  <div className="lp3-grp">
+                    <label className="lp3-label">
+                      연락처를 입력해주세요. <span className="lp3-req">*</span>
+                    </label>
+                    <div className="lp3-phone">
+                      {(["phone1", "phone2", "phone3"] as const).map((n, i) => (
+                        <span key={n} style={{ display: "contents" }}>
+                          {i > 0 && <span>-</span>}
+                          <input
+                            ref={(el) => {
+                              phoneRefs.current[i] = el;
+                            }}
+                            type="text"
+                            inputMode="numeric"
+                            name={n}
+                            className="lp3-in-f"
+                            maxLength={i === 0 ? 3 : 4}
+                            required
+                            onChange={onPhoneInput(i)}
+                          />
+                        </span>
                       ))}
                     </div>
+                  </div>
 
-                    {/* 페이지 구분 */}
-                    <input type="hidden" name="source" value={FORM_SOURCE} />
-                    {/* 보안 토큰 */}
-                    <input type="hidden" name="token" value={FORM_TOKEN} />
+                  <div className="lp3-grp">
+                    <label className="lp3-label">
+                      연락처를 입력해주세요(중복확인). <span className="lp3-req">*</span>
+                    </label>
+                    <div className="lp3-phone">
+                      {(["phoneCheck1", "phoneCheck2", "phoneCheck3"] as const).map((n, i) => (
+                        <span key={n} style={{ display: "contents" }}>
+                          {i > 0 && <span>-</span>}
+                          <input
+                            ref={(el) => {
+                              phoneRefs.current[3 + i] = el;
+                            }}
+                            type="text"
+                            inputMode="numeric"
+                            name={n}
+                            className="lp3-in-f"
+                            maxLength={i === 0 ? 3 : 4}
+                            required
+                            onChange={onPhoneInput(3 + i)}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  </div>
 
-                    <button type="submit" className="lp3-submit" disabled={submitting}>
-                      {submitting ? "전송중..." : SUBMIT_LABEL}
-                    </button>
-                  </form>
-                  <p className="lp3-notice">
-                    신청 후 24시간 이내 담당자가 연락드립니다.
-                    <br />
-                    더그로우는 함께 성장할 대표님만 선별해 진행합니다.
-                  </p>
-                </>
-              )}
-            </div>
+                  <div className="lp3-grp">
+                    <label className="lp3-label">
+                      신청 경로를 알려주세요. <span className="lp3-req">*</span>
+                    </label>
+                    {[
+                      ["네이버 검색(창업, 창업솔루션 등)", "네이버 검색 (창업, 창업솔루션 등)"],
+                      ["인스타/페이스북 광고", "인스타/페이스북 광고"],
+                      ["네이버 블로그", "네이버 블로그"],
+                      ["지인 소개/아카데미 수강생", "지인 소개 / 아카데미 수강생"],
+                      ["기타", "기타"],
+                    ].map(([value, text], i) => (
+                      <label key={value} className="lp3-radio">
+                        <input type="radio" name="route" value={value} required={i === 0} />
+                        <span>{text}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* 페이지 구분 */}
+                  <input type="hidden" name="source" value={FORM_SOURCE} />
+                  {/* 보안 토큰 */}
+                  <input type="hidden" name="token" value={FORM_TOKEN} />
+
+                  <button type="submit" className="lp3-submit" disabled={submitting}>
+                    {submitting ? "전송중..." : SUBMIT_LABEL}
+                  </button>
+                </form>
+                <p className="lp3-notice">
+                  신청 후 24시간 이내 담당자가 연락드립니다.
+                  <br />
+                  더그로우는 함께 성장할 대표님만 선별해 진행합니다.
+                </p>
+              </>
+            )}
           </div>
-        )}
+        </div>
         <iframe ref={iframeRef} name={FORM_TARGET} title="신청 전송" style={{ display: "none" }} />
       </section>
 
