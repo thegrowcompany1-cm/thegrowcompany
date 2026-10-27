@@ -4,6 +4,7 @@
 // 외부 라이브러리 없음. setInterval/rAF/IntersectionObserver 는 언마운트 시 전부 정리.
 
 import { useEffect, useRef, useState } from "react";
+import { DCC_OPEN_KO } from "@/lib/dccSchedule";
 import { TYPE_CURSOR_CSS, useTypewriter, type TypeStep } from "@/lib/useTypewriter";
 import Link from "next/link";
 import {
@@ -102,7 +103,7 @@ const COURSES: {
     img: "/edu/dcc/field.jpg",
     alt: "진단 컨설턴트 양성과정 현장실습",
     title: "진단 컨설턴트 양성과정 1기",
-    target: "9회 과정 · 최대 10명 선발 · 11월 15일 개강",
+    target: `9회 과정 · 최대 10명 선발 · ${DCC_OPEN_KO} 개강`,
     points: [
       "전문교육 5회 + 과제발표 3회 + 현장실습 1회",
       "1인 1매장 현장실습과 진단 리포트 작성",

@@ -15,6 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { DCC_OPEN_DOTTED, DCC_OPEN_SHORT_DOT, DCC_OPEN_SHORT_SLASH, DCC_SCHEDULE } from "@/lib/dccSchedule";
 // 로고 목록과 CSS 는 /consulting/diagnosis 가 쓰는 공용 컴포넌트와 같은 것을 쓴다.
 // 이 페이지는 DETAIL_HTML 주입 구조라 컴포넌트 자체는 못 쓰고 데이터·스타일만 가져온다.
 import {
@@ -65,7 +66,7 @@ const DCC_NO_ZOOM = ["/edu/dcc/case02-03.png", "/edu/dcc/field.jpg"];
 
 /* ▼▼ 기수 변경 시 이 상수만 수정 ▼▼ */
 const DCC = {
-  openDate: "2026.11.15",
+  openDate: DCC_OPEN_DOTTED,
   schedule: "매주 일요일 10:00-14:00",
   capacity: 10,
   sessions: 9,
@@ -237,7 +238,7 @@ const DCC_CASE_DISCLAIMER =
 
 // ── 07 커리큘럼 ──────────────────────────────────────────────────────────────
 // tone: present(과제·최종발표) / field(현장실습) → 그린 배지
-// 5회차는 배정 매장과 조율하는 평일 1일이라 일요일 정기 일정과 구분한다.
+// 날짜는 lib/dccSchedule.ts 의 DCC_SCHEDULE 에서 가져온다(같은 순서). 5회차는 배정 매장과 조율하는 평일 1일.
 type CurTone = "edu" | "present" | "field" | "rest";
 const CURRICULUM: {
   no: string;
@@ -250,7 +251,7 @@ const CURRICULUM: {
 }[] = [
   {
     no: "1회차",
-    date: "11/15",
+    date: DCC_SCHEDULE[0].date,
     kind: "교육",
     tone: "edu",
     instructor: "김승호 센터장",
@@ -259,7 +260,7 @@ const CURRICULUM: {
   },
   {
     no: "2회차",
-    date: "11/22",
+    date: DCC_SCHEDULE[1].date,
     kind: "교육",
     tone: "edu",
     instructor: "김재강 대표",
@@ -268,7 +269,7 @@ const CURRICULUM: {
   },
   {
     no: "3회차",
-    date: "11/29",
+    date: DCC_SCHEDULE[2].date,
     kind: "과제발표 ①",
     tone: "present",
     instructor: "김승호 센터장 총괄",
@@ -277,7 +278,7 @@ const CURRICULUM: {
   },
   {
     no: "휴식",
-    date: "12/06",
+    date: DCC_SCHEDULE[3].date,
     kind: "보완",
     tone: "rest",
     instructor: "",
@@ -286,7 +287,7 @@ const CURRICULUM: {
   },
   {
     no: "4회차",
-    date: "12/13",
+    date: DCC_SCHEDULE[4].date,
     kind: "교육",
     tone: "edu",
     instructor: "허준영 본부장",
@@ -295,7 +296,7 @@ const CURRICULUM: {
   },
   {
     no: "5회차",
-    date: "평일 1일",
+    date: DCC_SCHEDULE[5].date,
     kind: "현장실습",
     tone: "field",
     instructor: "현장 담당 프로 / 김승호 센터장 총괄",
@@ -304,7 +305,7 @@ const CURRICULUM: {
   },
   {
     no: "6회차",
-    date: "12/27",
+    date: DCC_SCHEDULE[6].date,
     kind: "과제발표 ②",
     tone: "present",
     instructor: "김승호 센터장 총괄",
@@ -313,7 +314,7 @@ const CURRICULUM: {
   },
   {
     no: "휴식",
-    date: "01/03",
+    date: DCC_SCHEDULE[7].date,
     kind: "보완",
     tone: "rest",
     instructor: "",
@@ -322,7 +323,7 @@ const CURRICULUM: {
   },
   {
     no: "7회차",
-    date: "01/10",
+    date: DCC_SCHEDULE[8].date,
     kind: "교육",
     tone: "edu",
     instructor: "김재강 대표",
@@ -330,8 +331,17 @@ const CURRICULUM: {
     detail: "경쟁 포지셔닝·가격·상품·타깃·콘텐츠, R&amp;R, SOP, 주간회의",
   },
   {
+    no: "휴식",
+    date: DCC_SCHEDULE[9].date,
+    kind: "휴강",
+    tone: "rest",
+    instructor: "",
+    title: "설 연휴 휴강",
+    detail: "",
+  },
+  {
     no: "8회차",
-    date: "01/17",
+    date: DCC_SCHEDULE[10].date,
     kind: "교육",
     tone: "edu",
     instructor: "박정민 대표",
@@ -340,7 +350,7 @@ const CURRICULUM: {
   },
   {
     no: "9회차",
-    date: "01/24",
+    date: DCC_SCHEDULE[11].date,
     kind: "최종발표 ③",
     tone: "present",
     instructor: "김승호 센터장 총괄",
@@ -896,7 +906,7 @@ ${LOGO_MARQUEE_STYLE}
     <div class="dcc-stats dcc-rv">
       <div class="dcc-stat"><b>${DCC.sessions}회</b><span>총 과정</span></div>
       <div class="dcc-stat"><b>${DCC.capacity}명</b><span>최대 선발</span></div>
-      <div class="dcc-stat"><b>11.15</b><span>개강</span></div>
+      <div class="dcc-stat"><b>${DCC_OPEN_SHORT_DOT}</b><span>개강</span></div>
     </div>
     <a class="dcc-cta dcc-jump dcc-rv" href="#apply">지원서 작성하기</a>
   </div>
@@ -1344,7 +1354,7 @@ ${LOGO_MARQUEE_STYLE}
 <section data-track-section="form" class="dcc-sec dcc-dark dcc-apply" id="apply">
   <div class="dcc-wrap">
     <h2 class="dcc-h2 dcc-rv">한 매장을 제대로 진단할 수 있다면,<em>다음 매장도 진단할 수 있습니다.</em></h2>
-    <p class="dcc-sum dcc-rv">최대 ${DCC.capacity}명 · 11/15 개강 · ${COST_NOTICE}</p>
+    <p class="dcc-sum dcc-rv">최대 ${DCC.capacity}명 · ${DCC_OPEN_SHORT_SLASH} 개강 · ${COST_NOTICE}</p>
 
     <div class="dcc-form-box dcc-rv" id="dccFormBox">
       <form id="dccForm" action="${FORM_ACTION}" method="POST" target="${FORM_TARGET}">
