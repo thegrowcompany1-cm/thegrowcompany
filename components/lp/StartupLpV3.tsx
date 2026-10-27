@@ -8,6 +8,9 @@
 //    박스, 블랙/화이트/그린 띠 배경 교차, LogoMarquee 방식의 가로 마퀴. 말풍선·회색 비교 카드·
 //    작은 카드 그리드는 쓰지 않는다. 한 장면 = 큰 문장 1개 + 실제 사진 1장 + 근거 1개.
 //  · 사진은 /consulting/startup 의 단계별 현장 사진(public/legacy/startup)을 그대로 쓴다.
+//  · 가로 마퀴(후기·갤러리)는 LogoMarquee 처럼 한 벌을 두 번 이어 붙여 한 벌 폭으로 모듈러 처리해
+//    끊김 없이 돌되, CSS 애니메이션 대신 rAF 로 offset 을 움직인다. 포인터 드래그로 직접 넘길 수 있고,
+//    놓으면 가벼운 관성 뒤 원래 방향·속도로 재개한다. 화면 밖이면 rAF 를 멈춘다.
 //  · 신청 폼은 /consulting/startup 의 창업 폼과 action·token·source·name·필드 구성이 같다
 //    (새 필드 없음). iframe 이름은 lps_hidden_iframe, 성공 판정은 iframe load (done 가드 +
 //    15초 타임아웃 + try/catch). 고른 준비 단계는 제출 직전에 route 값 뒤에
@@ -15,7 +18,7 @@
 //  · 하단 고정 바는 히어로 섹션 또는 장면 10(단계 선택+폼)이 화면에 보이면 숨긴다.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 const FORM_ACTION =
   "https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec";
@@ -217,14 +220,11 @@ const STYLE = `
 .lp3-lb-n{right:8px;top:50%;margin-top:-22px}
 .lp3-lb-c{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-size:14px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:0}
 
-/* 장면 8 후기 마퀴 (LogoMarquee 방식) */
-.lp3-mq{position:relative;overflow:hidden;width:100%;margin:30px -20px 0;width:calc(100% + 40px)}
-.lp3-mq-track{display:flex;align-items:stretch;width:max-content;will-change:transform;animation:lp3-left var(--dur,60s) linear infinite}
-.lp3-mq-track.lp3-mq-r{animation-name:lp3-right}
-@keyframes lp3-left{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes lp3-right{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.lp3-mq.is-paused .lp3-mq-track,.lp3-mq.is-hold .lp3-mq-track{animation-play-state:paused}
-@media(hover:hover) and (pointer:fine){.lp3-mq:hover .lp3-mq-track{animation-play-state:paused}}
+/* 장면 8 후기 마퀴 / 갤러리 마퀴 — rAF 로 translateX 를 직접 움직이고, 포인터 드래그로 넘긴다 */
+.lp3-mq{position:relative;overflow:hidden;margin:30px -20px 0;width:calc(100% + 40px);touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+.lp3-mq.is-dragging{cursor:grabbing}
+.lp3-mq img{-webkit-user-drag:none}
+.lp3-mq-track{display:flex;align-items:stretch;width:max-content;will-change:transform}
 .lp3-mq-i{flex:0 0 auto;display:flex;margin-right:12px}
 .lp3-mq-i:first-child{margin-left:20px}
 .lp3-kk{display:block;height:360px;width:auto;border-radius:16px}
@@ -312,35 +312,196 @@ const IcUp = () => (
   </svg>
 );
 
-// LogoMarquee 와 같은 방식: 두 벌 이어 붙임 + margin 간격 + 화면 밖 정지 + 터치 중 정지
+// 가로 마퀴 — 한 벌을 두 번 이어 붙이고(한 벌 폭 = track.scrollWidth / 2) rAF 로 offset 을 움직인다.
+//  · 자동 이동: 초당 (한 벌 폭 / dur) px, reverse 면 오른쪽으로
+//  · 드래그: 가로 이동이 세로보다 클 때만 잡는다(touch-action: pan-y 로 세로는 페이지 스크롤).
+//    놓으면 가벼운 관성(시간상수 150ms, 속도 상한 1.5px/ms)으로 감속한 뒤 자동 이동 재개.
+//    6px 이상 끌었으면 그 뒤의 click 은 삼킨다.
+//  · paused(라이트박스 등) 이거나 화면 밖이면 자동 이동을 멈춘다. 언마운트 시 rAF·옵저버·리스너 정리.
 function Marquee({ items, dur, reverse = false, paused = false }: { items: ReactNode[]; dur: number; reverse?: boolean; paused?: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+
+  // 드래그·이동 상태 — 렌더와 무관하므로 ref 로만 둔다
+  const st = useRef({
+    offset: 0,
+    raf: 0,
+    last: 0,
+    hover: false,
+    pointerId: -1,
+    phase: "idle" as "idle" | "pending" | "drag",
+    startX: 0,
+    startY: 0,
+    startOffset: 0,
+    dist: 0,
+    prevX: 0,
+    prevT: 0,
+    vel: 0, // 관성 속도 px/ms
+  });
+
   useEffect(() => {
-    const el = ref.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) el.classList.toggle("is-paused", !e.isIntersecting);
-      },
-      { threshold: 0, rootMargin: "120px 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  const hold = () => ref.current?.classList.add("is-hold");
-  const release = () => {
-    if (!paused) ref.current?.classList.remove("is-hold");
-  };
+    const wrap = wrapRef.current;
+    const track = trackRef.current;
+    if (!wrap || !track) return;
+    const S = st.current;
+    const dir = reverse ? 1 : -1;
+
+    const half = () => track.scrollWidth / 2;
+    const normalize = () => {
+      const h = half();
+      if (h <= 0) return;
+      while (S.offset <= -h) S.offset += h;
+      while (S.offset > 0) S.offset -= h;
+    };
+    const apply = () => {
+      track.style.transform = `translateX(${S.offset}px)`;
+    };
+
+    const frame = (ts: number) => {
+      if (!S.last) S.last = ts;
+      const dt = Math.min(ts - S.last, 64); // 탭 전환 등으로 긴 공백이 생겨도 점프하지 않게
+      S.last = ts;
+      if (S.phase !== "drag") {
+        if (S.vel !== 0) {
+          // 관성 — 손을 놓은 속도에서 지수 감속, 충분히 느려지면 자동 이동으로
+          S.offset += S.vel * dt;
+          S.vel *= Math.exp(-dt / 150);
+          if (Math.abs(S.vel) < 0.02) S.vel = 0;
+        } else if (!pausedRef.current && !S.hover) {
+          S.offset += (dir * half() * dt) / (dur * 1000);
+        }
+        normalize();
+        apply();
+      }
+      S.raf = requestAnimationFrame(frame);
+    };
+    const start = () => {
+      if (S.raf) return;
+      S.last = 0;
+      S.raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      if (S.raf) cancelAnimationFrame(S.raf);
+      S.raf = 0;
+    };
+
+    // 화면 밖이면 rAF 정지
+    let io: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      io = new IntersectionObserver(
+        (entries) => {
+          if (entries[entries.length - 1].isIntersecting) start();
+          else stop();
+        },
+        { threshold: 0, rootMargin: "120px 0px" },
+      );
+      io.observe(wrap);
+    } else {
+      start();
+    }
+
+    // 드래그 — Pointer Events (터치·마우스 공통)
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      S.phase = "pending";
+      S.pointerId = e.pointerId;
+      S.startX = e.clientX;
+      S.startY = e.clientY;
+      S.startOffset = S.offset;
+      S.dist = 0;
+      S.prevX = e.clientX;
+      S.prevT = e.timeStamp;
+      S.vel = 0;
+    };
+    const onMove = (e: PointerEvent) => {
+      if (S.phase === "idle" || e.pointerId !== S.pointerId) return;
+      const dx = e.clientX - S.startX;
+      const dy = e.clientY - S.startY;
+      if (S.phase === "pending") {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dy) > Math.abs(dx)) {
+          S.phase = "idle"; // 세로 제스처 — 페이지 스크롤에 맡긴다
+          return;
+        }
+        S.phase = "drag";
+        wrap.classList.add("is-dragging");
+        try {
+          wrap.setPointerCapture(e.pointerId);
+        } catch {
+          // 캡처 불가 환경이면 그냥 진행
+        }
+      }
+      S.dist = Math.max(S.dist, Math.abs(dx));
+      S.offset = S.startOffset + dx;
+      normalize();
+      apply();
+      const dt = e.timeStamp - S.prevT;
+      if (dt > 0) S.vel = (e.clientX - S.prevX) / dt;
+      S.prevX = e.clientX;
+      S.prevT = e.timeStamp;
+      e.preventDefault();
+    };
+    const onUp = (e: PointerEvent) => {
+      if (e.pointerId !== S.pointerId) return;
+      if (S.phase === "drag") {
+        wrap.classList.remove("is-dragging");
+        try {
+          wrap.releasePointerCapture(e.pointerId);
+        } catch {
+          // 이미 해제됐으면 무시
+        }
+        // 놓기 직전 80ms 넘게 멈춰 있었으면 관성 없음
+        if (e.timeStamp - S.prevT > 80) S.vel = 0;
+        S.vel = Math.max(-1.5, Math.min(1.5, S.vel)); // 가벼운 관성 — 최대 약 225px 미끄러짐
+      }
+      S.phase = "idle";
+      S.pointerId = -1;
+    };
+    // 6px 이상 끌었으면 그 뒤에 오는 click(타일 → 라이트박스 등)은 삼킨다
+    const onClick = (e: MouseEvent) => {
+      if (S.dist >= 6) {
+        e.stopPropagation();
+        e.preventDefault();
+        S.dist = 0;
+      }
+    };
+    const onEnter = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") S.hover = true;
+    };
+    const onLeave = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") S.hover = false;
+    };
+    const onDragStart = (e: Event) => e.preventDefault(); // 이미지 고스트 드래그 차단
+
+    wrap.addEventListener("pointerdown", onDown);
+    wrap.addEventListener("pointermove", onMove);
+    wrap.addEventListener("pointerup", onUp);
+    wrap.addEventListener("pointercancel", onUp);
+    wrap.addEventListener("click", onClick, true);
+    wrap.addEventListener("pointerenter", onEnter);
+    wrap.addEventListener("pointerleave", onLeave);
+    wrap.addEventListener("dragstart", onDragStart);
+
+    return () => {
+      stop();
+      io?.disconnect();
+      wrap.removeEventListener("pointerdown", onDown);
+      wrap.removeEventListener("pointermove", onMove);
+      wrap.removeEventListener("pointerup", onUp);
+      wrap.removeEventListener("pointercancel", onUp);
+      wrap.removeEventListener("click", onClick, true);
+      wrap.removeEventListener("pointerenter", onEnter);
+      wrap.removeEventListener("pointerleave", onLeave);
+      wrap.removeEventListener("dragstart", onDragStart);
+      wrap.classList.remove("is-dragging");
+    };
+  }, [dur, reverse]);
+
   return (
-    <div
-      ref={ref}
-      className={`lp3-mq${paused ? " is-hold" : ""}`}
-      style={{ "--dur": `${dur}s` } as CSSProperties}
-      onTouchStart={hold}
-      onTouchEnd={release}
-      onTouchCancel={release}
-    >
-      <div className={`lp3-mq-track${reverse ? " lp3-mq-r" : ""}`}>
+    <div ref={wrapRef} className="lp3-mq">
+      <div ref={trackRef} className="lp3-mq-track">
         {items.map((n, i) => (
           <div className="lp3-mq-i" key={`a${i}`}>
             {n}
