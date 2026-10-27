@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import StartupLp from "@/components/lp/StartupLpV2";
+import StartupLp from "@/components/lp/StartupLpV3";
 
 // 메타 광고 전용 창업솔루션 랜딩이다.
 //  · robots: index/follow 모두 false

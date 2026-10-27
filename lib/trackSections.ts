@@ -7,7 +7,7 @@ export const SECTION_TRACK_FIX_DATE = "2026-10-25";
 
 export const TRACK_SECTION_ORDER: Record<string, string[]> = {
   "/consulting/startup": ["hero", "review", "empathy", "solution", "process", "proof", "faq", "form"],
-  "/lp/startup": ["hero", "warning", "result", "empathy", "rebuttal", "proof", "target", "authority", "reframe", "compare", "process", "weapon", "feedback", "form", "faq"],
+  "/lp/startup": ["hero", "rewind", "presale", "space", "site", "team", "stories", "reviews", "person", "form", "faq"],
   "/consulting/outsourcing": ["hero", "empathy", "video", "proof", "compare", "solution", "process", "aftercare", "review", "faq", "form"],
   "/edu/fc-class": ["hero", "problem", "solution", "instructor", "curriculum", "review", "result", "gallery", "feedback", "target", "benefit", "faq", "price"],
   "/edu/gx-class": ["hero", "stats", "problem", "loop", "solution", "reframe", "system", "proof", "story", "result", "newconv", "revenue", "rejoin", "community", "price"],
@@ -78,6 +78,14 @@ export const TRACK_SECTION_LABEL: Record<string, string> = {
   rebuttal: "반박",
   authority: "권위",
   weapon: "무기 3가지",
+  rewind: "시간 되돌리기",
+  presale: "오픈 전 회원 모집",
+  space: "공간 설계",
+  site: "자리 선택",
+  team: "한 팀",
+  stories: "다른 창업 이야기",
+  reviews: "후기",
+  person: "사람",
 };
 
 export const TRACK_SOURCE_LABEL: Record<string, string> = {
