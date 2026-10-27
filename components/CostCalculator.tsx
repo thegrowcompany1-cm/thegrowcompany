@@ -206,13 +206,38 @@ const CALC_STYLE = `
 .calc-note{font-size:11.5px;color:#777;line-height:1.7;margin:12px 0 0;text-align:center}
 `;
 
-export default function CostCalculator() {
+export default function CostCalculator({
+  hideBar = false,
+  openToken = 0,
+  onOpenChange,
+}: {
+  /** true 면 하단 고정 바·스페이서를 그리지 않는다 (페이지가 자체 바를 가질 때) */
+  hideBar?: boolean;
+  /** 값이 바뀌고 0 보다 크면 패널을 연다 (외부 버튼에서 여는 용도) */
+  openToken?: number;
+  /** 패널 열림/닫힘이 바뀔 때 알려준다 */
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
 
+  const onOpenChangeRef = useRef(onOpenChange);
+  onOpenChangeRef.current = onOpenChange;
+  useEffect(() => {
+    onOpenChangeRef.current?.(open);
+  }, [open]);
+
+  const industryRef = useRef<IndustryKey | null>(null);
+  useEffect(() => {
+    if (openToken <= 0) return;
+    setOpen(true);
+    if (!industryRef.current) setStep(1);
+  }, [openToken]);
+
   // ── 입력 상태 ──
   const [industry, setIndustry] = useState<IndustryKey | null>(null);
+  industryRef.current = industry;
   const [area, setArea] = useState(50);
   const [areaText, setAreaText] = useState("50");
   const [grade, setGrade] = useState<number | null>(null); // 0 실속형 / 1 스탠다드 / 2 프리미엄
@@ -374,7 +399,7 @@ export default function CostCalculator() {
   );
 
   // 마운트 전에도 스페이서는 내보낸다 (하이드레이션 전 푸터 가림 방지)
-  if (!mounted) return bottomSpacer;
+  if (!mounted) return hideBar ? null : bottomSpacer;
 
   const r = PRICING.rangeRate;
 
@@ -382,9 +407,10 @@ export default function CostCalculator() {
     <>
       <style dangerouslySetInnerHTML={{ __html: CALC_STYLE }} />
 
-      {bottomSpacer}
+      {!hideBar && bottomSpacer}
 
       {/* 하단 전체 폭 고정 바 (트리거) — 패널 열림 동안 숨김 */}
+      {!hideBar && (
       <button
         type="button"
         className={`calc-bar${open ? " is-hidden" : ""}`}
@@ -408,6 +434,7 @@ export default function CostCalculator() {
         </svg>
         내 창업비용 계산해보기
       </button>
+      )}
 
       {/* 패널 (대기 시 transform 으로 화면 밖, 루트가 overflow 클리핑) */}
       <div className={`calc-root${open ? " is-open" : ""}`} aria-hidden={!open}>

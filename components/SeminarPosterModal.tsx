@@ -48,6 +48,7 @@ const EXCLUDE_PREFIX = [
   "/edu/gx-class",
   "/edu/fc-class",
   "/edu/startup-class",
+  "/lp/", // 메타 광고 전용 랜딩 전체
 ];
 
 const isExcluded = (path: string) =>

@@ -17,6 +17,7 @@
  */
 export const PIXEL_MAP: Record<string, string> = {
   "/consulting/startup": "1556215626187598", // 창업 솔루션
+  "/lp/startup": "1556215626187598", // 메타 광고 전용 창업 랜딩 (정확 일치, /consulting/startup 과 같은 픽셀)
   "/consulting/outsourcing": "747849161675945", // 매장 위탁
   "/edu/gx-class": "1112480951354351", // 그룹운동 비즈니스 클래스
   "/consulting/diagnosis": "1259348289492935", // 진단 컨설팅 — 허브 + 멘토 상세 7개 (prefix)

@@ -7,6 +7,7 @@ export const SECTION_TRACK_FIX_DATE = "2026-10-25";
 
 export const TRACK_SECTION_ORDER: Record<string, string[]> = {
   "/consulting/startup": ["hero", "review", "empathy", "solution", "process", "proof", "faq", "form"],
+  "/lp/startup": ["hero", "review", "empathy", "problem", "cost", "compare", "process", "difference", "proof", "ceo", "plan", "selection", "form", "faq"],
   "/consulting/outsourcing": ["hero", "empathy", "video", "proof", "compare", "solution", "process", "aftercare", "review", "faq", "form"],
   "/edu/fc-class": ["hero", "problem", "solution", "instructor", "curriculum", "review", "result", "gallery", "feedback", "target", "benefit", "faq", "price"],
   "/edu/gx-class": ["hero", "stats", "problem", "loop", "solution", "reframe", "system", "proof", "story", "result", "newconv", "revenue", "rejoin", "community", "price"],
@@ -69,6 +70,10 @@ export const TRACK_SECTION_LABEL: Record<string, string> = {
   contract: "계약 구조",
   chat: "카톡 후기",
   selection: "선발",
+  cost: "비용 계산",
+  difference: "차별점",
+  ceo: "대표 소개",
+  plan: "플랜",
 };
 
 export const TRACK_SOURCE_LABEL: Record<string, string> = {

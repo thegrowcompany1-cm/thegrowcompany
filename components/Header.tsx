@@ -140,8 +140,8 @@ export default function Header() {
 
   const hoveredItem = navItems.find((n) => n.label === hoveredLabel) ?? null;
 
-  // 광고 전용 랜딩(/edu/sales-ops3)은 메뉴·로고 링크 없이 로고만 보여 준다
-  if (pathname === "/edu/sales-ops3") {
+  // 광고 전용 랜딩(/edu/sales-ops3, /lp/*)은 메뉴·로고 링크 없이 로고만 보여 준다
+  if (pathname === "/edu/sales-ops3" || pathname === "/lp" || pathname.startsWith("/lp/")) {
     return (
       <header className="sticky top-0 z-50 bg-[#111111] border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
