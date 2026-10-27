@@ -6,12 +6,10 @@
 //  · 신청 폼은 /consulting/startup 의 창업 폼과 action·token·source·name·필드 구성이 같다.
 //    iframe 이름만 lps_hidden_iframe 으로 분리했고, 성공 판정은 iframe load
 //    (done 가드 + 15초 타임아웃 + try/catch — 진단 컨설턴트 양성과정 폼과 같은 구조).
-//  · 하단 고정 바(버튼 2개)가 계산기 하단 바를 대신한다. 계산기 패널은 CostCalculator 를
-//    hideBar 로 쓰고, 패널이 열리면 이 바를 숨긴다.
+//  · 하단 고정 바는 "창업 정보 받아보기" 버튼 1개(전체 폭). 계산기는 이 페이지에서 쓰지 않는다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import CostCalculator from "@/components/CostCalculator";
 import LogoMarquee from "@/components/LogoMarquee";
 
 const FORM_ACTION =
@@ -20,7 +18,6 @@ const FORM_SOURCE = "창업지원상담_아임웹";
 const FORM_TOKEN = "grow2026secure";
 const FORM_TARGET = "lps_hidden_iframe";
 const CTA_LABEL = "창업 정보 받아보기";
-const CALC_LABEL = "내 창업비용 계산해보기";
 
 // 후기 영상 — 8,300만원 영상을 첫 번째로
 const VIDEOS = [
@@ -30,33 +27,30 @@ const VIDEOS = [
 ];
 
 const EMPATHY = [
-  "보증금에 인테리어까지, 총 얼마가 드는지 감이 안 잡힙니다.",
-  "인테리어 견적 세 곳을 받았는데, 왜 이렇게 다른지 모르겠습니다.",
-  "오픈하면 회원은 어떻게 모아야 하는지 막막합니다.",
-  "업체마다 하는 말이 달라서, 누구 말을 믿어야 할지 모르겠습니다.",
+  "총 얼마가 드는지 감이 안 잡힙니다",
+  "견적 세 곳이 다 다릅니다",
+  "회원 모집이 막막합니다",
+  "누구 말을 믿어야 할지 모르겠습니다",
 ];
 
-const COMPARE_COLS = ["혼자 준비", "단계마다 다른 업체", "더그로우"];
-const COMPARE_ROWS: { item: string; cells: [string, string, string] }[] = [
-  { item: "입지·상권", cells: ["감과 중개사 말에 의존", "상권 분석만 하고 끝", "데이터 분석 + 계약 동행"] },
-  { item: "인테리어", cells: ["견적 비교가 어려움", "업체 마진이 그대로 붙음", "전속 인테리어팀 직접 시공"] },
-  { item: "기구", cells: ["소매가로 구매", "연결 수수료 발생", "B2B 계약으로 구매"] },
-  { item: "회원 모집", cells: ["오픈 후 광고부터", "홍보 대행만", "오픈 전 프리세일 설계"] },
-  { item: "오픈 이후", cells: ["혼자 해결", "계약 종료", "오픈세일 직원 상주 2달 + 운영 교육"] },
-  { item: "문제 생기면", cells: ["내 책임", "업체끼리 책임 미루기", "한 팀이 끝까지 책임"] },
+const COMPARE_ROWS: { item: string; normal: string; us: string }[] = [
+  { item: "인테리어", normal: "견적 비교가 어렵고 업체 마진이 그대로 붙음", us: "전속 인테리어팀 직접 시공" },
+  { item: "기구", normal: "소매가로 구매, 연결 수수료 발생", us: "B2B 계약으로 구매" },
+  { item: "회원 모집", normal: "오픈 후 광고부터, 홍보 대행만", us: "오픈 전 프리세일 설계" },
+  { item: "오픈 이후", normal: "혼자 해결하거나 계약 종료", us: "오픈세일 직원 상주 2달 + 운영 교육" },
 ];
 
 const STEPS = [
-  { badge: "입지·상권", title: "입지·상권", desc: "감이 아니라 데이터로 \"사람이 오는 자리\"를 찾습니다.", points: ["유동인구 분석", "경쟁 센터 조사", "부동산 계약 동행"] },
-  { badge: "인테리어·동선", title: "인테리어·동선", desc: "예쁜 공간이 아니라 매출이 나오는 구조로 만듭니다.", points: ["기구 배치", "동선", "상담 흐름까지 설계"] },
-  { badge: "프리세일", title: "프리세일", desc: "가격·패키지·상담 구조까지 설계해 오픈 전 매출을 만듭니다.", points: [] },
-  { badge: "운영 세팅", title: "운영 세팅", desc: "회원 관리·상담·매출·직원 관리까지, 대표가 없어도 돌아가는 구조를 만듭니다.", points: [] },
+  { title: "입지·상권", img: "3fe6ca005fb28.jpg", desc: "감이 아니라 데이터로 \"사람이 오는 자리\"를 찾습니다.", points: ["유동인구 분석", "경쟁 센터 조사", "부동산 계약 동행"] },
+  { title: "인테리어·동선", img: "3a1f8666a4fb7.png", desc: "예쁜 공간이 아니라 매출이 나오는 구조로 만듭니다.", points: ["기구 배치", "동선 설계", "상담 흐름"] },
+  { title: "프리세일", img: "482325a2e8663.jpg", desc: "가격·패키지·상담 구조까지 설계해 오픈 전 매출을 만듭니다.", points: ["가격 전략 설계", "오픈 전 매출", "온·오프라인 홍보"] },
+  { title: "운영 세팅", img: "57d1714abddb9.jpg", desc: "대표가 없어도 돌아가는 운영 구조를 만듭니다.", points: ["회원 관리", "상담·매출 관리", "직원 교육"] },
 ];
 
 const DIFFS = [
-  { title: "오픈세일, 직원이 2달간 직접 상주합니다", desc: "가장 중요한 오픈 첫 두 달. 더그로우 직원이 현장에서 상담과 등록을 함께 만듭니다." },
-  { title: "전속 인테리어팀이 직접 시공합니다", desc: "중간 업체 없이 직접 시공해, 견적에 붙는 마진을 줄입니다." },
-  { title: "기구는 B2B 계약으로 연결합니다", desc: "소매가가 아닌 B2B 조건으로 기구를 구매할 수 있도록 연결합니다." },
+  { token: "2달", title: "오픈세일 직원 상주", desc: "오픈 첫 두 달, 현장에서 상담과 등록을 함께 만듭니다." },
+  { token: "직접 시공", title: "전속 인테리어팀", desc: "중간 업체 없이 시공해 견적 마진을 줄입니다." },
+  { token: "B2B", title: "기구 계약", desc: "소매가가 아닌 B2B 조건으로 연결합니다." },
 ];
 
 const REVIEWS = [
@@ -101,9 +95,11 @@ const FAQS = [
   { q: "오픈 이후 지원", a: "오픈 후 안정화 기간 동안 운영 점검, 매출 분석, 마케팅 조정을 이어서 지원합니다." },
 ];
 
+type PlanItem = { t: string; cls?: string; sub?: string };
+
 const STYLE = `
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-.lps{--g:#009519;--g2:#22B573;--gl:#4CAF50;font-family:'Pretendard',var(--font-noto-sans-kr),-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;color:#1a1a1a;background:#fff;overflow-x:hidden;word-break:keep-all;overflow-wrap:break-word}
+.lps{--g:#009519;--g2:#22B573;--gl:#4CAF50;font-family:'Pretendard',var(--font-noto-sans-kr),-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;line-height:1.7;color:#1a1a1a;background:#fff;overflow-x:hidden;word-break:keep-all;overflow-wrap:break-word}
 .lps *,.lps *::before,.lps *::after{box-sizing:border-box}
 .lps h1,.lps h2,.lps h3,.lps h4,.lps p,.lps ul{margin:0;padding:0}
 .lps ul{list-style:none}
@@ -114,9 +110,9 @@ const STYLE = `
 .lps-dk{background:#0d0d0d;color:#fff}
 .lps-dk2{background:#1a1a1a;color:#fff}
 .lps-gray{background:#f8f9fa}
-.lps-h2{font-size:34px;font-weight:800;line-height:1.4;text-align:center;margin-bottom:14px}
-.lps-h2 em{font-style:normal;color:var(--gl)}
-.lps-sub{font-size:16px;line-height:1.75;text-align:center;color:#777;margin:0 auto 40px;max-width:640px}
+.lps-h2{font-size:32px;font-weight:800;line-height:1.4;text-align:center;margin-bottom:14px}
+.lps-h2 em{font-style:normal;color:var(--g2)}
+.lps-sub{font-size:16px;line-height:1.7;text-align:center;color:#777;margin:0 auto 40px;max-width:640px}
 .lps-dk .lps-sub,.lps-dk2 .lps-sub{color:#a9a9a9}
 .lps-btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 36px;border:none;border-radius:50px;background:linear-gradient(135deg,#4CAF50 0%,#2e7d32 100%);color:#fff;font-family:inherit;font-size:18px;font-weight:800;cursor:pointer;text-decoration:none;box-shadow:0 8px 25px rgba(76,175,80,.35);transition:transform .2s,box-shadow .2s}
 .lps-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(76,175,80,.45)}
@@ -131,7 +127,7 @@ const STYLE = `
 .lps-hero::before{content:'';position:absolute;inset:0;background:url('/legacy/startup/954205d44af9d.png') center/cover;opacity:.15}
 .lps-hero .lps-in{position:relative;z-index:1;max-width:800px}
 .lps-hero h1{font-size:38px;font-weight:800;line-height:1.4;margin-bottom:22px}
-.lps-hero h1 em{font-style:normal;color:var(--gl)}
+.lps-hero h1 em{font-style:normal;color:var(--g2)}
 .lps-hero p.lps-hero-sub{font-size:18px;line-height:1.8;color:#c4c4c4;margin-bottom:36px}
 .lps-hero-note{margin-top:14px;font-size:14px;color:#9a9a9a}
 
@@ -144,28 +140,33 @@ const STYLE = `
 .lps-vid-play span{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(0,149,25,.92);box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .lps-vid-cap{margin:12px 4px 0;font-size:14px;font-weight:600;line-height:1.5;color:#d6d6d6}
 
-/* 3 공감 */
-.lps-quotes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:34px}
-.lps-quote{background:#fff;border:1px solid #e9ecef;border-left:4px solid var(--gl);border-radius:14px;padding:22px 22px;font-size:16px;font-weight:600;line-height:1.65;color:#222}
-.lps-close{text-align:center;font-size:18px;font-weight:700;line-height:1.7;color:#1a1a1a}
+/* 3 공감 — 카톡 말풍선 */
+.lps-chat{display:flex;flex-direction:column;gap:14px;margin:34px 0}
+.lps-bub{display:flex;align-items:flex-start;gap:10px}
+.lps-bub-av{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#dfe3e8;color:#555;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.lps-bub-t{background:#fff;border:1px solid #e5e7eb;border-radius:4px 18px 18px 18px;padding:13px 16px;font-size:16px;line-height:1.6;color:#222;min-width:0}
+.lps-chat.is-anim .lps-bub{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.lps-chat.is-anim.in .lps-bub{opacity:1;transform:none}
+.lps-chat.is-anim.in .lps-bub:nth-child(2){transition-delay:.6s}
+.lps-chat.is-anim.in .lps-bub:nth-child(3){transition-delay:1.2s}
+.lps-chat.is-anim.in .lps-bub:nth-child(4){transition-delay:1.8s}
+.lps-close{text-align:center;font-size:20px;font-weight:700;line-height:1.6;color:#1a1a1a}
 
 /* 4 반박 */
 .lps-xlist{display:flex;flex-direction:column;gap:12px;max-width:520px;margin:28px auto 34px;text-align:left}
 .lps-xlist li{display:flex;align-items:center;gap:12px;padding:13px 16px;background:rgba(255,107,107,.08);border-left:3px solid #ff6b6b;border-radius:10px;color:#ff8b8b;font-size:17px}
 .lps-xlist i{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#ff6b6b;color:#fff;font-style:normal;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.lps-lead{text-align:center;font-size:17px;line-height:1.8;color:#b5b5b5}
-.lps-strong{text-align:center;font-size:22px;font-weight:700;line-height:1.7;color:#fff}
-.lps-strong b{color:var(--gl)}
+.lps-lead{text-align:center;font-size:16px;line-height:1.7;font-weight:400;color:#b5b5b5}
+.lps-strong{text-align:center;font-size:20px;font-weight:700;line-height:1.6;color:#fff}
+.lps-strong b{font-weight:700;color:#fff}
 
-/* 5 계산기 */
-.lps-calc{background:linear-gradient(180deg,#f8f9fa 0%,#e8f5e9 100%)}
-
-/* 6 비교표 */
+/* 6 비교표 — 일반적인 창업 / 더그로우 */
 .lps-table-wrap{border-radius:18px;overflow:hidden;border:1px solid #e5e7eb}
-.lps-table{width:100%;border-collapse:collapse;font-size:15px;table-layout:fixed}
-.lps-table th,.lps-table td{padding:16px 14px;text-align:left;line-height:1.55;border-bottom:1px solid #eee;vertical-align:top}
+.lps-table{width:100%;border-collapse:collapse;font-size:16px;table-layout:fixed}
+.lps-table th,.lps-table td{padding:16px 16px;text-align:left;line-height:1.6;border-bottom:1px solid #eee;vertical-align:top}
 .lps-table thead th{background:#f3f4f6;font-weight:700;color:#444}
-.lps-table tbody th{width:16%;font-weight:700;color:#111;background:#fafafa}
+.lps-table tbody th{width:20%;font-weight:700;color:#111;background:#fafafa}
+.lps-table tbody td{color:#999}
 .lps-table .lps-us{background:#eaf7ec;color:#0a6b1b;font-weight:700}
 .lps-table thead .lps-us{background:var(--g);color:#fff}
 .lps-table tbody tr:last-child th,.lps-table tbody tr:last-child td{border-bottom:none}
@@ -173,19 +174,21 @@ const STYLE = `
 
 /* 7 4단계 */
 .lps-steps{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.lps-step{background:#fff;border:1px solid #e9ecef;border-radius:18px;padding:26px 22px}
-.lps-step-no{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--g);color:#fff;font-weight:800;font-size:15px;margin-bottom:12px}
-.lps-step h3{font-size:20px;font-weight:800;margin-bottom:8px}
-.lps-step p{font-size:15px;line-height:1.7;color:#555}
-.lps-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.lps-tags span{background:#e8f5e9;color:#0a6b1b;font-size:13px;font-weight:600;padding:6px 12px;border-radius:50px}
+.lps-step{background:#fff;border:1px solid #e9ecef;border-radius:18px;overflow:hidden}
+.lps-step-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#e5e7eb}
+.lps-step-body{padding:20px 20px 22px}
+.lps-step h3{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;line-height:1.4;margin-bottom:8px}
+.lps-step-no{flex:0 0 28px;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--g);color:#fff;font-weight:800;font-size:14px}
+.lps-step p{font-size:16px;line-height:1.7;color:#555}
+.lps-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.lps-tags span{background:#e8f5e9;color:#0a6b1b;font-size:14px;font-weight:600;padding:5px 11px;border-radius:50px}
 
 /* 8 차별점 */
 .lps-diffs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.lps-diff{background:#161616;border:1px solid #2a2a2a;border-radius:18px;padding:28px 22px}
-.lps-diff-no{font-size:14px;font-weight:800;color:var(--g2);margin-bottom:12px}
-.lps-diff h3{font-size:19px;font-weight:800;line-height:1.5;margin-bottom:10px;color:#fff}
-.lps-diff p{font-size:15px;line-height:1.7;color:#b0b0b0}
+.lps-diff{background:#161616;border:1px solid #2a2a2a;border-radius:18px;padding:30px 20px;text-align:center}
+.lps-diff-token{font-size:40px;font-weight:800;line-height:1.2;color:#fff;margin-bottom:10px}
+.lps-diff h3{font-size:20px;font-weight:700;line-height:1.4;margin-bottom:8px;color:#fff}
+.lps-diff-desc{font-size:16px;line-height:1.7;color:#b0b0b0}
 
 /* 9 후기 */
 .lps-reviews{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:56px}
@@ -193,8 +196,8 @@ const STYLE = `
 .lps-review-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .lps-avatar{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:var(--g);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
 .lps-review h4{font-size:15px;font-weight:700}
-.lps-review small{font-size:13px;color:#888}
-.lps-review p{font-size:15px;line-height:1.75;color:#444}
+.lps-review small{font-size:14px;color:#888}
+.lps-review p{font-size:16px;line-height:1.7;color:#444}
 .lps-h3{font-size:20px;font-weight:800;text-align:center;margin-bottom:18px}
 .lps-kakao{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;margin-bottom:56px}
 .lps-kakao img{flex:0 0 auto;height:320px;width:auto;border-radius:12px;border:1px solid #eee;scroll-snap-align:start}
@@ -205,10 +208,10 @@ const STYLE = `
 .lps-ceo-imgs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .lps-ceo-imgs img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;display:block}
 .lps-ceo h2{font-size:30px;font-weight:800;line-height:1.45;margin-bottom:18px}
-.lps-ceo h2 em{font-style:normal;color:var(--gl)}
-.lps-ceo p{font-size:16px;line-height:1.85;color:#c4c4c4;margin-bottom:20px}
+.lps-ceo h2 em{font-style:normal;color:var(--g2)}
+.lps-ceo p{font-size:16px;line-height:1.7;color:#c4c4c4;margin-bottom:20px}
 .lps-badges{display:flex;flex-wrap:wrap;gap:8px}
-.lps-badges span{border:1px solid rgba(76,175,80,.5);color:#9be0a0;font-size:13px;font-weight:600;padding:7px 14px;border-radius:50px}
+.lps-badges span{border:1px solid rgba(76,175,80,.5);color:#9be0a0;font-size:14px;font-weight:600;padding:7px 14px;border-radius:50px}
 
 /* 11 플랜 */
 .lps-plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
@@ -219,14 +222,20 @@ const STYLE = `
 .lps-plan li{position:relative;padding-left:30px;font-size:15px;line-height:1.6;color:#333}
 .lps-plan li::before{content:'\\2713';position:absolute;left:0;top:1px;width:20px;height:20px;line-height:20px;text-align:center;background:var(--g);color:#fff;border-radius:50%;font-size:12px;font-weight:700}
 .lps-plan li.lps-strongli{font-weight:700;color:var(--g)}
-.lps-plan li small{display:block;font-size:13px;color:#777;font-weight:400;margin-top:3px}
+.lps-plan li small{display:block;font-size:14px;color:#777;font-weight:400;margin-top:3px}
 .lps-plan li.lps-bonus{background:rgba(0,149,25,.08);border-radius:12px;padding:12px 14px 12px 40px;font-weight:700;color:var(--g)}
 .lps-plan li.lps-bonus::before{left:11px;top:12px}
+.lps-more{margin-top:12px}
+.lps-more summary{list-style:none;cursor:pointer;text-align:center;padding:12px;border:1.5px solid #cfe8d3;border-radius:12px;color:var(--g);font-size:15px;font-weight:700}
+.lps-more summary::-webkit-details-marker{display:none}
+.lps-more summary::after{content:'+';margin-left:6px;font-weight:700}
+.lps-more[open] summary{margin-bottom:12px}
+.lps-more[open] summary::after{content:'\\2212'}
 
 /* 12 선별 */
 .lps-pick{background:linear-gradient(135deg,#4CAF50 0%,#2e7d32 100%);color:#fff;text-align:center}
 .lps-pick h2{font-size:32px;font-weight:800;line-height:1.5;margin-bottom:18px}
-.lps-pick p{font-size:17px;line-height:1.85;opacity:.95;margin-bottom:28px}
+.lps-pick p{font-size:16px;line-height:1.7;opacity:.95;margin-bottom:28px}
 .lps-pick ul{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
 .lps-pick li{background:rgba(255,255,255,.2);border-radius:50px;padding:12px 22px;font-size:15px;font-weight:700}
 
@@ -236,7 +245,7 @@ const STYLE = `
 .lps-recv-card{background:#fff;border-radius:16px;padding:22px 20px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
 .lps-recv-no{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#e8f5e9;color:var(--g);font-weight:800;font-size:14px;margin-bottom:10px}
 .lps-recv-card h3{font-size:17px;font-weight:800;line-height:1.5;margin-bottom:6px}
-.lps-recv-card p{font-size:14px;line-height:1.65;color:#666}
+.lps-recv-card p{font-size:14px;line-height:1.7;color:#666}
 .lps-form-wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.1);overflow:hidden;scroll-margin-top:90px}
 .lps-form-head{background:linear-gradient(135deg,#4CAF50 0%,#2e7d32 100%);color:#fff;padding:20px 28px;font-size:22px;font-weight:700}
 .lps-form{padding:32px 30px}
@@ -267,49 +276,46 @@ const STYLE = `
 .lps-faq summary::-webkit-details-marker{display:none}
 .lps-faq summary::after{content:'+';flex:0 0 auto;font-size:22px;font-weight:400;color:var(--g)}
 .lps-faq details[open] summary::after{content:'\\2212'}
-.lps-faq p{padding:0 20px 20px;font-size:15px;line-height:1.8;color:#555}
+.lps-faq p{padding:0 20px 20px;font-size:16px;line-height:1.7;color:#555}
 
 /* 하단 고정 바 */
 .lps-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(13,13,13,.96);border-top:1px solid rgba(255,255,255,.12);box-shadow:0 -4px 20px rgba(0,0,0,.25);transition:transform .3s ease}
-.lps-bar.is-hidden{transform:translateY(110%);pointer-events:none}
-.lps-bar button{min-width:0;height:48px;border-radius:12px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:-0.02em}
-.lps-bar-calc{flex:1 1 0;background:transparent;border:1.5px solid rgba(255,255,255,.45);color:#fff}
-.lps-bar-cta{flex:1.25 1 0;background:var(--g);border:none;color:#fff}
-.lps-bar-space{height:calc(64px + env(safe-area-inset-bottom))}
+.lps-bar button{min-width:0;width:100%;height:52px;border-radius:12px;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;letter-spacing:-0.02em}
+.lps-bar-cta{background:var(--g);border:none;color:#fff}
+.lps-bar-space{height:calc(68px + env(safe-area-inset-bottom))}
 @media(min-width:768px){.lps-bar{padding-left:max(12px,calc((100vw - 720px)/2));padding-right:max(12px,calc((100vw - 720px)/2))}}
 
 @media(max-width:768px){
-  .lps-sec{padding:60px 20px}
-  .lps-h2{font-size:24px}
-  .lps-sub{font-size:15px;margin-bottom:30px}
+  .lps-sec{padding:72px 20px}
+  .lps-h2{font-size:26px}
+  .lps-sub{font-size:16px;margin-bottom:30px}
   .lps-hero{padding:56px 20px 52px}
   .lps-hero h1{font-size:25px}
-  .lps-hero p.lps-hero-sub{font-size:15px;margin-bottom:28px}
+  .lps-hero p.lps-hero-sub{font-size:16px;margin-bottom:28px}
   .lps-btn{width:100%;font-size:17px;padding:0 20px}
   .lps-vids{justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -20px;padding:0 20px 8px;gap:14px;-webkit-overflow-scrolling:touch}
   .lps-vid{width:240px;scroll-snap-align:start}
-  .lps-quotes{grid-template-columns:1fr}
-  .lps-quote{font-size:15px;padding:18px}
-  .lps-close{font-size:16px}
-  .lps-xlist li{font-size:15px}
-  .lps-strong{font-size:18px}
+  .lps-xlist li{font-size:16px}
   .lps-table-wrap{display:none}
   .lps-cmp-cards{display:flex;flex-direction:column;gap:12px}
+  .lps-cmp-legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;font-weight:700;text-align:center;color:#999}
+  .lps-cmp-legend .lps-us{color:var(--g)}
   .lps-cmp{background:#fff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden}
-  .lps-cmp h3{padding:12px 16px;background:#f3f4f6;font-size:15px;font-weight:800}
-  .lps-cmp dl{margin:0}
-  .lps-cmp dl>div{display:flex;gap:12px;padding:11px 16px;border-top:1px solid #f0f0f0;font-size:14px;line-height:1.55}
-  .lps-cmp dt{flex:0 0 76px;color:#888;font-weight:600}
-  .lps-cmp dd{margin:0;flex:1 1 auto;min-width:0;color:#444}
-  .lps-cmp dl>div.lps-us{background:#eaf7ec}
-  .lps-cmp dl>div.lps-us dt{color:var(--g);font-weight:800}
-  .lps-cmp dl>div.lps-us dd{color:#0a6b1b;font-weight:800}
+  .lps-cmp h3{padding:10px 16px;background:#f3f4f6;font-size:15px;font-weight:800;line-height:1.5}
+  .lps-cmp-cols{display:grid;grid-template-columns:1fr 1fr}
+  .lps-cmp-cols p{padding:14px 12px;font-size:14px;line-height:1.6;min-width:0}
+  .lps-cmp-no{background:#f1f2f4;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#c8c8c8}
+  .lps-cmp-yes{display:flex;gap:6px;align-items:flex-start;background:#eaf7ec;color:#0a6b1b;font-weight:700}
+  .lps-cmp-yes svg{flex:0 0 18px;color:var(--g2);margin-top:2px}
   .lps-steps,.lps-diffs,.lps-plans,.lps-reviews,.lps-recv{grid-template-columns:1fr}
+  .lps-step-img{aspect-ratio:2.6/1}
+  .lps-step-body{padding:16px 18px 18px}
+  .lps-diff{padding:26px 20px}
   .lps-kakao img{height:260px}
   .lps-reviews{margin-bottom:40px}
   .lps-ceo{grid-template-columns:1fr;gap:24px}
-  .lps-ceo h2{font-size:24px}
-  .lps-pick h2{font-size:24px}
+  .lps-ceo h2{font-size:26px}
+  .lps-pick h2{font-size:26px}
   .lps-form{padding:24px 18px}
   .lps-form-head{font-size:19px;padding:16px 20px}
   .lps-notice{margin:0 18px 22px}
@@ -381,8 +387,6 @@ function VideoCard({
 
 export default function StartupLp() {
   const [activeVid, setActiveVid] = useState<number | null>(null);
-  const [calcToken, setCalcToken] = useState(0);
-  const [calcOpen, setCalcOpen] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -390,6 +394,26 @@ export default function StartupLp() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const phoneRefs = useRef<(HTMLInputElement | null)[]>([]);
   const stopRef = useRef<(() => void) | null>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
+
+  // 공감 말풍선 — 스크립트가 켜진 경우에만 숨겼다가 화면에 들어오면 하나씩 보여 준다 (기본은 표시)
+  useEffect(() => {
+    const el = chatRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    el.classList.add("is-anim");
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          el.classList.add("in");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // 언마운트 시 진행 중인 전송의 리스너·타이머 정리
   useEffect(() => () => stopRef.current?.(), []);
@@ -397,7 +421,6 @@ export default function StartupLp() {
   const scrollToForm = useCallback(() => {
     document.getElementById("consulting-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
-  const openCalc = useCallback(() => setCalcToken((n) => n + 1), []);
 
   // 연락처 6칸: 숫자만 허용, 칸이 차면 다음 칸으로
   const onPhoneInput = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -518,19 +541,22 @@ export default function StartupLp() {
         </div>
       </section>
 
-      {/* 3 공감 */}
+      {/* 3 공감 — 카톡 말풍선, 하나씩 등장(기본 표시, 스크립트가 켜질 때만 숨겼다 보여 줌) */}
       <section data-track-section="empathy" className="lps-sec lps-gray">
         <div className="lps-in lps-in--narrow">
           <h2 className="lps-h2">
             창업을 결심하고 나면
             <br />
-            이런 말들이 머릿속을 맴돕니다.
+            <em>이런 말들</em>이 머릿속을 맴돕니다.
           </h2>
-          <div className="lps-quotes" style={{ marginTop: 34 }}>
+          <div className="lps-chat" ref={chatRef}>
             {EMPATHY.map((t) => (
-              <p key={t} className="lps-quote">
-                &ldquo;{t}&rdquo;
-              </p>
+              <div key={t} className="lps-bub">
+                <span className="lps-bub-av" aria-hidden="true">
+                  대표
+                </span>
+                <p className="lps-bub-t">{t}</p>
+              </div>
             ))}
           </div>
           <p className="lps-close">이 고민을 그대로 안고 계약서에 도장을 찍으면, 그때부터는 되돌리기 어렵습니다.</p>
@@ -566,32 +592,13 @@ export default function StartupLp() {
         </div>
       </section>
 
-      {/* 5 손실 시각화 — 창업비용 계산기 */}
-      <section data-track-section="cost" className="lps-sec lps-calc">
-        <div className="lps-in lps-center">
-          <h2 className="lps-h2">
-            혼자 견적을 받으면
-            <br />
-            보이지 않는 비용이 있습니다.
-          </h2>
-          <p className="lps-sub">
-            시공 중간마진, 기구 유통마진, 필요 이상의 설계.
-            <br />
-            업종과 평수만 넣으면 줄일 수 있는 범위를 바로 보여드립니다.
-          </p>
-          <button type="button" className="lps-btn" onClick={openCalc}>
-            {CALC_LABEL}
-          </button>
-        </div>
-      </section>
-
-      {/* 6 비교표 */}
+      {/* 6 비교표 — 일반적인 창업 / 더그로우 2열, 핵심 4행 */}
       <section data-track-section="compare" className="lps-sec">
-        <div className="lps-in">
+        <div className="lps-in lps-in--narrow">
           <h2 className="lps-h2">
             같은 창업이라도,
             <br />
-            누구와 하느냐에 따라 <em>새는 돈이 달라집니다.</em>
+            누구와 하느냐에 따라 <em>새는 돈</em>이 달라집니다.
           </h2>
           <div style={{ height: 30 }} />
           <div className="lps-table-wrap">
@@ -599,10 +606,9 @@ export default function StartupLp() {
               <thead>
                 <tr>
                   <th scope="col">항목</th>
-                  <th scope="col">{COMPARE_COLS[0]}</th>
-                  <th scope="col">{COMPARE_COLS[1]}</th>
+                  <th scope="col">일반적인 창업</th>
                   <th scope="col" className="lps-us">
-                    {COMPARE_COLS[2]}
+                    더그로우
                   </th>
                 </tr>
               </thead>
@@ -610,54 +616,66 @@ export default function StartupLp() {
                 {COMPARE_ROWS.map((r) => (
                   <tr key={r.item}>
                     <th scope="row">{r.item}</th>
-                    <td>{r.cells[0]}</td>
-                    <td>{r.cells[1]}</td>
-                    <td className="lps-us">{r.cells[2]}</td>
+                    <td>{r.normal}</td>
+                    <td className="lps-us">{r.us}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="lps-cmp-cards">
+            <div className="lps-cmp-legend" aria-hidden="true">
+              <span>일반적인 창업</span>
+              <span className="lps-us">더그로우</span>
+            </div>
             {COMPARE_ROWS.map((r) => (
               <div key={r.item} className="lps-cmp">
                 <h3>{r.item}</h3>
-                <dl>
-                  {COMPARE_COLS.map((c, i) => (
-                    <div key={c} className={i === 2 ? "lps-us" : undefined}>
-                      <dt>{c}</dt>
-                      <dd>{r.cells[i]}</dd>
-                    </div>
-                  ))}
-                </dl>
+                <div className="lps-cmp-cols">
+                  <p className="lps-cmp-no">
+                    <span className="sr-only">일반적인 창업: </span>
+                    {r.normal}
+                  </p>
+                  <p className="lps-cmp-yes">
+                    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor" />
+                    </svg>
+                    <span className="sr-only">더그로우: </span>
+                    {r.us}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 7 4단계 한 팀 구조 */}
+      {/* 7 4단계 한 팀 구조 — 기존 단계별 사진 재사용 */}
       <section data-track-section="process" className="lps-sec lps-gray">
         <div className="lps-in">
           <h2 className="lps-h2">
             입지부터 운영까지,
             <br />
-            4단계를 <em>한 팀이 끝까지</em> 갑니다.
+            4단계를 <em>한 팀</em>이 끝까지 갑니다.
           </h2>
           <p className="lps-sub">단계마다 업체를 바꿔가며 소모되지 않도록, 처음부터 끝까지 같은 팀이 책임집니다.</p>
           <div className="lps-steps">
             {STEPS.map((s, i) => (
               <div key={s.title} className="lps-step">
-                <span className="lps-step-no">{i + 1}</span>
-                <h3>{s.title}</h3>
-                <p>{s.desc}</p>
-                {s.points.length > 0 && (
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="lps-step-img" src={`/legacy/startup/${s.img}`} alt={`${s.title} 현장`} loading="lazy" />
+                <div className="lps-step-body">
+                  <h3>
+                    <span className="lps-step-no">{i + 1}</span>
+                    {s.title}
+                  </h3>
+                  <p>{s.desc}</p>
                   <div className="lps-tags">
                     {s.points.map((p) => (
                       <span key={p}>{p}</span>
                     ))}
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
@@ -670,15 +688,15 @@ export default function StartupLp() {
           <h2 className="lps-h2">
             오픈해드리고 끝나는 곳과
             <br />
-            <em>여기서부터 다릅니다.</em>
+            <em>여기서부터</em> 다릅니다.
           </h2>
           <div style={{ height: 30 }} />
           <div className="lps-diffs">
-            {DIFFS.map((d, i) => (
+            {DIFFS.map((d) => (
               <div key={d.title} className="lps-diff">
-                <p className="lps-diff-no">0{i + 1}</p>
+                <p className="lps-diff-token">{d.token}</p>
                 <h3>{d.title}</h3>
-                <p>{d.desc}</p>
+                <p className="lps-diff-desc">{d.desc}</p>
               </div>
             ))}
           </div>
@@ -689,7 +707,7 @@ export default function StartupLp() {
       <section data-track-section="proof" className="lps-sec">
         <div className="lps-in">
           <h2 className="lps-h2" style={{ marginBottom: 34 }}>
-            직접 경험하신 <em style={{ color: "var(--g)" }}>대표님들의 이야기</em>
+            직접 경험하신 <em>대표님들</em>의 이야기
           </h2>
           <div className="lps-reviews">
             {REVIEWS.map((r) => (
@@ -751,35 +769,41 @@ export default function StartupLp() {
         </div>
       </section>
 
-      {/* 11 플랜 2종 */}
+      {/* 11 플랜 2종 — 상위 5개만 보이고 나머지는 아코디언 */}
       <section data-track-section="plan" className="lps-sec lps-gray">
         <div className="lps-in">
           <h2 className="lps-h2" style={{ marginBottom: 34 }}>
-            규모에 맞춘 <em style={{ color: "var(--g)" }}>창업 플랜</em>
+            규모에 맞춘 <em>창업 플랜</em>
           </h2>
           <div className="lps-plans">
             {[
               { name: "더그로우 창업솔루션", size: "헬스장, 6:1 이상 필라테스 등", bonus: true },
               { name: "소자본 창업솔루션", size: "1:1 피티샵, 개인·소그룹 필라테스 샵 등", bonus: false },
-            ].map((p) => (
-              <div key={p.name} className="lps-plan">
-                <p className="lps-plan-name">{p.name}</p>
-                <span className="lps-plan-size">{p.size}</span>
-                <ul>
-                  {PLAN_COMMON.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                  <li className="lps-strongli">
-                    그로우 운영시스템 교육 및 파일제공
-                    <small>총 4회, 섹터맵 / 홍보일지 / 회원관리 / 상담방법 등</small>
-                  </li>
-                  {PLAN_TAIL.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                  {p.bonus && <li className="lps-bonus">오픈세일 / 직원 직접상주 2달</li>}
-                </ul>
-              </div>
-            ))}
+            ].map((p) => {
+              const items: PlanItem[] = [
+                ...(p.bonus ? [{ t: "오픈세일 / 직원 직접상주 2달", cls: "lps-bonus" }] : []),
+                ...PLAN_COMMON.map((t) => ({ t })),
+                { t: "그로우 운영시스템 교육 및 파일제공", cls: "lps-strongli", sub: "총 4회, 섹터맵 / 홍보일지 / 회원관리 / 상담방법 등" },
+                ...PLAN_TAIL.map((t) => ({ t })),
+              ];
+              const renderLi = (it: PlanItem) => (
+                <li key={it.t} className={it.cls}>
+                  {it.t}
+                  {it.sub && <small>{it.sub}</small>}
+                </li>
+              );
+              return (
+                <div key={p.name} className="lps-plan">
+                  <p className="lps-plan-name">{p.name}</p>
+                  <span className="lps-plan-size">{p.size}</span>
+                  <ul>{items.slice(0, 5).map(renderLi)}</ul>
+                  <details className="lps-more">
+                    <summary>전체 항목 보기</summary>
+                    <ul>{items.slice(5).map(renderLi)}</ul>
+                  </details>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -811,7 +835,7 @@ export default function StartupLp() {
           <h2 className="lps-h2">
             연락처를 남기시면,
             <br />
-            내 계획에 맞는 <em style={{ color: "var(--g)" }}>창업 정보</em>를 보내드립니다.
+            내 계획에 맞는 <em>창업 정보</em>를 보내드립니다.
           </h2>
           <div style={{ height: 30 }} />
           <div className="lps-recv">
@@ -986,17 +1010,12 @@ export default function StartupLp() {
       {/* 하단 고정 바 스페이서 — 바가 푸터를 가리지 않게 한다 */}
       <div className="lps-bar-space" aria-hidden="true" />
 
-      {/* 하단 고정 바 — 계산기 패널이 열리면 숨김 */}
-      <div className={`lps-bar${calcOpen ? " is-hidden" : ""}`} aria-hidden={calcOpen}>
-        <button type="button" className="lps-bar-calc" onClick={openCalc} tabIndex={calcOpen ? -1 : 0}>
-          {CALC_LABEL}
-        </button>
-        <button type="button" className="lps-bar-cta" onClick={scrollToForm} tabIndex={calcOpen ? -1 : 0}>
+      {/* 하단 고정 바 — 버튼 1개(전체 폭) */}
+      <div className="lps-bar">
+        <button type="button" className="lps-bar-cta" onClick={scrollToForm}>
           {CTA_LABEL}
         </button>
       </div>
-
-      <CostCalculator hideBar openToken={calcToken} onOpenChange={setCalcOpen} />
     </div>
   );
 }
