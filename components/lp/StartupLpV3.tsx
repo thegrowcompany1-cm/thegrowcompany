@@ -45,6 +45,14 @@ const PHOTOS_SPACE = [
 ];
 const PHOTO_SITE = { src: "badee82e80f1a.jpg", alt: "입지 현장 동행" };
 
+// 장면 6-1 시공사례 갤러리 — /consulting/startup 의 시공사례 46장 전체, 3줄로 나눈다
+const GALLERY_ROWS: string[][] = [
+  ["7febfcc8985e2.png", "147fe84156057.png", "0c832ab248ce4.png", "971ea42cfd8a8.png", "16d3196b68f2e.png", "e8eb94b6d52ff.png", "050b276ee45d7.png", "7fddde5b80282.png", "bdffa96015f92.png", "429d83e687190.png", "994f3e4444876.png", "4a9b8cbefcace.png", "d62ab4ed1c51e.png", "bcb8f87ab7f88.png", "dded8e6197f60.png", "24150a19c2437.png"],
+  ["05fdbed8a415e.png", "5a7016f66c8e7.png", "5b6b3c8c692a6.png", "c0ad9289bb4b3.png", "a5225411385cf.png", "e7ec9b6e8f936.png", "d918cd70d9c08.png", "48a5270a28abe.png", "7855e31a685e9.png", "e75529ae4fab7.png", "425d8005700dd.png", "bf3bf2aea61a1.png", "b02205ae2e7da.png", "543e8bd02106a.png", "35a5086c05f11.png"],
+  ["e49fbb8f83360.png", "ee0af39a17497.png", "31d7a26b1bcf3.png", "4e18b37fda8fc.png", "8ff784baa524b.png", "ce858defec5b3.png", "13ef060b46ff4.png", "ed2606eb9f936.png", "6542da8356ba3.png", "88d10aeb9e1fd.png", "500c88fe40f06.png", "fe2ba70d48273.png", "ba9e88035d811.png", "5985b8b2d6a41.png", "31adc48935f10.png"],
+];
+const GALLERY_ALL = GALLERY_ROWS.flat();
+
 const REWIND = ["오픈 당일", "오픈 전 회원 모집", "공간 설계", "자리 선택"];
 const TIMELINE = ["자리 선택", "공간 설계", "오픈 전 회원 모집", "오픈", "운영"];
 
@@ -195,10 +203,27 @@ const STYLE = `
   .lp3-tl li span{display:block;padding-top:36px}
 }
 
+/* 장면 6-1 시공사례 갤러리 — 3줄 마퀴 + 라이트박스 */
+.lp3-gal{display:flex;flex-direction:column;gap:10px;margin-top:30px;overflow:hidden}
+.lp3-gal .lp3-mq{margin-top:0}
+.lp3-tile{display:block;width:140px;height:140px;padding:0;border:none;border-radius:8px;overflow:hidden;background:#1a1a1a;cursor:pointer}
+.lp3-tile img{display:block;width:100%;height:100%;object-fit:cover;object-position:bottom}
+@media(min-width:481px){.lp3-tile{width:180px;height:180px}}
+.lp3-lb{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.92);padding:64px 12px}
+@media(min-width:481px){.lp3-lb{padding:64px 64px}}
+.lp3-lb img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;border-radius:8px}
+.lp3-lb-x,.lp3-lb-p,.lp3-lb-n{position:absolute;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:none;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:22px;line-height:1;cursor:pointer}
+.lp3-lb-x{top:14px;right:14px}
+.lp3-lb-p{left:8px;top:50%;margin-top:-22px}
+.lp3-lb-n{right:8px;top:50%;margin-top:-22px}
+.lp3-lb-c{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-size:14px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:0}
+
 /* 장면 8 후기 마퀴 (LogoMarquee 방식) */
 .lp3-mq{position:relative;overflow:hidden;width:100%;margin:30px -20px 0;width:calc(100% + 40px)}
 .lp3-mq-track{display:flex;align-items:stretch;width:max-content;will-change:transform;animation:lp3-left var(--dur,60s) linear infinite}
+.lp3-mq-track.lp3-mq-r{animation-name:lp3-right}
 @keyframes lp3-left{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes lp3-right{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 .lp3-mq.is-paused .lp3-mq-track,.lp3-mq.is-hold .lp3-mq-track{animation-play-state:paused}
 @media(hover:hover) and (pointer:fine){.lp3-mq:hover .lp3-mq-track{animation-play-state:paused}}
 .lp3-mq-i{flex:0 0 auto;display:flex;margin-right:12px}
@@ -289,7 +314,7 @@ const IcUp = () => (
 );
 
 // LogoMarquee 와 같은 방식: 두 벌 이어 붙임 + margin 간격 + 화면 밖 정지 + 터치 중 정지
-function Marquee({ items, dur }: { items: ReactNode[]; dur: number }) {
+function Marquee({ items, dur, reverse = false, paused = false }: { items: ReactNode[]; dur: number; reverse?: boolean; paused?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -304,10 +329,19 @@ function Marquee({ items, dur }: { items: ReactNode[]; dur: number }) {
     return () => io.disconnect();
   }, []);
   const hold = () => ref.current?.classList.add("is-hold");
-  const release = () => ref.current?.classList.remove("is-hold");
+  const release = () => {
+    if (!paused) ref.current?.classList.remove("is-hold");
+  };
   return (
-    <div ref={ref} className="lp3-mq" style={{ "--dur": `${dur}s` } as CSSProperties} onTouchStart={hold} onTouchEnd={release} onTouchCancel={release}>
-      <div className="lp3-mq-track">
+    <div
+      ref={ref}
+      className={`lp3-mq${paused ? " is-hold" : ""}`}
+      style={{ "--dur": `${dur}s` } as CSSProperties}
+      onTouchStart={hold}
+      onTouchEnd={release}
+      onTouchCancel={release}
+    >
+      <div className={`lp3-mq-track${reverse ? " lp3-mq-r" : ""}`}>
         {items.map((n, i) => (
           <div className="lp3-mq-i" key={`a${i}`}>
             {n}
@@ -386,6 +420,7 @@ export default function StartupLpV3() {
   const [activeVid, setActiveVid] = useState<string | null>(null);
   const [heroPlaying, setHeroPlaying] = useState(false);
   const [stage, setStage] = useState<number | null>(null);
+  const [lb, setLb] = useState<number | null>(null); // 라이트박스에 띄운 갤러리 사진 index
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [heroBtnVisible, setHeroBtnVisible] = useState(true);
@@ -446,6 +481,24 @@ export default function StartupLpV3() {
     };
   }, []);
   const barHidden = heroBtnVisible || stageVisible;
+
+  // 라이트박스 — 열리면 body 스크롤 잠금, Esc 닫기, 좌우 화살표 넘김
+  useEffect(() => {
+    if (lb === null) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLb(null);
+      else if (e.key === "ArrowLeft") setLb((i) => (i === null ? null : (i - 1 + GALLERY_ALL.length) % GALLERY_ALL.length));
+      else if (e.key === "ArrowRight") setLb((i) => (i === null ? null : (i + 1) % GALLERY_ALL.length));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [lb]);
+  const lbMove = (d: number) => setLb((i) => (i === null ? null : (i + d + GALLERY_ALL.length) % GALLERY_ALL.length));
 
   const scrollToStage = useCallback(() => {
     document.getElementById("consulting-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -750,6 +803,37 @@ export default function StartupLpV3() {
         </div>
       </section>
 
+      {/* 장면 6-1 시공사례 갤러리 [블랙] — 3줄 마퀴, 탭하면 라이트박스 */}
+      <section data-track-section="gallery">
+        <div className="lp3-blk lp3-bk">
+          <div className="lp3-c">
+            <h2 className="lp3-mega lp3-rv">
+              같은 과정으로 문을 연 <Hl>센터들</Hl>
+            </h2>
+            <p className="lp3-p lp3-mt-s">헬스장·필라테스·PT샵·GX까지, 더그로우와 함께 오픈한 실제 현장입니다.</p>
+            <div className="lp3-gal">
+              {GALLERY_ROWS.map((row, r) => (
+                <Marquee
+                  key={r}
+                  dur={[64, 72, 58][r]}
+                  reverse={r === 1}
+                  paused={lb !== null}
+                  items={row.map((f) => {
+                    const idx = GALLERY_ALL.indexOf(f);
+                    return (
+                      <button key={f} type="button" className="lp3-tile" onClick={() => setLb(idx)} aria-label="시공사례 사진 크게 보기">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={LEGACY + f} alt="더그로우 창업 현장 실제 사진" loading="lazy" draggable={false} />
+                      </button>
+                    );
+                  })}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 장면 7 다른 창업 이야기 [블랙] */}
       <section data-track-section="stories">
         <div className="lp3-blk lp3-bk">
@@ -978,6 +1062,26 @@ export default function StartupLpV3() {
           </div>
         </div>
       </section>
+
+      {/* 시공사례 라이트박스 */}
+      {lb !== null && (
+        <div className="lp3-lb" role="dialog" aria-modal="true" aria-label="시공사례 사진" onClick={() => setLb(null)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={LEGACY + GALLERY_ALL[lb]} alt="더그로우 창업 현장 실제 사진" onClick={(e) => e.stopPropagation()} />
+          <button type="button" className="lp3-lb-x" aria-label="닫기" onClick={() => setLb(null)}>
+            ✕
+          </button>
+          <button type="button" className="lp3-lb-p" aria-label="이전 사진" onClick={(e) => { e.stopPropagation(); lbMove(-1); }}>
+            ‹
+          </button>
+          <button type="button" className="lp3-lb-n" aria-label="다음 사진" onClick={(e) => { e.stopPropagation(); lbMove(1); }}>
+            ›
+          </button>
+          <p className="lp3-lb-c">
+            {lb + 1} / {GALLERY_ALL.length}
+          </p>
+        </div>
+      )}
 
       {/* 하단 고정 바 스페이서 — 바가 푸터를 가리지 않게 한다 */}
       <div className="lp3-bar-space" aria-hidden="true" />
