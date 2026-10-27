@@ -5,7 +5,7 @@
 //
 //  · 구조·스타일은 /edu/gx-class 를 따른다. 주입 HTML 없이 전부 React 렌더,
 //    클래스 접두사 so-, 상수 접두사 SO_.
-//  · 일자·장소·정원·가격은 lib/salesOps.ts 상수만 수정한다 (장소·정원·가격은 TODO).
+//  · 일자·장소·가격은 lib/salesOps.ts 상수만 수정한다 (장소·정원·가격은 TODO).
 //  · 섹션: 히어로(직책 탭 3개 + 가져갈 것 패널) → 세일즈 문제(하수↔고수 대조) → 황현진 소개(저서 3D 슬라이드·영상)
 //    → 운영(김재강 소개 → 고통 말풍선 → 원칙 → GROW SYSTEM) → 커리큘럼 → 변화 → 클로징 → 신청(FAQ 포함).
 //  · 하단 고정 바: 마감 카운트다운 + "현재 신청 가능!"(잔여석이 1 이상이거나 못 가져온 경우) + 내 자리 확보하기. 마감·매진이면 신청 폼·결제도 막는다
@@ -24,7 +24,6 @@ import { whenFbReady } from "@/lib/metaPixel";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
 import { clearCheckoutPrefill, readCheckoutPrefill, saveCheckoutPrefill } from "@/lib/products";
 import {
-  SO_CAPACITY,
   SO_DEADLINE_MS,
   SO_LANDING_POPUP,
   SO_LANDING_V1,
@@ -35,7 +34,6 @@ import {
   SO_PRICE_NORMAL,
   SO_PRICE_STORY,
   SO_TIME,
-  soFormatCapacity,
   soFormatPrice,
   soIsPending,
 } from "@/lib/salesOps";
@@ -278,7 +276,7 @@ const SO_CLOSING = [
 const SO_FAQ: { q: string; a: string | null }[] = [
   {
     q: "환불 규정",
-    a: "강의 5일 전까지는 100% 환불이 가능합니다. 정원이 한정된 강의라 그 이후에는 환불이 불가합니다.",
+    a: "강의 5일 전까지는 100% 환불이 가능합니다. 그 이후에는 환불이 불가합니다.",
   },
   {
     q: "단체 신청",
@@ -1540,12 +1538,6 @@ export default function SalesOps() {
               <tr>
                 <th scope="row">장소</th>
                 <td className={soIsPending(SO_PLACE) ? "is-pending" : undefined}>{SO_PLACE}</td>
-              </tr>
-              <tr>
-                <th scope="row">정원</th>
-                <td className={soIsPending(SO_CAPACITY) ? "is-pending" : undefined}>
-                  {soFormatCapacity(SO_CAPACITY)}
-                </td>
               </tr>
               <tr>
                 <th scope="row">가격</th>

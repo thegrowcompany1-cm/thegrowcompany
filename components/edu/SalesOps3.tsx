@@ -8,14 +8,13 @@
 //  · 결제: components/edu/SalesOpsPay.tsx 를 수정 없이 사용. 랜딩 구분값(landing="sales-ops3")은
 //    이 파일이 결제 버튼 클릭 직후 신청 정보(sessionStorage)에 덧붙인다.
 //  · 측정 이벤트: view_item / apply_section_view / apply_click (+ 기존 begin_checkout, purchase 에 landing 포함)
-//  · 가격·일시·장소·정원·마감은 lib/salesOps.ts 상수에서 가져온다.
+//  · 가격·일시·장소·마감은 lib/salesOps.ts 상수에서 가져온다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
 import {
-  SO_CAPACITY,
   SO_DATE,
   SO_DEADLINE_MS,
   SO_LANDING_V3,
@@ -25,7 +24,6 @@ import {
   SO_PRODUCT_NORMAL,
   SO_PRODUCT_STORY,
   SO_TIME,
-  soFormatCapacity,
   soFormatPrice,
   soIsPending,
 } from "@/lib/salesOps";
@@ -38,9 +36,8 @@ const START_HOUR = parseInt(SO_TIME, 10); // "13:00~17:00" → 13
 const START_LABEL = START_HOUR >= 12 ? `오후 ${START_HOUR > 12 ? START_HOUR - 12 : 12}시` : `오전 ${START_HOUR}시`;
 const DATE_NUM = SO_DATE.replace(/\(.\)/, ""); // "2026.11.21"
 const DOW_EN = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][new Date(SO_DEADLINE_MS + 9 * 3_600_000).getUTCDay()];
-const CAP_TEXT = soFormatCapacity(SO_CAPACITY);
-const TOP_LINE = `${SO_DATE} ${START_LABEL} · 당산 · ${CAP_TEXT} 한정`;
-const LAST_LINE = `${SO_DATE} · 당산 · ${CAP_TEXT} 한정`;
+const TOP_LINE = `${SO_DATE} ${START_LABEL} · 당산`;
+const LAST_LINE = `${SO_DATE} · 당산`;
 const CTA_TEXT = "내 자리 확보하기";
 
 // ── 이미지·영상 (기존 /edu/sales-ops 와 같은 경로) ───────────────────────────
@@ -632,9 +629,9 @@ export default function SalesOps3() {
         {/* 9. 입장권 */}
         <section data-track-section="ticket" className="so3-b so3-dk">
           <h2>
-            단 하루,
+            오직 하루,
             <br />
-            <Hl>{CAP_TEXT}만 입장합니다.</Hl>
+            <Hl>현장에서만 열립니다.</Hl>
           </h2>
           <div className="so3-tk">
             <div className="so3-tk-s">
@@ -651,7 +648,7 @@ export default function SalesOps3() {
                 {PLACE_SHORT} (당산)
               </p>
               <p className="so3-tk-n">
-                정원 {CAP_TEXT} · 4시간
+                4시간 집중 교육
               </p>
             </div>
           </div>

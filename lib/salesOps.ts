@@ -15,7 +15,7 @@ export const SO_DATE = "2026.11.21(토)";
 export const SO_TIME = "13:00~17:00";
 /** 장소 — 신청 포스터(public/edu/sales-ops/poster.jpg)에 기재된 내용 */
 export const SO_PLACE: string | Pending = "한국에너지기술인협회 교육장 (서울 영등포구 당산로41길 11 E동 601호)";
-/** 정원 — 신청 포스터의 "100명 한정" */
+/** 정원 — 화면에는 표시하지 않는다(2026-10-27 희소성 이유로 제거). 서버의 매진 판정(lib/seminarSeats.ts)에만 쓴다 */
 export const SO_CAPACITY: number | Pending = 100;
 /** 정상가 (원) — products 의 sales-ops 가격과 같아야 한다 (서버가 DB 가격으로 금액을 검증한다) */
 export const SO_PRICE_NORMAL = 165000;

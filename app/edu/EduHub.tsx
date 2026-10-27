@@ -7,12 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import { TYPE_CURSOR_CSS, useTypewriter, type TypeStep } from "@/lib/useTypewriter";
 import Link from "next/link";
 import {
-  SO_CAPACITY,
   SO_DATE,
   SO_PRICE_NORMAL,
   SO_PRICE_STORY,
   SO_TIME,
-  soFormatCapacity,
   soFormatPrice,
 } from "@/lib/salesOps";
 
@@ -44,7 +42,7 @@ const COURSES: {
   imgPos?: string;
 }[] = [
   {
-    // 일자·시간·가격·정원은 lib/salesOps.ts 상수로 출력한다 (하드코딩 금지). 포스터가 세로형(4:5)이라 16:9 카드에서는 제목·강사 영역이 보이게 위치를 조정한다.
+    // 일자·시간·가격은 lib/salesOps.ts 상수로 출력한다 (하드코딩 금지). 포스터가 세로형(4:5)이라 16:9 카드에서는 제목·강사 영역이 보이게 위치를 조정한다.
     href: "/edu/sales-ops",
     img: "/edu/sales-ops/poster.jpg",
     alt: "피트니스 성장 마스터키 세미나 포스터",
@@ -56,7 +54,7 @@ const COURSES: {
       "2부 황현진 대표 매출치트키 — 권유·호감의 기술",
       `스토리 인증 시 ${soFormatPrice(SO_PRICE_STORY)} (정가 ${soFormatPrice(SO_PRICE_NORMAL)})`,
     ],
-    badge: `총 4시간 · ${soFormatCapacity(SO_CAPACITY)} 한정`,
+    badge: "총 4시간",
   },
   {
     href: "/edu/startup-class",

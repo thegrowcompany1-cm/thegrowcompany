@@ -527,7 +527,6 @@ export default function SalesOps2() {
               <div className="so2-r"><dt>장소</dt><dd>영등포 당산 · 당산로41길 11 E동 601호</dd></div>
               <div className="so2-r"><dt>구성</dt><dd>1부 운영키 2시간 + 2부 매출키 2시간</dd></div>
               <div className="so2-r"><dt>수강료</dt><dd>스토리 인증가 {fmt(SO_PRICE_STORY)} / 정상가 {fmt(SO_PRICE_NORMAL)}</dd></div>
-              <div className="so2-r"><dt>정원</dt><dd>100명</dd></div>
             </dl>
             <a className="so2-btn so2-btn-light so2-btn-block" href="#apply">강의 신청하기<svg className="so2-ar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
             <p className="so2-note">세부 일정은 신청하신 연락처로 안내드립니다.</p>
@@ -759,7 +758,6 @@ export default function SalesOps2() {
                 <div className="so2-r"><dt>시간</dt><dd>오후 1시 시작 (1부 2시간 + 2부 2시간)</dd></div>
                 <div className="so2-r"><dt>장소</dt><dd>서울 영등포구 당산로41길 11 E동 601호<span className="so2-memo">네이버 지도 등록명: 한국에너지기술인협회</span></dd></div>
                 <div className="so2-r"><dt>수강료</dt><dd>스토리 인증가 {fmt(SO_PRICE_STORY)} / 정상가 {fmt(SO_PRICE_NORMAL)}</dd></div>
-                <div className="so2-r"><dt>정원</dt><dd>100명</dd></div>
                 <div className="so2-r"><dt>주최</dt><dd>(주)더그로우컴퍼니 × 리얼세일즈(주)</dd></div>
                       </dl>
               <figure className="so2-vn-box">
@@ -783,7 +781,7 @@ export default function SalesOps2() {
             <h2 id="h-faq" className="so2-rv">자주 묻는 질문</h2>
             <div className="so2-faq so2-rv">
               <details><summary>수강료와 결제 방법은 어떻게 되나요?</summary><div className="so2-a">수강료는 스토리 인증가 {fmt(SO_PRICE_STORY)}, 정상가 {fmt(SO_PRICE_NORMAL)}이에요. 결제는 신청 화면에서 바로 진행하며 카드, 간편결제, 계좌이체를 이용할 수 있습니다.</div></details>
-              <details><summary>환불 규정이 있나요?</summary><div className="so2-a">강의 5일 전까지는 100% 환불이 가능합니다. 정원이 한정된 강의라 그 이후에는 환불이 불가합니다.</div></details>
+              <details><summary>환불 규정이 있나요?</summary><div className="so2-a">강의 5일 전까지는 100% 환불이 가능합니다. 그 이후에는 환불이 불가합니다.</div></details>
               <details><summary>한 센터에서 여러 명이 함께 신청할 수 있나요?</summary><div className="so2-a">단체 예약이 가능합니다.</div></details>
               <details><summary>주차가 가능한가요?</summary><div className="so2-a">가능합니다. 최초 30분은 무료이며, 이후에는 시간당 3,000원입니다. 인근 공영주차장이나 대중교통 이용을 권장드립니다.</div></details>
             </div>
