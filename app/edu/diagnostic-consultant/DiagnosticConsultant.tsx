@@ -254,7 +254,7 @@ const CURRICULUM: {
     date: DCC_SCHEDULE[0].date,
     kind: "교육",
     tone: "edu",
-    instructor: "김승호 센터장",
+    instructor: "김승호 이사",
     title: "진단 컨설팅 개론 &amp; 고객사 인터뷰",
     detail: "역할·책임, 현장 사례, 대표 인터뷰, 진단가설",
   },
@@ -272,7 +272,7 @@ const CURRICULUM: {
     date: DCC_SCHEDULE[2].date,
     kind: "과제발표 ①",
     tone: "present",
-    instructor: "김승호 센터장 총괄",
+    instructor: "김승호 이사 총괄",
     title: "진단 리포트 01",
     detail: "1-2회차 기반, 이 매장의 진짜 문제 찾기",
   },
@@ -299,7 +299,7 @@ const CURRICULUM: {
     date: DCC_SCHEDULE[5].date,
     kind: "현장실습",
     tone: "field",
-    instructor: "현장 담당 프로 / 김승호 센터장 총괄",
+    instructor: "현장 담당 프로 / 김승호 이사 총괄",
     title: "THE GROW 필드 이머전",
     detail: "1인 1매장, 고객·상담·수업·운영·CRM 관찰, 필드 리포트",
   },
@@ -308,7 +308,7 @@ const CURRICULUM: {
     date: DCC_SCHEDULE[6].date,
     kind: "과제발표 ②",
     tone: "present",
-    instructor: "김승호 센터장 총괄",
+    instructor: "김승호 이사 총괄",
     title: "진단 리포트 02",
     detail: "4-5회차 기반, 실제 현장의 병목 찾기",
   },
@@ -353,7 +353,7 @@ const CURRICULUM: {
     date: DCC_SCHEDULE[11].date,
     kind: "최종발표 ③",
     tone: "present",
-    instructor: "김승호 센터장 총괄",
+    instructor: "김승호 이사 총괄",
     title: "최종 진단 &amp; 컨설턴트 비전",
     detail: "7·30·90일 개선안, KPI, 비전 발표, 수료식",
   },
@@ -364,7 +364,7 @@ const FACULTY: { key: string; name: string; role: string; desc: string }[] = [
   {
     key: "kimSeungho",
     name: "김승호",
-    role: "센터장",
+    role: "이사",
     desc: "진단 철학 · 고객사 인터뷰 · 평가 · 최종 진단",
   },
   {
@@ -1213,7 +1213,7 @@ ${LOGO_MARQUEE_STYLE}
 <!-- ── 08 강사진 ─────────────────────────────────────────────────────────── -->
 <section data-track-section="instructor" class="dcc-sec dcc-beige" style="padding-top:0">
   <div class="dcc-wrap">
-    <h2 class="dcc-h2 dcc-rv">김승호 센터장 총괄<em>분야별 현장 전문 강사진</em></h2>
+    <h2 class="dcc-h2 dcc-rv">김승호 이사 총괄<em>분야별 현장 전문 강사진</em></h2>
     <div class="dcc-fac dcc-rv">${facultyCards}</div>
   </div>
 </section>
