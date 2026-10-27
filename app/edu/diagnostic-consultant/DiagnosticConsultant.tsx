@@ -1560,8 +1560,13 @@ ${LOGO_MARQUEE_STYLE}
             if (typeof window.__tgcFbTrack === 'function') {
               window.__tgcFbTrack('Lead', { content_name: '${FORM_SOURCE}' });
             }
-            alert('지원서가 접수되었습니다. 검토 후 사전 인터뷰 일정을 개별 연락드립니다.');
-            form.reset();
+            // 폼 영역을 접수 완료 안내로 교체 (load 처리는 이미 끝났고 리스너도 걷었으므로 iframe 이 함께 사라져도 무관하다)
+            var box = document.getElementById('dccFormBox');
+            if (box) {
+              box.innerHTML = '<div class="dcc-done"><b>지원서가 접수되었습니다.</b>검토 후 사전 인터뷰 일정을 개별 연락드립니다.</div>';
+            } else {
+              form.reset();
+            }
           } finally {
             restore();
           }
