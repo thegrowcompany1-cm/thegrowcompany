@@ -12,7 +12,7 @@
 //    (새 필드 없음). iframe 이름은 lps_hidden_iframe, 성공 판정은 iframe load (done 가드 +
 //    15초 타임아웃 + try/catch). 고른 준비 단계는 제출 직전에 route 값 뒤에
 //    " / 준비단계: [선택 텍스트]" 로 붙여 보내고, 전송 뒤 원래 값으로 되돌린다.
-//  · 하단 고정 바는 장면 1 버튼 또는 장면 10(단계 선택+폼)이 화면에 보이면 숨긴다.
+//  · 하단 고정 바는 히어로 섹션 또는 장면 10(단계 선택+폼)이 화면에 보이면 숨긴다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -22,7 +22,7 @@ const FORM_ACTION =
 const FORM_SOURCE = "창업지원상담_아임웹";
 const FORM_TOKEN = "grow2026secure";
 const FORM_TARGET = "lps_hidden_iframe";
-const CTA_LABEL = "내 창업 단계 진단하기";
+const CTA_LABEL = "창업 정보 받아보기";
 const SUBMIT_LABEL = "이 단계에 맞는 정보 받아보기";
 const PHOTO_CAP = "더그로우 창업 현장 실제 사진";
 
@@ -127,7 +127,6 @@ const STYLE = `
 
 .lp3-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:64px;border:none;border-radius:16px;background:var(--gr);color:#fff;font-family:inherit;font-size:20px;font-weight:900;letter-spacing:-0.02em;cursor:pointer;box-shadow:0 10px 30px rgba(0,149,25,.45)}
 .lp3-btn:active{transform:scale(.99)}
-.lp3-btn--line{background:transparent;border:2px solid rgba(255,255,255,.7);color:#fff;box-shadow:none}
 
 /* 전폭 사진 + 캡션 */
 .lp3-ph{position:relative;margin:30px -20px 0}
@@ -423,11 +422,11 @@ export default function StartupLpV3() {
   const [lb, setLb] = useState<number | null>(null); // 라이트박스에 띄운 갤러리 사진 index
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [heroBtnVisible, setHeroBtnVisible] = useState(true);
+  const [heroVisible, setHeroVisible] = useState(true);
   const [stageVisible, setStageVisible] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
-  const heroBtnRef = useRef<HTMLButtonElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const stageSecRef = useRef<HTMLElement>(null);
   const stageMsgRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -464,7 +463,7 @@ export default function StartupLpV3() {
     };
   }, []);
 
-  // 하단 고정 바 — 장면 1 버튼 또는 장면 10 이 화면에 보이면 숨김 (둘 다 안 보일 때만 표시)
+  // 하단 고정 바 — 히어로 섹션 또는 장면 10 이 화면에 보이면 숨김 (둘 다 안 보일 때만 표시)
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const watch = (el: Element | null, set: (v: boolean) => void) => {
@@ -473,14 +472,14 @@ export default function StartupLpV3() {
       io.observe(el);
       return io;
     };
-    const a = watch(heroBtnRef.current, setHeroBtnVisible);
+    const a = watch(heroRef.current, setHeroVisible);
     const b = watch(stageSecRef.current, setStageVisible);
     return () => {
       a?.disconnect();
       b?.disconnect();
     };
   }, []);
-  const barHidden = heroBtnVisible || stageVisible;
+  const barHidden = heroVisible || stageVisible;
 
   // 라이트박스 — 열리면 body 스크롤 잠금, Esc 닫기, 좌우 화살표 넘김
   useEffect(() => {
@@ -626,7 +625,7 @@ export default function StartupLpV3() {
       <style dangerouslySetInnerHTML={{ __html: STYLE }} />
 
       {/* 장면 1 결과 [블랙, 첫 화면 꽉 채움] */}
-      <section data-track-section="hero" className="lp3-hero">
+      <section data-track-section="hero" className="lp3-hero" ref={heroRef}>
         <div className="lp3-hero-bg" aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={VIDEO_MAIN.poster} alt="" />
@@ -646,8 +645,8 @@ export default function StartupLpV3() {
               <VideoCard {...VIDEO_MAIN} active={activeVid === VIDEO_MAIN.src} onPlay={() => setActiveVid(VIDEO_MAIN.src)} autoStart />
             </div>
           ) : null}
-          <div className="lp3-hero-btns">
-            {!heroPlaying && (
+          {!heroPlaying && (
+            <div className="lp3-hero-btns">
               <button
                 type="button"
                 className="lp3-btn"
@@ -658,11 +657,8 @@ export default function StartupLpV3() {
               >
                 대표님 영상으로 보기
               </button>
-            )}
-            <button ref={heroBtnRef} type="button" className="lp3-btn lp3-btn--line" onClick={scrollToStage}>
-              {CTA_LABEL}
-            </button>
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -1086,7 +1082,7 @@ export default function StartupLpV3() {
       {/* 하단 고정 바 스페이서 — 바가 푸터를 가리지 않게 한다 */}
       <div className="lp3-bar-space" aria-hidden="true" />
 
-      {/* 하단 고정 바 — 장면 1 버튼 또는 장면 10 이 보이면 숨김 */}
+      {/* 하단 고정 바 — 히어로 섹션 또는 장면 10 이 보이면 숨김 */}
       <div className={`lp3-bar${barHidden ? " is-hidden" : ""}`} aria-hidden={barHidden}>
         <button type="button" className="lp3-btn" onClick={scrollToStage} tabIndex={barHidden ? -1 : 0}>
           {CTA_LABEL}
