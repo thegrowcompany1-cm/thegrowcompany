@@ -4,6 +4,7 @@
 // 운영 × 세일즈 서울세미나 — 사이트 전체 중앙 포스터 모달 (app/layout.tsx 에서 한 번만 마운트)
 //
 //  · 제외 경로: /edu/sales-ops* (본 페이지) · /checkout* · /admin* · /legal* · /login · /signup · /mypage · /auth*
+//    + 광고 랜딩(/consulting/{startup,outsourcing,community,diagnosis}* · /edu/{diagnostic-consultant,gx-class,fc-class,startup-class}*)
 //  · 노출 기간: POPUP_UNTIL 이후에는 아무것도 그리지 않는다.
 //  · 진입 1초 뒤 표시. 경로가 바뀔 때마다 다시 센다.
 //  · 닫기: X · 닫기 · ESC · 배경 클릭 → 이 브라우저 세션 동안 닫음(sessionStorage)
@@ -32,7 +33,22 @@ const K_HIDE_DAY = "tgc:popup:so:hide";
 /** 경계까지 맞는 경로 (정확히 같거나 하위 경로) */
 const EXCLUDE_EXACT = ["/login", "/signup", "/mypage"];
 /** 접두사로 거르는 경로 — /edu/sales-ops 는 sales-ops2·3 까지 함께 걸린다 */
-const EXCLUDE_PREFIX = ["/edu/sales-ops", "/checkout", "/admin", "/legal", "/auth"];
+const EXCLUDE_PREFIX = [
+  "/edu/sales-ops",
+  "/checkout",
+  "/admin",
+  "/legal",
+  "/auth",
+  // 광고 랜딩 — 일반 탐색 페이지(메인·/edu 허브·정보마당 등)에서만 노출한다
+  "/consulting/startup",
+  "/consulting/outsourcing",
+  "/consulting/community",
+  "/consulting/diagnosis",
+  "/edu/diagnostic-consultant",
+  "/edu/gx-class",
+  "/edu/fc-class",
+  "/edu/startup-class",
+];
 
 const isExcluded = (path: string) =>
   EXCLUDE_PREFIX.some((p) => path.startsWith(p)) || EXCLUDE_EXACT.some((p) => path === p || path.startsWith(p + "/"));
