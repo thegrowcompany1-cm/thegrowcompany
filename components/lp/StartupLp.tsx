@@ -123,6 +123,8 @@ const STYLE = `
 .lps-btn--line{background:transparent;border:2px solid var(--gl);color:var(--gl);box-shadow:none}
 .lps-btn--line:hover{background:rgba(76,175,80,.1);box-shadow:none}
 .lps-center{text-align:center}
+.lps-bm{display:none}
+@media(max-width:480px){.lps-bm{display:inline}}
 
 /* 1 히어로 */
 .lps-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);color:#fff;padding:88px 20px 80px;text-align:center}
@@ -478,14 +480,21 @@ export default function StartupLp() {
       <section data-track-section="hero" className="lps-hero">
         <div className="lps-in">
           <h1>
-            창업 컨설팅 회사를 고르고 계신다면,
+            창업 컨설팅 회사를 <br className="lps-bm" />
+            고르고 계신다면,
             <br />
-            <em>오픈 다음 날까지 책임지는 곳인지</em> 먼저 확인하세요.
+            <em>
+              오픈 다음 날까지 <br className="lps-bm" />
+              책임지는 곳인지
+            </em>{" "}
+            <br className="lps-bm" />
+            먼저 확인하세요.
           </h1>
           <p className="lps-hero-sub">
             헬스장·필라테스 창업 300회.
             <br />
-            입지 선정부터 오픈세일 현장 상주까지, 한 팀이 끝까지 갑니다.
+            입지 선정부터 오픈세일 현장 상주까지, <br className="lps-bm" />
+            한 팀이 끝까지 갑니다.
           </p>
           <button type="button" className="lps-btn" onClick={scrollToForm}>
             {CTA_LABEL}
