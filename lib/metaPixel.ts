@@ -19,6 +19,8 @@ export const PIXEL_MAP: Record<string, string> = {
   "/consulting/startup": "1556215626187598", // 창업 솔루션
   "/consulting/outsourcing": "747849161675945", // 매장 위탁
   "/edu/gx-class": "1112480951354351", // 그룹운동 비즈니스 클래스
+  "/consulting/diagnosis": "1259348289492935", // 진단 컨설팅 — 허브 + 멘토 상세 7개 (prefix)
+  "/edu/diagnostic-consultant": "922401360805621", // 진단 컨설턴트 양성과정
   // 성장 마스터키 세미나 — 정규 FC 2 픽셀 (prefix 는 경로 경계 기준이라 3개 모두 명시)
   "/edu/sales-ops": "1016101377452945",
   "/edu/sales-ops2": "1016101377452945",
@@ -29,7 +31,6 @@ export const PIXEL_MAP: Record<string, string> = {
 
   // 아래는 픽셀 발급 후 주석을 풀고 ID 를 채우면 바로 적용된다.
   // "/consulting/community": "",    // 시설 위탁(아파트·기업) — 픽셀 발급 후 입력
-  // "/consulting/diagnosis": "",    // 진단 솔루션 (멘토 하위 페이지 전체) — 픽셀 발급 후 입력
   // "/edu": "",                     // 그로우 에듀 (세미나 전체) — 픽셀 발급 후 입력
 };
 

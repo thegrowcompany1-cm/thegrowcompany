@@ -1533,9 +1533,9 @@ ${LOGO_MARQUEE_STYLE}
       if (typeof window.gtag === 'function') {
         window.gtag('event', 'form_submit', { form_source: '${FORM_SOURCE}' });
       }
-      // 메타 픽셀 — 이 페이지에 픽셀이 매핑된 경우에만 전송된다
-      if (typeof window.fbq === 'function') {
-        window.fbq('track', 'Lead', { content_name: '${FORM_SOURCE}' });
+      // 메타 픽셀 — 이 페이지에 픽셀이 매핑된 경우에만, 현재 페이지 픽셀로만 전송된다
+      if (typeof window.__tgcFbTrack === 'function') {
+        window.__tgcFbTrack('Lead', { content_name: '${FORM_SOURCE}' });
       }
 
       // 제출은 hidden iframe 으로 나가므로 페이지 이동이 없다. 폼 영역만 교체.
@@ -1550,6 +1550,19 @@ ${LOGO_MARQUEE_STYLE}
 
     form.addEventListener('submit', onSubmit);
     stops.push(function () { form.removeEventListener('submit', onSubmit); });
+
+    // 지원폼 첫 입력 — 메타 커스텀 이벤트 ApplyStart 를 한 번만 보낸다
+    var started = false;
+    var onStart = function () {
+      if (started) return;
+      started = true;
+      form.removeEventListener('input', onStart);
+      if (typeof window.__tgcFbTrackCustom === 'function') {
+        window.__tgcFbTrackCustom('ApplyStart');
+      }
+    };
+    form.addEventListener('input', onStart);
+    stops.push(function () { form.removeEventListener('input', onStart); });
   }
 
   /* 5) 공용 이미지 라이트박스
