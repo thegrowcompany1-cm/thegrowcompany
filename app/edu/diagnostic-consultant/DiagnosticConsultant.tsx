@@ -1512,36 +1512,79 @@ ${LOGO_MARQUEE_STYLE}
       stops.push(function () { phone.removeEventListener('input', onPhone); });
     }
 
-    var onSubmit = function () {
-      // 위탁/창업 폼이 쓰는 3분할 칸도 함께 채운다 (시트 열 구성이 어느 쪽이든 대응)
-      var digits = (phone ? phone.value : '').replace(/[^0-9]/g, '');
-      var parts = ['', '', ''];
-      if (digits.length > 7) {
-        parts = [digits.slice(0, 3), digits.slice(3, digits.length - 4), digits.slice(digits.length - 4)];
-      }
-      var keys = ['phone1', 'phone2', 'phone3'];
-      for (var p = 0; p < keys.length; p++) {
-        var hid = form.querySelector('[name="' + keys[p] + '"]');
-        if (hid) hid.value = parts[p];
-      }
+    var onSubmit = function (e) {
+      // 전송은 hidden iframe 으로 직접 한다 — 성공 판정은 iframe 의 load 1회 (진단 멘토 폼과 같은 구조).
+      // 응답 본문은 교차 출처라 읽을 수 없으므로 "요청이 끝나 응답 문서가 로드됨" 까지만 확인한다.
+      e.preventDefault();
+      var btn = form.querySelector('.dcc-submit');
+      var btnText = btn ? btn.textContent : '';
+      var iframe = document.querySelector('iframe[name="${FORM_TARGET}"]');
+      var done = false;
+      var timer = null;
+      var onLoad = null;
+      var restore = function () {
+        if (btn) { btn.disabled = false; btn.textContent = btnText; }
+      };
+      var cleanup = function () {
+        if (timer) clearTimeout(timer);
+        if (iframe && onLoad) iframe.removeEventListener('load', onLoad);
+      };
+      stops.push(cleanup);
 
-      // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
-      if (typeof window.gtag === 'function') {
-        window.gtag('event', 'form_submit', { form_source: '${FORM_SOURCE}' });
-      }
-      // 메타 픽셀 — 이 페이지에 픽셀이 매핑된 경우에만, 현재 페이지 픽셀로만 전송된다
-      if (typeof window.__tgcFbTrack === 'function') {
-        window.__tgcFbTrack('Lead', { content_name: '${FORM_SOURCE}' });
-      }
-
-      // 제출은 hidden iframe 으로 나가므로 페이지 이동이 없다. 폼 영역만 교체.
-      var box = document.getElementById('dccFormBox');
-      var tid = setTimeout(function () {
-        if (box) {
-          box.innerHTML = '<div class="dcc-done"><b>지원서가 접수되었습니다.</b>검토 후 사전 인터뷰 일정을 개별 연락드립니다.</div>';
+      try {
+        // 위탁/창업 폼이 쓰는 3분할 칸도 함께 채운다 (시트 열 구성이 어느 쪽이든 대응)
+        var digits = (phone ? phone.value : '').replace(/[^0-9]/g, '');
+        var parts = ['', '', ''];
+        if (digits.length > 7) {
+          parts = [digits.slice(0, 3), digits.slice(3, digits.length - 4), digits.slice(digits.length - 4)];
         }
-      }, 600);
-      stops.push(function () { clearTimeout(tid); });
+        var keys = ['phone1', 'phone2', 'phone3'];
+        for (var p = 0; p < keys.length; p++) {
+          var hid = form.querySelector('[name="' + keys[p] + '"]');
+          if (hid) hid.value = parts[p];
+        }
+
+        if (!iframe) throw new Error('dcc iframe not found');
+        if (btn) { btn.disabled = true; btn.textContent = '전송중...'; }
+
+        onLoad = function () {
+          if (done) return; // 15초 뒤에 늦게 온 load 는 무시
+          done = true;
+          cleanup();
+          try {
+            // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
+            if (typeof window.gtag === 'function') {
+              window.gtag('event', 'form_submit', { form_source: '${FORM_SOURCE}' });
+            }
+            // 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만, 현재 페이지 픽셀로만 전송된다
+            if (typeof window.__tgcFbTrack === 'function') {
+              window.__tgcFbTrack('Lead', { content_name: '${FORM_SOURCE}' });
+            }
+            alert('지원서가 접수되었습니다. 검토 후 사전 인터뷰 일정을 개별 연락드립니다.');
+            form.reset();
+          } finally {
+            restore();
+          }
+        };
+        iframe.addEventListener('load', onLoad);
+
+        // 15초 안에 load 가 오지 않으면 실패로 보고 버튼을 돌려준다.
+        timer = setTimeout(function () {
+          if (done) return;
+          done = true;
+          cleanup();
+          alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+          restore();
+        }, 15000);
+
+        form.submit();
+      } catch (err) {
+        // 예외로 전송이 끊긴 경우 — 리스너·타이머를 걷고 버튼을 되돌린다.
+        done = true;
+        cleanup();
+        alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+        restore();
+      }
     };
 
     form.addEventListener('submit', onSubmit);
