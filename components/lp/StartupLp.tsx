@@ -111,7 +111,8 @@ const STYLE = `
 .lps-dk2{background:#1a1a1a;color:#fff}
 .lps-gray{background:#f8f9fa}
 .lps-h2{font-size:32px;font-weight:800;line-height:1.4;text-align:center;margin-bottom:14px}
-.lps-h2 em{font-style:normal;color:var(--g2)}
+.lps-h2 em{font-style:normal;color:var(--g)}
+.lps-dk .lps-h2 em,.lps-dk2 .lps-h2 em{color:var(--g2)}
 .lps-sub{font-size:16px;line-height:1.7;text-align:center;color:#777;margin:0 auto 40px;max-width:640px}
 .lps-dk .lps-sub,.lps-dk2 .lps-sub{color:#a9a9a9}
 .lps-btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 36px;border:none;border-radius:50px;background:linear-gradient(135deg,#4CAF50 0%,#2e7d32 100%);color:#fff;font-family:inherit;font-size:18px;font-weight:800;cursor:pointer;text-decoration:none;box-shadow:0 8px 25px rgba(76,175,80,.35);transition:transform .2s,box-shadow .2s}
