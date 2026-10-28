@@ -520,7 +520,7 @@ const HERO_SECTION_HTML = `<style>
 
     <div class="tgc-hero-trust tgc-fade-up tgc-delay-4">
       <div class="tgc-hero-trust-item">
-        <strong><span class="count-num" data-target="200">0</span>+</strong>
+        <strong><span class="count-num" data-target="250">0</span>+</strong>
         오픈 센터
       </div>
       <div class="tgc-hero-trust-item">
@@ -2256,7 +2256,7 @@ const DETAIL_HTML = `
     <!-- 통계 -->
     <div class="tgc-trust-stats" id="trustStats">
       <div class="tgc-trust-stat">
-        <span class="tgc-trust-stat-num"><span class="count-num" data-target="200">0</span>+</span>
+        <span class="tgc-trust-stat-num"><span class="count-num" data-target="250">0</span>+</span>
         <span class="tgc-trust-stat-label">오픈 센터</span>
       </div>
       <div class="tgc-trust-stat">
@@ -2367,7 +2367,7 @@ const DETAIL_HTML = `
       </div>
       <div class="tgc-ceo-content">
         <span class="tgc-ceo-badge">더그로우컴퍼니 대표</span>
-        <h3>12년간 <span class="green">200개 이상</span>의<br>센터를 함께 만들었습니다.</h3>
+        <h3>12년간 <span class="green">250개 이상</span>의<br>센터를 함께 만들었습니다.</h3>
         <p>
           직접 센터를 운영해본 경험, <br>수백 개의 창업을 도운 경험,<br>
           그리고 실패와 성공을 모두 겪은 <br>현장의 노하우를 담아
@@ -2380,7 +2380,7 @@ const DETAIL_HTML = `
           </span>
           <span class="tgc-ceo-highlight">
             <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            200+ 센터 오픈
+            250+ 센터 오픈
           </span>
           <span class="tgc-ceo-highlight">
             <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>

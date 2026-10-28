@@ -8,7 +8,7 @@ import StartupLp from "@/components/lp/StartupLpV3";
 export const metadata: Metadata = {
   title: "헬스장·필라테스 창업 솔루션",
   description:
-    "헬스장·필라테스 창업 300회. 입지 선정부터 오픈세일 현장 상주까지, 한 팀이 끝까지 갑니다.",
+    "헬스장·필라테스 창업 250회. 입지 선정부터 오픈세일 현장 상주까지, 한 팀이 끝까지 갑니다.",
   robots: { index: false, follow: false },
   alternates: { canonical: null },
 };

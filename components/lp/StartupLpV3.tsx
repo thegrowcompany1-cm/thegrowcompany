@@ -1031,7 +1031,7 @@ export default function StartupLpV3() {
             </div>
             <p className="lp3-person-name">김재강 대표</p>
             <p className="lp3-num">
-              <b>300</b>
+              <b>250</b>
               <span>회</span>
             </p>
             <p className="lp3-num-d">헬스장·필라테스 창업</p>

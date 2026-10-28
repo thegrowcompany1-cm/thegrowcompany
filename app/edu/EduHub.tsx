@@ -29,7 +29,7 @@ const TYPE_STEPS: TypeStep[] = [
 const STATS = [
   { target: 800, suffix: "명+", label: "누적 수강생" },
   { target: 500, suffix: "명+", label: "함께한 대표님" },
-  { target: 200, suffix: "회+", label: "창업 경험사례" },
+  { target: 250, suffix: "회+", label: "창업 경험사례" },
 ];
 
 const COURSES: {

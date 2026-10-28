@@ -471,7 +471,7 @@ const DETAIL_HTML = `<div class="fc1">
       <div class="fc1-point fc1-reveal">
         <div class="fc1-point-label">검증된 강사 2인 직강</div>
         <h3>운영과 마케팅, 각 분야 전문가가 직접 가르칩니다.</h3>
-        <p>한 명이 다 하는 교육이 아닙니다. 창업 217개를 만든 김재강 대표와 검색광고 1급 허준영 본부장이 각자의 무기를 직강합니다.</p>
+        <p>한 명이 다 하는 교육이 아닙니다. 창업 250개를 만든 김재강 대표와 검색광고 1급 허준영 본부장이 각자의 무기를 직강합니다.</p>
       </div>
     </div>
     <div class="fc1-summary fc1-reveal">
@@ -493,7 +493,7 @@ const DETAIL_HTML = `<div class="fc1">
         <div class="fc1-inst-body">
           <div class="fc1-inst-tags"><span class="fc1-inst-tag">창업</span><span class="fc1-inst-tag">운영</span><span class="fc1-inst-tag">솔루션</span></div>
           <p class="fc1-inst-role">(주)더그로우컴퍼니 대표</p>
-          <p class="fc1-inst-tagline">창업 217개 · 위탁 560개를 직접 만들어 온 현장 그 자체</p>
+          <p class="fc1-inst-tagline">창업 250개 · 위탁 560개를 직접 만들어 온 현장 그 자체</p>
           <ul class="fc1-inst-career">
             <li>(주)더그로우컴퍼니 · 그로우아카데미 · 그로우마케팅 대표</li>
             <li>(주)그로우인테리어 대표</li>
