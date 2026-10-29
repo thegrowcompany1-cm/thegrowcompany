@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import MentorImage from "@/components/MentorImage";
 import DiagnosisIntro from "./DiagnosisIntro";
 import VideoReviewPair from "@/components/VideoReviewPair";
@@ -21,6 +20,7 @@ const CONSULTANTS = [
   { slug: "heo-junyoung", name: "허준영", field: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg" },
   { slug: "hwang-hyunjin", name: "황현진", field: "상담 등록률 · 세일즈 화법", img: "/consultants/hwang-hyunjin.png" },
   { slug: "park-gukjin", name: "박국진", field: "자금 · 보증", img: "/consultants/park-gukjin.jpg" },
+  { slug: "lee-seokhoon", name: "이석훈", field: "운영시스템 · 데이터·AI", img: "/consultants/lee-seokhun.png" },
 ];
 
 // 자체 호스팅 영상 후기 (유튜브 미사용) — video-raw 원본을 720p CRF28 로 인코딩한 것
@@ -175,26 +175,6 @@ export default function DiagnosisPage() {
               </div>
             </Link>
           ))}
-
-          {/* 이석훈 — 준비중 (링크 없음, 흐리게, 클릭 불가) */}
-          <div className="flex cursor-default flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] opacity-50 grayscale lg:col-start-2">
-            <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1c1c]">
-              <Image
-                src="/consultants/lee-seokhun.png"
-                alt="이석훈 헬스장·필라테스 운영 진단 멘토 (준비중)"
-                fill
-                className="object-cover object-top"
-                sizes="(min-width: 1024px) 33vw, 50vw"
-              />
-              <span className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-[11px] font-bold text-white">
-                준비중
-              </span>
-            </div>
-            <div className="flex flex-col gap-1 p-3 sm:p-4">
-              <h3 className="text-sm font-bold text-white sm:text-base">이석훈 멘토</h3>
-              <p className="text-xs font-medium text-gray-400">준비중</p>
-            </div>
-          </div>
         </div>
       </section>
     </div>

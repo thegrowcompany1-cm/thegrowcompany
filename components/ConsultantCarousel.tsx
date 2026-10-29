@@ -2,8 +2,8 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 진단 멘토 상세페이지 하단 "다른 멘토들을 확인해보세요" 캐러셀
-//  - 7명 전체 목록을 이 파일에서 관리하고, currentSlug 로 현재 페이지 본인만 제외한다.
-//  - PC: 6개가 한 줄 그리드 / 모바일: 가로 스크롤(스와이프) 슬라이드.
+//  - 8명 전체 목록을 이 파일에서 관리하고, currentSlug 로 현재 페이지 본인만 제외한다.
+//  - PC: 7개가 한 줄 그리드 / 모바일: 가로 스크롤(스와이프) 슬라이드.
 //  - 멘토 페이지 추가 시 아래 CONSULTANTS 배열만 갱신하면 된다.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -19,6 +19,7 @@ const CONSULTANTS = [
   { slug: "heo-junyoung", name: "허준영", field: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg" },
   { slug: "hwang-hyunjin", name: "황현진", field: "상담 등록률 · 세일즈 화법", img: "/consultants/hwang-hyunjin.png" },
   { slug: "park-gukjin", name: "박국진", field: "자금 · 보증", img: "/consultants/park-gukjin.jpg" },
+  { slug: "lee-seokhoon", name: "이석훈", field: "운영시스템 · 데이터·AI", img: "/consultants/lee-seokhun.png" },
 ];
 
 type Consultant = (typeof CONSULTANTS)[number];
@@ -72,7 +73,7 @@ export default function ConsultantCarousel({
           다른 멘토들을 확인해보세요
         </h2>
 
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-6 lg:gap-4 lg:overflow-visible lg:pb-0">
+        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-7 lg:gap-4 lg:overflow-visible lg:pb-0">
           {others.map((c) => (
             <ConsultantCard key={c.slug} c={c} />
           ))}

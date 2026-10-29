@@ -100,6 +100,7 @@ const groups: Group[] = [
       { title: "허준영 멘토", desc: "신규 고객 유입 · AI", img: "/consultants/heo-junyoung.jpg", href: "/consulting/diagnosis/heo-junyoung", photo: true },
       { title: "황현진 멘토", desc: "상담 등록률 · 세일즈 화법", img: "/consultants/hwang-hyunjin.png", href: "/consulting/diagnosis/hwang-hyunjin", photo: true },
       { title: "박국진 멘토", desc: "자금 · 보증", img: "/consultants/park-gukjin.jpg", href: "/consulting/diagnosis/park-gukjin", photo: true },
+      { title: "이석훈 멘토", desc: "운영시스템 · 데이터·AI", img: "/consultants/lee-seokhun.png", href: "/consulting/diagnosis/lee-seokhoon", photo: true },
     ],
   },
   {

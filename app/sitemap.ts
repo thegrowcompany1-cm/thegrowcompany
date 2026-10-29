@@ -12,6 +12,7 @@ const ROUTES = [
   "/consulting/diagnosis/park-jungmin",
   "/consulting/diagnosis/hwang-hyunjin",
   "/consulting/diagnosis/park-gukjin",
+  "/consulting/diagnosis/lee-seokhoon",
   "/info",
   "/info/column",
   "/info/knowhow",
