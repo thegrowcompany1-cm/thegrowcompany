@@ -67,7 +67,12 @@ export default function GaDashboard({ scope }: { scope: string }) {
   const [tab, setTab] = useState<TabKey>(() => (TABS.some((t) => t.key === sp.get("tab")) ? (sp.get("tab") as TabKey) : "live"));
   // 한 번이라도 열어 본 탭 — 이 탭들만 마운트해 두고 숨긴다
   const [visited, setVisited] = useState<ReadonlySet<TabKey>>(() => new Set([tab]));
+  const tabRef = useRef<TabKey>(tab);
   const pickTab = useCallback((k: TabKey) => {
+    // 새 탭 본문이 이동 방향(오른쪽 탭이면 오른쪽에서, 왼쪽이면 왼쪽에서)으로 밀려 들어오도록 방향을 남긴다
+    const dir = TABS.findIndex((t) => t.key === k) >= TABS.findIndex((t) => t.key === tabRef.current) ? 1 : -1;
+    rootRef.current?.style.setProperty("--ga-dx", `${dir * 22}px`);
+    tabRef.current = k;
     setTab(k);
     setVisited((v) => (v.has(k) ? v : new Set(v).add(k)));
   }, []);
@@ -164,7 +169,14 @@ export default function GaDashboard({ scope }: { scope: string }) {
     mq.addEventListener("change", schedule);
     const onClick = (e: MouseEvent) => {
       const tr = (e.target as HTMLElement).closest("table.ga-table tbody tr");
-      if (!tr || tr.classList.contains("is-click") || !mq.matches) return;
+      if (!tr) return;
+      // 행 선택(고정): 고른 행을 강조하고 다시 누르면 해제한다. 연동 행(is-link)·일별 행(is-click)은 자체 동작이 있다.
+      if (!tr.classList.contains("is-click") && !tr.classList.contains("is-link")) {
+        const on = tr.getAttribute("data-sel") === "1";
+        tr.closest("tbody")?.querySelectorAll("tr[data-sel]").forEach((r) => r.removeAttribute("data-sel"));
+        if (!on) tr.setAttribute("data-sel", "1");
+      }
+      if (tr.classList.contains("is-click") || !mq.matches) return;
       if (tr.getAttribute("data-open") === "1") tr.removeAttribute("data-open");
       else tr.setAttribute("data-open", "1");
     };

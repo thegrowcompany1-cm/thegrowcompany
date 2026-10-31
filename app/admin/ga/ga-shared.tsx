@@ -106,11 +106,18 @@ export function ReportSkeleton() {
 }
 
 /** 표의 핵심 수치 칸 — 같은 표 안의 최댓값 대비 길이를 배경 막대로 보여 준다 (값은 그대로, 막대는 보조 표현) */
-export function BarNum({ value, max, text }: { value: number; max: number; text?: string }) {
+export function BarNum({ value, max, sum, text }: { value: number; max: number; sum?: number; text?: string }) {
   const w = max > 0 && value > 0 ? Math.max(4, (value / max) * 100) : 0;
+  // sum 을 주면 행에 마우스를 올리거나 행을 고를 때 "이 표 합계 대비 비중" 칩이 나타난다
+  const share = sum && sum > 0 ? value / sum : null;
   return (
     <span className="ga-cb">
       <i style={{ width: `${w}%` }} aria-hidden="true" />
+      {share !== null && (
+        <em className="ga-cb-share" title="이 표 합계 대비 비중">
+          {share > 0 && share < 0.01 ? "<1" : Math.round(share * 100)}%
+        </em>
+      )}
       <b>{text ?? num(value)}</b>
     </span>
   );
@@ -563,4 +570,85 @@ export const GA_STYLE = `
 .ga-table tr:not(.is-click):has(td:nth-child(5))::after{grid-column:1/-1}
 }
 @media(prefers-reduced-motion:reduce){.ga-spark-dot,.ga-spark svg{animation:none}.ga-select,.ga-table tbody td{transition:none}}
+/* ═══ 인터랙션 v3 — 사용자 행동(호버·탭·선택)과 데이터 변화에 반응하는 움직임. 무한 애니메이션 없음, transform/opacity 위주 ═══ */
+/* KPI 카드: 호버 상승 + 깊이 그림자 + 커서를 따라가는 스포트라이트, 누르면 눌림 */
+.ga-sc{overflow:visible;transition:transform .28s var(--ga-ease),border-color .25s}
+/* 등장 애니메이션이 끝난 뒤에는 호버·눌림 변환이 적용되도록 끝 상태를 붙잡지 않는다 (fill-mode: both 는 transform:none 을 고정해 호버를 덮어씀) */
+.ga-sc{animation-fill-mode:backwards}
+.ga-sc::before{background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),rgba(34,181,115,.2),transparent 70%)}
+.ga-sc::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 24px 44px -18px rgba(0,0,0,.8),0 0 0 1px rgba(34,181,115,.3);opacity:0;transition:opacity .28s;pointer-events:none}
+@media(hover:hover){.ga-sc:hover{z-index:2;transform:translateY(-4px)}.ga-sc:hover::after{opacity:1}}
+.ga-sc:active{transform:translateY(-1px) scale(.992);transition-duration:.12s}
+/* 스파크라인 인터랙션 (호버·탭) */
+.ga-spark{touch-action:pan-y;cursor:crosshair}
+.ga-spark.is-hi .ga-spark-dot{opacity:.3}
+.ga-spark-guide{position:absolute;top:-3px;bottom:-3px;width:1px;background:rgba(255,255,255,.3);pointer-events:none}
+.ga-spark-pt{position:absolute;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 3px #151515;pointer-events:none;transition:left .08s linear,top .08s linear}
+.ga-spark-tip{position:absolute;bottom:calc(100% + 10px);z-index:3;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:#1f1f1f;font-size:12px;white-space:nowrap;pointer-events:none;transform:translateX(-50%);animation:ga-fade-in .12s ease-out both}
+.ga-spark-tip.is-l{transform:translateX(-12%)}
+.ga-spark-tip.is-r{transform:translateX(-88%)}
+.ga-spark-tip small{font-size:10.5px;color:#9a9a9a}
+.ga-spark-tip b{font-weight:800}
+/* 진입: KPI → 카드 → 차트 선·면이 시차를 두고 */
+.ga-panel.is-fresh .ga-card:nth-child(2){animation-delay:.1s}
+.ga-panel.is-fresh .ga-card:nth-child(3){animation-delay:.2s}
+.ga-panel.is-fresh .ga-card:nth-child(n+4){animation-delay:.3s}
+.ga-tc-line{animation:ga-draw .9s cubic-bezier(.22,1,.36,1) .3s both}
+.ga-tc-area,.ga-tc-part{animation:ga-fade-in .7s ease-out .55s both}
+.ga-spark svg{animation:ga-reveal .7s cubic-bezier(.22,1,.36,1) .2s both}
+/* 탭 전환: 새 본문이 이동 방향에서 밀려 들어온다 (방향은 --ga-dx 로 전달) */
+@keyframes ga-panel-in{from{opacity:0;transform:translateX(var(--ga-dx,0px))}to{opacity:1;transform:none}}
+.ga-panel{animation-duration:.28s;animation-timing-function:var(--ga-ease)}
+/* 차트: 가이드선·점·툴팁이 부드럽게 따라 움직이고, 고정(핀) 툴팁에는 하루만 보기 버튼 */
+.ga-tc svg{cursor:crosshair}
+.ga-tc-ov{position:absolute;inset:0;pointer-events:none}
+.ga-tc-guide{position:absolute;left:0;width:0;border-left:1px solid rgba(255,255,255,.3);will-change:transform}
+.ga-tc-guide.is-pin{border-left-color:rgba(34,181,115,.8)}
+.ga-tc-guide.is-dash{border-left-style:dashed}
+.ga-tc-dot{position:absolute;left:0;top:0;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;box-shadow:0 0 0 2px #141414,0 0 0 7px var(--c);will-change:transform}
+.ga-tc-glide{transition:transform .14s cubic-bezier(.22,1,.36,1)}
+.ga-tc-fade{animation:ga-fade-in .3s ease-out both}
+.ga-tc-tip{left:0;top:0;transition:transform .14s cubic-bezier(.22,1,.36,1)}
+.ga-tc-tip.is-pin{pointer-events:auto;border-color:rgba(34,181,115,.55)}
+.ga-tc-tip-h{display:flex;align-items:center;gap:6px;margin:0 0 4px;color:#fff;font-weight:800}
+.ga-tc-pin{font-size:11px}
+.ga-tc-tip-r{display:flex;align-items:baseline;gap:6px;margin:3px 0 0}
+.ga-tc-tip-r b{font-weight:800}
+.ga-tc-d{padding:1px 6px;border-radius:999px;font-size:11px;font-style:normal;font-weight:800}
+.ga-tc-d.up{background:rgba(74,222,128,.13);color:#4ade80}
+.ga-tc-d.down{background:rgba(248,113,113,.13);color:#f87171}
+.ga-tc-d.flat{background:rgba(255,255,255,.07);color:#9a9a9a}
+.ga-tc-tip-f{margin:6px 0 0;font-size:10.5px;color:#8b8b8b}
+.ga-tc-go{width:100%;margin-top:8px;padding:6px 10px;border:1px solid rgba(34,181,115,.5);border-radius:8px;background:rgba(34,181,115,.14);color:#bff1d8;font:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:background-color .15s}
+.ga-tc-go:hover{background:rgba(34,181,115,.26)}
+/* 표: 행 호버·선택·연동 상태 */
+.ga-table tbody tr.is-selected td,.ga-table tbody tr[data-sel="1"] td{background:rgba(34,181,115,.1)}
+.ga-table tbody tr.is-selected td:first-child,.ga-table tbody tr[data-sel="1"] td:first-child{box-shadow:inset 3px 0 0 #22B573}
+.ga-table tbody tr.is-linked td{background:rgba(34,181,115,.075)}
+.ga-table tbody tr.is-link,.ga-table tbody tr.is-click{cursor:pointer}
+.ga-table tbody tr.is-link:focus-visible,.ga-table tbody tr.is-click:focus-visible{outline:2px solid #22B573;outline-offset:-2px}
+.ga-rowhint{display:inline-block;margin-left:10px;padding:2px 8px;border-radius:999px;background:rgba(34,181,115,.14);color:#9be3c0;font-size:11px;font-weight:700;white-space:nowrap;opacity:0;transform:translateX(-4px);transition:opacity .15s,transform .15s}
+.ga-table tbody tr:hover .ga-rowhint,.ga-table tbody tr:focus-visible .ga-rowhint,.ga-table tbody tr.is-selected .ga-rowhint{opacity:1;transform:none}
+@media(hover:none){.ga-rowhint{opacity:.85;transform:none}}
+.ga-cb-share{position:relative;margin-right:8px;font-size:11px;font-style:normal;font-weight:700;color:#7be0b0;opacity:0;transform:translateX(6px);transition:opacity .15s,transform .15s}
+.ga-table tbody tr:hover .ga-cb-share,.ga-table tbody tr.is-selected .ga-cb-share,.ga-table tbody tr[data-sel="1"] .ga-cb-share{opacity:1;transform:none}
+/* 랜딩 섹션 퍼널: 구간 선택 → 강조·흐림, 상세 줄 */
+.ga-fbar{padding:6px 8px;margin:0 -8px;border-radius:10px;cursor:pointer;outline:none;transition:opacity .2s,background-color .2s,box-shadow .2s}
+@media(hover:hover){.ga-fbar:hover{background:rgba(255,255,255,.045)}}
+.ga-fbar:focus-visible{outline:2px solid #22B573;outline-offset:1px}
+.ga-fbars.has-sel .ga-fbar:not(.is-sel){opacity:.4}
+.ga-fbar.is-sel{background:rgba(34,181,115,.09);box-shadow:inset 0 0 0 1px rgba(34,181,115,.45)}
+.ga-fbar.is-sel.is-drop{background:rgba(239,68,68,.08);box-shadow:inset 0 0 0 1px rgba(239,68,68,.5)}
+.ga-fdetail{margin:14px 0 6px;padding:14px 16px;border:1px solid rgba(34,181,115,.3);border-radius:14px;background:linear-gradient(180deg,rgba(34,181,115,.1),rgba(34,181,115,.03));animation:ga-rise .28s var(--ga-ease) both}
+.ga-fd-t{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ga-fd-t b{font-size:15px}
+.ga-fd-t span{font-size:12px;color:#8b8b8b}
+.ga-fd-x{width:28px;height:28px;margin-left:auto;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:16px;line-height:1;cursor:pointer}
+.ga-fd-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ga-fd-g>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ga-fd-g small{font-size:11px;color:#8b8b8b}
+.ga-fd-g b{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}
+.ga-fd-g i{font-size:12px;font-style:normal;font-weight:700;color:#9be3c0}
+@media(max-width:560px){.ga-fd-g{grid-template-columns:repeat(2,minmax(0,1fr))}.ga-rowhint{margin-left:6px}}
+@media(prefers-reduced-motion:reduce){.ga-sc,.ga-tc-glide,.ga-tc-tip,.ga-fbar,.ga-rowhint,.ga-cb-share{transition:none}.ga-sc:hover,.ga-sc:active{transform:none}.ga-fdetail,.ga-tc-fade,.ga-spark-tip,.ga-tc-line,.ga-tc-area,.ga-tc-part,.ga-spark svg{animation:none}.ga-panel{animation:none}}
 `;

@@ -5,7 +5,7 @@
 //  · 20초 이상 머문 비율은 자체 방문 추적 기준이다 (같은 세션+경로 3초 묶음 방문 중 duration_sec >= 20).
 //    자체 추적 데이터가 없는 기간은 GA 참여율로 대체하고 "(GA 기준)" 을 붙인다.
 
-import { memo, useMemo, type CSSProperties } from "react";
+import { memo, useCallback, useMemo, useRef, type CSSProperties, type PointerEvent as RPointerEvent } from "react";
 import { todayKst } from "@/lib/gaRange";
 import { buildChannelCompare } from "@/lib/gaInsights";
 import type { ReportPayload } from "@/lib/gaTypes";
@@ -78,12 +78,27 @@ function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPa
   const days = useMemo(() => (report ? [...report.daily].sort((x, y) => (x.date < y.date ? -1 : 1)) : []), [report]);
   const partial = !!report?.includesToday && days.length > 2 && days[days.length - 1].date === todayKst();
   const sparkDays = partial ? days.slice(0, -1) : days;
+  const sparkDates = sparkDays.map((d) => d.date);
   const sparkCap = `${sparkDays.length}일 추이${partial ? " · 오늘 제외" : ""}`;
+  // 마우스가 카드 위를 움직이면 스포트라이트 위치(--mx/--my)만 프레임당 한 번 갱신한다 (터치는 제외)
+  const spot = useRef(0);
+  const onMove = useCallback((e: RPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "touch" || spot.current) return;
+    const card = (e.target as HTMLElement).closest<HTMLElement>(".ga-sc");
+    if (!card) return;
+    const { clientX, clientY } = e;
+    spot.current = requestAnimationFrame(() => {
+      spot.current = 0;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${clientX - r.left}px`);
+      card.style.setProperty("--my", `${clientY - r.top}px`);
+    });
+  }, []);
   const skel = (w: number) => <span className="ga-skel ga-sc-skel" style={{ width: w }} aria-hidden="true" />;
 
   return (
     <section aria-label="오늘 한눈에" className={loading ? "ga-strip-wrap is-stale" : "ga-strip-wrap"}>
-      <div className="ga-strip">
+      <div className="ga-strip" onPointerMove={onMove}>
         <div className="ga-sc is-live" style={{ "--i": 0 } as CSSProperties}>
           <p className="ga-sc-l"><span className="ga-dot-s" aria-hidden="true" />지금 접속 (실시간)</p>
           <p className="ga-sc-v is-live">{rt === null ? skel(70) : <><CountUp value={rt} format={fmtInt} /><small>명</small></>}</p>
@@ -115,7 +130,7 @@ function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPa
           {t && p && <Delta cur={t.sessions} prev={p.sessions} kind="rel" label="" />}
           {t && <p className="ga-sc-s">사용자 {num(t.users)}명 · 평균 {mmss(t.avgSessionDuration)}</p>}
           <div className="ga-sc-viz">
-            <div className="ga-sc-g">{t && <Spark values={sparkDays.map((d) => d.sessions)} label={`일별 세션 추이, ${sparkCap}`} />}</div>
+            <div className="ga-sc-g">{t && <Spark values={sparkDays.map((d) => d.sessions)} labels={sparkDates} format={fmtInt} label={`일별 세션 추이, ${sparkCap}`} />}</div>
             <p className="ga-sc-cap">{t ? sparkCap : ""}</p>
           </div>
         </div>
@@ -132,7 +147,7 @@ function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPa
                   <i className="o" style={{ width: `${ownRate * 100}%` }} />
                 </div>
               ) : (
-                t && <Spark values={sparkDays.map((d) => d.engagementRate)} color="#c084fc" label={`일별 참여율 추이, ${sparkCap}`} />
+                t && <Spark values={sparkDays.map((d) => d.engagementRate)} labels={sparkDates} format={fmtPct} color="#c084fc" label={`일별 참여율 추이, ${sparkCap}`} />
               )}
             </div>
             <p className="ga-sc-cap">{ownRate !== null && own ? `20초 이상 ${num(own.over20)} / 전체 ${num(own.visits)}건` : t ? sparkCap : ""}</p>
@@ -143,7 +158,7 @@ function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPa
           <p className="ga-sc-v">{t ? <><CountUp value={t.keyEvents} format={fmtInt} /><small>건</small></> : skel(80)}</p>
           {t && p && <Delta cur={t.keyEvents} prev={p.keyEvents} kind="rel" label="" />}
           <div className="ga-sc-viz">
-            <div className="ga-sc-g">{t && <Spark values={sparkDays.map((d) => d.keyEvents)} color="#fbbf24" label={`일별 키 이벤트 추이, ${sparkCap}`} />}</div>
+            <div className="ga-sc-g">{t && <Spark values={sparkDays.map((d) => d.keyEvents)} labels={sparkDates} format={fmtInt} color="#fbbf24" label={`일별 키 이벤트 추이, ${sparkCap}`} />}</div>
             <p className="ga-sc-cap">{t ? sparkCap : ""}</p>
           </div>
         </div>

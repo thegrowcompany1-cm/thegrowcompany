@@ -3,7 +3,7 @@
 // 랜딩 성과 · 검색·SEO · AI 유입(AEO) · 채널 비교 탭
 // 데이터: 기간 리포트(report, GaDashboard 가 불러온 것) + 서치콘솔(/api/admin/gsc, 검색·SEO 탭을 열 때만 호출)
 
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
   GSC_OPP_MIN_IMPRESSIONS,
   GSC_OPP_POS_MAX,
@@ -15,7 +15,7 @@ import {
 import { isWeekend, weekdayKo } from "@/lib/gaRange";
 import { VERDICT_LABEL, aiInsight, buildChannelCompare, channelInsight, judgeLanding, landingInsight, searchInsight } from "@/lib/gaInsights";
 import LandingFunnel from "./LandingFunnel";
-import TrendChart from "./TrendChartSvg";
+import TrendChart, { createHoverLink } from "./TrendChartSvg";
 import { BarNum, Empty, ErrBox, Insight, Skel, mmss, num, pct } from "./ga-shared";
 import { useGaData } from "./useGaData";
 
@@ -24,9 +24,10 @@ function Badge({ row }: { row: LandingRow }) {
   return <span className={`ga-badge ${v}`}>{VERDICT_LABEL[v]}</span>;
 }
 
-function LandingTable({ rows, empty }: { rows: LandingRow[]; empty: string }) {
+function LandingTable({ rows, empty, selected, tracked, onPickRow }: { rows: LandingRow[]; empty: string; selected?: string; tracked?: ReadonlySet<string>; onPickRow?: (path: string) => void }) {
   if (!rows.length) return <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">{empty.replace(/[.]$/, "")}</Empty>;
   const maxS = Math.max(0, ...rows.map((r) => r.sessions));
+  const sumS = rows.reduce((s, r) => s + r.sessions, 0);
   return (
     <div className="ga-table-wrap">
       <table className="ga-table">
@@ -37,9 +38,26 @@ function LandingTable({ rows, empty }: { rows: LandingRow[]; empty: string }) {
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.landing}>
-              <td title={r.landing}>{r.landing}</td>
-              <td className="is-key"><BarNum value={r.sessions} max={maxS} /></td>
+            <tr
+              key={r.landing}
+              className={(tracked?.has(r.landing) ? "is-link" : "") + (selected === r.landing ? " is-selected" : "")}
+              {...(tracked?.has(r.landing)
+                ? {
+                    tabIndex: 0,
+                    role: "button",
+                    "aria-pressed": selected === r.landing,
+                    onClick: () => onPickRow?.(r.landing),
+                    onKeyDown: (e: React.KeyboardEvent) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onPickRow?.(r.landing);
+                      }
+                    },
+                  }
+                : {})}
+            >
+              <td title={r.landing}>{r.landing}{tracked?.has(r.landing) && <span className="ga-rowhint">퍼널 보기 ›</span>}</td>
+              <td className="is-key"><BarNum value={r.sessions} max={maxS} sum={sumS} /></td>
               <td>{num(r.engagedSessions)}</td>
               <td>{pct(r.engagementRate)}</td>
               <td>{mmss(r.avgEngagementSec)}</td>
@@ -83,6 +101,31 @@ function DailyTabImpl({ report, onPickDay }: { report: ReportPayload; onPickDay:
   const trackRes = useGaData<TrackDaily>(`/api/admin/track?view=daily&from=${from}&to=${to}`, { staleMs: 60_000, netMsg: "자체 추적 일별 데이터를 불러오지 못했습니다." });
   const track = trackRes.data;
   const trackErr = trackRes.error;
+  // 차트 ↔ 표 연동: 차트에서 날짜를 고정하면 표의 그 행이 강조되고, 표 행에 마우스를 올리면 차트의 그 날짜 점이 강조된다
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const link = useMemo(() => createHoverLink(), []);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  // 호버 날짜가 바뀌면 표의 해당 행에 연동 강조 클래스를 직접 붙인다 (React 상태가 아니라 표를 다시 그리지 않는다)
+  useEffect(
+    () =>
+      link.subscribe(() => {
+        const wrap = wrapRef.current;
+        if (!wrap) return;
+        wrap.querySelector("tr.is-linked")?.classList.remove("is-linked");
+        const d = link.get();
+        if (d) wrap.querySelector(`tr[data-date="${d}"]:not(.is-selected)`)?.classList.add("is-linked");
+      }),
+    [link],
+  );
+  useEffect(() => {
+    if (!selectedDate) return;
+    const wrap = wrapRef.current;
+    const tr = wrap?.querySelector<HTMLElement>(`tr[data-date="${selectedDate}"]`);
+    if (!wrap || !tr) return;
+    const rw = wrap.getBoundingClientRect(), rt = tr.getBoundingClientRect();
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    wrap.scrollTo({ top: Math.max(0, wrap.scrollTop + (rt.top - rw.top) - wrap.clientHeight / 2 + rt.height / 2), behavior: reduce ? "auto" : "smooth" });
+  }, [selectedDate]);
 
   const byDate = useMemo(() => new Map((track?.days ?? []).map((d) => [d.date, d])), [track]);
   const rows = useMemo(() => [...report.daily].sort((a, b) => (a.date < b.date ? 1 : -1)), [report.daily]);
@@ -107,7 +150,7 @@ function DailyTabImpl({ report, onPickDay }: { report: ReportPayload; onPickDay:
 
   return (
     <div>
-      <TrendChart report={report} />
+      <TrendChart report={report} selectedDate={selectedDate} onSelectDate={setSelectedDate} link={link} onPickDay={onPickDay} />
       <section className="ga-card">
         <div className="ga-row">
           <h2 className="ga-h" style={{ margin: 0 }}>일별 보기 <span className="ga-sub">· 최신 날짜가 위 · 행을 누르면 그날 하루만 봅니다</span></h2>
@@ -125,7 +168,7 @@ function DailyTabImpl({ report, onPickDay }: { report: ReportPayload; onPickDay:
                 <span key={k} className={k}>{MIX_LABEL[k]}</span>
               ))}
             </div>
-            <div className="ga-table-wrap">
+            <div className="ga-table-wrap" ref={wrapRef}>
               <table className="ga-table">
                 <thead>
                   <tr>
@@ -142,7 +185,10 @@ function DailyTabImpl({ report, onPickDay }: { report: ReportPayload; onPickDay:
                     return (
                       <tr
                         key={d.date}
-                        className={"is-click" + (isWeekend(d.date) ? " is-weekend" : "")}
+                        data-date={d.date}
+                        className={"is-click" + (isWeekend(d.date) ? " is-weekend" : "") + (selectedDate === d.date ? " is-selected" : "")}
+                        onPointerEnter={(e) => { if (e.pointerType !== "touch") link.set(d.date); }}
+                        onPointerLeave={(e) => { if (e.pointerType !== "touch") link.set(null); }}
                         tabIndex={0}
                         onClick={() => onPickDay(d.date)}
                         onKeyDown={(e) => {
@@ -190,15 +236,27 @@ function DailyTabImpl({ report, onPickDay }: { report: ReportPayload; onPickDay:
 
 // ── 랜딩 성과 ────────────────────────────────────────────────────────────────
 function LandingTabImpl({ report, from, to }: { report: ReportPayload; from: string; to: string }) {
+  // 랜딩 표의 행을 누르면 아래 섹션 도달 퍼널이 그 랜딩으로 바뀐다 (자체 추적 대상인 랜딩만)
+  const listRes = useGaData<{ ok: true; paths: { path: string; sessions: number }[] }>(`/api/admin/track?view=funnel&from=${from}&to=${to}`, { staleMs: 60_000, keepPrevious: true });
+  const tracked = useMemo(() => new Set((listRes.data?.paths ?? []).map((p) => p.path)), [listRes.data]);
+  const [pick, setPick] = useState("");
+  const funnelRef = useRef<HTMLDivElement>(null);
+  const onPickRow = (path: string) => {
+    setPick(path);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    funnelRef.current?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+  };
   return (
     <div>
       <section className="ga-card">
         <h2 className="ga-h">랜딩 성과 <span className="ga-sub">· 세션이 시작된 첫 페이지 기준 (쿼리스트링 제외)</span></h2>
         <Insight text={landingInsight(report.landings, "랜딩")} />
-        <LandingTable rows={report.landings} empty="이 기간의 랜딩 데이터가 없습니다." />
-        <p className="ga-sub" style={{ marginTop: 10 }}>{BADGE_GUIDE}</p>
+        <LandingTable rows={report.landings} empty="이 기간의 랜딩 데이터가 없습니다." selected={pick} tracked={tracked} onPickRow={onPickRow} />
+        <p className="ga-sub" style={{ marginTop: 10 }}>{BADGE_GUIDE}{tracked.size ? " · 퍼널 보기 표시가 있는 행을 누르면 아래 섹션 도달 퍼널이 그 랜딩으로 바뀝니다" : ""}</p>
       </section>
-      <LandingFunnel from={from} to={to} />
+      <div ref={funnelRef} className="ga-funnel-anchor">
+        <LandingFunnel from={from} to={to} pick={pick} onPick={setPick} />
+      </div>
     </div>
   );
 }
@@ -213,6 +271,10 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
   const maxQ = Math.max(0, ...(gsc?.queries ?? []).map((r) => r.clicks));
   const maxP = Math.max(0, ...(gsc?.pages ?? []).map((r) => r.clicks));
   const maxOrg = Math.max(0, ...report.organic.sources.map((s) => s.sessions));
+  const sumOpp = (gsc?.opportunities ?? []).reduce((a, r) => a + r.impressions, 0);
+  const sumQ = (gsc?.queries ?? []).reduce((a, r) => a + r.clicks, 0);
+  const sumP = (gsc?.pages ?? []).reduce((a, r) => a + r.clicks, 0);
+  const sumOrg = report.organic.sources.reduce((a, s) => a + s.sessions, 0);
   const oppKeys = useMemo(() => new Set((gsc?.opportunities ?? []).map((o) => o.key)), [gsc]);
   const MAIN_ENGINES = ["google", "naver", "daum", "bing"];
 
@@ -242,7 +304,7 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                     {gsc.opportunities.map((r) => (
                       <tr key={r.key} className="is-opp">
                         <td title={r.key}>{r.key}</td>
-                        <td className="is-key"><BarNum value={r.impressions} max={maxOpp} /></td>
+                        <td className="is-key"><BarNum value={r.impressions} max={maxOpp} sum={sumOpp} /></td>
                         <td>{num(r.clicks)}</td>
                         <td>{pct(r.ctr)}</td>
                         <td><RankPos v={r.position} /></td>
@@ -261,7 +323,7 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                   {gsc.queries.map((r) => (
                     <tr key={r.key} className={oppKeys.has(r.key) ? "is-opp" : undefined}>
                       <td title={r.key}>{r.key}</td>
-                      <td className="is-key"><BarNum value={r.clicks} max={maxQ} /></td>
+                      <td className="is-key"><BarNum value={r.clicks} max={maxQ} sum={sumQ} /></td>
                       <td>{num(r.impressions)}</td>
                       <td>{pct(r.ctr)}</td>
                       <td><RankPos v={r.position} /></td>
@@ -284,7 +346,7 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                 {gsc.pages.map((r) => (
                   <tr key={r.key}>
                     <td title={r.key}>{r.key.replace(/^https?:\/\/[^/]+/, "") || "/"}</td>
-                    <td className="is-key"><BarNum value={r.clicks} max={maxP} /></td>
+                    <td className="is-key"><BarNum value={r.clicks} max={maxP} sum={sumP} /></td>
                     <td>{num(r.impressions)}</td>
                     <td>{pct(r.ctr)}</td>
                     <td><RankPos v={r.position} /></td>
@@ -311,7 +373,7 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                   .map((s) => (
                     <tr key={s.source}>
                       <td>{s.source}</td>
-                      <td className="is-key"><BarNum value={s.sessions} max={maxOrg} /></td>
+                      <td className="is-key"><BarNum value={s.sessions} max={maxOrg} sum={sumOrg} /></td>
                       <td>{pct(s.engagementRate)}</td>
                     </tr>
                   ))}
@@ -332,6 +394,7 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
 function AiTabImpl({ report }: { report: ReportPayload }) {
   const { sources, landings } = report.ai;
   const maxAi = Math.max(0, ...sources.map((s) => s.sessions));
+  const sumAi = sources.reduce((a, s) => a + s.sessions, 0);
   return (
     <div>
       <section className="ga-card">
@@ -347,7 +410,7 @@ function AiTabImpl({ report }: { report: ReportPayload }) {
                 {sources.map((s) => (
                   <tr key={s.source}>
                     <td>{s.source}</td>
-                    <td className="is-key"><BarNum value={s.sessions} max={maxAi} /></td>
+                    <td className="is-key"><BarNum value={s.sessions} max={maxAi} sum={sumAi} /></td>
                     <td>{num(s.users)}</td>
                     <td>{pct(s.engagementRate)}</td>
                     <td>{mmss(s.avgSessionDuration)}</td>
@@ -374,6 +437,8 @@ function ChannelTabImpl({ report }: { report: ReportPayload }) {
   const rows = useMemo(() => buildChannelCompare(report), [report]);
   const maxCmp = Math.max(0, ...rows.map((r) => r.sessions));
   const maxCh = Math.max(0, ...report.channels.map((c) => c.sessions));
+  const sumCmp = rows.reduce((a, r) => a + r.sessions, 0);
+  const sumCh = report.channels.reduce((a, c) => a + c.sessions, 0);
   return (
     <div>
       <section className="ga-card">
@@ -386,7 +451,7 @@ function ChannelTabImpl({ report }: { report: ReportPayload }) {
               {rows.map((r) => (
                 <tr key={r.key}>
                   <td>{r.label}</td>
-                  <td className="is-key"><BarNum value={r.sessions} max={maxCmp} /></td>
+                  <td className="is-key"><BarNum value={r.sessions} max={maxCmp} sum={sumCmp} /></td>
                   <td>{num(r.users)}</td>
                   <td>{r.sessions ? pct(r.engagementRate) : "-"}</td>
                   <td>{r.sessions ? mmss(r.avgSessionDuration) : "-"}</td>
@@ -411,7 +476,7 @@ function ChannelTabImpl({ report }: { report: ReportPayload }) {
                 {report.channels.map((c) => (
                   <tr key={c.channel}>
                     <td>{c.channel}</td>
-                    <td className="is-key"><BarNum value={c.sessions} max={maxCh} /></td>
+                    <td className="is-key"><BarNum value={c.sessions} max={maxCh} sum={sumCh} /></td>
                     <td>{num(c.users)}</td>
                     <td>{pct(c.engagementRate)}</td>
                     <td>{mmss(c.avgSessionDuration)}</td>

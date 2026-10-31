@@ -6,7 +6,7 @@
 //    prefers-reduced-motion · 숨은 탭(비활성 패널)·백그라운드 탭에서는 바로 최종 값을 보여준다.
 //  · Spark: KPI 카드용 미니 추이선. 실제 일별 값만 그린다 (오늘 집계 중인 날은 제외).
 
-import { useId, useLayoutEffect, useRef } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { monotonePath, type Pt } from "./ga-chart-math";
 import { useTabActive } from "./ga-shared";
 
@@ -51,11 +51,24 @@ export function CountUp({ value, format, ms = 520 }: { value: number; format: (n
 
 /**
  * KPI 카드용 미니 추이선. values 는 날짜 오름차순 실제 값이다 (오늘 집계 중인 날은 호출하는 쪽에서 빼고 넘긴다).
- * 선·면 그라데이션은 늘어나는 SVG 로, 끝점은 비율 좌표의 작은 점(HTML)으로 그려 어떤 폭에서도 찌그러지지 않는다.
+ * 선·면 그라데이션은 늘어나는 SVG 로, 점·가이드선·툴팁은 비율 좌표의 HTML 로 그려 어떤 폭에서도 찌그러지지 않는다.
+ * 호버(마우스)·탭/드래그(터치)로 그날의 값을 본다. 터치에서는 손가락을 떼도 유지하고 바깥을 누르면 닫는다.
  */
-export function Spark({ values, color = "#22B573", label }: { values: number[]; color?: string; label: string }) {
+export function Spark({ values, labels, format, color = "#22B573", label }: { values: number[]; labels?: string[]; format?: (n: number) => string; color?: string; label: string }) {
   const uid = useId().replace(/:/g, "");
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [hi, setHi] = useState<number | null>(null);
   const n = values.length;
+
+  useEffect(() => {
+    if (hi === null) return;
+    const close = (e: PointerEvent) => {
+      if (!boxRef.current?.contains(e.target as Node)) setHi(null);
+    };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [hi !== null]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (n < 2) return <div className="ga-spark ga-spark-empty" aria-hidden="true" />;
   const W = 120, H = 34, PT = 5, PB = 4;
   const max = Math.max(...values), min = Math.min(...values);
@@ -66,8 +79,23 @@ export function Spark({ values, color = "#22B573", label }: { values: number[]; 
   const d = monotonePath(pts);
   const area = `${d}L${W},${H}L0,${H}Z`;
   const last = pts[n - 1];
+  const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const i = Math.max(0, Math.min(n - 1, Math.round(((e.clientX - r.left) / r.width) * (n - 1))));
+    setHi((c) => (c === i ? c : i));
+  };
+  const at = hi === null ? null : pts[hi];
+  const fmt = format ?? ((v: number) => String(v));
   return (
-    <div className="ga-spark" role="img" aria-label={label}>
+    <div
+      className={"ga-spark" + (hi !== null ? " is-hi" : "")}
+      ref={boxRef}
+      role="img"
+      aria-label={label}
+      onPointerMove={onMove}
+      onPointerDown={onMove}
+      onPointerLeave={(e) => { if (e.pointerType !== "touch") setHi(null); }}
+    >
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id={`${uid}-g`} x1="0" y1="0" x2="0" y2="1">
@@ -79,6 +107,16 @@ export function Spark({ values, color = "#22B573", label }: { values: number[]; 
         <path d={d} fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
       </svg>
       <i className="ga-spark-dot" style={{ left: `${(last[0] / W) * 100}%`, top: `${(last[1] / H) * 100}%`, background: color }} />
+      {at && hi !== null && (
+        <>
+          <i className="ga-spark-guide" style={{ left: `${(at[0] / W) * 100}%` }} />
+          <i className="ga-spark-pt" style={{ left: `${(at[0] / W) * 100}%`, top: `${(at[1] / H) * 100}%`, background: color }} />
+          <span className={"ga-spark-tip" + (hi < n * 0.2 ? " is-l" : hi > n * 0.8 ? " is-r" : "")} style={{ left: `${(at[0] / W) * 100}%` }} role="status">
+            {labels?.[hi] ? <small>{labels[hi].slice(5)}</small> : null}
+            <b style={{ color }}>{fmt(values[hi])}</b>
+          </span>
+        </>
+      )}
     </div>
   );
 }

@@ -25,7 +25,7 @@ type ExitsRes = { ok: true; sessions: number; exited: number; top: { path: strin
 const FUNNEL_MIN = 30;
 const secLabel = (s: string | null) => (s ? (TRACK_SECTION_LABEL[s] ? `${TRACK_SECTION_LABEL[s]}(${s})` : s) : "-");
 
-export default function LandingFunnel({ from, to }: { from: string; to: string }) {
+export default function LandingFunnel({ from, to, pick: extPick, onPick }: { from: string; to: string; pick?: string; onPick?: (path: string) => void }) {
   const periodLabel = from === to ? from : `${from} ~ ${to}`;
 
   // ── 섹션 도달 퍼널 / 이탈 지점 ──
@@ -33,7 +33,15 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
   // 그래서 ① 목록 요청 → ② 선택한 랜딩(고르지 않았으면 목록의 첫 랜딩)의 상세 요청, 두 요청이 모두 필요하다.
   // 요청은 URL 별로 합쳐지고 캐시되어 같은 경로의 상세는 한 번만 나가며, 응답도 URL 별로 따로 보관되므로
   // 랜딩을 빠르게 바꿔도 늦게 온 이전 응답이 현재 선택을 덮어쓰지 않는다.
-  const [pick, setPick] = useState<string>("");
+  // 랜딩 선택: 위쪽 랜딩 표에서 행을 눌러도(extPick) 바뀌고, 이 카드의 드롭다운으로도 바뀐다
+  const [pickLocal, setPickLocal] = useState<string>("");
+  const pick = extPick !== undefined ? extPick : pickLocal;
+  const setPick = (p: string) => {
+    setPickLocal(p);
+    onPick?.(p);
+  };
+  // 선택한 구간(섹션) — 랜딩이 바뀌면 자동으로 해제된다
+  const [selSt, setSelSt] = useState<{ path: string; sec: string } | null>(null);
   const active = useTabActive();
   const base = `/api/admin/track?view=funnel&from=${from}&to=${to}`;
   const listRes = useGaData<FunnelRes>(base, { staleMs: 60_000, keepPrevious: true, netMsg: "퍼널을 불러오지 못했습니다." });
@@ -49,6 +57,8 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
   // 선택한 랜딩·기간의 상세를 기다리는 중 (이전 데이터가 보이더라도 "로딩 중"으로 본다)
   const settling = !!funnelPath && (detailRes.loading || detailRes.placeholder);
   const pathList = paths ?? funnel?.paths ?? [];
+  const selSec = selSt && selSt.path === funnelPath ? selSt.sec : null;
+  const toggleSec = (sec: string) => setSelSt(selSec === sec ? null : { path: funnelPath, sec });
 
   // 이탈 지점은 60초마다 갱신 (이 탭이 보일 때만)
   const exitsRes = useGaData<ExitsRes>(`/api/admin/track?view=exits&from=${from}&to=${to}`, { staleMs: 30_000, pollMs: 60_000, active, netMsg: "이탈 지점을 불러오지 못했습니다." });
@@ -56,6 +66,11 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
   const exitsErr = exitsRes.error;
 
   const maxExit = Math.max(0, ...(exits?.top ?? []).map((r) => r.count));
+  const sumExit = (exits?.top ?? []).reduce((a, r) => a + r.count, 0);
+  const selIdx = selSec ? (funnel?.rows ?? []).findIndex((r) => r.section === selSec) : -1;
+  const selRow = selIdx >= 0 ? funnel?.rows?.[selIdx] : undefined;
+  const selPrev = selIdx > 0 ? funnel?.rows?.[selIdx - 1] : undefined;
+  const exitHere = selSec ? exits?.top.find((r) => r.path === funnelPath && r.section === selSec) : undefined;
   const drop = useMemo(() => (funnel?.rows ? funnelDrop(funnel.rows) : null), [funnel]);
   const notReady = [funnelErr, exitsErr].find((e) => e?.code === "TRACK_NOT_READY") ?? null;
 
@@ -105,7 +120,7 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
               <Empty hint="방문이 생기면 이 기간 안에서 집계됩니다">이 랜딩의 섹션 도달 기록이 아직 없습니다</Empty>
             ) : (
               <div
-                className={"ga-fbars" + (funnel.totalSessions !== undefined && funnel.totalSessions < FUNNEL_MIN ? " is-low" : "") + (settling ? " ga-data is-stale" : "")}
+                className={"ga-fbars" + (funnel.totalSessions !== undefined && funnel.totalSessions < FUNNEL_MIN ? " is-low" : "") + (settling ? " ga-data is-stale" : "") + (selSec ? " has-sel" : "")}
                 aria-busy={settling}
               >
                 {funnel.totalSessions !== undefined && funnel.totalSessions < FUNNEL_MIN && (
@@ -117,7 +132,20 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                   const isDrop = !!drop && drop.index === i;
                   const isWarn = !isDrop && dr !== null && Math.round(dr * 100) >= 20;
                   return (
-                    <div className={"ga-fbar" + (isDrop ? " is-drop" : isWarn ? " is-warn" : "")} key={r.section}>
+                    <div
+                      className={"ga-fbar" + (isDrop ? " is-drop" : isWarn ? " is-warn" : "") + (selSec === r.section ? " is-sel" : "")}
+                      key={r.section}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={selSec === r.section}
+                      onClick={() => toggleSec(r.section)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          toggleSec(r.section);
+                        }
+                      }}
+                    >
                       <span className="ga-fbar-name" title={r.section}>{TRACK_SECTION_LABEL[r.section] ?? r.section}</span>
                       <span className="ga-fbar-track"><i style={{ width: `${Math.max(2, r.rate * 100)}%` }} /></span>
                       <span className="ga-fbar-r">
@@ -129,7 +157,30 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                     </div>
                   );
                 })}
-                <p className="ga-sub">기준: 이 랜딩에 들어온 {num(funnel.totalSessions ?? 0)}세션 중 그 섹션 또는 그보다 뒤 섹션을 본 세션 (섹션은 절반 또는 화면 절반 이상 보였을 때 기록) · 빨강 = 직전 대비 가장 크게 떨어진 구간 · 주황 = 20%p 이상 하락</p>
+                {selRow && (
+                  <div className="ga-fdetail" key={selRow.section} role="status">
+                    <div className="ga-fd-t">
+                      <b>{TRACK_SECTION_LABEL[selRow.section] ?? selRow.section}</b>
+                      <span>구간 상세</span>
+                      <button type="button" className="ga-fd-x" aria-label="선택 해제" onClick={() => setSelSt(null)}>×</button>
+                    </div>
+                    <div className="ga-fd-g">
+                      <div><small>도달</small><b>{num(selRow.sessions)}명</b><i>{Math.round(selRow.rate * 100)}%</i></div>
+                      <div>
+                        <small>직전 구간 대비 이탈</small>
+                        <b>{selPrev ? `${num(Math.max(0, selPrev.sessions - selRow.sessions))}명` : "–"}</b>
+                        <i>{selPrev ? `−${((selPrev.rate - selRow.rate) * 100).toFixed(0)}%p` : "첫 구간"}</i>
+                      </div>
+                      <div><small>처음부터 누적 이탈</small><b>{num(Math.max(0, (funnel.totalSessions ?? selRow.sessions) - selRow.sessions))}명</b><i>{((1 - selRow.rate) * 100).toFixed(0)}%</i></div>
+                      <div>
+                        <small>여기서 마지막으로 이탈</small>
+                        <b>{exitHere ? `${num(exitHere.count)}건` : "Top 밖"}</b>
+                        <i>{exitHere && exits?.exited ? pct(exitHere.count / exits.exited) : ""}</i>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <p className="ga-sub">기준: 이 랜딩에 들어온 {num(funnel.totalSessions ?? 0)}세션 중 그 섹션 또는 그보다 뒤 섹션을 본 세션 (섹션은 절반 또는 화면 절반 이상 보였을 때 기록) · 빨강 = 직전 대비 가장 크게 떨어진 구간 · 주황 = 20%p 이상 하락 · 구간을 누르면 상세와 이탈 지점 표가 연결됩니다</p>
               </div>
             )}
           </section>
@@ -150,14 +201,43 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                     <tr><th>페이지</th><th>마지막 섹션</th><th>이탈 세션</th><th>비율</th></tr>
                   </thead>
                   <tbody>
-                    {exits.top.map((r) => (
-                      <tr key={`${r.path}|${r.section}`}>
-                        <td title={r.path}>{r.path}</td>
+                    {exits.top.map((r) => {
+                      const linkable = pathList.some((p) => p.path === r.path);
+                      const linked = r.path === funnelPath && r.section === selSec;
+                      const go = () => {
+                        if (r.path === funnelPath) toggleSec(r.section);
+                        else {
+                          setPick(r.path);
+                          setSelSt({ path: r.path, sec: r.section });
+                        }
+                      };
+                      return (
+                      <tr
+                        key={`${r.path}|${r.section}`}
+                        data-section={r.section}
+                        className={(linkable ? "is-link" : "") + (linked ? " is-selected" : "")}
+                        {...(linkable
+                          ? {
+                              tabIndex: 0,
+                              role: "button",
+                              "aria-pressed": linked,
+                              onClick: go,
+                              onKeyDown: (e: React.KeyboardEvent) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  go();
+                                }
+                              },
+                            }
+                          : {})}
+                      >
+                        <td title={r.path}>{r.path}{linkable && <span className="ga-rowhint">퍼널 구간 보기 ›</span>}</td>
                         <td>{secLabel(r.section)}</td>
-                        <td className="is-key"><BarNum value={r.count} max={maxExit} /></td>
+                        <td className="is-key"><BarNum value={r.count} max={maxExit} sum={sumExit} /></td>
                         <td>{exits.exited ? pct(r.count / exits.exited) : "-"}</td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
