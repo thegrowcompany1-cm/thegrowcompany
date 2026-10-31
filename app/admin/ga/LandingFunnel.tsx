@@ -29,17 +29,26 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
   const periodLabel = from === to ? from : `${from} ~ ${to}`;
 
   // ── 섹션 도달 퍼널 / 이탈 지점 ──
-  // 선택한 랜딩(pick)이 없으면 서버가 가장 많은 랜딩을 골라 응답하므로, 그 값을 그대로 보여준다 (다시 요청하지 않음).
+  // 서버는 path 없이 요청하면 경로 목록만 돌려주고, path 를 줘야 섹션 도달 상세(rows)를 준다.
+  // 그래서 ① 목록 요청 → ② 선택한 랜딩(고르지 않았으면 목록의 첫 랜딩)의 상세 요청, 두 요청이 모두 필요하다.
+  // 요청은 URL 별로 합쳐지고 캐시되어 같은 경로의 상세는 한 번만 나가며, 응답도 URL 별로 따로 보관되므로
+  // 랜딩을 빠르게 바꿔도 늦게 온 이전 응답이 현재 선택을 덮어쓰지 않는다.
   const [pick, setPick] = useState<string>("");
   const active = useTabActive();
-  const funnelRes = useGaData<FunnelRes>(`/api/admin/track?view=funnel&from=${from}&to=${to}${pick ? `&path=${encodeURIComponent(pick)}` : ""}`, {
+  const base = `/api/admin/track?view=funnel&from=${from}&to=${to}`;
+  const listRes = useGaData<FunnelRes>(base, { staleMs: 60_000, keepPrevious: true, netMsg: "퍼널을 불러오지 못했습니다." });
+  const paths = listRes.data?.paths;
+  const funnelPath = pick || paths?.[0]?.path || "";
+  const detailRes = useGaData<FunnelRes>(funnelPath ? `${base}&path=${encodeURIComponent(funnelPath)}` : null, {
     staleMs: 60_000,
     keepPrevious: true,
     netMsg: "퍼널을 불러오지 못했습니다.",
   });
-  const funnel = funnelRes.data;
-  const funnelErr = funnelRes.error;
-  const funnelPath = pick || funnel?.path || funnel?.paths[0]?.path || "";
+  const funnel = detailRes.data;
+  const funnelErr = detailRes.error ?? listRes.error;
+  // 선택한 랜딩·기간의 상세를 기다리는 중 (이전 데이터가 보이더라도 "로딩 중"으로 본다)
+  const settling = !!funnelPath && (detailRes.loading || detailRes.placeholder);
+  const pathList = paths ?? funnel?.paths ?? [];
 
   // 이탈 지점은 60초마다 갱신 (이 탭이 보일 때만)
   const exitsRes = useGaData<ExitsRes>(`/api/admin/track?view=exits&from=${from}&to=${to}`, { staleMs: 30_000, pollMs: 60_000, active, netMsg: "이탈 지점을 불러오지 못했습니다." });
@@ -71,12 +80,12 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
               <h2 className="ga-h" style={{ margin: 0 }}>랜딩 섹션 도달 퍼널 <span className="ga-sub">· {periodLabel}</span></h2>
               <span className="ga-fsel">
                 <select className="ga-select" aria-label="랜딩 선택" value={funnelPath} onChange={(e) => setPick(e.target.value)}>
-                  {(funnel?.paths ?? []).map((p) => (
+                  {pathList.map((p) => (
                     <option key={p.path} value={p.path}>{p.path}</option>
                   ))}
                 </select>
-                {funnel?.paths.find((p) => p.path === funnelPath) && (
-                  <span className="ga-sub">세션 {num(funnel.paths.find((p) => p.path === funnelPath)!.sessions)}</span>
+                {pathList.find((p) => p.path === funnelPath) && (
+                  <span className="ga-sub">세션 {num(pathList.find((p) => p.path === funnelPath)!.sessions)}</span>
                 )}
               </span>
             </div>
@@ -85,15 +94,20 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                 {SECTION_TRACK_FIX_DATE.replace(/-/g, ".")} 이전 데이터는 화면 높이의 2배가 넘는 긴 섹션이 과소 기록됐습니다 — 이 날짜 이전을 포함한 기간의 긴 섹션(신청 폼 등) 수치는 실제보다 낮게 보일 수 있습니다.
               </p>
             )}
-            <Insight text={funnelInsight} />
-            {funnelErr && !funnel ? (
+            <Insight text={settling ? null : funnelInsight} />
+            {funnelErr && !funnel && !(paths && paths.length) ? (
               funnelErr.code === "TRACK_NOT_READY" ? null : <ErrBox title="퍼널을 불러오지 못했습니다" err={funnelErr} />
-            ) : !funnel ? (
+            ) : paths && paths.length === 0 ? (
+              <Empty hint="방문이 생기면 이 기간 안에서 집계됩니다">추적된 랜딩 방문이 아직 없습니다</Empty>
+            ) : !funnel || (settling && !funnel.rows?.length) ? (
               <Skel h={90} />
             ) : !funnel.rows || funnel.rows.length === 0 ? (
-              <Empty hint="방문이 생기면 이 기간 안에서 집계됩니다">{funnel.paths.length === 0 ? "추적된 랜딩 방문이 아직 없습니다" : "이 랜딩의 섹션 도달 기록이 아직 없습니다"}</Empty>
+              <Empty hint="방문이 생기면 이 기간 안에서 집계됩니다">이 랜딩의 섹션 도달 기록이 아직 없습니다</Empty>
             ) : (
-              <div className={"ga-fbars" + (funnel.totalSessions !== undefined && funnel.totalSessions < FUNNEL_MIN ? " is-low" : "")}>
+              <div
+                className={"ga-fbars" + (funnel.totalSessions !== undefined && funnel.totalSessions < FUNNEL_MIN ? " is-low" : "") + (settling ? " ga-data is-stale" : "")}
+                aria-busy={settling}
+              >
                 {funnel.totalSessions !== undefined && funnel.totalSessions < FUNNEL_MIN && (
                   <p><span className="ga-warnbadge">표본 적음 ({num(funnel.totalSessions)}세션) — 판단 보류 권장</span></p>
                 )}
