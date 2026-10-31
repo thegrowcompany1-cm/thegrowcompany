@@ -105,6 +105,17 @@ export function ReportSkeleton() {
   );
 }
 
+/** 표의 핵심 수치 칸 — 같은 표 안의 최댓값 대비 길이를 배경 막대로 보여 준다 (값은 그대로, 막대는 보조 표현) */
+export function BarNum({ value, max, text }: { value: number; max: number; text?: string }) {
+  const w = max > 0 && value > 0 ? Math.max(4, (value / max) * 100) : 0;
+  return (
+    <span className="ga-cb">
+      <i style={{ width: `${w}%` }} aria-hidden="true" />
+      <b>{text ?? num(value)}</b>
+    </span>
+  );
+}
+
 /** 표 상단 한 줄 자동 코멘트 */
 export function Insight({ text }: { text: string | null }) {
   if (!text) return null;
@@ -473,4 +484,83 @@ export const GA_STYLE = `
 @media(max-width:767px){.ga-tabbar .ga-tabs{flex:1}.ga-tabs button{padding:9px 12px;font-size:13px}}
 @media(max-width:560px){.ga-sc{padding:14px}.ga-sc-v,.ga-sc:nth-child(5) .ga-sc-v{font-size:24px}.ga-live-num{font-size:48px}.ga-card{padding:16px}}
 @media(prefers-reduced-motion:reduce){.ga-panel.is-fresh .ga-card,.ga-sc,.ga-panel,.ga-sc-split i,.ga-panel.is-fresh .ga-bar i,.ga-panel.is-fresh .ga-fbar-track i{animation:none}.ga-sc,.ga-sc::before,.ga-strip-wrap{transition:none}.ga-skel::after{animation:none}}
+/* ═══ 디자인 보정 v2 — KPI 카드 통일 · 스파크라인 · 모바일 세션 · 탭 내비 · 테이블 (색 전환만, 무한 애니메이션 없음) ═══ */
+/* KPI 카드: 값 → 보조 정보 → 하단 시각 요소(그래프 + 캡션)를 카드 맨 아래에 맞춘다 */
+.ga-sc{display:flex;flex-direction:column}
+.ga-sc-viz{margin-top:auto;padding-top:14px}
+.ga-sc-g{height:34px;display:flex;align-items:center}
+.ga-sc-g>*{width:100%}
+.ga-sc-cap{display:flex;flex-wrap:wrap;gap:2px 12px;min-height:16px;margin:6px 0 0;font-size:11.5px;line-height:1.4;color:#8b8b8b}
+.ga-sc-cap span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.ga-sc-dot{display:inline-block;width:7px;height:7px;border-radius:50%}
+.ga-sc-split{height:10px;margin-top:0;border-radius:6px}
+.ga-sc .ga-delta{align-self:flex-start}
+/* 스파크라인: 선·면은 늘어나는 SVG, 끝점은 비율 좌표의 점 */
+.ga-spark{position:relative;display:block;width:100%;height:34px;margin:0}
+.ga-spark svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ga-spark svg{animation:ga-reveal .7s cubic-bezier(.22,1,.36,1) both}
+@keyframes ga-reveal{from{clip-path:inset(-6px 100% -6px -6px)}to{clip-path:inset(-6px -6px -6px -6px)}}
+.ga-spark-empty{height:34px}
+.ga-spark-dot{position:absolute;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 2.5px #151515;animation:ga-fade-in .25s ease-out .6s both}
+/* 모바일 포함 실시간 세션: 한 줄(유입·경로·체류 시간) + 보조 정보 칩 */
+.ga-sess li button{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:12px 14px;border-radius:14px}
+.ga-sess-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-width:0}
+.ga-sess-path{min-width:0;font-size:14px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ga-sess-t{font-size:15px;font-weight:900;color:#22B573;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ga-sess-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ga-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.06);font-size:11.5px;font-weight:600;color:#b4b4b4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ga-chip.is-sec{background:rgba(34,181,115,.1);color:#9be3c0}
+.ga-chip .ga-dev-ic{margin:0;vertical-align:0;color:inherit}
+/* 셀렉트 */
+.ga-select{appearance:none;-webkit-appearance:none;padding:9px 34px 9px 14px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:#171717 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%23a3a3a3' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center/12px;font-weight:700;cursor:pointer;transition:border-color .15s}
+.ga-select:hover{border-color:rgba(34,181,115,.5)}
+.ga-select:focus-visible{outline:2px solid #22B573;outline-offset:2px}
+.ga-select option{background:#1a1a1a;color:#fff}
+/* 표 */
+.ga-table-wrap{border:1px solid var(--ga-line);border-radius:14px;background:#131313;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
+.ga-table{border-collapse:separate;border-spacing:0;font-size:13.5px}
+.ga-table thead th{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1);background:#161616;box-shadow:none;font-size:11.5px;font-weight:700;letter-spacing:.03em;color:#8a8a8a}
+.ga-table tbody td{padding:13px 14px;border-top:0;border-bottom:1px solid rgba(255,255,255,.055);color:#cdcdcd;font-variant-numeric:tabular-nums}
+.ga-table tbody tr:last-child td{border-bottom:0}
+.ga-table tbody td:first-child{color:#fff;font-weight:700}
+.ga-table tbody td.is-key{color:#fff;font-weight:800;font-size:14.5px}
+.ga-table tbody tr:hover td{background:rgba(34,181,115,.06)}
+.ga-table tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 #22B573}
+.ga-table tbody tr.is-opp td{background:rgba(250,204,21,.07)}
+.ga-table tbody tr.is-opp td:first-child,.ga-table tbody tr.is-opp:hover td:first-child{box-shadow:inset 3px 0 0 #FACC15}
+.ga-table tbody tr.is-opp:hover td{background:rgba(250,204,21,.12)}
+.ga-table tbody tr.is-weekend td{background:rgba(255,255,255,.025)}
+.ga-table tbody tr.is-click:hover td{background:rgba(34,181,115,.08)}
+.ga-table .ga-delta{padding:1px 7px;font-size:11.5px}
+.ga-cb{position:relative;display:inline-flex;align-items:center;justify-content:flex-end;min-width:104px;height:26px;padding:0 8px}
+.ga-cb i{position:absolute;right:0;top:3px;bottom:3px;border-radius:5px;background:linear-gradient(90deg,rgba(34,181,115,.05),rgba(34,181,115,.26))}
+.ga-cb b{position:relative;font-weight:inherit}
+.ga-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 11px}
+.ga-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.ga-rank{display:inline-block;min-width:52px;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:800;text-align:center}
+.ga-rank.top{background:rgba(34,181,115,.18);color:#4ade80}
+.ga-rank.mid{background:rgba(96,165,250,.14);color:#93c5fd}
+.ga-rank.low{background:rgba(255,255,255,.06);color:#a3a3a3}
+@media(max-width:767px){
+.ga-tabbar .ga-tabs{overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%)}
+.ga-tabs button{min-height:40px;padding:10px 14px;-webkit-tap-highlight-color:transparent}
+}
+@media(max-width:560px){
+.ga-sess li button{gap:7px;padding:11px 12px}
+.ga-sess-top{gap:8px}
+.ga-sess-path{font-size:13.5px}
+.ga-chip{padding:3px 8px;font-size:11px}
+.ga-table-wrap{border:0;border-radius:0;background:none}
+.ga-table tbody{gap:10px}
+.ga-table tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 12px;padding:14px;border-radius:14px;background:linear-gradient(180deg,#181818,#131313)}
+.ga-table tbody td,.ga-table tbody tr:hover td{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:2px;padding:8px 0 0;border:0;background:none;text-align:left;white-space:normal;font-size:13.5px}
+.ga-table tbody td::before{font-size:11px;font-weight:600;color:#7c7c7c}
+.ga-table tbody td:first-child{grid-column:1/-1;display:block;max-width:none;padding:0 0 4px;font-size:14.5px;box-shadow:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ga-table tbody tr:hover td:first-child{box-shadow:none}
+.ga-table tbody td.is-key{font-size:15px}
+.ga-cb{justify-content:flex-start;min-width:0;height:auto;padding:0}
+.ga-cb i{display:none}
+.ga-table tr:not(.is-click):has(td:nth-child(5))::after{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){.ga-spark-dot,.ga-spark svg{animation:none}.ga-select,.ga-table tbody td{transition:none}}
 `;

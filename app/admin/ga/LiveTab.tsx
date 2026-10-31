@@ -228,14 +228,19 @@ function LiveTabImpl() {
                 {live.sessions.map((s) => (
                   <li key={s.sessionId}>
                     <button type="button" className={fresh?.has(s.sessionId) ? "is-new" : undefined} aria-pressed={openSid === s.sessionId} onClick={() => setOpenSid((cur) => (cur === s.sessionId ? null : s.sessionId))}>
-                      <SourceBadge type={s.sourceType} />
-                      <span className="ga-sess-main">
-                        <div className="ga-sess-path" title={s.path}>{s.path}</div>
-                        <div className="ga-sess-meta">
-                          <DeviceIcon device={s.device} /> {s.device ? `${DEVICE_LABEL[s.device] ?? s.device} · ` : ""}{s.pages}페이지 지나옴 · 스크롤 {s.maxScrollPct}% · 마지막 섹션 {secLabel(s.lastSection)}
-                        </div>
+                      <span className="ga-sess-top">
+                        <SourceBadge type={s.sourceType} />
+                        <span className="ga-sess-path" title={s.path}>{s.path}</span>
+                        <span className="ga-sess-t" title="이 페이지에서 머문 시간"><Elapsed iso={s.enteredAt} skew={skew} /></span>
                       </span>
-                      <span className="ga-sess-t" title="이 페이지에서 머문 시간"><Elapsed iso={s.enteredAt} skew={skew} /></span>
+                      <span className="ga-sess-chips">
+                        <span className="ga-chip" title={s.device ? DEVICE_LABEL[s.device] ?? s.device : "기기 미상"}>
+                          <DeviceIcon device={s.device} />{s.device ? DEVICE_LABEL[s.device] ?? s.device : "기기 미상"}
+                        </span>
+                        <span className="ga-chip" title="지나온 페이지 수">{s.pages}페이지</span>
+                        <span className="ga-chip" title="최대 스크롤 깊이">스크롤 {s.maxScrollPct}%</span>
+                        <span className="ga-chip is-sec" title={`마지막 섹션 ${secLabel(s.lastSection)}`}>섹션 {s.lastSection ? TRACK_SECTION_LABEL[s.lastSection] ?? s.lastSection : "-"}</span>
+                      </span>
                     </button>
                   </li>
                 ))}

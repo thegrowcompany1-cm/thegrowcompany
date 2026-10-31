@@ -195,10 +195,36 @@ export default function GaDashboard({ scope }: { scope: string }) {
     return () => ro.disconnect();
   }, [tab]);
 
-  // 모바일에서 가로 스크롤되는 탭 줄: 선택한 탭이 보이게 맞춘다
+  // 모바일에서 가로 스크롤되는 탭 줄: 선택한 탭을 가운데로 맞춘다 (모션 줄이기 설정이면 바로 이동)
   useEffect(() => {
-    tabsRef.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "auto" });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    tabsRef.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.scrollIntoView({ block: "nearest", inline: "center", behavior: reduce ? "auto" : "smooth" });
   }, [tab]);
+
+  // 탭 줄이 좌우로 더 있으면 해당 쪽 끝을 페이드로 흐리게 보여 스크롤 가능함을 알린다 (스크롤 때 프레임당 한 번만 갱신)
+  useEffect(() => {
+    const el = tabsRef.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = el.scrollWidth - el.clientWidth;
+      el.style.setProperty("--fl", el.scrollLeft > 2 ? "28px" : "0px");
+      el.style.setProperty("--fr", el.scrollLeft < max - 2 ? "28px" : "0px");
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    el.addEventListener("scroll", schedule, { passive: true });
+    const ro = new ResizeObserver(schedule);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", schedule);
+      ro.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const pickDay = useCallback((day: string) => go(day, day, compare), [go, compare]);
 

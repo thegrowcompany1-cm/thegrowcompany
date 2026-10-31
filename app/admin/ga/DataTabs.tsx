@@ -16,7 +16,7 @@ import { isWeekend, weekdayKo } from "@/lib/gaRange";
 import { VERDICT_LABEL, aiInsight, buildChannelCompare, channelInsight, judgeLanding, landingInsight, searchInsight } from "@/lib/gaInsights";
 import LandingFunnel from "./LandingFunnel";
 import TrendChart from "./TrendChartSvg";
-import { Empty, ErrBox, Insight, Skel, mmss, num, pct } from "./ga-shared";
+import { BarNum, Empty, ErrBox, Insight, Skel, mmss, num, pct } from "./ga-shared";
 import { useGaData } from "./useGaData";
 
 function Badge({ row }: { row: LandingRow }) {
@@ -26,6 +26,7 @@ function Badge({ row }: { row: LandingRow }) {
 
 function LandingTable({ rows, empty }: { rows: LandingRow[]; empty: string }) {
   if (!rows.length) return <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">{empty.replace(/[.]$/, "")}</Empty>;
+  const maxS = Math.max(0, ...rows.map((r) => r.sessions));
   return (
     <div className="ga-table-wrap">
       <table className="ga-table">
@@ -38,7 +39,7 @@ function LandingTable({ rows, empty }: { rows: LandingRow[]; empty: string }) {
           {rows.map((r) => (
             <tr key={r.landing}>
               <td title={r.landing}>{r.landing}</td>
-              <td>{num(r.sessions)}</td>
+              <td className="is-key"><BarNum value={r.sessions} max={maxS} /></td>
               <td>{num(r.engagedSessions)}</td>
               <td>{pct(r.engagementRate)}</td>
               <td>{mmss(r.avgEngagementSec)}</td>
@@ -50,6 +51,11 @@ function LandingTable({ rows, empty }: { rows: LandingRow[]; empty: string }) {
       </table>
     </div>
   );
+}
+
+/** 검색 평균 순위 — 3위 이내 강조, 10위 이내 보통, 그 밖은 흐리게 (표현만 다르고 값은 그대로) */
+function RankPos({ v }: { v: number }) {
+  return <span className={"ga-rank " + (v <= 3 ? "top" : v <= 10 ? "mid" : "low")}>{v.toFixed(1)}위</span>;
 }
 
 const BADGE_GUIDE = "판정: 평균 참여 20초 이상 좋음 · 10~20초 보통 · 10초 미만 개선 필요 · 세션 10 미만은 표본 적음 (평균 참여 = 참여시간 ÷ 세션)";
@@ -148,7 +154,7 @@ function DailyTabImpl({ report, onPickDay }: { report: ReportPayload; onPickDay:
                       >
                         <td className="ga-dayname">{d.date}<small>({weekdayKo(d.date)})</small></td>
                         <td>{num(d.users)}</td>
-                        <td>
+                        <td className="is-key">
                           {num(d.sessions)}
                           {hi && <span className="ga-delta up" style={{ display: "inline", marginLeft: 6 }}>▲ {Math.round((ratio - 1) * 100)}%</span>}
                           {lo && <span className="ga-delta down" style={{ display: "inline", marginLeft: 6 }}>▼ {Math.round((1 - ratio) * 100)}%</span>}
@@ -203,6 +209,10 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
   const gsc = gscRes.data;
   const gscErr = gscRes.error;
 
+  const maxOpp = Math.max(0, ...(gsc?.opportunities ?? []).map((r) => r.impressions));
+  const maxQ = Math.max(0, ...(gsc?.queries ?? []).map((r) => r.clicks));
+  const maxP = Math.max(0, ...(gsc?.pages ?? []).map((r) => r.clicks));
+  const maxOrg = Math.max(0, ...report.organic.sources.map((s) => s.sessions));
   const oppKeys = useMemo(() => new Set((gsc?.opportunities ?? []).map((o) => o.key)), [gsc]);
   const MAIN_ENGINES = ["google", "naver", "daum", "bing"];
 
@@ -232,10 +242,10 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                     {gsc.opportunities.map((r) => (
                       <tr key={r.key} className="is-opp">
                         <td title={r.key}>{r.key}</td>
-                        <td>{num(r.impressions)}</td>
+                        <td className="is-key"><BarNum value={r.impressions} max={maxOpp} /></td>
                         <td>{num(r.clicks)}</td>
                         <td>{pct(r.ctr)}</td>
-                        <td>{r.position.toFixed(1)}위</td>
+                        <td><RankPos v={r.position} /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -251,10 +261,10 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                   {gsc.queries.map((r) => (
                     <tr key={r.key} className={oppKeys.has(r.key) ? "is-opp" : undefined}>
                       <td title={r.key}>{r.key}</td>
-                      <td>{num(r.clicks)}</td>
+                      <td className="is-key"><BarNum value={r.clicks} max={maxQ} /></td>
                       <td>{num(r.impressions)}</td>
                       <td>{pct(r.ctr)}</td>
-                      <td>{r.position.toFixed(1)}위</td>
+                      <td><RankPos v={r.position} /></td>
                     </tr>
                   ))}
                 </tbody>
@@ -274,10 +284,10 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                 {gsc.pages.map((r) => (
                   <tr key={r.key}>
                     <td title={r.key}>{r.key.replace(/^https?:\/\/[^/]+/, "") || "/"}</td>
-                    <td>{num(r.clicks)}</td>
+                    <td className="is-key"><BarNum value={r.clicks} max={maxP} /></td>
                     <td>{num(r.impressions)}</td>
                     <td>{pct(r.ctr)}</td>
-                    <td>{r.position.toFixed(1)}위</td>
+                    <td><RankPos v={r.position} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -301,7 +311,7 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
                   .map((s) => (
                     <tr key={s.source}>
                       <td>{s.source}</td>
-                      <td>{num(s.sessions)}</td>
+                      <td className="is-key"><BarNum value={s.sessions} max={maxOrg} /></td>
                       <td>{pct(s.engagementRate)}</td>
                     </tr>
                   ))}
@@ -321,6 +331,7 @@ function SearchTabImpl({ report, from, to }: { report: ReportPayload; from: stri
 // ── AI 유입(AEO) ─────────────────────────────────────────────────────────────
 function AiTabImpl({ report }: { report: ReportPayload }) {
   const { sources, landings } = report.ai;
+  const maxAi = Math.max(0, ...sources.map((s) => s.sessions));
   return (
     <div>
       <section className="ga-card">
@@ -336,7 +347,7 @@ function AiTabImpl({ report }: { report: ReportPayload }) {
                 {sources.map((s) => (
                   <tr key={s.source}>
                     <td>{s.source}</td>
-                    <td>{num(s.sessions)}</td>
+                    <td className="is-key"><BarNum value={s.sessions} max={maxAi} /></td>
                     <td>{num(s.users)}</td>
                     <td>{pct(s.engagementRate)}</td>
                     <td>{mmss(s.avgSessionDuration)}</td>
@@ -361,6 +372,8 @@ function AiTabImpl({ report }: { report: ReportPayload }) {
 // ── 채널 비교 ────────────────────────────────────────────────────────────────
 function ChannelTabImpl({ report }: { report: ReportPayload }) {
   const rows = useMemo(() => buildChannelCompare(report), [report]);
+  const maxCmp = Math.max(0, ...rows.map((r) => r.sessions));
+  const maxCh = Math.max(0, ...report.channels.map((c) => c.sessions));
   return (
     <div>
       <section className="ga-card">
@@ -373,7 +386,7 @@ function ChannelTabImpl({ report }: { report: ReportPayload }) {
               {rows.map((r) => (
                 <tr key={r.key}>
                   <td>{r.label}</td>
-                  <td>{num(r.sessions)}</td>
+                  <td className="is-key"><BarNum value={r.sessions} max={maxCmp} /></td>
                   <td>{num(r.users)}</td>
                   <td>{r.sessions ? pct(r.engagementRate) : "-"}</td>
                   <td>{r.sessions ? mmss(r.avgSessionDuration) : "-"}</td>
@@ -398,7 +411,7 @@ function ChannelTabImpl({ report }: { report: ReportPayload }) {
                 {report.channels.map((c) => (
                   <tr key={c.channel}>
                     <td>{c.channel}</td>
-                    <td>{num(c.sessions)}</td>
+                    <td className="is-key"><BarNum value={c.sessions} max={maxCh} /></td>
                     <td>{num(c.users)}</td>
                     <td>{pct(c.engagementRate)}</td>
                     <td>{mmss(c.avgSessionDuration)}</td>

@@ -9,7 +9,7 @@
 import { useMemo, useState } from "react";
 import { funnelDrop } from "@/lib/gaInsights";
 import { SECTION_TRACK_FIX_DATE, TRACK_SECTION_LABEL } from "@/lib/trackSections";
-import { Empty, ErrBox, Insight, Skel, num, pct, useTabActive } from "./ga-shared";
+import { BarNum, Empty, ErrBox, Insight, Skel, num, pct, useTabActive } from "./ga-shared";
 import { useGaData } from "./useGaData";
 
 type FunnelRes = {
@@ -46,6 +46,7 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
   const exits = exitsRes.data;
   const exitsErr = exitsRes.error;
 
+  const maxExit = Math.max(0, ...(exits?.top ?? []).map((r) => r.count));
   const drop = useMemo(() => (funnel?.rows ? funnelDrop(funnel.rows) : null), [funnel]);
   const notReady = [funnelErr, exitsErr].find((e) => e?.code === "TRACK_NOT_READY") ?? null;
 
@@ -139,7 +140,7 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
                       <tr key={`${r.path}|${r.section}`}>
                         <td title={r.path}>{r.path}</td>
                         <td>{secLabel(r.section)}</td>
-                        <td>{num(r.count)}</td>
+                        <td className="is-key"><BarNum value={r.count} max={maxExit} /></td>
                         <td>{exits.exited ? pct(r.count / exits.exited) : "-"}</td>
                       </tr>
                     ))}
