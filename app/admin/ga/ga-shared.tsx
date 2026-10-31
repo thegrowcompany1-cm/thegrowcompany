@@ -465,7 +465,9 @@ export const GA_STYLE = `
 .ga-tabs button{position:relative;z-index:1;margin:0;padding:9px 16px;border:0;border-radius:999px;font-size:13.5px;color:#9a9a9a;transition:color .2s}
 .ga-tabs button:hover{color:#e5e5e5}
 .ga-tabs button[aria-selected="true"]{color:#fff;border:0}
-.ga-tab-ind{top:4px;bottom:4px;height:auto;border-radius:999px;background:rgba(34,181,115,.2);box-shadow:inset 0 0 0 1px rgba(34,181,115,.5)}
+.ga-tab-ind{top:4px;bottom:4px;height:auto;border-radius:999px;background:rgba(34,181,115,.2);box-shadow:inset 0 0 0 1px rgba(34,181,115,.5);transition:transform .26s cubic-bezier(.22,1,.36,1),width .26s cubic-bezier(.22,1,.36,1),opacity .15s;will-change:transform,width;contain:layout paint style}
+.ga-tabs button{transition:color .14s,transform .12s}
+.ga-tabs button:active{transform:scale(.96)}
 .ga-tabbar .ga-period{margin-left:auto}
 .ga-presets button{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.1);transition:background-color .15s,border-color .15s,color .15s}
 .ga-presets button:hover{border-color:rgba(34,181,115,.5);color:#fff}
@@ -592,11 +594,13 @@ export const GA_STYLE = `
 .ga-tc-line{animation:ga-draw .9s cubic-bezier(.22,1,.36,1) .3s both}
 .ga-tc-area,.ga-tc-part{animation:ga-fade-in .7s ease-out .55s both}
 .ga-spark svg{animation:ga-reveal .7s cubic-bezier(.22,1,.36,1) .2s both}
-/* 탭 전환: 새 화면이 보이는 순간 불투명도만 가볍게 올린다 (이동·크기 변화 없음 → 레이아웃·클릭 지연 없음) */
+/* 탭 전환: 새 화면이 불투명도 + 6px 위로 떠오르며 등장한다(.2s, ease-out) — transform/opacity 뿐이라 레이아웃을 건드리지 않는다.
+   이전 화면을 DOM 에 남겨 크로스페이드하거나 View Transitions 로 스냅샷을 겹치는 방식은 두 화면을 동시에 렌더하거나 상태 반영을
+   프레임 뒤로 미뤄 모바일 6x 에서 클릭 반응이 늦어져(측정 결과) 쓰지 않는다. 이전 화면은 클릭 프레임에 바로 숨는다. */
 .ga-panel{animation:none}
-.ga-panel:not([hidden]){animation:ga-screen-in .18s ease-out}
-@keyframes ga-screen-in{from{opacity:.45}to{opacity:1}}
-@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]){animation:none}}
+.ga-panel:not([hidden]){animation:ga-screen-in .2s cubic-bezier(.22,1,.36,1)}
+@keyframes ga-screen-in{from{opacity:0;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]){animation:none}.ga-tabs button:active{transform:none}.ga-tab-ind{transition:none}.ga-tabs button{transition:none}}
 .ga-notice{margin:0 0 10px;padding:7px 12px;font-size:12.5px;line-height:1.5}
 .ga-stale{margin:0 0 10px;padding:7px 12px;font-size:12.5px;line-height:1.5}
 .ga-strip-wrap{margin-top:4px}
