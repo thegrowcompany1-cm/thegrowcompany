@@ -111,13 +111,8 @@ export function BarNum({ value, max, sum, text }: { value: number; max: number; 
   // sum 을 주면 행에 마우스를 올리거나 행을 고를 때 "이 표 합계 대비 비중" 칩이 나타난다
   const share = sum && sum > 0 ? value / sum : null;
   return (
-    <span className="ga-cb">
+    <span className="ga-cb" data-share={share !== null ? `${share > 0 && share < 0.01 ? "<1" : Math.round(share * 100)}%` : undefined} title={share !== null ? "이 표 합계 대비 비중" : undefined}>
       <i style={{ width: `${w}%` }} aria-hidden="true" />
-      {share !== null && (
-        <em className="ga-cb-share" title="이 표 합계 대비 비중">
-          {share > 0 && share < 0.01 ? "<1" : Math.round(share * 100)}%
-        </em>
-      )}
       <b>{text ?? num(value)}</b>
     </span>
   );
@@ -379,7 +374,8 @@ export const GA_STYLE = `
 /* 숨긴 탭은 display:none 대신 렌더 상태를 보존한 채 건너뛴다 (content-visibility:hidden) — 다시 열 때 레이아웃·스타일을 처음부터 계산하지 않는다.
    높이 0 으로 공간은 차지하지 않고, 안의 애니메이션은 멈춘다. */
 .ga-panel[hidden]{display:block;height:0;margin:0;padding:0;overflow:hidden;content-visibility:hidden;contain-intrinsic-size:0 0}
-.ga-panel[hidden] *,.ga-panel[hidden] *::before,.ga-panel[hidden] *::after{animation-play-state:paused!important}
+/* 숨은 탭 안에서 무한 반복하는 것은 실시간 점 하나뿐이라 그것만 멈춘다 (전체 요소 선택자는 탭을 보이거나 숨길 때 안쪽 모든 노드의 스타일을 다시 계산하게 한다) */
+.ga-panel[hidden] .ga-dot::after{animation-play-state:paused}
 @keyframes ga-fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .ga-tabs{position:relative}
 .ga-tabs button[aria-selected="true"]{border-bottom-color:transparent}
@@ -596,9 +592,10 @@ export const GA_STYLE = `
 .ga-tc-line{animation:ga-draw .9s cubic-bezier(.22,1,.36,1) .3s both}
 .ga-tc-area,.ga-tc-part{animation:ga-fade-in .7s ease-out .55s both}
 .ga-spark svg{animation:ga-reveal .7s cubic-bezier(.22,1,.36,1) .2s both}
-/* 탭 전환: 새 본문이 이동 방향에서 밀려 들어온다 (방향은 --ga-dx 로 전달) */
-@keyframes ga-panel-in{from{opacity:0;transform:translateX(var(--ga-dx,0px))}to{opacity:1;transform:none}}
-.ga-panel{animation-duration:.28s;animation-timing-function:var(--ga-ease)}
+/* 탭 본문 패널 전체에는 애니메이션을 걸지 않는다 — 큰 패널을 합성 레이어로 올리는 비용이 클릭 직후 반응을 늦춘다 */
+.ga-panel{animation:none}
+/* 화면 밖 카드는 칠하지도 레이아웃하지도 않는다 — 탭을 보일 때 큰 표 카드 전체를 한꺼번에 그리지 않아 클릭 직후 반응이 빨라진다 */
+.ga-panel .ga-card{content-visibility:auto;contain-intrinsic-size:auto 480px}
 /* 차트: 가이드선·점·툴팁이 부드럽게 따라 움직이고, 고정(핀) 툴팁에는 하루만 보기 버튼 */
 .ga-tc svg{cursor:crosshair}
 .ga-tc-ov{position:absolute;inset:0;pointer-events:none}
@@ -630,8 +627,8 @@ export const GA_STYLE = `
 .ga-rowhint{display:inline-block;margin-left:10px;padding:2px 8px;border-radius:999px;background:rgba(34,181,115,.14);color:#9be3c0;font-size:11px;font-weight:700;white-space:nowrap;opacity:0;transform:translateX(-4px);transition:opacity .15s,transform .15s}
 .ga-table tbody tr:hover .ga-rowhint,.ga-table tbody tr:focus-visible .ga-rowhint,.ga-table tbody tr.is-selected .ga-rowhint{opacity:1;transform:none}
 @media(hover:none){.ga-rowhint{opacity:.85;transform:none}}
-.ga-cb-share{position:relative;margin-right:8px;font-size:11px;font-style:normal;font-weight:700;color:#7be0b0;opacity:0;transform:translateX(6px);transition:opacity .15s,transform .15s}
-.ga-table tbody tr:hover .ga-cb-share,.ga-table tbody tr.is-selected .ga-cb-share,.ga-table tbody tr[data-sel="1"] .ga-cb-share{opacity:1;transform:none}
+.ga-cb[data-share]::before{content:attr(data-share);position:relative;margin-right:8px;font-size:11px;font-weight:700;color:#7be0b0;opacity:0;transform:translateX(6px);transition:opacity .15s,transform .15s}
+.ga-table tbody tr:hover .ga-cb[data-share]::before,.ga-table tbody tr.is-selected .ga-cb[data-share]::before,.ga-table tbody tr[data-sel="1"] .ga-cb[data-share]::before{opacity:1;transform:none}
 /* 랜딩 섹션 퍼널: 구간 선택 → 강조·흐림, 상세 줄 */
 .ga-fbar{padding:6px 8px;margin:0 -8px;border-radius:10px;cursor:pointer;outline:none;transition:opacity .2s,background-color .2s,box-shadow .2s}
 @media(hover:hover){.ga-fbar:hover{background:rgba(255,255,255,.045)}}
@@ -650,5 +647,38 @@ export const GA_STYLE = `
 .ga-fd-g b{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums}
 .ga-fd-g i{font-size:12px;font-style:normal;font-weight:700;color:#9be3c0}
 @media(max-width:560px){.ga-fd-g{grid-template-columns:repeat(2,minmax(0,1fr))}.ga-rowhint{margin-left:6px}}
-@media(prefers-reduced-motion:reduce){.ga-sc,.ga-tc-glide,.ga-tc-tip,.ga-fbar,.ga-rowhint,.ga-cb-share{transition:none}.ga-sc:hover,.ga-sc:active{transform:none}.ga-fdetail,.ga-tc-fade,.ga-spark-tip,.ga-tc-line,.ga-tc-area,.ga-tc-part,.ga-spark svg{animation:none}.ga-panel{animation:none}}
+@media(prefers-reduced-motion:reduce){.ga-sc,.ga-tc-glide,.ga-tc-tip,.ga-fbar,.ga-rowhint,.ga-cb[data-share]::before{transition:none}.ga-sc:hover,.ga-sc:active{transform:none}.ga-fdetail,.ga-tc-fade,.ga-spark-tip,.ga-tc-line,.ga-tc-area,.ga-tc-part,.ga-spark svg{animation:none}.ga-panel{animation:none}}
+/* ═══ 글래스 v4 — 반투명 다크 글래스. 블러(backdrop-filter)는 고정 헤더·팝업에만 쓰고, 카드는 반투명 그라데이션 + 테두리 + 안쪽 하이라이트 + 배경 빛 번짐으로 유리 질감을 낸다 (GPU 부담 최소) ═══ */
+.ga{--g-bg:linear-gradient(165deg,rgba(255,255,255,.085),rgba(255,255,255,.028) 55%,rgba(255,255,255,.04));--g-bd:rgba(255,255,255,.1);--g-hi:inset 0 1px 0 rgba(255,255,255,.09);--g-sh:0 22px 46px -28px rgba(0,0,0,.8);position:relative;isolation:isolate}
+/* 배경: 은은한 그린 빛 번짐 (정적 그라데이션 — 한 번만 그린다) */
+.ga::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:-70px;bottom:0;pointer-events:none;background:radial-gradient(660px 430px at 20% 70px,rgba(34,181,115,.24),transparent 68%),radial-gradient(560px 420px at 86% 90px,rgba(18,126,98,.2),transparent 68%),radial-gradient(800px 520px at 52% 56%,rgba(34,181,115,.085),transparent 72%);-webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent),linear-gradient(180deg,transparent,#000 120px,#000 55%,transparent);mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent),linear-gradient(180deg,transparent,#000 120px,#000 55%,transparent);-webkit-mask-composite:source-in;mask-composite:intersect}
+/* 카드·패널 */
+.ga-card,.ga-sc{background:var(--g-bg);border-color:var(--g-bd);box-shadow:var(--g-hi),var(--g-sh)}
+.ga-sc.is-live{background:linear-gradient(160deg,rgba(34,181,115,.22),rgba(34,181,115,.055));border-color:rgba(34,181,115,.34)}
+.ga-fdetail{background:linear-gradient(180deg,rgba(34,181,115,.13),rgba(34,181,115,.04));box-shadow:var(--g-hi)}
+.ga-insight,.ga-strip-note,.ga-stale{background:rgba(34,181,115,.09);border-color:rgba(34,181,115,.24);box-shadow:var(--g-hi)}
+.ga-journey{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
+.ga-sess li button{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border-color:rgba(255,255,255,.1);box-shadow:var(--g-hi)}
+.ga-sess li button[aria-pressed="true"]{background:linear-gradient(180deg,rgba(34,181,115,.14),rgba(34,181,115,.05))}
+/* 표: 카드 안쪽의 한 단계 더 깊은 유리 */
+.ga-table-wrap{background:rgba(0,0,0,.24);border-color:rgba(255,255,255,.08)}
+.ga-table thead th{background:rgba(20,25,22,.95)}
+.ga-table tbody td{border-bottom-color:rgba(255,255,255,.055)}
+/* 컨트롤 */
+.ga-tabbar .ga-tabs{background:rgba(255,255,255,.055);box-shadow:var(--g-hi),inset 0 0 0 1px rgba(255,255,255,.07)}
+.ga-presets button{background:rgba(255,255,255,.045);box-shadow:var(--g-hi)}
+.ga-select{background-color:rgba(255,255,255,.055);box-shadow:var(--g-hi)}
+.ga-btn{background:rgba(255,255,255,.04);box-shadow:var(--g-hi)}
+.ga-rbtn{background:rgba(255,255,255,.05);box-shadow:var(--g-hi)}
+/* 툴팁: 거의 불투명한 유리 (움직일 때마다 블러를 다시 계산하지 않는다) */
+.ga-tc-tip,.ga-spark-tip{background:rgba(22,27,24,.95);border-color:rgba(255,255,255,.14);box-shadow:0 12px 28px -12px rgba(0,0,0,.8),var(--g-hi)}
+/* 고정 헤더: 반투명 + 블러는 의사 요소 하나에만 (헤더 자체에 쓰면 안쪽 position:fixed 시트의 기준이 바뀐다) */
+.ga-sticky{background:rgba(10,13,11,.74)}
+.ga-sticky::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;-webkit-backdrop-filter:blur(14px) saturate(130%);backdrop-filter:blur(14px) saturate(130%)}
+/* 팝업(달력·모바일 시트): 열려 있는 동안 하나만 존재 */
+.ga-cal{background:rgba(22,27,24,.92);-webkit-backdrop-filter:blur(16px) saturate(130%);backdrop-filter:blur(16px) saturate(130%);border-color:rgba(255,255,255,.14)}
+.ga-sheet{background:rgba(22,27,24,.92);-webkit-backdrop-filter:blur(18px) saturate(130%);backdrop-filter:blur(18px) saturate(130%)}
+@media(max-width:560px){.ga-table tbody tr{background:var(--g-bg);border-color:var(--g-bd);box-shadow:var(--g-hi)}.ga::before{top:-40px}}
+/* 투명도 줄이기 설정: 블러가 걸린 요소(헤더·팝업)만 불투명하게. 카드의 반투명 그라데이션은 대비가 충분해 유지한다 */
+@media(prefers-reduced-transparency:reduce){.ga-sticky{background:#0a0d0b}.ga-sticky::before{display:none}.ga-cal,.ga-sheet{background:#161a18;-webkit-backdrop-filter:none;backdrop-filter:none}.ga-tc-tip,.ga-spark-tip{background:#181c1a}}
 `;

@@ -69,9 +69,8 @@ export default function GaDashboard({ scope }: { scope: string }) {
   const [visited, setVisited] = useState<ReadonlySet<TabKey>>(() => new Set([tab]));
   const tabRef = useRef<TabKey>(tab);
   const pickTab = useCallback((k: TabKey) => {
-    // 새 탭 본문이 이동 방향(오른쪽 탭이면 오른쪽에서, 왼쪽이면 왼쪽에서)으로 밀려 들어오도록 방향을 남긴다
-    const dir = TABS.findIndex((t) => t.key === k) >= TABS.findIndex((t) => t.key === tabRef.current) ? 1 : -1;
-    rootRef.current?.style.setProperty("--ga-dx", `${dir * 22}px`);
+    // 탭 줄(표시기·선택 상태)과 본문 전환은 한 번에(동기) 렌더한다.
+    // (표시기를 먼저 그리고 본문을 다음 작업에서 렌더하는 두 단계 방식은 본문이 더 늦게 나와 오히려 끊겨 보여 쓰지 않는다 — 측정 결과 참고)
     tabRef.current = k;
     setTab(k);
     setVisited((v) => (v.has(k) ? v : new Set(v).add(k)));
@@ -122,6 +121,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
       firstTab.current = false;
       return;
     }
+    if (window.scrollY < 160) return; // 맨 위에서는 보정할 것이 없다 — 레이아웃을 읽지 않는다 (클릭 경로의 강제 레이아웃 방지)
     const panel = rootRef.current?.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])');
     const sticky = stickyRef.current;
     if (!panel || !sticky) return;
@@ -189,28 +189,42 @@ export default function GaDashboard({ scope }: { scope: string }) {
     };
   }, []);
 
-  // 활성 탭 표시(슬라이딩 인디케이터) — 위치·폭만 갱신하고 CSS 가 transform 으로 움직인다
+  // 활성 탭 표시(슬라이딩 인디케이터) — 탭 버튼 위치·폭은 처음과 크기가 바뀔 때만 측정해 캐시하고,
+  // 탭을 누를 때는 캐시로만 이동한다. (클릭마다 offsetLeft/offsetWidth 를 읽으면 새로 보이는 패널의 스타일·레이아웃을
+  // 이벤트 처리 중에 동기로 계산하게 되어 클릭 직후 화면 반영이 늦어진다)
+  const geoRef = useRef<Record<string, { x: number; w: number }>>({});
+  const placeInd = useCallback((k: string) => {
+    const g = geoRef.current[k];
+    const ind = indRef.current;
+    if (!g || !ind) return;
+    ind.style.width = `${g.w}px`;
+    ind.style.transform = `translateX(${g.x}px)`;
+    ind.style.opacity = "1";
+  }, []);
   useLayoutEffect(() => {
     const box = tabsRef.current;
-    const ind = indRef.current;
-    if (!box || !ind) return;
-    const place = () => {
-      const btn = box.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]');
-      if (!btn) return;
-      ind.style.width = `${btn.offsetWidth}px`;
-      ind.style.transform = `translateX(${btn.offsetLeft}px)`;
-      ind.style.opacity = "1";
+    if (!box) return;
+    const measure = () => {
+      box.querySelectorAll<HTMLElement>('[role="tab"]').forEach((b) => {
+        geoRef.current[b.dataset.k as string] = { x: b.offsetLeft, w: b.offsetWidth };
+      });
+      placeInd(tabRef.current);
     };
-    place();
-    const ro = new ResizeObserver(place);
+    measure();
+    const ro = new ResizeObserver(measure);
     box.querySelectorAll('[role="tab"]').forEach((b) => ro.observe(b));
     return () => ro.disconnect();
-  }, [tab]);
+  }, [placeInd]);
+  useLayoutEffect(() => placeInd(tab), [tab, placeInd]);
 
   // 모바일에서 가로 스크롤되는 탭 줄: 선택한 탭을 가운데로 맞춘다 (모션 줄이기 설정이면 바로 이동)
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    tabsRef.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.scrollIntoView({ block: "nearest", inline: "center", behavior: reduce ? "auto" : "smooth" });
+    // 새 탭 본문이 먼저 그려진 뒤에 (클릭 직후 첫 프레임을 늦추지 않도록) 실행한다
+    const id = window.setTimeout(() => {
+      tabsRef.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.scrollIntoView({ block: "nearest", inline: "center", behavior: reduce ? "auto" : "smooth" });
+    }, 120);
+    return () => window.clearTimeout(id);
   }, [tab]);
 
   // 탭 줄이 좌우로 더 있으면 해당 쪽 끝을 페이드로 흐리게 보여 스크롤 가능함을 알린다 (스크롤 때 프레임당 한 번만 갱신)
@@ -266,7 +280,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
           <div className="ga-tabs" role="tablist" aria-label="분석 항목" ref={tabsRef}>
             <span className="ga-tab-ind" ref={indRef} aria-hidden="true" />
             {TABS.map((t) => (
-              <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} onClick={() => pickTab(t.key)}>
+              <button key={t.key} type="button" role="tab" data-k={t.key} aria-selected={tab === t.key} onClick={() => pickTab(t.key)}>
                 {t.label}
               </button>
             ))}
