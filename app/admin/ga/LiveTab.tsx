@@ -4,12 +4,14 @@
 // 실시간 방문자 탭
 //  · GA4 실시간(최근 30분) — 60초 갱신. 자체 추적 — 15초 폴링 (Realtime 구독 대신 폴링: 별도 publication 설정 없이 동작).
 //  · 자체 추적: 지금 접속 중인 세션 → 클릭하면 여정 타임라인 (섹션 도달 퍼널·이탈 지점은 랜딩 성과 탭)
-//  · 탭을 떠나면(언마운트) 모든 interval·요청을 정리한다.
+//  · 탭을 떠나도 언마운트하지 않고 숨긴다 — 비활성 동안은 폴링·1초 시계·애니메이션이 모두 멈춘다 (useTabActive).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useState, useSyncExternalStore } from "react";
 import { TRACK_SECTION_LABEL, TRACK_SOURCE_LABEL } from "@/lib/trackSections";
-import { Empty, ErrBox, Insight, Skel, fetchJson, mmss, num, type ApiError } from "./ga-shared";
+import { Empty, ErrBox, Insight, Skel, mmss, num, useTabActive } from "./ga-shared";
+import { useGaData } from "./useGaData";
+import { CountUp } from "./ga-motion";
 
 type Realtime = {
   ok: true;
@@ -38,6 +40,7 @@ type Journey = {
   sections: { path: string; section: string }[];
 };
 
+const fmtInt = (n: number) => num(Math.round(n));
 const DEVICE_LABEL: Record<string, string> = { mobile: "모바일", desktop: "데스크톱", tablet: "태블릿", "smart tv": "스마트 TV" };
 const LIVE_MS = 15_000;
 const GA_RT_MS = 60_000;
@@ -63,108 +66,62 @@ function SourceBadge({ type }: { type: string }) {
   return <span className={`ga-src ${type}`}>{TRACK_SOURCE_LABEL[type] ?? type}</span>;
 }
 
-export default function LiveTab() {
-  // ── GA4 실시간 ──
-  const [rt, setRt] = useState<Realtime | null>(null);
-  const [rtErr, setRtErr] = useState<ApiError | null>(null);
-  const [rtAt, setRtAt] = useState<Date | null>(null);
-
-  const loadRealtime = useCallback(async (signal?: AbortSignal) => {
-    try {
-      const data = await fetchJson<Realtime>("/api/admin/ga/realtime", signal);
-      if (data.ok) {
-        setRt(data);
-        setRtErr(null);
-        setRtAt(new Date());
-      } else setRtErr(data);
-    } catch (e) {
-      if ((e as Error).name !== "AbortError") setRtErr({ ok: false, code: "NETWORK", message: "네트워크 오류로 실시간 데이터를 불러오지 못했습니다." });
+// 1초 시계 — 구독자가 있을 때만 하나의 타이머가 돈다. 체류 시간 칸만 다시 그린다 (목록 전체 재렌더 없음).
+const clockSubs = new Set<() => void>();
+let clockId = 0;
+const subscribeClock = (fn: () => void) => {
+  clockSubs.add(fn);
+  if (!clockId) {
+    clockId = window.setInterval(() => {
+      clockSubs.forEach((f) => f());
+    }, 1000);
+  }
+  return () => {
+    clockSubs.delete(fn);
+    if (!clockSubs.size) {
+      window.clearInterval(clockId);
+      clockId = 0;
     }
-  }, []);
+  };
+};
+const noopSubscribe = () => () => {};
+const clockNow = () => Math.floor(Date.now() / 1000) * 1000; // 초 단위로 고정된 현재 시각 (같은 초 안에서는 같은 값)
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    loadRealtime(ctrl.signal);
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") loadRealtime(ctrl.signal);
-    }, GA_RT_MS);
-    return () => {
-      window.clearInterval(id);
-      ctrl.abort();
-    };
-  }, [loadRealtime]);
+function Elapsed({ iso, skew }: { iso: string; skew: number }) {
+  const active = useTabActive();
+  const now = useSyncExternalStore(active ? subscribeClock : noopSubscribe, clockNow, clockNow);
+  return <>{mmss(Math.max(0, Math.round((now + skew - Date.parse(iso)) / 1000)))}</>;
+}
 
-  // ── 자체 추적: 실시간 세션 ──
-  const [live, setLive] = useState<LiveRes | null>(null);
-  const [liveErr, setLiveErr] = useState<ApiError | null>(null);
-  const [skew, setSkew] = useState(0); // 서버 시계 - 브라우저 시계
-  const [tick, setTick] = useState(0); // 체류 시간을 1초마다 다시 그리기 위한 값
-  const [newIds, setNewIds] = useState<Set<string>>(new Set());
-  const knownIds = useRef<Set<string> | null>(null);
+function LiveTabImpl() {
+  const active = useTabActive();
+
+  // ── GA4 실시간 (60초 갱신 · SummaryStrip 과 같은 요청을 공유) ──
+  const rtRes = useGaData<Realtime>("/api/admin/ga/realtime", { staleMs: 20_000, pollMs: GA_RT_MS, active, netMsg: "네트워크 오류로 실시간 데이터를 불러오지 못했습니다." });
+  const rt = rtRes.data;
+  const rtErr = rtRes.error;
+  const rtAt = rtRes.at ? new Date(rtRes.at) : null;
+
+  // ── 자체 추적: 실시간 세션 (15초 갱신) ──
+  const liveRes = useGaData<LiveRes>("/api/admin/track?view=live", { staleMs: 5_000, pollMs: LIVE_MS, active, netMsg: "네트워크 오류로 방문자 목록을 불러오지 못했습니다." });
+  const live = liveRes.data;
+  const liveErr = liveRes.error;
+  // 서버 시계 - 브라우저 시계 (응답을 받은 시각 기준)
+  const skew = live && liveRes.at ? Date.parse(live.now) - liveRes.at : 0;
+
+  // 처음 불러온 뒤 새로 들어온 세션: 직전 응답에 없던 세션을 강조한다 (렌더 중 파생 상태 — 새 응답이 올 때만 갱신)
+  const [seen, setSeen] = useState<{ src: LiveRes; ids: ReadonlySet<string>; fresh: ReadonlySet<string> } | null>(null);
+  if (live && (!seen || seen.src !== live)) {
+    const ids = new Set(live.sessions.map((x) => x.sessionId));
+    setSeen({ src: live, ids, fresh: seen ? new Set([...ids].filter((id) => !seen.ids.has(id))) : new Set() });
+  }
+  const fresh = seen?.fresh;
   const [openSid, setOpenSid] = useState<string | null>(null);
-  const [journey, setJourney] = useState<Journey | null>(null);
-  const [journeyErr, setJourneyErr] = useState<ApiError | null>(null);
-
-  const loadLive = useCallback(async (signal?: AbortSignal) => {
-    try {
-      const data = await fetchJson<LiveRes>("/api/admin/track?view=live", signal);
-      if (data.ok) {
-        // 처음 불러온 뒤에 새로 들어온 세션은 3초간 강조한다
-        const fresh = knownIds.current ? data.sessions.filter((x) => !knownIds.current!.has(x.sessionId)).map((x) => x.sessionId) : [];
-        knownIds.current = new Set(data.sessions.map((x) => x.sessionId));
-        if (fresh.length) {
-          setNewIds((cur) => new Set([...cur, ...fresh]));
-          window.setTimeout(() => setNewIds((cur) => new Set([...cur].filter((id) => !fresh.includes(id)))), 3000);
-        }
-        setLive(data);
-        setLiveErr(null);
-        setSkew(Date.parse(data.now) - Date.now());
-      } else setLiveErr(data);
-    } catch (e) {
-      if ((e as Error).name !== "AbortError") setLiveErr({ ok: false, code: "NETWORK", message: "네트워크 오류로 방문자 목록을 불러오지 못했습니다." });
-    }
-  }, []);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    loadLive(ctrl.signal);
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") loadLive(ctrl.signal);
-    }, LIVE_MS);
-    const clock = window.setInterval(() => setTick((v) => v + 1), 1000);
-    return () => {
-      window.clearInterval(id);
-      window.clearInterval(clock);
-      ctrl.abort();
-    };
-  }, [loadLive]);
 
   // 세션 클릭 → 여정 (열려 있는 동안 15초마다 새로 고침)
-  useEffect(() => {
-    if (!openSid) return;
-    const ctrl = new AbortController();
-    const load = async () => {
-      try {
-        const data = await fetchJson<Journey>(`/api/admin/track?view=journey&session=${encodeURIComponent(openSid)}`, ctrl.signal);
-        if (data.ok) {
-          setJourney(data);
-          setJourneyErr(null);
-        } else setJourneyErr(data);
-      } catch (e) {
-        if ((e as Error).name !== "AbortError") setJourneyErr({ ok: false, code: "NETWORK", message: "여정을 불러오지 못했습니다." });
-      }
-    };
-    setJourney(null);
-    load();
-    const id = window.setInterval(load, LIVE_MS);
-    return () => {
-      window.clearInterval(id);
-      ctrl.abort();
-    };
-  }, [openSid]);
-
-  const now = Date.now() + skew + tick * 0; // tick 은 재렌더 트리거
-  const elapsed = (iso: string) => Math.max(0, Math.round((now - Date.parse(iso)) / 1000));
+  const journeyRes = useGaData<Journey>(openSid ? `/api/admin/track?view=journey&session=${encodeURIComponent(openSid)}` : null, { staleMs: 5_000, pollMs: LIVE_MS, active, netMsg: "여정을 불러오지 못했습니다." });
+  const journey = journeyRes.data;
+  const journeyErr = journeyRes.error;
 
   const deviceTotal = rt?.devices.reduce((s, d) => s + d.users, 0) ?? 0;
   const pageMax = Math.max(1, ...(rt?.pages.map((p) => p.users) ?? [1]));
@@ -198,7 +155,7 @@ export default function LiveTab() {
             <div>
               <div className="ga-live-num">
                 <span className="ga-dot" aria-hidden="true" />
-                <span aria-live="polite">{num(rt.total)}</span>
+                <span aria-live="polite" aria-atomic="true"><span aria-hidden="true"><CountUp value={rt.total} format={fmtInt} /></span><span className="ga-sr">{num(rt.total)}</span></span>
                 <small>명 접속 중</small>
               </div>
               <p className="ga-sub" style={{ marginTop: 10 }}>
@@ -270,7 +227,7 @@ export default function LiveTab() {
               <ul className="ga-sess">
                 {live.sessions.map((s) => (
                   <li key={s.sessionId}>
-                    <button type="button" className={newIds.has(s.sessionId) ? "is-new" : undefined} aria-pressed={openSid === s.sessionId} onClick={() => setOpenSid((cur) => (cur === s.sessionId ? null : s.sessionId))}>
+                    <button type="button" className={fresh?.has(s.sessionId) ? "is-new" : undefined} aria-pressed={openSid === s.sessionId} onClick={() => setOpenSid((cur) => (cur === s.sessionId ? null : s.sessionId))}>
                       <SourceBadge type={s.sourceType} />
                       <span className="ga-sess-main">
                         <div className="ga-sess-path" title={s.path}>{s.path}</div>
@@ -278,7 +235,7 @@ export default function LiveTab() {
                           <DeviceIcon device={s.device} /> {s.device ? `${DEVICE_LABEL[s.device] ?? s.device} · ` : ""}{s.pages}페이지 지나옴 · 스크롤 {s.maxScrollPct}% · 마지막 섹션 {secLabel(s.lastSection)}
                         </div>
                       </span>
-                      <span className="ga-sess-t" title="이 페이지에서 머문 시간">{mmss(elapsed(s.enteredAt))}</span>
+                      <span className="ga-sess-t" title="이 페이지에서 머문 시간"><Elapsed iso={s.enteredAt} skew={skew} /></span>
                     </button>
                   </li>
                 ))}
@@ -312,3 +269,6 @@ export default function LiveTab() {
     </div>
   );
 }
+
+const LiveTab = memo(LiveTabImpl);
+export default LiveTab;

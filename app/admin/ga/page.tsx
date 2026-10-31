@@ -29,7 +29,7 @@ export default async function AdminGaPage() {
         </header>
         <AdminTabs active="ga" />
         <Suspense fallback={null}>
-          <GaDashboard />
+          <GaDashboard scope={email} />
         </Suspense>
       </div>
     </main>

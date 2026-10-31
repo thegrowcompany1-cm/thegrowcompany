@@ -2,7 +2,35 @@
 
 // /admin/ga 화면 공용 — 타입 · 포맷 · 스타일(ga- 접두사) · 작은 컴포넌트
 
-import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+
+/** 탭 패널이 지금 보이는 탭인지 — 비활성 탭은 폴링·타이머를 멈춘다 */
+const TabActiveContext = createContext(true);
+export const useTabActive = () => useContext(TabActiveContext);
+
+/**
+ * 방문한 탭을 언마운트하지 않고 유지한다. 비활성 동안에는 마지막 요소를 그대로 돌려줘서
+ * (같은 element 참조 → React 가 재렌더를 건너뜀) 부모가 바뀌어도 숨은 탭은 다시 그리지 않는다.
+ */
+export function KeepAlive({ active, children }: { active: boolean; children: ReactNode }) {
+  // 활성일 때만 새 요소를 따라가고, 비활성이 되는 순간의 요소를 그대로 유지한다
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const shown = useMemo(() => children, [active ? children : null]);
+  // 카드·막대 등장 애니메이션은 이 탭을 처음 연 직후 1초 동안만 (다시 열 때마다 반복하면 전환이 무거워진다)
+  const [fresh, setFresh] = useState(true);
+  useEffect(() => {
+    if (!active || !fresh) return;
+    const t = window.setTimeout(() => setFresh(false), 1000);
+    return () => window.clearTimeout(t);
+  }, [active, fresh]);
+  return (
+    <TabActiveContext.Provider value={active}>
+      <div role="tabpanel" className={"ga-panel" + (fresh ? " is-fresh" : "")} hidden={!active}>
+        {shown}
+      </div>
+    </TabActiveContext.Provider>
+  );
+}
 
 export type ApiError = { ok: false; code: string; message: string };
 
@@ -55,8 +83,26 @@ export function ErrBox({ title, err }: { title: string; err: ApiError }) {
   );
 }
 
-export function Skel({ h = 18 }: { h?: number }) {
-  return <div className="ga-skel" style={{ height: h }} aria-hidden="true" />;
+export function Skel({ h = 18, w }: { h?: number; w?: number | string }) {
+  return <div className="ga-skel" style={{ height: h, width: w }} aria-hidden="true" />;
+}
+
+/** 리포트가 처음 오기 전 자리표시 — 실제 카드·표와 비슷한 모양과 높이라 데이터가 와도 화면이 튀지 않는다 */
+export function ReportSkeleton() {
+  return (
+    <div aria-busy="true" aria-label="불러오는 중" role="status">
+      {[0, 1].map((k) => (
+        <section className="ga-card" key={k}>
+          <Skel h={18} w={k ? 140 : 190} />
+          <div style={{ display: "grid", gap: 10, marginTop: 18 }}>
+            {Array.from({ length: k ? 3 : 6 }, (_, i) => (
+              <Skel key={i} h={36} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
 }
 
 /** 표 상단 한 줄 자동 코멘트 */
@@ -93,9 +139,10 @@ export const GA_STYLE = `
 .ga-live>div{min-width:0}
 .ga-live-num{display:flex;align-items:center;gap:12px;font-size:56px;font-weight:900;line-height:1;color:#22B573}
 .ga-live-num small{font-size:14px;font-weight:700;color:#9a9a9a}
-.ga-dot{width:12px;height:12px;border-radius:50%;background:#22B573;box-shadow:0 0 0 0 rgba(34,181,115,.6);animation:ga-pulse 1.6s ease-out infinite;flex:0 0 auto}
-@keyframes ga-pulse{0%{box-shadow:0 0 0 0 rgba(34,181,115,.55)}70%{box-shadow:0 0 0 12px rgba(34,181,115,0)}100%{box-shadow:0 0 0 0 rgba(34,181,115,0)}}
-@media(prefers-reduced-motion:reduce){.ga-dot{animation:none}}
+.ga-dot{position:relative;width:12px;height:12px;border-radius:50%;background:#22B573;flex:0 0 auto}
+.ga-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:#22B573;opacity:.55;transform:scale(1);animation:ga-pulse 1.6s ease-out infinite;will-change:transform,opacity}
+@keyframes ga-pulse{0%{transform:scale(1);opacity:.55}70%,100%{transform:scale(2.6);opacity:0}}
+@media(prefers-reduced-motion:reduce){.ga-dot::after{animation:none;opacity:0}}
 .ga-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 .ga-list li{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;line-height:1.4}
 .ga-list li span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#d6d6d6}
@@ -309,6 +356,39 @@ export const GA_STYLE = `
 .ga-table tr.is-weekend,.ga-table tr.is-weekend td{background:rgba(255,255,255,.06)}
 .ga-mix{margin-left:0}
 }
+/* 탭 유지·이전 데이터 표시 */
+.ga-panel{animation:ga-fade .18s ease-out}
+/* 숨긴 탭은 display:none 대신 렌더 상태를 보존한 채 건너뛴다 (content-visibility:hidden) — 다시 열 때 레이아웃·스타일을 처음부터 계산하지 않는다.
+   높이 0 으로 공간은 차지하지 않고, 안의 애니메이션은 멈춘다. */
+.ga-panel[hidden]{display:block;height:0;margin:0;padding:0;overflow:hidden;content-visibility:hidden;contain-intrinsic-size:0 0}
+.ga-panel[hidden] *,.ga-panel[hidden] *::before,.ga-panel[hidden] *::after{animation-play-state:paused!important}
+@keyframes ga-fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ga-tabs{position:relative}
+.ga-tabs button[aria-selected="true"]{border-bottom-color:transparent}
+.ga-tab-ind{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:#22B573;opacity:0;pointer-events:none;transition:transform .28s cubic-bezier(.22,1,.36,1),width .28s cubic-bezier(.22,1,.36,1)}
+.ga-progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;overflow:hidden;opacity:0;transition:opacity .15s;pointer-events:none}
+.ga-progress.is-on{opacity:1}
+.ga-progress::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#22B573,transparent);transform:translateX(-100%)}
+.ga-progress.is-on::after{animation:ga-prog 1.1s ease-in-out infinite}
+@keyframes ga-prog{to{transform:translateX(100%)}}
+.ga-stale{margin:0 0 14px;padding:9px 14px;border-radius:10px;background:rgba(34,181,115,.08);border:1px solid rgba(34,181,115,.25);font-size:13px;line-height:1.6;color:#bfeed6}
+.ga-data{transition:opacity .2s}
+.ga-data.is-stale{opacity:.55}
+@media(prefers-reduced-motion:reduce){.ga-panel{animation:none}.ga-tab-ind{transition:none}.ga-progress::after{animation:none;transform:none;opacity:.6}}
+/* SVG 추이 차트 */
+.ga-tc{position:relative;touch-action:pan-y}
+.ga-tc svg{display:block;overflow:visible;outline:none}
+.ga-tc svg:focus-visible{outline:2px solid #22B573;outline-offset:2px;border-radius:6px}
+.ga-tc-t{fill:#777;font-size:11px}
+.ga-tc-line{stroke-dasharray:1;stroke-dashoffset:0;animation:ga-draw .8s cubic-bezier(.22,1,.36,1) both}
+.ga-tc-area,.ga-tc-part{animation:ga-fade-in .6s ease-out both}
+@keyframes ga-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes ga-fade-in{from{opacity:0}to{opacity:1}}
+.ga-tc-tip{position:absolute;z-index:2;min-width:120px;padding:8px 12px;border-radius:10px;background:#1c1c1c;border:1px solid rgba(255,255,255,.15);font-size:12px;pointer-events:none;white-space:nowrap}
+.ga-tc-legend{display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:12px;color:#b8b8b8}
+.ga-tc-legend span{display:inline-flex;align-items:center;gap:6px}
+.ga-tc-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+@media(prefers-reduced-motion:reduce){.ga-tc-line,.ga-tc-area,.ga-tc-part{animation:none}}
 /* 기간 바 — 768px 미만: 한 줄 버튼 + 탭 가로 스크롤, 고정 영역 56px 이하 */
 .ga-rbtn{display:none}
 .ga-sheet-bg,.ga-sheet{display:none}
@@ -328,4 +408,69 @@ export const GA_STYLE = `
 .ga-sheet-presets button[aria-pressed="true"]{background:#22B573;border-color:#22B573;color:#fff}
 .ga-sheet .ga-cal{position:static;margin:14px 0 0;padding:0;border:0;box-shadow:none;background:none;max-width:none}
 }
+/* ═══ 프리미엄 디자인 (Kerfa 참고 · 더그로우 블랙/그린) — 애니메이션은 transform·opacity 만 ═══ */
+.ga{--ga-ease:cubic-bezier(.22,1,.36,1);--ga-line:rgba(255,255,255,.08)}
+@keyframes ga-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ga-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ga-shim{to{transform:translateX(100%)}}
+@keyframes ga-panel-in{from{opacity:0}to{opacity:1}}
+/* 카드 */
+.ga-card{position:relative;padding:22px;border-radius:18px;border:1px solid var(--ga-line);background:linear-gradient(180deg,#181818,#131313);transition:border-color .2s}
+.ga-panel.is-fresh .ga-card{animation:ga-rise .38s var(--ga-ease) both}
+.ga-panel.is-fresh .ga-card:nth-child(2){animation-delay:.04s}.ga-panel.is-fresh .ga-card:nth-child(3){animation-delay:.08s}.ga-panel.is-fresh .ga-card:nth-child(n+4){animation-delay:.12s}
+.ga-h{font-size:17px;letter-spacing:-.01em}
+.ga-panel{animation-name:ga-panel-in;animation-duration:.16s}
+/* KPI 카드 */
+.ga-strip{gap:14px}
+.ga-sc{position:relative;overflow:hidden;padding:18px 18px 16px;border-radius:18px;border:1px solid var(--ga-line);background:linear-gradient(180deg,#191919,#121212);transition:transform .25s var(--ga-ease),border-color .25s;animation:ga-rise .45s var(--ga-ease) both;animation-delay:calc(var(--i,0)*55ms)}
+.ga-sc::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 90% at 50% 0%,rgba(34,181,115,.16),transparent 62%);opacity:0;transition:opacity .25s;pointer-events:none}
+.ga-sc>*{position:relative}
+.ga-sc.is-live{border-color:rgba(34,181,115,.3);background:linear-gradient(160deg,rgba(34,181,115,.18),#121212 64%)}
+@media(hover:hover){.ga-sc:hover{transform:translateY(-3px);border-color:rgba(34,181,115,.45)}.ga-sc:hover::before{opacity:1}.ga-card:hover{border-color:rgba(255,255,255,.16)}}
+.ga-sc-l{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#a3a3a3}
+.ga-sc-v{margin-top:10px;font-size:30px;font-weight:900;letter-spacing:-.025em;line-height:1.1}
+.ga-sc:nth-child(5) .ga-sc-v{font-size:26px}
+.ga-sc-v small{font-size:13px;letter-spacing:0}
+.ga-sc-s{margin-top:8px;font-size:12px}
+.ga-dot-s{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:#22B573;box-shadow:0 0 0 3px rgba(34,181,115,.22)}
+.ga-spark{display:block;width:100%;height:34px;margin-top:14px;overflow:visible}
+.ga-spark-empty{margin-top:14px}
+.ga-sc-split{display:flex;gap:2px;height:8px;margin-top:16px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.07)}
+.ga-sc-split i{display:block;height:100%;transform-origin:left;animation:ga-grow .8s var(--ga-ease) both}
+.ga-sc-split .m{background:#60a5fa}.ga-sc-split .o{background:#22B573}
+.ga-sc-skel{display:inline-block;height:30px;vertical-align:middle;border-radius:8px}
+.ga-strip-wrap{transition:opacity .2s}
+.ga-strip-wrap.is-stale{opacity:.6}
+.ga-strip-note{padding:10px 14px;border-radius:12px;background:rgba(34,181,115,.08);border:1px solid rgba(34,181,115,.18)}
+/* 증감 배지 */
+.ga-delta{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.ga-delta.up{background:rgba(74,222,128,.13)}.ga-delta.down{background:rgba(248,113,113,.13)}.ga-delta.flat{background:rgba(255,255,255,.07)}
+.ga-sc .ga-delta{margin-top:10px}
+/* 세그먼트 탭 */
+.ga-tabbar .ga-tabs{flex:0 1 auto;min-width:0;padding:4px;gap:2px;border-radius:999px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.ga-tabs button{position:relative;z-index:1;margin:0;padding:9px 16px;border:0;border-radius:999px;font-size:13.5px;color:#9a9a9a;transition:color .2s}
+.ga-tabs button:hover{color:#e5e5e5}
+.ga-tabs button[aria-selected="true"]{color:#fff;border:0}
+.ga-tab-ind{top:4px;bottom:4px;height:auto;border-radius:999px;background:rgba(34,181,115,.2);box-shadow:inset 0 0 0 1px rgba(34,181,115,.5)}
+.ga-tabbar .ga-period{margin-left:auto}
+.ga-presets button{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.1);transition:background-color .15s,border-color .15s,color .15s}
+.ga-presets button:hover{border-color:rgba(34,181,115,.5);color:#fff}
+.ga-presets button[aria-pressed="true"]{background:#22B573;border-color:#22B573;color:#fff}
+/* 스켈레톤 (shimmer 는 transform 으로 — 리페인트 없음) */
+.ga-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.ga-skel{position:relative;overflow:hidden;background:rgba(255,255,255,.06);animation:none}
+.ga-skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:ga-shim 1.4s ease-in-out infinite}
+/* 막대 */
+.ga-bar{height:8px}
+.ga-bar i{background:linear-gradient(90deg,#1b9a62,#34d696)}
+.ga-bar i,.ga-fbar-track i{transform-origin:left;transition:width .45s var(--ga-ease)}
+.ga-panel.is-fresh .ga-bar i,.ga-panel.is-fresh .ga-fbar-track i{animation:ga-grow .8s var(--ga-ease) both}
+.ga-live-num{font-size:64px;letter-spacing:-.03em;text-shadow:0 0 40px rgba(34,181,115,.28)}
+.ga-table tbody tr{transition:background-color .15s}
+.ga-sess li button{transition:border-color .2s,background-color .2s,transform .2s var(--ga-ease)}
+@media(hover:hover){.ga-sess li button:hover{border-color:rgba(34,181,115,.5);transform:translateX(2px)}}
+@media(max-width:860px){.ga-sc:nth-child(5) .ga-sc-v{font-size:26px}}
+@media(max-width:767px){.ga-tabbar .ga-tabs{flex:1}.ga-tabs button{padding:9px 12px;font-size:13px}}
+@media(max-width:560px){.ga-sc{padding:14px}.ga-sc-v,.ga-sc:nth-child(5) .ga-sc-v{font-size:24px}.ga-live-num{font-size:48px}.ga-card{padding:16px}}
+@media(prefers-reduced-motion:reduce){.ga-panel.is-fresh .ga-card,.ga-sc,.ga-panel,.ga-sc-split i,.ga-panel.is-fresh .ga-bar i,.ga-panel.is-fresh .ga-fbar-track i{animation:none}.ga-sc,.ga-sc::before,.ga-strip-wrap{transition:none}.ga-skel::after{animation:none}}
 `;

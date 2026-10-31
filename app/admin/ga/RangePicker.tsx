@@ -11,13 +11,17 @@
 //  · 팝오버는 바깥을 누르거나 Esc 로 닫는다.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import "react-day-picker/style.css";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DayPicker, type DateRange } from "react-day-picker";
-import { ko } from "react-day-picker/locale";
+import dynamic from "next/dynamic";
+import type { DateRange } from "react-day-picker";
 import { MAX_RANGE_DAYS, PRESET_LABEL, PRESET_ORDER, matchPreset, presetRange, rangeLength, todayKst, type PresetKey } from "@/lib/gaRange";
 
 const TZ = "Asia/Seoul";
+
+// 달력(react-day-picker)은 처음 열 때(또는 "직접 선택" 위에 마우스를 올릴 때)만 내려받는다.
+// 모바일에서는 기간 버튼을 누르는 순간에도 미리 불러온다. 실제 Next 프로덕션 빌드에서 첫 로드에 포함되지 않음을 확인했다.
+const loadCalendar = () => import("./RangeCalendar");
+const RangeCalendar = dynamic(loadCalendar, { ssr: false, loading: () => <div className="ga-skel" style={{ height: 300 }} aria-hidden="true" /> });
 const kstFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
 
 /** Date → "YYYY-MM-DD" (KST) */
@@ -121,7 +125,7 @@ export default function RangePicker({ from, to, onChange }: Props) {
           {PRESET_LABEL[k]}
         </button>
       ))}
-      <button type="button" aria-pressed={active === null || open} aria-expanded={open} aria-haspopup="dialog" onClick={() => (open ? setOpen(false) : openCustom())}>
+      <button type="button" aria-pressed={active === null || open} aria-expanded={open} aria-haspopup="dialog" onPointerEnter={loadCalendar} onFocus={loadCalendar} onClick={() => (open ? setOpen(false) : openCustom())}>
         직접 선택
       </button>
     </>
@@ -129,18 +133,7 @@ export default function RangePicker({ from, to, onChange }: Props) {
 
   const calendar = open ? (
         <div className="ga-cal" role="dialog" aria-label="기간 직접 선택">
-          <DayPicker
-            mode="range"
-            locale={ko}
-            timeZone={TZ}
-            numberOfMonths={months}
-            defaultMonth={defaultMonth}
-            endMonth={endMonth}
-            disabled={{ after: endMonth }}
-            selected={draft}
-            onSelect={setDraft}
-            weekStartsOn={0}
-          />
+          <RangeCalendar timeZone={TZ} months={months} defaultMonth={defaultMonth} endMonth={endMonth} selected={draft} onSelect={setDraft} />
           <div className="ga-cal-foot">
             <span className={"ga-cal-info" + (tooLong ? " is-bad" : "")}>
               {tooLong
@@ -166,7 +159,7 @@ export default function RangePicker({ from, to, onChange }: Props) {
       <div className="ga-presets" role="group" aria-label="기간 선택">
         {presetButtons}
       </div>
-      <button type="button" className="ga-rbtn" aria-haspopup="dialog" aria-expanded={sheet} onClick={() => setSheet(true)}>
+      <button type="button" className="ga-rbtn" aria-haspopup="dialog" aria-expanded={sheet} onPointerEnter={loadCalendar} onClick={() => { loadCalendar(); setSheet(true); }}>
         <span aria-hidden="true">📅</span> {rangeLabel} <span aria-hidden="true">▾</span>
       </button>
 

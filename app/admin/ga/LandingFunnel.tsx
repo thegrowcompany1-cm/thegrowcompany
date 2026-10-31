@@ -6,10 +6,11 @@
 //  · 이탈 지점은 60초마다 갱신한다. 탭을 떠나면(언마운트) interval·요청을 정리한다.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { funnelDrop } from "@/lib/gaInsights";
 import { SECTION_TRACK_FIX_DATE, TRACK_SECTION_LABEL } from "@/lib/trackSections";
-import { Empty, ErrBox, Insight, Skel, fetchJson, num, pct, type ApiError } from "./ga-shared";
+import { Empty, ErrBox, Insight, Skel, num, pct, useTabActive } from "./ga-shared";
+import { useGaData } from "./useGaData";
 
 type FunnelRes = {
   ok: true;
@@ -28,52 +29,22 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
   const periodLabel = from === to ? from : `${from} ~ ${to}`;
 
   // ── 섹션 도달 퍼널 / 이탈 지점 ──
-  const [funnelPath, setFunnelPath] = useState<string>("");
-  const [funnel, setFunnel] = useState<FunnelRes | null>(null);
-  const [funnelErr, setFunnelErr] = useState<ApiError | null>(null);
-  const [exits, setExits] = useState<ExitsRes | null>(null);
-  const [exitsErr, setExitsErr] = useState<ApiError | null>(null);
+  // 선택한 랜딩(pick)이 없으면 서버가 가장 많은 랜딩을 골라 응답하므로, 그 값을 그대로 보여준다 (다시 요청하지 않음).
+  const [pick, setPick] = useState<string>("");
+  const active = useTabActive();
+  const funnelRes = useGaData<FunnelRes>(`/api/admin/track?view=funnel&from=${from}&to=${to}${pick ? `&path=${encodeURIComponent(pick)}` : ""}`, {
+    staleMs: 60_000,
+    keepPrevious: true,
+    netMsg: "퍼널을 불러오지 못했습니다.",
+  });
+  const funnel = funnelRes.data;
+  const funnelErr = funnelRes.error;
+  const funnelPath = pick || funnel?.path || funnel?.paths[0]?.path || "";
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    (async () => {
-      try {
-        const q = `/api/admin/track?view=funnel&from=${from}&to=${to}${funnelPath ? `&path=${encodeURIComponent(funnelPath)}` : ""}`;
-        const data = await fetchJson<FunnelRes>(q, ctrl.signal);
-        if (data.ok) {
-          setFunnel(data);
-          setFunnelErr(null);
-          if (!funnelPath && data.paths.length) setFunnelPath(data.paths[0].path);
-        } else setFunnelErr(data);
-      } catch (e) {
-        if ((e as Error).name !== "AbortError") setFunnelErr({ ok: false, code: "NETWORK", message: "퍼널을 불러오지 못했습니다." });
-      }
-    })();
-    return () => ctrl.abort();
-  }, [from, to, funnelPath]);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    const load = async () => {
-      try {
-        const data = await fetchJson<ExitsRes>(`/api/admin/track?view=exits&from=${from}&to=${to}`, ctrl.signal);
-        if (data.ok) {
-          setExits(data);
-          setExitsErr(null);
-        } else setExitsErr(data);
-      } catch (e) {
-        if ((e as Error).name !== "AbortError") setExitsErr({ ok: false, code: "NETWORK", message: "이탈 지점을 불러오지 못했습니다." });
-      }
-    };
-    load();
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") load();
-    }, 60_000);
-    return () => {
-      window.clearInterval(id);
-      ctrl.abort();
-    };
-  }, [from, to]);
+  // 이탈 지점은 60초마다 갱신 (이 탭이 보일 때만)
+  const exitsRes = useGaData<ExitsRes>(`/api/admin/track?view=exits&from=${from}&to=${to}`, { staleMs: 30_000, pollMs: 60_000, active, netMsg: "이탈 지점을 불러오지 못했습니다." });
+  const exits = exitsRes.data;
+  const exitsErr = exitsRes.error;
 
   const drop = useMemo(() => (funnel?.rows ? funnelDrop(funnel.rows) : null), [funnel]);
   const notReady = [funnelErr, exitsErr].find((e) => e?.code === "TRACK_NOT_READY") ?? null;
@@ -98,7 +69,7 @@ export default function LandingFunnel({ from, to }: { from: string; to: string }
             <div className="ga-row">
               <h2 className="ga-h" style={{ margin: 0 }}>랜딩 섹션 도달 퍼널 <span className="ga-sub">· {periodLabel}</span></h2>
               <span className="ga-fsel">
-                <select className="ga-select" aria-label="랜딩 선택" value={funnelPath} onChange={(e) => setFunnelPath(e.target.value)}>
+                <select className="ga-select" aria-label="랜딩 선택" value={funnelPath} onChange={(e) => setPick(e.target.value)}>
                   {(funnel?.paths ?? []).map((p) => (
                     <option key={p.path} value={p.path}>{p.path}</option>
                   ))}

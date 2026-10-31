@@ -5,12 +5,18 @@
 //  · 20초 이상 머문 비율은 자체 방문 추적 기준이다 (같은 세션+경로 3초 묶음 방문 중 duration_sec >= 20).
 //    자체 추적 데이터가 없는 기간은 GA 참여율로 대체하고 "(GA 기준)" 을 붙인다.
 
-import { useEffect, useMemo, useState } from "react";
+import { memo, useMemo, type CSSProperties } from "react";
+import { todayKst } from "@/lib/gaRange";
 import { buildChannelCompare } from "@/lib/gaInsights";
 import type { ReportPayload } from "@/lib/gaTypes";
-import { Delta, fetchJson, mmss, num, pct } from "./ga-shared";
+import { Delta, mmss, num, pct } from "./ga-shared";
+import { CountUp, Spark } from "./ga-motion";
+import { useGaData } from "./useGaData";
 
 type Rt = { ok: true; total: number };
+const fmtInt = (n: number) => num(Math.round(n));
+const fmtPct = (n: number) => pct(n);
+const fmtWhole = (n: number) => n.toFixed(0);
 type TrackStay = { ok: true; stay: { visits: number; over20: number } };
 
 /** 가장 중요한 변화 1개 (비교 켜짐) 또는 가장 큰 유입 채널 (비교 꺼짐) */
@@ -42,44 +48,14 @@ function comment(report: ReportPayload): string | null {
   return `${top.label.replace(/ \(.*\)$/, "")}이 세션의 ${((top.sessions / total) * 100).toFixed(0)}%로 가장 큰 유입 채널입니다`;
 }
 
-export default function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPayload | null; compare: boolean; loading: boolean; from: string; to: string }) {
-  const [rt, setRt] = useState<number | null>(null);
-  const [stay, setStay] = useState<{ key: string; visits: number; over20: number } | null>(null);
+function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPayload | null; compare: boolean; loading: boolean; from: string; to: string }) {
+  // 지금 접속 — LiveTab 과 같은 요청·캐시를 공유한다 (60초 갱신)
+  const rt = useGaData<Rt>("/api/admin/ga/realtime", { staleMs: 20_000, pollMs: 60_000 }).data?.total ?? null;
 
-  // 20초 이상 머문 비율 — 자체 추적 (기간이 바뀔 때마다)
-  useEffect(() => {
-    const ctrl = new AbortController();
-    (async () => {
-      try {
-        const d = await fetchJson<TrackStay>(`/api/admin/track?view=daily&from=${from}&to=${to}`, ctrl.signal);
-        if (d.ok && d.stay) setStay({ key: `${from}|${to}`, ...d.stay });
-        else setStay(null);
-      } catch {
-        if (!ctrl.signal.aborted) setStay(null);
-      }
-    })();
-    return () => ctrl.abort();
-  }, [from, to]);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    const load = async () => {
-      try {
-        const d = await fetchJson<Rt>("/api/admin/ga/realtime", ctrl.signal);
-        if (d.ok) setRt(d.total);
-      } catch {
-        /* 실시간 카드만 "-" 로 남긴다 */
-      }
-    };
-    load();
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") load();
-    }, 60_000);
-    return () => {
-      window.clearInterval(id);
-      ctrl.abort();
-    };
-  }, []);
+  // 20초 이상 머문 비율 — 자체 추적 (기간이 바뀔 때마다). 일별 탭이 쓰는 요청과 같은 URL 이라 한 번만 나간다.
+  // 새 기간 응답이 오기 전에는 직전 값을 유지하고, 오류면 GA 참여율로 대신 보여준다.
+  const stayRes = useGaData<TrackStay>(`/api/admin/track?view=daily&from=${from}&to=${to}`, { staleMs: 60_000, keepPrevious: true });
+  const stay = stayRes.error ? null : stayRes.data?.stay ?? null;
 
   const mix = useMemo(() => {
     if (!report || !report.totals.sessions) return null;
@@ -92,40 +68,57 @@ export default function SummaryStrip({ report, compare, loading, from, to }: { r
   const t = report?.totals;
   const p = compare ? report?.prev?.totals : undefined;
   const note = report ? comment(report) : null;
-  const dash = <>-</>;
-  const own = stay && stay.key === `${from}|${to}` && stay.visits > 0 ? stay : null;
+  const own = stay && stay.visits > 0 ? stay : null;
   const ownRate = own ? own.over20 / own.visits : null;
+  // 미니 추이선 — 실제 일별 값 (날짜 오름차순). 오늘이 끝에 들어 있으면 마지막 구간을 점선으로 구분한다.
+  const days = useMemo(() => (report ? [...report.daily].sort((x, y) => (x.date < y.date ? -1 : 1)) : []), [report]);
+  const partial = !!report?.includesToday && days.length > 2 && days[days.length - 1].date === todayKst();
+  const skel = (w: number) => <span className="ga-skel ga-sc-skel" style={{ width: w }} aria-hidden="true" />;
 
   return (
-    <section aria-label="오늘 한눈에" style={{ opacity: loading ? 0.6 : 1, transition: "opacity .2s" }}>
+    <section aria-label="오늘 한눈에" className={loading ? "ga-strip-wrap is-stale" : "ga-strip-wrap"}>
       <div className="ga-strip">
-        <div className="ga-sc">
-          <p className="ga-sc-l">지금 접속 (실시간)</p>
-          <p className="ga-sc-v is-live">{rt === null ? dash : <>{num(rt)}<small>명</small></>}</p>
+        <div className="ga-sc is-live" style={{ "--i": 0 } as CSSProperties}>
+          <p className="ga-sc-l"><span className="ga-dot-s" aria-hidden="true" />지금 접속 (실시간)</p>
+          <p className="ga-sc-v is-live">{rt === null ? skel(70) : <><CountUp value={rt} format={fmtInt} /><small>명</small></>}</p>
           <p className="ga-sc-s">최근 30분 · 60초 갱신</p>
         </div>
-        <div className="ga-sc">
+        <div className="ga-sc" style={{ "--i": 1 } as CSSProperties}>
           <p className="ga-sc-l">방문 세션</p>
-          <p className="ga-sc-v">{t ? <>{num(t.sessions)}<small>세션</small></> : dash}</p>
+          <p className="ga-sc-v">{t ? <><CountUp value={t.sessions} format={fmtInt} /><small>세션</small></> : skel(110)}</p>
           {t && p && <Delta cur={t.sessions} prev={p.sessions} kind="rel" label="" />}
           {t && <p className="ga-sc-s">사용자 {num(t.users)}명 · 평균 {mmss(t.avgSessionDuration)}</p>}
+          {t && <Spark values={days.map((d) => d.sessions)} partialLast={partial} label="일별 세션 추이" />}
         </div>
-        <div className="ga-sc" title="자체 방문 추적 기준 — 같은 세션·경로 3초 묶음 방문 중 20초 이상 머문 비율. 추적 데이터가 없는 기간은 GA 참여율로 대신 보여줍니다">
+        <div className="ga-sc" style={{ "--i": 2 } as CSSProperties} title="자체 방문 추적 기준 — 같은 세션·경로 3초 묶음 방문 중 20초 이상 머문 비율. 추적 데이터가 없는 기간은 GA 참여율로 대신 보여줍니다">
           <p className="ga-sc-l">20초 이상 머문 비율{t && ownRate === null ? " (GA 기준)" : ""}</p>
-          <p className="ga-sc-v">{ownRate !== null ? pct(ownRate) : t ? pct(t.engagementRate) : dash}</p>
+          <p className="ga-sc-v">{ownRate !== null ? <CountUp value={ownRate} format={fmtPct} /> : t ? <CountUp value={t.engagementRate} format={fmtPct} /> : skel(90)}</p>
           {ownRate !== null && t && <p className="ga-sc-s">GA 참여율 {pct(t.engagementRate)}</p>}
+          {ownRate !== null && (
+            <div className="ga-sc-split" aria-hidden="true">
+              <i className="o" style={{ width: `${ownRate * 100}%` }} />
+            </div>
+          )}
           {ownRate === null && t && p && <Delta cur={t.engagementRate} prev={p.engagementRate} kind="pp" label="" />}
           {ownRate === null && t && !p && <p className="ga-sc-s">GA 참여 세션 기준 (10초 이상)</p>}
+          {ownRate === null && t && <Spark values={days.map((d) => d.engagementRate)} partialLast={partial} color="#c084fc" label="일별 참여율 추이" />}
         </div>
-        <div className="ga-sc">
+        <div className="ga-sc" style={{ "--i": 3 } as CSSProperties}>
           <p className="ga-sc-l">키 이벤트 (문의·결제)</p>
-          <p className="ga-sc-v">{t ? <>{num(t.keyEvents)}<small>건</small></> : dash}</p>
+          <p className="ga-sc-v">{t ? <><CountUp value={t.keyEvents} format={fmtInt} /><small>건</small></> : skel(80)}</p>
           {t && p && <Delta cur={t.keyEvents} prev={p.keyEvents} kind="rel" label="" />}
+          {t && <Spark values={days.map((d) => d.keyEvents)} partialLast={partial} color="#fbbf24" label="일별 키 이벤트 추이" />}
         </div>
-        <div className="ga-sc">
+        <div className="ga-sc" style={{ "--i": 4 } as CSSProperties}>
           <p className="ga-sc-l">메타광고 vs 자연검색</p>
-          <p className="ga-sc-v">{mix ? <>{(mix.meta * 100).toFixed(0)}%<small> vs </small>{(mix.organic * 100).toFixed(0)}%</> : dash}</p>
+          <p className="ga-sc-v">{mix ? <><CountUp value={mix.meta * 100} format={fmtWhole} />%<small> vs </small><CountUp value={mix.organic * 100} format={fmtWhole} />%</> : t ? "-" : skel(110)}</p>
           <p className="ga-sc-s">전체 세션 대비 비중</p>
+          {mix && (
+            <div className="ga-sc-split" aria-hidden="true">
+              <i className="m" style={{ width: `${mix.meta * 100}%` }} />
+              <i className="o" style={{ width: `${mix.organic * 100}%` }} />
+            </div>
+          )}
         </div>
       </div>
       {note && (
@@ -136,3 +129,6 @@ export default function SummaryStrip({ report, compare, loading, from, to }: { r
     </section>
   );
 }
+
+// 탭을 바꿀 때 props 가 그대로면 다시 그리지 않는다
+export default memo(SummaryStrip);

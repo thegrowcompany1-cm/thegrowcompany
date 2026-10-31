@@ -4,7 +4,7 @@
 //  · 기간 선택(상단 달력)과 무관하다. 리포트는 매주 금요일 아침 크론이 만들고(KST 08:00), 여기서는 읽기만 한다.
 //  · "지금 생성" 은 직전 7일 기준이며 최대 1분쯤 걸린다. 같은 기간이 이미 있으면 덮어쓸지 먼저 묻는다.
 
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import MarkdownLite from "./MarkdownLite";
 import { Empty, ErrBox, Skel, fetchJson, type ApiError } from "./ga-shared";
 
@@ -18,7 +18,7 @@ const md = (d: string) => `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}`;
 const label = (r: Item) => `${md(r.period_from)}~${md(r.period_to)}${r.status === "error" ? " (실패)" : ""}`;
 const when = (iso: string) => new Date(iso).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour12: false });
 
-export default function WeeklyTab() {
+function WeeklyTabImpl() {
   const [list, setList] = useState<ListRes | null>(null);
   const [listErr, setListErr] = useState<ApiError | null>(null);
   const [selId, setSelId] = useState<string>("");
@@ -142,3 +142,6 @@ export default function WeeklyTab() {
     </div>
   );
 }
+
+const WeeklyTab = memo(WeeklyTabImpl);
+export default WeeklyTab;
