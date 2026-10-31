@@ -3,10 +3,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 마케팅 인사이트 대시보드 (클라이언트)
 //
-//  · 상단: 기간 선택(프리셋 + 달력) · 직전 기간 비교 · 요약 띠. 일별 추이 차트는 "일별" 탭에서만 보인다.
+//  · 상단: 기간 선택(프리셋 + 달력) · 직전 기간 비교. KPI 카드 5개(요약)는 "대시보드" 탭에서만, 일별 추이 차트는 "일별" 탭에서만 보인다.
 //    선택한 기간은 URL 쿼리(?from=YYYY-MM-DD&to=YYYY-MM-DD&compare=1)에 저장돼 새로고침·링크 공유에도 유지된다.
 //    기간을 바꿀 때마다 history 에 쌓으므로 브라우저 뒤로가기로 이전 기간으로 돌아온다.
-//  · 하위 탭: 실시간 방문자 / 일별 / 랜딩 성과 / 검색·SEO / AI 유입(AEO) / 채널 비교 — 모두 같은 기간을 쓴다.
+//  · 탭: 대시보드 / 실시간 방문자 / 일별 / 랜딩 성과 / 검색·SEO / AI 유입(AEO) / 채널 비교 / 주간 리포트 — 모두 같은 기간을 쓴다.
 //  · 모든 날짜 경계는 KST. 기간 리포트는 /api/admin/ga/report 한 번으로 받아 탭이 나눠 쓴다.
 //  · 방문한 탭은 언마운트하지 않고 유지한다(KeepAlive) — 비활성 탭은 폴링·타이머를 멈추고, 다시 열면 캐시로 즉시 보인다.
 //  · 기간을 바꾸면 새 데이터가 올 때까지 이전 데이터를 그대로 두고 "이전 기간 데이터"임을 표시한다 (화면이 비지 않는다).
@@ -26,6 +26,7 @@ import { ErrBox, GA_STYLE, KeepAlive, ReportSkeleton } from "./ga-shared";
 import { setGaScope, useGaData } from "./useGaData";
 
 const TABS = [
+  { key: "dashboard", label: "대시보드" },
   { key: "live", label: "실시간 방문자" },
   { key: "daily", label: "일별" },
   { key: "landing", label: "랜딩 성과" },
@@ -64,7 +65,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
     [router, pathname],
   );
 
-  const [tab, setTab] = useState<TabKey>(() => (TABS.some((t) => t.key === sp.get("tab")) ? (sp.get("tab") as TabKey) : "live"));
+  const [tab, setTab] = useState<TabKey>(() => (TABS.some((t) => t.key === sp.get("tab")) ? (sp.get("tab") as TabKey) : "dashboard"));
   // 한 번이라도 열어 본 탭 — 이 탭들만 마운트해 두고 숨긴다
   const [visited, setVisited] = useState<ReadonlySet<TabKey>>(() => new Set([tab]));
   const tabRef = useRef<TabKey>(tab);
@@ -121,7 +122,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
       firstTab.current = false;
       return;
     }
-    if (window.scrollY < 160) return; // 맨 위에서는 보정할 것이 없다 — 레이아웃을 읽지 않는다 (클릭 경로의 강제 레이아웃 방지)
+    if (window.scrollY < 48) return; // 맨 위에서는 보정할 것이 없다 — 레이아웃을 읽지 않는다 (클릭 경로의 강제 레이아웃 방지)
     const panel = rootRef.current?.querySelector<HTMLElement>('[role="tabpanel"]:not([hidden])');
     const sticky = stickyRef.current;
     if (!panel || !sticky) return;
@@ -252,12 +253,16 @@ export default function GaDashboard({ scope }: { scope: string }) {
     };
   }, []);
 
+  // 기간 리포트를 쓰는 화면(대시보드·분석 탭)에서만 기간 안내를 보인다 — 실시간·주간 리포트는 기간과 무관
+  const periodTab = tab !== "live" && tab !== "weekly";
+
   const pickDay = useCallback((day: string) => go(day, day, compare), [go, compare]);
 
   // 탭별 본문. 리포트가 필요한 탭은 리포트가 아직 한 번도 오지 않았을 때만 자리표시를 보여 준다.
   const content = (k: TabKey): ReactNode => {
     if (k === "live") return <LiveTab />;
     if (k === "weekly") return <WeeklyTab />;
+    if (k === "dashboard") return <SummaryStrip report={report} compare={compare} loading={switching} from={from} to={to} />;
     if (!report) return repErr ? null : <ReportSkeleton />;
     return (
       <div className={"ga-data" + (switching ? " is-stale" : "")} aria-busy={switching}>
@@ -306,12 +311,12 @@ export default function GaDashboard({ scope }: { scope: string }) {
       {urlInvalid && (
         <p className="ga-notice" role="status">주소의 기간 값이 올바르지 않아 최근 28일로 표시합니다.</p>
       )}
-      {to >= today && (
+      {periodTab && to >= today && (
         <p className="ga-notice" role="note">
-          오늘이 포함된 기간입니다 — GA 기간 리포트는 집계 지연으로 오늘 숫자가 작게 보일 수 있습니다 (실시간 탭 숫자는 즉시 반영).
+          오늘이 포함된 기간입니다 — 집계 지연으로 오늘 숫자가 작게 보일 수 있습니다 (실시간 탭은 즉시 반영)
         </p>
       )}
-      {switching && (
+      {periodTab && switching && (
         <p className="ga-stale" role="status">
           {rangeMismatch && report
             ? `이전 기간(${periodText(report.from, report.to)}) 데이터를 표시 중입니다 · ${periodText(from, to)} 불러오는 중`
@@ -324,8 +329,6 @@ export default function GaDashboard({ scope }: { scope: string }) {
           <ErrBox title={repErr.code === "PERMISSION_DENIED" ? "접근 권한 오류" : "리포트를 불러오지 못했습니다"} err={repErr} />
         </div>
       )}
-
-      <SummaryStrip report={report} compare={compare} loading={switching} from={from} to={to} />
 
       {TABS.map((t) =>
         visited.has(t.key) ? (

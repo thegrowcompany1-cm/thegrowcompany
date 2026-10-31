@@ -592,8 +592,15 @@ export const GA_STYLE = `
 .ga-tc-line{animation:ga-draw .9s cubic-bezier(.22,1,.36,1) .3s both}
 .ga-tc-area,.ga-tc-part{animation:ga-fade-in .7s ease-out .55s both}
 .ga-spark svg{animation:ga-reveal .7s cubic-bezier(.22,1,.36,1) .2s both}
-/* 탭 본문 패널 전체에는 애니메이션을 걸지 않는다 — 큰 패널을 합성 레이어로 올리는 비용이 클릭 직후 반응을 늦춘다 */
+/* 탭 전환: 새 화면이 보이는 순간 불투명도만 가볍게 올린다 (이동·크기 변화 없음 → 레이아웃·클릭 지연 없음) */
 .ga-panel{animation:none}
+.ga-panel:not([hidden]){animation:ga-screen-in .18s ease-out}
+@keyframes ga-screen-in{from{opacity:.45}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]){animation:none}}
+.ga-notice{margin:0 0 10px;padding:7px 12px;font-size:12.5px;line-height:1.5}
+.ga-stale{margin:0 0 10px;padding:7px 12px;font-size:12.5px;line-height:1.5}
+.ga-strip-wrap{margin-top:4px}
+.ga-strip-note{margin:12px 0 4px}
 /* 화면 밖 카드는 칠하지도 레이아웃하지도 않는다 — 탭을 보일 때 큰 표 카드 전체를 한꺼번에 그리지 않아 클릭 직후 반응이 빨라진다 */
 .ga-panel .ga-card{content-visibility:auto;contain-intrinsic-size:auto 480px}
 /* 차트: 가이드선·점·툴팁이 부드럽게 따라 움직이고, 고정(핀) 툴팁에는 하루만 보기 버튼 */

@@ -1,6 +1,6 @@
 "use client";
 
-// 오늘 한눈에 — 모든 탭 위에 보이는 요약 띠 (카드 5개 + 자동 코멘트 1줄)
+// 오늘 한눈에 — "대시보드" 탭에서만 보이는 요약 (카드 5개 + 자동 코멘트 1줄)
 //  · 지금 접속은 GA4 실시간 API(60초 갱신), 나머지는 기간 리포트에서 가져온다 (API 변경 없음).
 //  · 20초 이상 머문 비율은 자체 방문 추적 기준이다 (같은 세션+경로 3초 묶음 방문 중 duration_sec >= 20).
 //    자체 추적 데이터가 없는 기간은 GA 참여율로 대체하고 "(GA 기준)" 을 붙인다.
@@ -9,7 +9,7 @@ import { memo, useCallback, useMemo, useRef, type CSSProperties, type PointerEve
 import { todayKst } from "@/lib/gaRange";
 import { buildChannelCompare } from "@/lib/gaInsights";
 import type { ReportPayload } from "@/lib/gaTypes";
-import { Delta, mmss, num, pct } from "./ga-shared";
+import { Delta, mmss, num, pct, useTabActive } from "./ga-shared";
 import { CountUp, Spark } from "./ga-motion";
 import { useGaData } from "./useGaData";
 
@@ -51,8 +51,9 @@ function comment(report: ReportPayload): string | null {
 }
 
 function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPayload | null; compare: boolean; loading: boolean; from: string; to: string }) {
-  // 지금 접속 — LiveTab 과 같은 요청·캐시를 공유한다 (60초 갱신)
-  const rtData = useGaData<Rt>("/api/admin/ga/realtime", { staleMs: 20_000, pollMs: 60_000 }).data;
+  // 지금 접속 — LiveTab 과 같은 요청·캐시를 공유한다 (60초 갱신, 다른 탭을 보는 동안은 멈춘다)
+  const tabActive = useTabActive();
+  const rtData = useGaData<Rt>("/api/admin/ga/realtime", { staleMs: 20_000, pollMs: 60_000, active: tabActive }).data;
   const rt = rtData?.total ?? null;
   const devTotal = rtData?.devices?.reduce((a, d) => a + d.users, 0) ?? 0;
 
