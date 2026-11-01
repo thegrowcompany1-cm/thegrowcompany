@@ -80,33 +80,11 @@ export default function GaDashboard({ scope }: { scope: string }) {
     else go();
   }, []);
   useEffect(() => () => window.clearTimeout(warmTimer.current), []);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const rippleRef = useRef<HTMLElement>(null);
-  const pickTab = useCallback((k: TabKey, btn?: HTMLElement) => {
+  const curtainRef = useRef<HTMLElement>(null);
+  const pickTab = useCallback((k: TabKey) => {
     // 탭 줄(표시기·선택 상태)과 본문 전환은 한 번에(동기) 렌더한다.
     // (표시기를 먼저 그리고 본문을 다음 작업에서 렌더하는 두 단계 방식은 본문이 더 늦게 나와 오히려 끊겨 보여 쓰지 않는다 — 측정 결과 참고)
-    // 메뉴 ↔ 콘텐츠 연결 모션 (레이아웃을 읽는 것은 상태를 바꾸기 전 한 번뿐이라 비용이 없다):
-    //  · 새 화면은 이동 방향(오른쪽 탭이면 오른쪽에서)으로 살짝 밀려 들어오며 부드럽게 안착한다 — 방향은 루트 속성으로만 알린다.
-    //  · 눌린 탭 위치에서 빛이 번져 콘텐츠 영역 위쪽을 훑고 사라진다 — 작은 요소 하나의 transform/opacity 뿐이다.
-    if (k !== tabRef.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const dir = TABS.findIndex((t) => t.key === k) > TABS.findIndex((t) => t.key === tabRef.current) ? "r" : "l";
-      rootRef.current?.setAttribute("data-dir", dir);
-      const stage = stageRef.current;
-      const blob = rippleRef.current;
-      if (stage && blob && btn) {
-        const s = stage.getBoundingClientRect();
-        const b = btn.getBoundingClientRect();
-        const half = blob.offsetWidth / 2;
-        const x = b.left + b.width / 2 - s.left - half;
-        blob.animate(
-          [
-            { transform: `translate3d(${x}px,0,0) scale(.3)`, opacity: 0.95 },
-            { transform: `translate3d(${x + (dir === "r" ? 40 : -40)}px,0,0) scale(1.5)`, opacity: 0 },
-          ],
-          { duration: 640, easing: "cubic-bezier(.16,1,.3,1)" },
-        );
-      }
-    }
+    // 액체 알약·화면 등장 모션은 상태가 바뀐 직후의 레이아웃 효과(아래 [tab] 효과)에서 시작한다.
     tabRef.current = k;
     setTab(k);
     setVisited((v) => (v.has(k) ? v : new Set(v).add(k)));
@@ -125,6 +103,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
   const stickyRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const indRef = useRef<HTMLSpanElement>(null);
+  const pill = useRef({ x1: 0, x2: 0, W: 0, raf: 0, first: true });
   const [stuck, setStuck] = useState(false);
 
   // 고정 헤더가 위에 붙은 상태에서만 아래 그림자를 준다
@@ -294,33 +273,108 @@ export default function GaDashboard({ scope }: { scope: string }) {
     };
   }, []);
 
-  // 활성 탭 표시(슬라이딩 인디케이터) — 탭 버튼 위치·폭은 처음과 크기가 바뀔 때만 측정해 캐시하고,
-  // 탭을 누를 때는 캐시로만 이동한다. (클릭마다 offsetLeft/offsetWidth 를 읽으면 새로 보이는 패널의 스타일·레이아웃을
-  // 이벤트 처리 중에 동기로 계산하게 되어 클릭 직후 화면 반영이 늦어진다)
+  // 액체 알약(Liquid Pill) — 알약은 탭 줄 전체 폭의 한 장 레이어이고, 보이는 모양은 clip-path: inset(위 R 아래 L round) 로 오려 낸다.
+  //  · 다음 탭으로 갈 때 앞쪽 끝(이동 방향의 끝)은 먼저·빠르게, 뒤쪽 끝은 조금 늦게·느리게 움직인다 → 알약이 늘어났다가 도착하면서 줄어든다.
+  //  · 두 끝을 따로 움직이는 JS 트윈(rAF)이라 연속 클릭에도 "지금 모양"에서 이어서 새 목표로 간다 (처음 위치로 튀지 않는다).
+  //  · 탭 좌표는 처음·크기 변경 때만 측정해 캐시한다. 알약 레이어(작은 한 요소)의 clip-path 만 쓰므로 표·차트에는 영향이 없다.
   const geoRef = useRef<Record<string, { x: number; w: number }>>({});
-  const placeInd = useCallback((k: string) => {
-    const g = geoRef.current[k];
+  const paintPill = useCallback(() => {
+    const ind = indRef.current;
+    if (!ind) return;
+    const s = pill.current;
+    const ring = ind.firstElementChild as HTMLElement | null;
+    const fill = ind.lastElementChild as HTMLElement | null;
+    if (!ring || !fill) return;
+    const l = Math.max(0, s.x1);
+    const r = Math.max(0, s.W - s.x2);
+    ring.style.clipPath = `inset(0 ${r}px 0 ${l}px round 999px)`;
+    fill.style.clipPath = `inset(1px ${r + 1}px 1px ${l + 1}px round 999px)`;
+  }, []);
+  const snapPill = useCallback(() => {
+    const g = geoRef.current[tabRef.current];
     const ind = indRef.current;
     if (!g || !ind) return;
-    ind.style.width = `${g.w}px`;
-    ind.style.transform = `translateX(${g.x}px)`;
+    const s = pill.current;
+    s.x1 = g.x;
+    s.x2 = g.x + g.w;
+    paintPill();
     ind.style.opacity = "1";
-  }, []);
+  }, [paintPill]);
   useLayoutEffect(() => {
     const box = tabsRef.current;
-    if (!box) return;
+    const ind = indRef.current;
+    if (!box || !ind) return;
     const measure = () => {
       box.querySelectorAll<HTMLElement>('[role="tab"]').forEach((b) => {
         geoRef.current[b.dataset.k as string] = { x: b.offsetLeft, w: b.offsetWidth };
       });
-      placeInd(tabRef.current);
+      pill.current.W = box.scrollWidth;
+      ind.style.width = `${box.scrollWidth}px`;
+      if (!pill.current.raf) snapPill(); // 움직이는 중이면 트윈이 매 프레임 최신 좌표를 목표로 삼는다
     };
     measure();
     const ro = new ResizeObserver(measure);
     box.querySelectorAll('[role="tab"]').forEach((b) => ro.observe(b));
+    ro.observe(box);
     return () => ro.disconnect();
-  }, [placeInd]);
-  useLayoutEffect(() => placeInd(tab), [tab, placeInd]);
+  }, [snapPill]);
+  // 탭이 바뀌면(상태 반영 직후, 첫 그림 전): 막(커튼)을 덮고, 다음 프레임부터 알약을 늘렸다 줄인다
+  useLayoutEffect(() => {
+    const s = pill.current;
+    const g = geoRef.current[tab];
+    if (s.first) {
+      s.first = false;
+      snapPill();
+      return;
+    }
+    if (!g) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      cancelAnimationFrame(s.raf);
+      s.raf = 0;
+      snapPill();
+      return;
+    }
+    // 화면 등장: 막이 새 화면을 덮은 채 시작해 위에서 아래로 걷힌다 (뷰포트 한 장 크기의 transform 하나 — 아래 표·차트는 애니메이션 없음)
+    const cur = curtainRef.current;
+    if (cur) {
+      cur.getAnimations().forEach((a) => a.cancel());
+      cur.animate(
+        [
+          { transform: "translate3d(0,-170px,0)", opacity: 1 },
+          { transform: "translate3d(0,100%,0)", opacity: 1 },
+        ],
+        { duration: 540, easing: "cubic-bezier(.2,.75,.25,1)" },
+      );
+    }
+    cancelAnimationFrame(s.raf);
+    const from1 = s.x1;
+    const from2 = s.x2;
+    const dist = Math.abs(g.x + g.w / 2 - (from1 + from2) / 2);
+    const right = g.x + g.w / 2 > (from1 + from2) / 2;
+    const extra = Math.min(140, dist * 0.1);
+    const LEAD = { delay: 0, dur: 330 + extra, ease: (t: number) => 1 - Math.pow(1 - t, 3) }; // 앞쪽 끝: 먼저, 빠르게 (ease-out)
+    const TRAIL = { delay: 55, dur: 450 + extra, ease: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) }; // 뒤쪽 끝: 늦게 출발해 천천히 (ease-in-out)
+    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+    let t0 = 0;
+    const step = (now: number) => {
+      if (!t0) t0 = now;
+      const T = geoRef.current[tabRef.current] ?? g; // 목표는 매 프레임 최신 캐시 좌표 (크기가 바뀌어도 어긋나지 않는다)
+      const e = now - t0;
+      const p1 = (right ? TRAIL : LEAD);
+      const p2 = (right ? LEAD : TRAIL);
+      s.x1 = from1 + (T.x - from1) * p1.ease(clamp01((e - p1.delay) / p1.dur));
+      s.x2 = from2 + (T.x + T.w - from2) * p2.ease(clamp01((e - p2.delay) / p2.dur));
+      if (e < Math.max(LEAD.delay + LEAD.dur, TRAIL.delay + TRAIL.dur)) {
+        paintPill();
+        s.raf = requestAnimationFrame(step);
+      } else {
+        s.raf = 0;
+        snapPill();
+      }
+    };
+    s.raf = requestAnimationFrame(step);
+  }, [tab, snapPill, paintPill]);
+  useEffect(() => () => cancelAnimationFrame(pill.current.raf), []);
 
   // 모바일에서 가로 스크롤되는 탭 줄: 선택한 탭을 가운데로 맞춘다 (모션 줄이기 설정이면 바로 이동)
   useEffect(() => {
@@ -387,9 +441,12 @@ export default function GaDashboard({ scope }: { scope: string }) {
         <RangePicker from={from} to={to} onChange={(f, t) => go(f, t, compare)} />
         <div className="ga-tabbar">
           <div className="ga-tabs" role="tablist" aria-label="분석 항목" ref={tabsRef}>
-            <span className="ga-tab-ind" ref={indRef} aria-hidden="true" />
+            <span className="ga-tab-ind" ref={indRef} aria-hidden="true">
+              <i />
+              <i />
+            </span>
             {TABS.map((t) => (
-              <button key={t.key} type="button" role="tab" data-k={t.key} aria-selected={tab === t.key} onClick={(e) => pickTab(t.key, e.currentTarget)} onPointerEnter={(e) => e.pointerType === "mouse" && warm(t.key, 160)} onPointerLeave={() => window.clearTimeout(warmTimer.current)} onFocus={() => warm(t.key, 0)}>
+              <button key={t.key} type="button" role="tab" data-k={t.key} aria-selected={tab === t.key} onClick={() => pickTab(t.key)} onPointerEnter={(e) => e.pointerType === "mouse" && warm(t.key, 160)} onPointerLeave={() => window.clearTimeout(warmTimer.current)} onFocus={() => warm(t.key, 0)}>
                 {t.label}
               </button>
             ))}
@@ -434,10 +491,8 @@ export default function GaDashboard({ scope }: { scope: string }) {
         </div>
       )}
 
-      <div className="ga-stage" ref={stageRef}>
-        <i className="ga-ripple" aria-hidden="true">
-          <b ref={rippleRef} />
-        </i>
+      <div className="ga-stage">
+        <i className="ga-curtain" ref={curtainRef} aria-hidden="true" />
         {TABS.map((t) =>
           visited.has(t.key) ? (
             <KeepAlive key={t.key} active={tab === t.key}>

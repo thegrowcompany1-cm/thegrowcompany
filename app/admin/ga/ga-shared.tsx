@@ -697,18 +697,21 @@ export const GA_STYLE = `
 /* ═══ 유기적 화면 전환 + 인터랙티브 글래스 ═══ */
 /* 콘텐츠 영역: 가로로 밀려 들어오는 새 화면이 바깥으로 삐져나가지 않게 가로만 자른다 (세로·sticky 에는 영향 없음) */
 .ga-stage{position:relative;overflow-x:clip}
-/* 눌린 탭 위치에서 번지는 빛 — 콘텐츠 영역 위쪽에 놓인 작은 요소 하나 (transform/opacity 만 움직인다) */
-.ga-ripple{position:absolute;left:0;right:0;top:0;height:260px;overflow:hidden;pointer-events:none;z-index:3;contain:strict}
-.ga-ripple b{position:absolute;left:0;top:-210px;width:420px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(60,214,146,.34),rgba(34,181,115,.12) 55%,transparent);opacity:0;will-change:transform,opacity}
-/* 새 화면: 이동 방향에서 expo-out 으로 안착(.46s) + 불투명도는 더 빨리(.24s). 표·차트 안쪽에는 아무 애니메이션도 걸지 않는다 */
-.ga-panel:not([hidden]){animation:ga-in-xr .34s cubic-bezier(.16,1,.3,1),ga-in-o .16s ease-out}
-.ga[data-dir="l"] .ga-panel:not([hidden]){animation-name:ga-in-xl,ga-in-o}
-@keyframes ga-in-xr{from{transform:translate3d(22px,6px,0)}to{transform:none}}
-@keyframes ga-in-xl{from{transform:translate3d(-22px,6px,0)}to{transform:none}}
-@keyframes ga-in-o{from{opacity:.35}to{opacity:1}}
+/* 액체 알약: 탭 줄 전체 폭의 레이어를 clip-path 로 오려 쓴다 (JS 가 왼쪽·오른쪽 끝을 따로 움직인다). 바깥 테두리 레이어 + 안쪽 채움 레이어 */
+.ga-tab-ind{position:absolute;left:0;top:4px;bottom:4px;height:auto;width:0;transform:none;background:none;box-shadow:none;border-radius:0;contain:none;will-change:auto;opacity:0;transition:opacity .15s;pointer-events:none}
+.ga-tab-ind i{position:absolute;inset:0;display:block}
+.ga-tab-ind i:first-child{background:#1f6a47}
+.ga-tab-ind i:last-child{background:#183a2a}
+/* 화면 등장 ① 막: 새 화면이 열리는 순간 콘텐츠 영역 위를 덮었다가 위에서 아래로 걷힌다 (뷰포트 한 장 크기 transform 하나 — 표·차트는 애니메이션 없음) */
+.ga-curtain{position:absolute;left:0;right:0;top:0;height:calc(100vh + 170px);pointer-events:none;z-index:4;opacity:0;transform:translate3d(0,100%,0);background:linear-gradient(180deg,rgba(17,17,17,0) 0,#111 170px,#111 100%);will-change:transform}
+/* 화면 등장 ② 제목이 왼쪽에서 오른쪽으로 드러나고 ③ 핵심 지표가 이어서 떠오른다 — 작은 요소만 움직인다 (표·차트 본문은 제외) */
+.ga-panel,.ga-panel:not([hidden]){animation:none}
+.ga-panel:not([hidden]) .ga-h,.ga-panel:not([hidden]) .ga-kpi-l{animation:ga-title-in .56s cubic-bezier(.22,1,.36,1) .1s backwards}
+@keyframes ga-title-in{from{clip-path:inset(0 100% 0 0);transform:translate3d(0,8px,0);opacity:.2}to{clip-path:inset(0 0 0 0);transform:none;opacity:1}}
+.ga-panel:not([hidden]) .ga-insight,.ga-panel:not([hidden]) .ga-fsel,.ga-panel:not([hidden]) .ga-live-num{animation:ga-metric-in .5s cubic-bezier(.22,1,.36,1) .2s backwards}
+.ga-panel:not([hidden]) .ga-sc{animation:ga-metric-in .54s cubic-bezier(.22,1,.36,1) calc(.18s + var(--i,0)*55ms) backwards}
+@keyframes ga-metric-in{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
 .ga-loading{margin-left:8px}
-/* 메뉴 표시기: 살짝 늘어났다 안착하는 탄성 이동 */
-.ga-tab-ind{transition:transform .4s cubic-bezier(.3,1.35,.5,1),width .32s cubic-bezier(.22,1,.36,1),opacity .15s}
 /* KPI 카드: 커서를 따라가는 반사광 + 테두리 하이라이트 + 3px 떠오름 */
 .ga-sc{--mx:50%;--my:0%}
 .ga-sc::before{background:radial-gradient(120px circle at var(--mx) var(--my),rgba(255,255,255,.09),transparent 70%),radial-gradient(280px circle at var(--mx) var(--my),rgba(70,224,158,.3),rgba(34,181,115,.09) 46%,transparent 74%)}
@@ -726,5 +729,5 @@ export const GA_STYLE = `
 .ga-table tbody tr.is-link:active td,.ga-table tbody tr.is-click:active td{background:rgba(34,181,115,.16)}
 /* 차트 점: 누르면 파동이 퍼진다 (JS 가 ::after 를 애니메이션) */
 .ga-tc-dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--c);opacity:0;pointer-events:none}
-@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]){animation:none}.ga-ripple{display:none}.ga-tab-ind{transition:none}.ga-sc:hover,.ga-sc[data-press]{transform:none}.ga-sc::before,.ga-sc::after,.ga-fbar,.ga-presets button,.ga-btn,.ga-rbtn{transition:none}.ga-presets button:active,.ga-btn:active,.ga-rbtn:active,.ga-fbar:active,.ga-sess li button:active{transform:none}}
+@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]) .ga-h,.ga-panel:not([hidden]) .ga-kpi-l,.ga-panel:not([hidden]) .ga-insight,.ga-panel:not([hidden]) .ga-fsel,.ga-panel:not([hidden]) .ga-live-num,.ga-panel:not([hidden]) .ga-sc{animation:none}.ga-curtain{display:none}.ga-tab-ind{transition:none}.ga-sc:hover,.ga-sc[data-press]{transform:none}.ga-sc::before,.ga-sc::after,.ga-fbar,.ga-presets button,.ga-btn,.ga-rbtn{transition:none}.ga-presets button:active,.ga-btn:active,.ga-rbtn:active,.ga-fbar:active,.ga-sess li button:active{transform:none}}
 `;
