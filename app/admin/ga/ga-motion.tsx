@@ -13,7 +13,7 @@ import { useTabActive } from "./ga-shared";
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - 2 ** (-10 * t));
 
 /** format 은 렌더마다 새로 만들지 않는 함수(모듈 상수)를 넘긴다 */
-export function CountUp({ value, format, ms = 520 }: { value: number; format: (n: number) => string; ms?: number }) {
+export function CountUp({ value, format, ms = 600 }: { value: number; format: (n: number) => string; ms?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const shown = useRef<number | null>(null); // 화면에 최종 반영된 값
   const raf = useRef(0);

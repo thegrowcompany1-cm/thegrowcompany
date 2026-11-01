@@ -730,4 +730,17 @@ export const GA_STYLE = `
 /* 차트 점: 누르면 파동이 퍼진다 (JS 가 ::after 를 애니메이션) */
 .ga-tc-dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--c);opacity:0;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]) .ga-h,.ga-panel:not([hidden]) .ga-kpi-l,.ga-panel:not([hidden]) .ga-insight,.ga-panel:not([hidden]) .ga-fsel,.ga-panel:not([hidden]) .ga-live-num,.ga-panel:not([hidden]) .ga-sc{animation:none}.ga-curtain{display:none}.ga-tab-ind{transition:none}.ga-sc:hover,.ga-sc[data-press]{transform:none}.ga-sc::before,.ga-sc::after,.ga-fbar,.ga-presets button,.ga-btn,.ga-rbtn{transition:none}.ga-presets button:active,.ga-btn:active,.ga-rbtn:active,.ga-fbar:active,.ga-sess li button:active{transform:none}}
+/* 채워지는 연출 타임라인: 0.1s 막 → 0.3s 제목·카드 윤곽 → 0.6s KPI·카드 완성 → 1.2s 차트·퍼널 완료. 카드는 opacity 만, 면 차트는 왼쪽→오른쪽 clip */
+@keyframes ga-area-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.ga-panel.is-fresh .ga-card{animation:ga-panel-in .32s ease-out both}
+.ga-panel.is-fresh .ga-card:nth-child(2){animation-delay:.17s}
+.ga-panel.is-fresh .ga-card:nth-child(3){animation-delay:.24s}
+.ga-panel.is-fresh .ga-card:nth-child(n+4){animation-delay:.31s}
+.ga-panel.is-fresh .ga-card:nth-child(1){animation-delay:.1s}
+.ga-tc-line{animation:ga-draw .8s cubic-bezier(.22,1,.36,1) .45s both}
+.ga-tc-area{animation:ga-area-wipe .8s cubic-bezier(.22,1,.36,1) .45s both}
+.ga-tc-part{animation:ga-fade-in .5s ease-out .8s both}
+.ga-panel.is-fresh .ga-fbar-track i{animation:ga-grow .6s var(--ga-ease) both;animation-delay:calc(.5s + var(--fi,0)*60ms)}
+.ga-fbar:nth-child(1){--fi:0}.ga-fbar:nth-child(2){--fi:1}.ga-fbar:nth-child(3){--fi:2}.ga-fbar:nth-child(4){--fi:3}.ga-fbar:nth-child(5){--fi:4}.ga-fbar:nth-child(6){--fi:5}.ga-fbar:nth-child(7){--fi:6}.ga-fbar:nth-child(8){--fi:7}.ga-fbar:nth-child(n+9){--fi:8}
+@media(prefers-reduced-motion:reduce){.ga-panel.is-fresh .ga-card,.ga-tc-line,.ga-tc-area,.ga-tc-part,.ga-panel.is-fresh .ga-fbar-track i{animation:none}}
 `;

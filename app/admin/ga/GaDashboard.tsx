@@ -353,7 +353,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
     const right = g.x + g.w / 2 > (from1 + from2) / 2;
     const extra = Math.min(140, dist * 0.1);
     const LEAD = { delay: 0, dur: 330 + extra, ease: (t: number) => 1 - Math.pow(1 - t, 3) }; // 앞쪽 끝: 먼저, 빠르게 (ease-out)
-    const TRAIL = { delay: 55, dur: 450 + extra, ease: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) }; // 뒤쪽 끝: 늦게 출발해 천천히 (ease-in-out)
+    const TRAIL = { delay: 100, dur: 450 + extra, ease: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) }; // 뒤쪽 끝: 늦게 출발해 천천히 (ease-in-out)
     const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
     let t0 = 0;
     const step = (now: number) => {
@@ -364,6 +364,9 @@ export default function GaDashboard({ scope }: { scope: string }) {
       const p2 = (right ? LEAD : TRAIL);
       s.x1 = from1 + (T.x - from1) * p1.ease(clamp01((e - p1.delay) / p1.dur));
       s.x2 = from2 + (T.x + T.w - from2) * p2.ease(clamp01((e - p2.delay) / p2.dur));
+      // 멀리 있는 탭이어도 알약이 탭 줄을 덮지 않도록 늘어나는 길이에 상한을 둔다 (큰 쪽 폭 + 260px)
+      const cap = Math.max(from2 - from1, T.w) + 260;
+      if (s.x2 - s.x1 > cap) { if (right) s.x1 = s.x2 - cap; else s.x2 = s.x1 + cap; }
       if (e < Math.max(LEAD.delay + LEAD.dur, TRAIL.delay + TRAIL.dur)) {
         paintPill();
         s.raf = requestAnimationFrame(step);
