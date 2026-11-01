@@ -692,4 +692,36 @@ export const GA_STYLE = `
 @media(max-width:560px){.ga-table tbody tr{background:var(--g-bg);border-color:var(--g-bd);box-shadow:var(--g-hi)}.ga::before{top:-40px}}
 /* 투명도 줄이기 설정: 블러가 걸린 요소(헤더·팝업)만 불투명하게. 카드의 반투명 그라데이션은 대비가 충분해 유지한다 */
 @media(prefers-reduced-transparency:reduce){.ga-sticky{background:#0a0d0b}.ga-sticky::before{display:none}.ga-cal,.ga-sheet{background:#161a18;-webkit-backdrop-filter:none;backdrop-filter:none}.ga-tc-tip,.ga-spark-tip{background:#181c1a}}
+/* ═══ 유기적 화면 전환 + 인터랙티브 글래스 ═══ */
+/* 콘텐츠 영역: 가로로 밀려 들어오는 새 화면이 바깥으로 삐져나가지 않게 가로만 자른다 (세로·sticky 에는 영향 없음) */
+.ga-stage{position:relative;overflow-x:clip}
+/* 눌린 탭 위치에서 번지는 빛 — 콘텐츠 영역 위쪽에 놓인 작은 요소 하나 (transform/opacity 만 움직인다) */
+.ga-ripple{position:absolute;left:0;right:0;top:0;height:260px;overflow:hidden;pointer-events:none;z-index:3;contain:strict}
+.ga-ripple b{position:absolute;left:0;top:-210px;width:420px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(60,214,146,.34),rgba(34,181,115,.12) 55%,transparent);opacity:0;will-change:transform,opacity}
+/* 새 화면: 이동 방향에서 expo-out 으로 안착(.46s) + 불투명도는 더 빨리(.24s). 표·차트 안쪽에는 아무 애니메이션도 걸지 않는다 */
+.ga-panel:not([hidden]){animation:ga-in-xr .46s cubic-bezier(.16,1,.3,1),ga-in-o .24s ease-out}
+.ga[data-dir="l"] .ga-panel:not([hidden]){animation-name:ga-in-xl,ga-in-o}
+@keyframes ga-in-xr{from{transform:translate3d(28px,8px,0)}to{transform:none}}
+@keyframes ga-in-xl{from{transform:translate3d(-28px,8px,0)}to{transform:none}}
+@keyframes ga-in-o{from{opacity:0}to{opacity:1}}
+/* 메뉴 표시기: 살짝 늘어났다 안착하는 탄성 이동 */
+.ga-tab-ind{transition:transform .4s cubic-bezier(.3,1.35,.5,1),width .32s cubic-bezier(.22,1,.36,1),opacity .15s}
+/* KPI 카드: 커서를 따라가는 반사광 + 테두리 하이라이트 + 3px 떠오름 */
+.ga-sc{--mx:50%;--my:0%}
+.ga-sc::before{background:radial-gradient(120px circle at var(--mx) var(--my),rgba(255,255,255,.09),transparent 70%),radial-gradient(280px circle at var(--mx) var(--my),rgba(70,224,158,.3),rgba(34,181,115,.09) 46%,transparent 74%)}
+.ga-sc::after{padding:1px;box-shadow:none;background:radial-gradient(190px circle at var(--mx) var(--my),rgba(150,255,208,.95),rgba(34,181,115,.4) 42%,rgba(34,181,115,.14) 75%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+@media(hover:hover){.ga-sc:hover{transform:translateY(-3px)}.ga-sc:hover::before{opacity:1}}
+.ga-sc[data-press]{transform:translateY(-1px) scale(.985);transition-duration:.12s}
+.ga-sc[data-press]::before,.ga-sc[data-press]::after{opacity:1}
+/* 누르고 떼는 반응: 버튼·필터·행·세션 */
+.ga-presets button{transition:background-color .15s,border-color .15s,color .15s,transform .14s var(--ga-ease)}
+.ga-btn,.ga-rbtn{transition:border-color .15s,color .15s,transform .14s var(--ga-ease)}
+.ga-presets button:active,.ga-btn:active,.ga-rbtn:active{transform:scale(.95)}
+.ga-fbar{transition:opacity .2s,background-color .2s,box-shadow .2s,transform .14s var(--ga-ease)}
+.ga-fbar:active{transform:scale(.99)}
+.ga-sess li button:active{transform:scale(.985)}
+.ga-table tbody tr.is-link:active td,.ga-table tbody tr.is-click:active td{background:rgba(34,181,115,.16)}
+/* 차트 점: 누르면 파동이 퍼진다 (JS 가 ::after 를 애니메이션) */
+.ga-tc-dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--c);opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]){animation:none}.ga-ripple{display:none}.ga-tab-ind{transition:none}.ga-sc:hover,.ga-sc[data-press]{transform:none}.ga-sc::before,.ga-sc::after,.ga-fbar,.ga-presets button,.ga-btn,.ga-rbtn{transition:none}.ga-presets button:active,.ga-btn:active,.ga-rbtn:active,.ga-fbar:active,.ga-sess li button:active{transform:none}}
 `;

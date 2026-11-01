@@ -69,9 +69,33 @@ export default function GaDashboard({ scope }: { scope: string }) {
   // 한 번이라도 열어 본 탭 — 이 탭들만 마운트해 두고 숨긴다
   const [visited, setVisited] = useState<ReadonlySet<TabKey>>(() => new Set([tab]));
   const tabRef = useRef<TabKey>(tab);
-  const pickTab = useCallback((k: TabKey) => {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const rippleRef = useRef<HTMLElement>(null);
+  const pickTab = useCallback((k: TabKey, btn?: HTMLElement) => {
     // 탭 줄(표시기·선택 상태)과 본문 전환은 한 번에(동기) 렌더한다.
     // (표시기를 먼저 그리고 본문을 다음 작업에서 렌더하는 두 단계 방식은 본문이 더 늦게 나와 오히려 끊겨 보여 쓰지 않는다 — 측정 결과 참고)
+    // 메뉴 ↔ 콘텐츠 연결 모션 (레이아웃을 읽는 것은 상태를 바꾸기 전 한 번뿐이라 비용이 없다):
+    //  · 새 화면은 이동 방향(오른쪽 탭이면 오른쪽에서)으로 살짝 밀려 들어오며 부드럽게 안착한다 — 방향은 루트 속성으로만 알린다.
+    //  · 눌린 탭 위치에서 빛이 번져 콘텐츠 영역 위쪽을 훑고 사라진다 — 작은 요소 하나의 transform/opacity 뿐이다.
+    if (k !== tabRef.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const dir = TABS.findIndex((t) => t.key === k) > TABS.findIndex((t) => t.key === tabRef.current) ? "r" : "l";
+      rootRef.current?.setAttribute("data-dir", dir);
+      const stage = stageRef.current;
+      const blob = rippleRef.current;
+      if (stage && blob && btn) {
+        const s = stage.getBoundingClientRect();
+        const b = btn.getBoundingClientRect();
+        const half = blob.offsetWidth / 2;
+        const x = b.left + b.width / 2 - s.left - half;
+        blob.animate(
+          [
+            { transform: `translate3d(${x}px,0,0) scale(.3)`, opacity: 0.95 },
+            { transform: `translate3d(${x + (dir === "r" ? 40 : -40)}px,0,0) scale(1.5)`, opacity: 0 },
+          ],
+          { duration: 640, easing: "cubic-bezier(.16,1,.3,1)" },
+        );
+      }
+    }
     tabRef.current = k;
     setTab(k);
     setVisited((v) => (v.has(k) ? v : new Set(v).add(k)));
@@ -129,6 +153,68 @@ export default function GaDashboard({ scope }: { scope: string }) {
     const edge = sticky.getBoundingClientRect().bottom + 8;
     if (panel.getBoundingClientRect().top < edge) window.scrollTo({ top: window.scrollY + panel.getBoundingClientRect().top - edge, behavior: "auto" });
   }, [tab]);
+
+  // 인터랙티브 글래스: 루트 한 곳에서 포인터를 받아 KPI 카드(.ga-sc)의 빛 위치(--mx/--my)만 프레임당 한 번 갱신한다 (React 상태 없음).
+  //  · 마우스: 커서를 따라 반사광·테두리 하이라이트가 움직인다. 나가면 CSS 전환으로 부드럽게 꺼진다.
+  //  · 터치: 호버가 없으므로 누른 지점에서 빛이 켜지고 손을 떼면 꺼진다 (data-press).
+  //  · 차트: 누르면 점에서 파동이 퍼진다.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let raf = 0;
+    let card: HTMLElement | null = null;
+    let px = 0;
+    let py = 0;
+    let pressed: HTMLElement | null = null;
+    const place = () => {
+      raf = 0;
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${px - r.left}px`);
+      card.style.setProperty("--my", `${py - r.top}px`);
+    };
+    const track = (c: HTMLElement, x: number, y: number) => {
+      card = c;
+      px = x;
+      py = y;
+      if (!raf) raf = requestAnimationFrame(place);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || reduce.matches) return;
+      const c = (e.target as Element).closest<HTMLElement>(".ga-sc");
+      if (c) track(c, e.clientX, e.clientY);
+    };
+    const release = () => {
+      pressed?.removeAttribute("data-press");
+      pressed = null;
+    };
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as Element;
+      const c = t.closest<HTMLElement>(".ga-sc");
+      if (c) {
+        if (!reduce.matches) track(c, e.clientX, e.clientY);
+        c.setAttribute("data-press", "");
+        pressed = c;
+      }
+      if (!reduce.matches && t.closest(".ga-tc [data-ga-plot]")) {
+        t.closest(".ga-tc")?.querySelectorAll<HTMLElement>(".ga-tc-dot").forEach((d) => {
+          d.animate([{ transform: "scale(1)", opacity: 0.8 }, { transform: "scale(3.2)", opacity: 0 }], { duration: 520, easing: "cubic-bezier(.16,1,.3,1)", pseudoElement: "::after" });
+        });
+      }
+    };
+    root.addEventListener("pointermove", onMove, { passive: true });
+    root.addEventListener("pointerdown", onDown, { passive: true });
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", release);
+    return () => {
+      root.removeEventListener("pointermove", onMove);
+      root.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("pointercancel", release);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   // 사이트 상단 헤더(sticky) 높이만큼 비워서 고정 헤더가 그 밑에 붙게 한다
   useEffect(() => {
@@ -285,7 +371,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
           <div className="ga-tabs" role="tablist" aria-label="분석 항목" ref={tabsRef}>
             <span className="ga-tab-ind" ref={indRef} aria-hidden="true" />
             {TABS.map((t) => (
-              <button key={t.key} type="button" role="tab" data-k={t.key} aria-selected={tab === t.key} onClick={() => pickTab(t.key)}>
+              <button key={t.key} type="button" role="tab" data-k={t.key} aria-selected={tab === t.key} onClick={(e) => pickTab(t.key, e.currentTarget)}>
                 {t.label}
               </button>
             ))}
@@ -330,13 +416,18 @@ export default function GaDashboard({ scope }: { scope: string }) {
         </div>
       )}
 
-      {TABS.map((t) =>
-        visited.has(t.key) ? (
-          <KeepAlive key={t.key} active={tab === t.key}>
-            {content(t.key)}
-          </KeepAlive>
-        ) : null,
-      )}
+      <div className="ga-stage" ref={stageRef}>
+        <i className="ga-ripple" aria-hidden="true">
+          <b ref={rippleRef} />
+        </i>
+        {TABS.map((t) =>
+          visited.has(t.key) ? (
+            <KeepAlive key={t.key} active={tab === t.key}>
+              {content(t.key)}
+            </KeepAlive>
+          ) : null,
+        )}
+      </div>
 
       <p className="ga-note">
         기간 리포트는 GA 집계 특성상 최대 24~48시간 지연될 수 있음

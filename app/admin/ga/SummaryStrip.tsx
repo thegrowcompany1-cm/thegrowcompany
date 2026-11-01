@@ -5,7 +5,7 @@
 //  · 20초 이상 머문 비율은 자체 방문 추적 기준이다 (같은 세션+경로 3초 묶음 방문 중 duration_sec >= 20).
 //    자체 추적 데이터가 없는 기간은 GA 참여율로 대체하고 "(GA 기준)" 을 붙인다.
 
-import { memo, useCallback, useMemo, useRef, type CSSProperties, type PointerEvent as RPointerEvent } from "react";
+import { memo, useMemo, type CSSProperties } from "react";
 import { todayKst } from "@/lib/gaRange";
 import { buildChannelCompare } from "@/lib/gaInsights";
 import type { ReportPayload } from "@/lib/gaTypes";
@@ -81,25 +81,12 @@ function SummaryStrip({ report, compare, loading, from, to }: { report: ReportPa
   const sparkDays = partial ? days.slice(0, -1) : days;
   const sparkDates = sparkDays.map((d) => d.date);
   const sparkCap = `${sparkDays.length}일 추이${partial ? " · 오늘 제외" : ""}`;
-  // 마우스가 카드 위를 움직이면 스포트라이트 위치(--mx/--my)만 프레임당 한 번 갱신한다 (터치는 제외)
-  const spot = useRef(0);
-  const onMove = useCallback((e: RPointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === "touch" || spot.current) return;
-    const card = (e.target as HTMLElement).closest<HTMLElement>(".ga-sc");
-    if (!card) return;
-    const { clientX, clientY } = e;
-    spot.current = requestAnimationFrame(() => {
-      spot.current = 0;
-      const r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", `${clientX - r.left}px`);
-      card.style.setProperty("--my", `${clientY - r.top}px`);
-    });
-  }, []);
+  // 카드 위 빛 추적(--mx/--my)은 GaDashboard 루트에서 한 번에 처리한다
   const skel = (w: number) => <span className="ga-skel ga-sc-skel" style={{ width: w }} aria-hidden="true" />;
 
   return (
     <section aria-label="오늘 한눈에" className={loading ? "ga-strip-wrap is-stale" : "ga-strip-wrap"}>
-      <div className="ga-strip" onPointerMove={onMove}>
+      <div className="ga-strip">
         <div className="ga-sc is-live" style={{ "--i": 0 } as CSSProperties}>
           <p className="ga-sc-l"><span className="ga-dot-s" aria-hidden="true" />지금 접속 (실시간)</p>
           <p className="ga-sc-v is-live">{rt === null ? skel(70) : <><CountUp value={rt} format={fmtInt} /><small>명</small></>}</p>
