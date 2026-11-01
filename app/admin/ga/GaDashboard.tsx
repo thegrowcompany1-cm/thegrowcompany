@@ -80,7 +80,6 @@ export default function GaDashboard({ scope }: { scope: string }) {
     else go();
   }, []);
   useEffect(() => () => window.clearTimeout(warmTimer.current), []);
-  const curtainRef = useRef<HTMLElement>(null);
   const pickTab = useCallback((k: TabKey) => {
     // 탭 줄(표시기·선택 상태)과 본문 전환은 한 번에(동기) 렌더한다.
     // (표시기를 먼저 그리고 본문을 다음 작업에서 렌더하는 두 단계 방식은 본문이 더 늦게 나와 오히려 끊겨 보여 쓰지 않는다 — 측정 결과 참고)
@@ -334,18 +333,6 @@ export default function GaDashboard({ scope }: { scope: string }) {
       snapPill();
       return;
     }
-    // 화면 등장: 막이 새 화면을 덮은 채 시작해 위에서 아래로 걷힌다 (뷰포트 한 장 크기의 transform 하나 — 아래 표·차트는 애니메이션 없음)
-    const cur = curtainRef.current;
-    if (cur) {
-      cur.getAnimations().forEach((a) => a.cancel());
-      cur.animate(
-        [
-          { transform: "translate3d(0,-170px,0)", opacity: 1 },
-          { transform: "translate3d(0,100%,0)", opacity: 1 },
-        ],
-        { duration: 540, easing: "cubic-bezier(.2,.75,.25,1)" },
-      );
-    }
     cancelAnimationFrame(s.raf);
     const from1 = s.x1;
     const from2 = s.x2;
@@ -495,7 +482,6 @@ export default function GaDashboard({ scope }: { scope: string }) {
       )}
 
       <div className="ga-stage">
-        <i className="ga-curtain" ref={curtainRef} aria-hidden="true" />
         {TABS.map((t) =>
           visited.has(t.key) ? (
             <KeepAlive key={t.key} active={tab === t.key}>

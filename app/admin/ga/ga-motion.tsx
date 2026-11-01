@@ -19,13 +19,17 @@ export function CountUp({ value, format, ms = 600 }: { value: number; format: (n
   const raf = useRef(0);
   const active = useTabActive();
 
+  const wasActive = useRef(false);
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const prev = shown.current;
+    // 탭에 다시 들어온 순간(비활성 → 활성)에는 0 에서 다시 센다. 폴링·기간 변경으로 값만 바뀐 경우는 이전 값에서 새 값으로만 움직인다.
+    const reentered = active && !wasActive.current && prev !== null;
+    wasActive.current = active;
     cancelAnimationFrame(raf.current);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prev === value) {
+    if (prev === value && !reentered) {
       el.textContent = format(value);
       return;
     }
@@ -34,7 +38,7 @@ export function CountUp({ value, format, ms = 600 }: { value: number; format: (n
       el.textContent = format(value);
       return;
     }
-    const from = prev ?? 0;
+    const from = reentered && prev === value ? 0 : prev ?? 0;
     const t0 = performance.now();
     const step = (now: number) => {
       const p = Math.min(1, (now - t0) / ms);

@@ -702,8 +702,6 @@ export const GA_STYLE = `
 .ga-tab-ind i{position:absolute;inset:0;display:block}
 .ga-tab-ind i:first-child{background:#1f6a47}
 .ga-tab-ind i:last-child{background:#183a2a}
-/* 화면 등장 ① 막: 새 화면이 열리는 순간 콘텐츠 영역 위를 덮었다가 위에서 아래로 걷힌다 (뷰포트 한 장 크기 transform 하나 — 표·차트는 애니메이션 없음) */
-.ga-curtain{position:absolute;left:0;right:0;top:0;height:calc(100vh + 170px);pointer-events:none;z-index:4;opacity:0;transform:translate3d(0,100%,0);background:linear-gradient(180deg,rgba(17,17,17,0) 0,#111 170px,#111 100%);will-change:transform}
 /* 화면 등장 ② 제목이 왼쪽에서 오른쪽으로 드러나고 ③ 핵심 지표가 이어서 떠오른다 — 작은 요소만 움직인다 (표·차트 본문은 제외) */
 .ga-panel,.ga-panel:not([hidden]){animation:none}
 .ga-panel:not([hidden]) .ga-h,.ga-panel:not([hidden]) .ga-kpi-l{animation:ga-title-in .56s cubic-bezier(.22,1,.36,1) .1s backwards}
@@ -729,7 +727,7 @@ export const GA_STYLE = `
 .ga-table tbody tr.is-link:active td,.ga-table tbody tr.is-click:active td{background:rgba(34,181,115,.16)}
 /* 차트 점: 누르면 파동이 퍼진다 (JS 가 ::after 를 애니메이션) */
 .ga-tc-dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--c);opacity:0;pointer-events:none}
-@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]) .ga-h,.ga-panel:not([hidden]) .ga-kpi-l,.ga-panel:not([hidden]) .ga-insight,.ga-panel:not([hidden]) .ga-fsel,.ga-panel:not([hidden]) .ga-live-num,.ga-panel:not([hidden]) .ga-sc{animation:none}.ga-curtain{display:none}.ga-tab-ind{transition:none}.ga-sc:hover,.ga-sc[data-press]{transform:none}.ga-sc::before,.ga-sc::after,.ga-fbar,.ga-presets button,.ga-btn,.ga-rbtn{transition:none}.ga-presets button:active,.ga-btn:active,.ga-rbtn:active,.ga-fbar:active,.ga-sess li button:active{transform:none}}
+@media(prefers-reduced-motion:reduce){.ga-panel:not([hidden]) .ga-h,.ga-panel:not([hidden]) .ga-kpi-l,.ga-panel:not([hidden]) .ga-insight,.ga-panel:not([hidden]) .ga-fsel,.ga-panel:not([hidden]) .ga-live-num,.ga-panel:not([hidden]) .ga-sc{animation:none}.ga-tab-ind{transition:none}.ga-sc:hover,.ga-sc[data-press]{transform:none}.ga-sc::before,.ga-sc::after,.ga-fbar,.ga-presets button,.ga-btn,.ga-rbtn{transition:none}.ga-presets button:active,.ga-btn:active,.ga-rbtn:active,.ga-fbar:active,.ga-sess li button:active{transform:none}}
 /* 채워지는 연출 타임라인: 0.1s 막 → 0.3s 제목·카드 윤곽 → 0.6s KPI·카드 완성 → 1.2s 차트·퍼널 완료. 카드는 opacity 만, 면 차트는 왼쪽→오른쪽 clip */
 @keyframes ga-area-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 .ga-panel.is-fresh .ga-card{animation:ga-panel-in .32s ease-out both}
@@ -742,5 +740,21 @@ export const GA_STYLE = `
 .ga-tc-part{animation:ga-fade-in .5s ease-out .8s both}
 .ga-panel.is-fresh .ga-fbar-track i{animation:ga-grow .6s var(--ga-ease) both;animation-delay:calc(.5s + var(--fi,0)*60ms)}
 .ga-fbar:nth-child(1){--fi:0}.ga-fbar:nth-child(2){--fi:1}.ga-fbar:nth-child(3){--fi:2}.ga-fbar:nth-child(4){--fi:3}.ga-fbar:nth-child(5){--fi:4}.ga-fbar:nth-child(6){--fi:5}.ga-fbar:nth-child(7){--fi:6}.ga-fbar:nth-child(8){--fi:7}.ga-fbar:nth-child(n+9){--fi:8}
+@media(prefers-reduced-motion:reduce){.ga-panel.is-fresh .ga-card,.ga-tc-line,.ga-tc-area,.ga-tc-part,.ga-panel.is-fresh .ga-fbar-track i{animation:none}}
+/* 막 없이 새 화면 구조(제목·카드 틀·스켈레톤)가 0.1초부터 보이고 0.3초에 자리 잡는다 — opacity 와 작은 요소의 짧은 이동만 */
+@keyframes ga-title-in{from{clip-path:inset(0 45% 0 0);opacity:.4}to{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes ga-metric-in{from{opacity:.35;transform:translate3d(0,6px,0)}to{opacity:1;transform:none}}
+@keyframes ga-card-in{from{opacity:.5}to{opacity:1}}
+.ga-panel:not([hidden]) .ga-h,.ga-panel:not([hidden]) .ga-kpi-l{animation:ga-title-in .3s cubic-bezier(.22,1,.36,1) backwards}
+.ga-panel:not([hidden]) .ga-insight,.ga-panel:not([hidden]) .ga-fsel,.ga-panel:not([hidden]) .ga-live-num{animation:ga-metric-in .32s cubic-bezier(.22,1,.36,1) .04s backwards}
+.ga-panel:not([hidden]) .ga-sc{animation:ga-metric-in .34s cubic-bezier(.22,1,.36,1) calc(.02s + var(--i,0)*35ms) backwards}
+.ga-panel.is-fresh .ga-card{animation:ga-card-in .3s ease-out both}
+.ga-panel.is-fresh .ga-card:nth-child(1){animation-delay:0s}
+.ga-panel.is-fresh .ga-card:nth-child(2){animation-delay:.05s}
+.ga-panel.is-fresh .ga-card:nth-child(3){animation-delay:.1s}
+.ga-panel.is-fresh .ga-card:nth-child(n+4){animation-delay:.15s}
+.ga-tc-line,.ga-tc-area{animation-delay:.3s}
+.ga-tc-part{animation-delay:.6s}
+.ga-panel.is-fresh .ga-fbar-track i{animation-delay:calc(.3s + var(--fi,0)*60ms)}
 @media(prefers-reduced-motion:reduce){.ga-panel.is-fresh .ga-card,.ga-tc-line,.ga-tc-area,.ga-tc-part,.ga-panel.is-fresh .ga-fbar-track i{animation:none}}
 `;
