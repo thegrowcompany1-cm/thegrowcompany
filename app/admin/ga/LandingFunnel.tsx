@@ -23,6 +23,14 @@ type FunnelRes = {
 type ExitsRes = { ok: true; sessions: number; exited: number; top: { path: string; section: string; count: number }[] };
 
 const FUNNEL_MIN = 30;
+
+/**
+ * 퍼널 API 주소 — 목록(path 없음)과 상세(path 있음)가 이 함수 하나로 만들어진다.
+ * 서버는 path 가 없으면 경로 목록만, 있어야 섹션 도달 상세(rows)를 주므로 상세 요청에는 path 가 반드시 들어가야 하고,
+ * 랜딩 표의 미리 받기·탭 안의 상세 요청이 같은 주소(=같은 캐시 키)를 쓰도록 한 곳에서 만든다.
+ */
+export const funnelUrl = (from: string, to: string, path?: string) =>
+  `/api/admin/track?view=funnel&from=${from}&to=${to}${path ? `&path=${encodeURIComponent(path)}` : ""}`;
 const secLabel = (s: string | null) => (s ? (TRACK_SECTION_LABEL[s] ? `${TRACK_SECTION_LABEL[s]}(${s})` : s) : "-");
 
 export default function LandingFunnel({ from, to, pick: extPick, onPick }: { from: string; to: string; pick?: string; onPick?: (path: string) => void }) {
@@ -43,11 +51,10 @@ export default function LandingFunnel({ from, to, pick: extPick, onPick }: { fro
   // 선택한 구간(섹션) — 랜딩이 바뀌면 자동으로 해제된다
   const [selSt, setSelSt] = useState<{ path: string; sec: string } | null>(null);
   const active = useTabActive();
-  const base = `/api/admin/track?view=funnel&from=${from}&to=${to}`;
-  const listRes = useGaData<FunnelRes>(base, { staleMs: 60_000, keepPrevious: true, netMsg: "퍼널을 불러오지 못했습니다." });
+  const listRes = useGaData<FunnelRes>(funnelUrl(from, to), { staleMs: 60_000, keepPrevious: true, netMsg: "퍼널을 불러오지 못했습니다." });
   const paths = listRes.data?.paths;
   const funnelPath = pick || paths?.[0]?.path || "";
-  const detailRes = useGaData<FunnelRes>(funnelPath ? `${base}&path=${encodeURIComponent(funnelPath)}` : null, {
+  const detailRes = useGaData<FunnelRes>(funnelPath ? funnelUrl(from, to, funnelPath) : null, {
     staleMs: 60_000,
     keepPrevious: true,
     netMsg: "퍼널을 불러오지 못했습니다.",
@@ -102,6 +109,7 @@ export default function LandingFunnel({ from, to, pick: extPick, onPick }: { fro
                 {pathList.find((p) => p.path === funnelPath) && (
                   <span className="ga-sub">세션 {num(pathList.find((p) => p.path === funnelPath)!.sessions)}</span>
                 )}
+                {settling && <span className="ga-sub ga-loading" role="status">불러오는 중</span>}
               </span>
             </div>
             {from < SECTION_TRACK_FIX_DATE && (

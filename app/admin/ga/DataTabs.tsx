@@ -3,7 +3,7 @@
 // 랜딩 성과 · 검색·SEO · AI 유입(AEO) · 채널 비교 탭
 // 데이터: 기간 리포트(report, GaDashboard 가 불러온 것) + 서치콘솔(/api/admin/gsc, 검색·SEO 탭을 열 때만 호출)
 
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   GSC_OPP_MIN_IMPRESSIONS,
   GSC_OPP_POS_MAX,
@@ -14,17 +14,53 @@ import {
 } from "@/lib/gaTypes";
 import { isWeekend, weekdayKo } from "@/lib/gaRange";
 import { VERDICT_LABEL, aiInsight, buildChannelCompare, channelInsight, judgeLanding, landingInsight, searchInsight } from "@/lib/gaInsights";
-import LandingFunnel from "./LandingFunnel";
+import LandingFunnel, { funnelUrl } from "./LandingFunnel";
 import TrendChart, { createHoverLink } from "./TrendChartSvg";
 import { BarNum, Empty, ErrBox, Insight, Skel, mmss, num, pct } from "./ga-shared";
-import { useGaData } from "./useGaData";
+import { prefetchGa, useGaData } from "./useGaData";
 
 function Badge({ row }: { row: LandingRow }) {
   const v = judgeLanding(row.avgEngagementSec, row.sessions);
   return <span className={`ga-badge ${v}`}>{VERDICT_LABEL[v]}</span>;
 }
 
-function LandingTable({ rows, empty, selected, tracked, onPickRow }: { rows: LandingRow[]; empty: string; selected?: string; tracked?: ReadonlySet<string>; onPickRow?: (path: string) => void }) {
+/** 랜딩 표의 한 행 — 선택이 바뀔 때 선택이 바뀐 두 행만 다시 그리도록 분리·메모한다 (행마다 막대·배지 포함 43행을 매번 다시 그리지 않는다) */
+const LandingRowView = memo(function LandingRowView({ r, maxS, sumS, link, sel, onPickRow, onIntent }: { r: LandingRow; maxS: number; sumS: number; link: boolean; sel: boolean; onPickRow?: (path: string) => void; onIntent?: (path: string | null, delay: number) => void }) {
+  return (
+    <tr
+      className={(link ? "is-link" : "") + (sel ? " is-selected" : "")}
+      {...(link
+        ? {
+            tabIndex: 0,
+            role: "button",
+            "aria-pressed": sel,
+            onClick: () => onPickRow?.(r.landing),
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onPickRow?.(r.landing);
+              }
+            },
+            // 고르기 직전의 신호(마우스 머무름·키보드 포커스·누르는 순간)에 그 랜딩의 상세만 미리 받는다
+            onPointerEnter: (e: React.PointerEvent) => e.pointerType === "mouse" && onIntent?.(r.landing, 140),
+            onPointerLeave: () => onIntent?.(null, 0),
+            onPointerDown: () => onIntent?.(r.landing, 0),
+            onFocus: () => onIntent?.(r.landing, 0),
+          }
+        : {})}
+    >
+      <td title={r.landing}>{r.landing}{link && <span className="ga-rowhint">퍼널 보기 ›</span>}</td>
+      <td className="is-key"><BarNum value={r.sessions} max={maxS} sum={sumS} /></td>
+      <td>{num(r.engagedSessions)}</td>
+      <td>{pct(r.engagementRate)}</td>
+      <td>{mmss(r.avgEngagementSec)}</td>
+      <td>{num(r.keyEvents)}</td>
+      <td><Badge row={r} /></td>
+    </tr>
+  );
+});
+
+function LandingTable({ rows, empty, selected, tracked, onPickRow, onIntent }: { rows: LandingRow[]; empty: string; selected?: string; tracked?: ReadonlySet<string>; onPickRow?: (path: string) => void; onIntent?: (path: string | null, delay: number) => void }) {
   if (!rows.length) return <Empty hint="기간을 넓히면 더 많은 데이터가 보입니다">{empty.replace(/[.]$/, "")}</Empty>;
   const maxS = Math.max(0, ...rows.map((r) => r.sessions));
   const sumS = rows.reduce((s, r) => s + r.sessions, 0);
@@ -38,32 +74,7 @@ function LandingTable({ rows, empty, selected, tracked, onPickRow }: { rows: Lan
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr
-              key={r.landing}
-              className={(tracked?.has(r.landing) ? "is-link" : "") + (selected === r.landing ? " is-selected" : "")}
-              {...(tracked?.has(r.landing)
-                ? {
-                    tabIndex: 0,
-                    role: "button",
-                    "aria-pressed": selected === r.landing,
-                    onClick: () => onPickRow?.(r.landing),
-                    onKeyDown: (e: React.KeyboardEvent) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        onPickRow?.(r.landing);
-                      }
-                    },
-                  }
-                : {})}
-            >
-              <td title={r.landing}>{r.landing}{tracked?.has(r.landing) && <span className="ga-rowhint">퍼널 보기 ›</span>}</td>
-              <td className="is-key"><BarNum value={r.sessions} max={maxS} sum={sumS} /></td>
-              <td>{num(r.engagedSessions)}</td>
-              <td>{pct(r.engagementRate)}</td>
-              <td>{mmss(r.avgEngagementSec)}</td>
-              <td>{num(r.keyEvents)}</td>
-              <td><Badge row={r} /></td>
-            </tr>
+            <LandingRowView key={r.landing} r={r} maxS={maxS} sumS={sumS} link={!!tracked?.has(r.landing)} sel={selected === r.landing} onPickRow={onPickRow} onIntent={onIntent} />
           ))}
         </tbody>
       </table>
@@ -237,21 +248,34 @@ function DailyTabImpl({ report, onPickDay }: { report: ReportPayload; onPickDay:
 // ── 랜딩 성과 ────────────────────────────────────────────────────────────────
 function LandingTabImpl({ report, from, to }: { report: ReportPayload; from: string; to: string }) {
   // 랜딩 표의 행을 누르면 아래 섹션 도달 퍼널이 그 랜딩으로 바뀐다 (자체 추적 대상인 랜딩만)
-  const listRes = useGaData<{ ok: true; paths: { path: string; sessions: number }[] }>(`/api/admin/track?view=funnel&from=${from}&to=${to}`, { staleMs: 60_000, keepPrevious: true });
+  const listRes = useGaData<{ ok: true; paths: { path: string; sessions: number }[] }>(funnelUrl(from, to), { staleMs: 60_000, keepPrevious: true });
   const tracked = useMemo(() => new Set((listRes.data?.paths ?? []).map((p) => p.path)), [listRes.data]);
   const [pick, setPick] = useState("");
   const funnelRef = useRef<HTMLDivElement>(null);
-  const onPickRow = (path: string) => {
+  const onPickRow = useCallback((path: string) => {
     setPick(path);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     funnelRef.current?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
-  };
+  }, []);
+  // 선택 의도(마우스를 올려 둠·포커스·누름) → 그 랜딩 하나의 상세만 미리 받는다. 지나가기만 하는 행은 대기 중 취소되어 요청이 나가지 않는다.
+  const intentTimer = useRef(0);
+  const onIntent = useCallback(
+    (path: string | null, delay: number) => {
+      window.clearTimeout(intentTimer.current);
+      if (!path) return;
+      const go = () => prefetchGa(funnelUrl(from, to, path));
+      if (delay > 0) intentTimer.current = window.setTimeout(go, delay);
+      else go();
+    },
+    [from, to],
+  );
+  useEffect(() => () => window.clearTimeout(intentTimer.current), []);
   return (
     <div>
       <section className="ga-card">
         <h2 className="ga-h">랜딩 성과 <span className="ga-sub">· 세션이 시작된 첫 페이지 기준 (쿼리스트링 제외)</span></h2>
         <Insight text={landingInsight(report.landings, "랜딩")} />
-        <LandingTable rows={report.landings} empty="이 기간의 랜딩 데이터가 없습니다." selected={pick} tracked={tracked} onPickRow={onPickRow} />
+        <LandingTable rows={report.landings} empty="이 기간의 랜딩 데이터가 없습니다." selected={pick} tracked={tracked} onPickRow={onPickRow} onIntent={onIntent} />
         <p className="ga-sub" style={{ marginTop: 10 }}>{BADGE_GUIDE}{tracked.size ? " · 퍼널 보기 표시가 있는 행을 누르면 아래 섹션 도달 퍼널이 그 랜딩으로 바뀝니다" : ""}</p>
       </section>
       <div ref={funnelRef} className="ga-funnel-anchor">

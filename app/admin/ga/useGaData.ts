@@ -79,6 +79,15 @@ function load(url: string, maxAge: number, netMsg: string): Promise<void> {
   return p;
 }
 
+/**
+ * 사용자가 곧 열 가능성이 높은 URL 을 미리 받아 둔다 (예: 랜딩 표 행에 마우스를 올려 둔 상태).
+ * 이미 신선한 캐시가 있으면 아무것도 하지 않고, 진행 중이면 그 요청에 합류하므로 실제 클릭과 겹쳐도 요청은 한 번이다.
+ * 한 번에 하나의 URL 만 호출하는 곳에서만 쓴다 (전체 목록을 한꺼번에 미리 받지 않는다).
+ */
+export function prefetchGa(url: string, staleMs = 60_000) {
+  void load(url, staleMs, "네트워크 오류로 데이터를 불러오지 못했습니다.");
+}
+
 export type GaOpts = {
   /** 성공 응답을 재사용하는 시간 (기본 60초) */
   staleMs?: number;

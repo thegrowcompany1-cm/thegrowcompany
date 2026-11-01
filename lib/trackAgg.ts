@@ -39,18 +39,56 @@ const CAP = 20_000;
 export const isMissingTable = (e: DbErr | null) =>
   !!e && (e.code === "42P01" || e.code === "PGRST205" || /does not exist|schema cache/i.test(e.message ?? ""));
 
-/** PostgREST 는 한 번에 1000행까지라 페이지를 넘겨 가며 모은다 */
+/** 페이지를 한꺼번에 요청하는 수 — 예전에는 한 페이지씩 순서대로 기다려 행이 많은 기간일수록 왕복 시간이 그대로 쌓였다 */
+const PAGE_BATCH = 4;
+
+/**
+ * PostgREST 는 한 번에 1000행까지라 페이지를 넘겨 가며 모은다.
+ * 페이지는 PAGE_BATCH 개씩 동시에 요청하고 결과는 페이지 순서대로 이어 붙인다 (순서·내용·상한 동작은 순차 방식과 같다:
+ * 짧은 페이지를 만나면 거기서 끝이고, 오류는 그 앞 페이지까지 모은 행과 함께 돌려준다).
+ */
 export async function fetchAll<T>(
   build: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: DbErr | null }>,
 ): Promise<{ rows: T[]; error: DbErr | null; capped: boolean }> {
   const rows: T[] = [];
-  for (let from = 0; from < CAP; from += PAGE) {
-    const { data, error } = await build(from, from + PAGE - 1);
-    if (error) return { rows, error, capped: false };
-    rows.push(...(data ?? []));
-    if (!data || data.length < PAGE) return { rows, error: null, capped: false };
+  const pages = CAP / PAGE;
+  for (let first = 0; first < pages; first += PAGE_BATCH) {
+    const n = Math.min(PAGE_BATCH, pages - first);
+    const got = await Promise.all(Array.from({ length: n }, (_, i) => build((first + i) * PAGE, (first + i + 1) * PAGE - 1)));
+    for (const { data, error } of got) {
+      if (error) return { rows, error, capped: false };
+      rows.push(...(data ?? []));
+      if (!data || data.length < PAGE) return { rows, error: null, capped: false };
+    }
   }
   return { rows, error: null, capped: true }; // 상한(CAP)까지 읽고도 더 있을 수 있다
+}
+
+/**
+ * 기간 안의 방문 행 전체 — 퍼널(목록·상세)과 이탈 지점이 모두 같은 조회를 쓴다.
+ * 예전에는 랜딩 성과 탭을 열 때, 그리고 랜딩을 고를 때마다 같은 기간의 방문 행을 처음부터 다시 읽었다(요청마다 전체 스캔).
+ * 같은 기간의 조회는 진행 중이면 합류하고, 끝난 뒤 짧은 시간(VISIT_SCAN_TTL_MS) 동안 결과를 재사용한다. 오류는 보관하지 않는다.
+ * 반환 행은 읽기 전용으로만 쓴다(dedupeVisits 는 복사본을 만든다).
+ */
+const VISIT_SCAN_TTL_MS = 15_000;
+const VISIT_SCAN_MAX = 8;
+type VisitScan = { rows: Visit[]; error: DbErr | null; capped: boolean };
+const visitScans = new Map<string, { at: number; p: Promise<VisitScan> }>();
+
+function scanVisits(db: SupabaseClient, since: string, until: string): Promise<VisitScan> {
+  const key = `${since}|${until}`;
+  const hit = visitScans.get(key);
+  if (hit && Date.now() - hit.at < VISIT_SCAN_TTL_MS) return hit.p;
+  const p = fetchAll<Visit>((f, t) =>
+    db.from("visits").select(VISIT_COLS).gte("entered_at", since).lte("entered_at", until).order("entered_at", { ascending: true }).range(f, t),
+  );
+  visitScans.set(key, { at: Date.now(), p });
+  const drop = () => {
+    if (visitScans.get(key)?.p === p) visitScans.delete(key);
+  };
+  p.then((r) => r.error && drop(), drop);
+  while (visitScans.size > VISIT_SCAN_MAX) visitScans.delete(visitScans.keys().next().value as string);
+  return p;
 }
 
 export type FunnelPath = { path: string; sessions: number; tracked: boolean };
@@ -66,10 +104,17 @@ export type FunnelResult =
 
 /** 기간(UTC ISO) 안의 랜딩별 섹션 도달 퍼널. path 가 없으면 경로 목록만. */
 export async function funnelData(db: SupabaseClient, since: string, until: string, path?: string): Promise<FunnelResult> {
-  const pv = await fetchAll<Visit>((f, t) =>
-    db.from("visits").select(VISIT_COLS).gte("entered_at", since).lte("entered_at", until).order("entered_at", { ascending: true }).range(f, t),
-  );
-  if (pv.error) return { error: pv.error };
+  // 방문 행 조회와 (path 가 있으면) 섹션 조회는 서로 의존하지 않으므로 동시에 시작한다 — 예전에는 방문 조회가 끝난 뒤에야 섹션 조회를 시작했다
+  const svPromise = path
+    ? fetchAll<{ session_id: string; section: string }>((f, t) =>
+        db.from("section_views").select("session_id, section").eq("path", path).gte("seen_at", since).lte("seen_at", until).order("seen_at", { ascending: false }).range(f, t),
+      )
+    : null;
+  const pv = await scanVisits(db, since, until);
+  if (pv.error) {
+    svPromise?.catch(() => {});
+    return { error: pv.error };
+  }
   const sessionsByPath = new Map<string, Set<string>>();
   for (const r of dedupeVisits(pv.rows)) {
     if (!sessionsByPath.has(r.path)) sessionsByPath.set(r.path, new Set());
@@ -82,9 +127,7 @@ export async function funnelData(db: SupabaseClient, since: string, until: strin
   if (!path) return { error: null, paths, capped: pv.capped };
 
   const total = sessionsByPath.get(path)?.size ?? 0;
-  const sv = await fetchAll<{ session_id: string; section: string }>((f, t) =>
-    db.from("section_views").select("session_id, section").eq("path", path).gte("seen_at", since).lte("seen_at", until).order("seen_at", { ascending: false }).range(f, t),
-  );
+  const sv = await svPromise!;
   if (sv.error) return { error: sv.error };
   const reached = new Map<string, Set<string>>(); // 직접 기록된 섹션별 세션
   const deepest = new Map<string, number>(); // 세션별 가장 뒤 섹션의 순서 번호
@@ -113,9 +156,7 @@ export type ExitsResult =
 
 /** 기간(UTC ISO) 안의 이탈 지점 Top — (페이지, 마지막으로 본 섹션) 조합 */
 export async function exitsData(db: SupabaseClient, since: string, until: string, limit = 15, now = Date.now()): Promise<ExitsResult> {
-  const all = await fetchAll<Visit>((f, t) =>
-    db.from("visits").select(VISIT_COLS).gte("entered_at", since).lte("entered_at", until).order("entered_at", { ascending: true }).range(f, t),
-  );
+  const all = await scanVisits(db, since, until);
   if (all.error) return { error: all.error };
   const lastBySession = new Map<string, Visit>();
   for (const v of dedupeVisits(all.rows)) lastBySession.set(v.session_id, v); // 오름차순이라 마지막 값이 세션의 마지막 방문

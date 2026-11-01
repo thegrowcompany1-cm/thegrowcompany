@@ -34,7 +34,9 @@ export function KeepAlive({ active, children }: { active: boolean; children: Rea
 
 export type ApiError = { ok: false; code: string; message: string };
 
-export const num = (v: number) => v.toLocaleString("ko-KR");
+// Intl.NumberFormat 은 한 번만 만든다 — Number.prototype.toLocaleString 은 호출마다 포매터를 새로 만들어 표 수백 칸을 그릴 때 눈에 띄게 느리다
+const NF = new Intl.NumberFormat("ko-KR");
+export const num = (v: number) => NF.format(v);
 export const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 /** 초 → "1분 12초" (1분 미만은 "31초") */
 export const mmss = (sec: number) => {
@@ -364,8 +366,8 @@ export const GA_STYLE = `
 .ga-table td:first-child::before{content:none}
 .ga-table tbody tr:hover td{background:none}
 .ga-table tr:not(.is-click):not([data-open="1"]) td:nth-child(n+5){display:none}
-.ga-table tr:not(.is-click):has(td:nth-child(5))::after{content:"탭하여 자세히 보기";display:block;padding-top:6px;font-size:11.5px;font-weight:700;color:#22B573}
-.ga-table tr[data-open="1"]:not(.is-click):has(td:nth-child(5))::after{content:"접기"}
+.ga-table tr:not(.is-click)[data-more]::after{content:"탭하여 자세히 보기";display:block;padding-top:6px;font-size:11.5px;font-weight:700;color:#22B573}
+.ga-table tr[data-open="1"]:not(.is-click)[data-more]::after{content:"접기"}
 .ga-table tr.is-weekend,.ga-table tr.is-weekend td{background:rgba(255,255,255,.06)}
 .ga-mix{margin-left:0}
 }
@@ -565,7 +567,7 @@ export const GA_STYLE = `
 .ga-table tbody td.is-key{font-size:15px}
 .ga-cb{justify-content:flex-start;min-width:0;height:auto;padding:0}
 .ga-cb i{display:none}
-.ga-table tr:not(.is-click):has(td:nth-child(5))::after{grid-column:1/-1}
+.ga-table tr:not(.is-click)[data-more]::after{grid-column:1/-1}
 }
 @media(prefers-reduced-motion:reduce){.ga-spark-dot,.ga-spark svg{animation:none}.ga-select,.ga-table tbody td{transition:none}}
 /* ═══ 인터랙션 v3 — 사용자 행동(호버·탭·선택)과 데이터 변화에 반응하는 움직임. 무한 애니메이션 없음, transform/opacity 위주 ═══ */
@@ -699,11 +701,12 @@ export const GA_STYLE = `
 .ga-ripple{position:absolute;left:0;right:0;top:0;height:260px;overflow:hidden;pointer-events:none;z-index:3;contain:strict}
 .ga-ripple b{position:absolute;left:0;top:-210px;width:420px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(60,214,146,.34),rgba(34,181,115,.12) 55%,transparent);opacity:0;will-change:transform,opacity}
 /* 새 화면: 이동 방향에서 expo-out 으로 안착(.46s) + 불투명도는 더 빨리(.24s). 표·차트 안쪽에는 아무 애니메이션도 걸지 않는다 */
-.ga-panel:not([hidden]){animation:ga-in-xr .46s cubic-bezier(.16,1,.3,1),ga-in-o .24s ease-out}
+.ga-panel:not([hidden]){animation:ga-in-xr .34s cubic-bezier(.16,1,.3,1),ga-in-o .16s ease-out}
 .ga[data-dir="l"] .ga-panel:not([hidden]){animation-name:ga-in-xl,ga-in-o}
-@keyframes ga-in-xr{from{transform:translate3d(28px,8px,0)}to{transform:none}}
-@keyframes ga-in-xl{from{transform:translate3d(-28px,8px,0)}to{transform:none}}
-@keyframes ga-in-o{from{opacity:0}to{opacity:1}}
+@keyframes ga-in-xr{from{transform:translate3d(22px,6px,0)}to{transform:none}}
+@keyframes ga-in-xl{from{transform:translate3d(-22px,6px,0)}to{transform:none}}
+@keyframes ga-in-o{from{opacity:.35}to{opacity:1}}
+.ga-loading{margin-left:8px}
 /* 메뉴 표시기: 살짝 늘어났다 안착하는 탄성 이동 */
 .ga-tab-ind{transition:transform .4s cubic-bezier(.3,1.35,.5,1),width .32s cubic-bezier(.22,1,.36,1),opacity .15s}
 /* KPI 카드: 커서를 따라가는 반사광 + 테두리 하이라이트 + 3px 떠오름 */

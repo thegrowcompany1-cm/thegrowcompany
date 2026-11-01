@@ -69,6 +69,17 @@ export default function GaDashboard({ scope }: { scope: string }) {
   // 한 번이라도 열어 본 탭 — 이 탭들만 마운트해 두고 숨긴다
   const [visited, setVisited] = useState<ReadonlySet<TabKey>>(() => new Set([tab]));
   const tabRef = useRef<TabKey>(tab);
+  // 탭 버튼에 마우스를 잠깐 올려 두거나 키보드로 포커스하면, 아직 열어 보지 않은 탭을 숨긴 채 미리 만들어 둔다 (클릭 직전의 신호).
+  // 그러면 클릭할 때는 이미 만들어진 화면을 보이기만 해서 첫 진입도 재진입처럼 빠르고, 그 탭의 데이터 요청도 그만큼 일찍 시작된다.
+  // 지나가기만 하는 탭은 대기 중에 취소되어 아무것도 만들지 않는다.
+  const warmTimer = useRef(0);
+  const warm = useCallback((k: TabKey, delay: number) => {
+    window.clearTimeout(warmTimer.current);
+    const go = () => setVisited((v) => (v.has(k) ? v : new Set(v).add(k)));
+    if (delay > 0) warmTimer.current = window.setTimeout(go, delay);
+    else go();
+  }, []);
+  useEffect(() => () => window.clearTimeout(warmTimer.current), []);
   const stageRef = useRef<HTMLDivElement>(null);
   const rippleRef = useRef<HTMLElement>(null);
   const pickTab = useCallback((k: TabKey, btn?: HTMLElement) => {
@@ -230,19 +241,26 @@ export default function GaDashboard({ scope }: { scope: string }) {
 
   // 모바일 카드형 표: 각 칸에 열 제목(data-label)을 붙이고, 카드를 누르면 나머지 지표를 펼친다
   // (카드형 표는 560px 이하에서만 쓰이므로 그때만 라벨을 붙이고, 변경은 프레임당 한 번으로 모은다)
+  // 이미 처리한 행은 WeakSet 으로 건너뛴다 — 예전에는 DOM 이 바뀔 때마다 모든 탭의 모든 칸을 다시 훑어 첫 진입이 느렸다.
+  // 5칸 이상인 행에는 data-more 를 붙여 "탭하여 자세히 보기" 표시를 CSS 속성 선택자로 처리한다 (:has() 는 행마다 하위 구조를 다시 평가해 비싸다).
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const mq = window.matchMedia("(max-width: 560px)");
     let raf = 0;
+    const done = new WeakSet<Element>();
     const label = () => {
       raf = 0;
       if (!mq.matches) return;
       root.querySelectorAll("table.ga-table").forEach((t) => {
-        const heads = [...t.querySelectorAll("thead th")].map((th) => th.textContent?.trim() ?? "");
+        let heads: string[] | null = null;
         t.querySelectorAll("tbody tr").forEach((tr) => {
+          if (done.has(tr)) return;
+          done.add(tr);
+          heads ??= [...t.querySelectorAll("thead th")].map((th) => th.textContent?.trim() ?? "");
+          if (tr.children.length >= 5) tr.setAttribute("data-more", "");
           [...tr.children].forEach((td, i) => {
-            if (heads[i] && td.getAttribute("data-label") !== heads[i]) td.setAttribute("data-label", heads[i]);
+            if (heads![i] && td.getAttribute("data-label") !== heads![i]) td.setAttribute("data-label", heads![i]);
           });
         });
       });
@@ -371,7 +389,7 @@ export default function GaDashboard({ scope }: { scope: string }) {
           <div className="ga-tabs" role="tablist" aria-label="분석 항목" ref={tabsRef}>
             <span className="ga-tab-ind" ref={indRef} aria-hidden="true" />
             {TABS.map((t) => (
-              <button key={t.key} type="button" role="tab" data-k={t.key} aria-selected={tab === t.key} onClick={(e) => pickTab(t.key, e.currentTarget)}>
+              <button key={t.key} type="button" role="tab" data-k={t.key} aria-selected={tab === t.key} onClick={(e) => pickTab(t.key, e.currentTarget)} onPointerEnter={(e) => e.pointerType === "mouse" && warm(t.key, 160)} onPointerLeave={() => window.clearTimeout(warmTimer.current)} onFocus={() => warm(t.key, 0)}>
                 {t.label}
               </button>
             ))}
