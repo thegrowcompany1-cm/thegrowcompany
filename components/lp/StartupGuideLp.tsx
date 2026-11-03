@@ -121,7 +121,6 @@ const STYLE = `
 .lpg-badge{display:table;margin:0 auto 16px;padding:6px 14px;border-radius:50px;background:rgba(34,181,115,.16);border:1px solid rgba(34,181,115,.55);color:var(--gl);font-size:14px;font-weight:800;letter-spacing:-0.01em}
 .lpg-hero .lpg-mega{font-size:clamp(26px,8.2vw,34px);line-height:1.34;word-break:keep-all}
 @media(max-width:480px){.lpg-hero .lpg-mega{font-size:clamp(23px,7.2vw,30px);line-height:1.3}}
-@media(max-height:760px){.lpg-hero .lpg-mega{line-height:1.22}.lpg-hero .lpg-badge{margin-bottom:10px}.lpg-hero .lpg-hero-sub{margin-top:8px}}
 .lpg-hero-sub{margin-top:14px;font-size:15.5px;font-weight:600;line-height:1.55;text-align:center;color:rgba(255,255,255,.8)}
 .lpg-ask0{margin-top:22px;font-size:17px;font-weight:800;text-align:center;letter-spacing:-0.02em}
 .lpg-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px}
@@ -592,6 +591,8 @@ export default function StartupGuideLp() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [chipsVisible, setChipsVisible] = useState(true);
+  const barHidden = formVisible || chipsVisible;
 
   const rootRef = useRef<HTMLDivElement>(null);
   const formSecRef = useRef<HTMLElement>(null);
@@ -634,6 +635,15 @@ export default function StartupGuideLp() {
     if (typeof IntersectionObserver === "undefined" || !formSecRef.current) return;
     const io = new IntersectionObserver((entries) => setFormVisible(entries[entries.length - 1].isIntersecting), { threshold: 0.02 });
     io.observe(formSecRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  // 하단 고정 바 — 히어로 걱정 칩이 화면에 보이는 동안은 숨김(칩이 지나가면 표시)
+  useEffect(() => {
+    const el = document.getElementById("lpg-chips");
+    if (typeof IntersectionObserver === "undefined" || !el) return;
+    const io = new IntersectionObserver((entries) => setChipsVisible(entries[entries.length - 1].isIntersecting), { threshold: 0 });
+    io.observe(el);
     return () => io.disconnect();
   }, []);
 
@@ -792,7 +802,7 @@ export default function StartupGuideLp() {
             계약하기 전에 반드시 확인해야 할 창업 계획을 함께 검토해 드립니다.
           </p>
           <p className="lpg-ask0" id="lpg-ask0">지금 가장 걱정되는 건 무엇인가요?</p>
-          <div className="lpg-chips" role="group" aria-labelledby="lpg-ask0">
+          <div className="lpg-chips" id="lpg-chips" role="group" aria-labelledby="lpg-ask0">
             {CONCERNS.map((c) => (
               <button key={c.label} type="button" className={`lpg-chip${concern === c.label ? " is-on" : ""}`} aria-pressed={concern === c.label} onClick={() => pickConcern(c)}>
                 {c.label}
@@ -1213,8 +1223,8 @@ export default function StartupGuideLp() {
       <div className="lpg-bar-space" aria-hidden="true" />
 
       {/* 하단 고정 바 — 첫 화면부터 보이고, 신청 폼이 화면에 보이면 숨김 */}
-      <div className={`lpg-bar${formVisible ? " is-hidden" : ""}`} aria-hidden={formVisible}>
-        <button type="button" className="lpg-btn" onClick={scrollToForm} tabIndex={formVisible ? -1 : 0}>
+      <div className={`lpg-bar${barHidden ? " is-hidden" : ""}`} aria-hidden={barHidden}>
+        <button type="button" className="lpg-btn" onClick={scrollToForm} tabIndex={barHidden ? -1 : 0}>
           {CTA_LABEL}
         </button>
       </div>
