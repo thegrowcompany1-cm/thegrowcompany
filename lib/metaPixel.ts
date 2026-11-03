@@ -20,6 +20,7 @@ export const PIXEL_MAP: Record<string, string> = {
   "/lp/startup": "1556215626187598", // 메타 광고 전용 창업 랜딩 (정확 일치, /consulting/startup 과 같은 픽셀)
   "/lp/startup-guide": "1556215626187598", // 메타 광고 전용 창업 불안 해소형 랜딩 (정확 일치, 같은 픽셀)
   "/consulting/outsourcing": "747849161675945", // 매장 위탁
+  "/consulting/outsourcing-v2": "747849161675945", // 매장 위탁 B안(v2) — 같은 픽셀, 경로가 정확히 일치해야 한다
   "/edu/gx-class": "1112480951354351", // 그룹운동 비즈니스 클래스
   "/consulting/diagnosis": "1259348289492935", // 진단 컨설팅 — 허브 + 멘토 상세 8개 (prefix)
   "/edu/diagnostic-consultant": "922401360805621", // 진단 컨설턴트 양성과정
