@@ -353,6 +353,45 @@ const WT_MID_CTA_GRAY_HTML = `<div class="wt-cta-mid wt-cta-mid--gray">
   <button type="button" class="wt-vid-cta" data-cta="mid_aftercare" onclick="wtCta(this)">무료 방문 진단 신청하기</button>
 </div>`;
 
+// ─── 배포 전 확인 필요 항목 (오너 확인 전까지 근거 미확인) ───────────────────────────
+//  [실적 수치] 750+ 매장 운영 경험 / 540+ 현장 상주 / 평균 매출 상승률 130% / 평균 상승 3,870만 / 최대 상승 1억 800만
+//    · 출처는 2026-01 리뉴얼 때의 내부 자료(볼트 기록)뿐이고 정의·산정 기준·대상 기간·증빙이 확인되지 않았다.
+//    · 임시 비노출: Vercel 환경변수 NEXT_PUBLIC_WT_V2_HIDE_STATS=1 로 두고 재배포하면 아래 수치 박스만 사라진다
+//      (코드 수정·커밋 불필요, 카카오톡 후기 이미지와 나머지 구성은 그대로). 값을 지우고 재배포하면 복구된다.
+//  [무료 방문 진단] 제공 범위·방문 가능 지역·1회 한도의 실제 정책 확인 필요 (문구는 "신청 후 안내"로만 적음)
+//  [위탁 기간] "1개월 기준, 보통 1개월~45일" — 실제 계약 기간(과거 기록은 30~60일)과 일치하는지 확인 필요
+//  [수수료·사후관리] "후불 방식, 산정 기준은 진단 후 계약서 명시" — 전체 매출 기준인지 상승분 기준인지, 종료 후 점검 범위 확인 필요
+//  [개인정보 동의] 서버(Apps Script) 쪽 필수 동의 검증은 확인하지 못했다. 보관기간 문구는 개인정보처리방침 기준.
+const HIDE_UNVERIFIED_STATS = process.env.NEXT_PUBLIC_WT_V2_HIDE_STATS === "1";
+
+// 실적 수치 박스 (근거 미확인 — 위 주석 참고)
+const WT_STATS_HTML = `  <div class="evidence-stats-box">
+    <p class="evidence-stats-label">더그로우 현장 실적</p>
+    <div class="evidence-stats evidence-stats-5">
+      <div class="ev-stat">
+        <div class="ev-stat-num">750+</div>
+        <div class="ev-stat-label">매장 운영 경험</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num">540+</div>
+        <div class="ev-stat-label">현장 상주 실적</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num red">130%</div>
+        <div class="ev-stat-label">평균 매출 상승률</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num">3,870만</div>
+        <div class="ev-stat-label">평균 매출 상승</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num">1억 800만</div>
+        <div class="ev-stat-label">최대 매출 상승</div>
+      </div>
+    </div>
+    <p class="evidence-foot">※ 더그로우 내부 집계 기준이며, 매장별 결과는 상황에 따라 다를 수 있습니다.</p>
+  </div>`;
+
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
 // 아임웹용 위탁 HTML(+<style>+<script>) 전체를 이 백틱 문자열 안에 그대로 붙여넣으세요.
 //
@@ -882,32 +921,7 @@ const DETAIL_HTML = `<style>
     현장 상주로 만들어낸 결과입니다.
   </p>
 
-  <div class="evidence-stats-box">
-    <p class="evidence-stats-label">더그로우 현장 실적</p>
-    <div class="evidence-stats evidence-stats-5">
-      <div class="ev-stat">
-        <div class="ev-stat-num">750+</div>
-        <div class="ev-stat-label">매장 운영 경험</div>
-      </div>
-      <div class="ev-stat">
-        <div class="ev-stat-num">540+</div>
-        <div class="ev-stat-label">현장 상주 실적</div>
-      </div>
-      <div class="ev-stat">
-        <div class="ev-stat-num red">130%</div>
-        <div class="ev-stat-label">평균 매출 상승률</div>
-      </div>
-      <div class="ev-stat">
-        <div class="ev-stat-num">3,870만</div>
-        <div class="ev-stat-label">평균 매출 상승</div>
-      </div>
-      <div class="ev-stat">
-        <div class="ev-stat-num">1억 800만</div>
-        <div class="ev-stat-label">최대 매출 상승</div>
-      </div>
-    </div>
-    <p class="evidence-foot">※ 더그로우 내부 집계 기준이며, 매장별 결과는 상황에 따라 다를 수 있습니다.</p>
-  </div>
+${HIDE_UNVERIFIED_STATS ? "" : WT_STATS_HTML}
 
   <div class="evidence-slide-area">
     <p class="evidence-slide-title">대표님들이 직접 보내주신 카톡 후기</p>
