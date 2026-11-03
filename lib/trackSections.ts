@@ -9,7 +9,7 @@ export const TRACK_SECTION_ORDER: Record<string, string[]> = {
   "/consulting/startup": ["hero", "review", "empathy", "solution", "process", "proof", "faq", "form"],
   "/lp/startup": ["hero", "rewind", "presale", "space", "site", "team", "gallery", "stories", "reviews", "person", "form", "faq"],
   "/lp/startup-guide": ["hero", "empathy", "redefine", "capital", "site", "interior", "members", "ops", "proof", "honest", "form", "faq"],
-  "/consulting/outsourcing": ["hero", "empathy", "video", "proof", "compare", "solution", "process", "aftercare", "review", "faq", "form"],
+  "/consulting/outsourcing": ["hero", "empathy", "proof", "process", "video", "review", "compare", "solution", "aftercare", "faq", "form"],
   "/edu/fc-class": ["hero", "problem", "solution", "instructor", "curriculum", "review", "result", "gallery", "feedback", "target", "benefit", "faq", "price"],
   "/edu/gx-class": ["hero", "stats", "problem", "loop", "solution", "reframe", "system", "proof", "story", "result", "newconv", "revenue", "rejoin", "community", "price"],
   "/edu/sales-ops": ["hero", "target", "problem", "hwang", "kim", "ops", "curriculum", "change", "closing", "form"],

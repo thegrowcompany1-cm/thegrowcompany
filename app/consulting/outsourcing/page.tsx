@@ -30,7 +30,7 @@ const SERVICE_SCHEMA = {
   url: `${SITE_URL}/consulting/outsourcing`,
   areaServed: "KR",
   description:
-    "헬스장 위탁·필라테스 위탁 전문가가 매장에 직접 상주하며 헬스장 위탁운영으로 매출이 오를 때까지 함께합니다.",
+    "헬스장 위탁·필라테스 위탁 전문가가 매장에 직접 상주하며 1개월 현장 상주로 회원 모집부터 상담·등록, 운영까지 함께 실행합니다.",
   provider: {
     "@type": "Organization",
     name: "더그로우컴퍼니",
@@ -126,7 +126,7 @@ function RelatedServiceCard({
 //  · 기본 표시 원칙: 스크립트가 실행되지 않아도 poster·카피·버튼은 그대로
 //    보인다. 스크립트는 재생 / 화면 이탈 시 일시정지 / 스크롤만 얹는다.
 const WT_VIDEO_HTML = `<style>
-  .wt-vid-sec{max-width:800px;margin:0 auto;padding:0 20px 70px;background:#fff;text-align:center;overflow-x:hidden}
+  .wt-vid-sec{max-width:800px;margin:0 auto;padding:56px 20px 70px;background:#fff;text-align:center;overflow-x:hidden}
   .wt-vid-lead{font-size:21px;font-weight:800;color:#222;line-height:1.5;margin:0 0 20px;word-break:keep-all}
   /* PC: 두 영상 가로 나란히 중앙 정렬. max-width 로 좁은 화면에서 자동 축소되어
      640px 대 뷰포트에서도 가로로 넘치지 않는다. */
@@ -138,6 +138,8 @@ const WT_VIDEO_HTML = `<style>
   .wt-vid-cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border:none;padding:0;cursor:pointer;transition:background .2s}
   .wt-vid-cover:hover{background:rgba(0,0,0,.32)}
   .wt-vid-play{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(34,181,115,.92);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .wt-vid-desc{font-size:16px;font-weight:600;color:#555;line-height:1.65;margin:0 0 22px;word-break:keep-all}
+  .wt-vid-cta{max-width:calc(100% - 32px);line-height:1.4;margin-top:26px}
   .wt-vid-sub{font-size:16px;font-weight:700;color:#444;line-height:1.6;margin:22px 0 24px;word-break:keep-all}
   .wt-vid-cta{display:inline-block;background:#22B573;color:#fff;padding:16px 44px;border-radius:8px;font-size:17px;font-weight:700;border:none;cursor:pointer;transition:background .3s}
   .wt-vid-cta:hover{background:#1a9c5e}
@@ -154,7 +156,7 @@ const WT_VIDEO_HTML = `<style>
   .wt-teaser-hint{font-size:13px;color:#22B573;font-weight:600}
 
   @media (max-width: 600px) {
-    .wt-vid-sec{padding:0 0 50px}
+    .wt-vid-sec{padding:40px 0 50px}
     .wt-vid-lead{font-size:18px;padding:0 16px}
     /* 모바일: 한 번에 1개 + 다음 영상이 살짝 보이게 가로 스와이프.
        스크롤은 이 줄(.wt-vid-row) 안에서만 일어나므로 페이지 가로 스크롤로
@@ -170,12 +172,13 @@ const WT_VIDEO_HTML = `<style>
 </style>
 
 <div class="wt-vid-sec" id="wt-vid-sec" data-track-section="video">
-  <p class="wt-vid-lead">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</p>
+  <p class="wt-vid-lead">실제로 매장을 맡겨본 대표님들의 이야기</p>
+  <p class="wt-vid-desc">처음에는 맡기는 것이 불안했지만,<br>직접 경험한 변화는 달랐습니다.</p>
 
   <div class="wt-vid-row">
     <div class="wt-vid-item">
       <div class="wt-vid-frame">
-        <video class="wt-vid-player" src="/reviews/review-wt.mp4" poster="/reviews/review-wt.jpg" preload="none" playsinline></video>
+        <video class="wt-vid-player" src="/reviews/review-wt.mp4" data-poster="/reviews/review-wt.jpg" preload="none" playsinline></video>
         <button type="button" class="wt-vid-cover" aria-label="위탁 후기 영상 1 재생">
           <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
         </button>
@@ -183,7 +186,7 @@ const WT_VIDEO_HTML = `<style>
     </div>
     <div class="wt-vid-item">
       <div class="wt-vid-frame">
-        <video class="wt-vid-player" src="/reviews/review-wt2.mp4" poster="/reviews/review-wt2.jpg" preload="none" playsinline></video>
+        <video class="wt-vid-player" src="/reviews/review-wt2.mp4" data-poster="/reviews/review-wt2.jpg" preload="none" playsinline></video>
         <button type="button" class="wt-vid-cover" aria-label="위탁 후기 영상 2 재생">
           <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
         </button>
@@ -191,7 +194,7 @@ const WT_VIDEO_HTML = `<style>
     </div>
     <div class="wt-vid-item">
       <div class="wt-vid-frame">
-        <video class="wt-vid-player" src="/reviews/review-wt3.mp4" poster="/reviews/review-wt3.jpg" preload="none" playsinline></video>
+        <video class="wt-vid-player" src="/reviews/review-wt3.mp4" data-poster="/reviews/review-wt3.jpg" preload="none" playsinline></video>
         <button type="button" class="wt-vid-cover" aria-label="위탁 후기 영상 3 재생">
           <span class="wt-vid-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
         </button>
@@ -199,9 +202,7 @@ const WT_VIDEO_HTML = `<style>
     </div>
   </div>
 
-  <p class="wt-vid-sub">직접 맡겨본 대표님이 달라진 점을 이야기합니다</p>
-
-  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">정보 받아보기</button>
+  <button type="button" class="wt-vid-cta" data-cta="mid_video" onclick="wtCta(this)">우리 매장 무료 진단 신청하기</button>
 </div>
 
 <script>
@@ -215,6 +216,41 @@ const WT_VIDEO_HTML = `<style>
   }
   window.wtScrollToForm = function () { wtScrollTo('consulting-form-wt'); };
   window.wtScrollToVideo = function () { wtScrollTo('wt-vid-sec'); };
+  function wtGa(name, params) {
+    try { if (typeof window.gtag === 'function') window.gtag('event', name, params || {}); } catch (e) {}
+  }
+  /* 모든 CTA 는 기존 신청 폼으로 이동한다. 클릭 위치를 GA4 로 남긴다(cta_click). */
+  window.wtCta = function (el) {
+    var loc = (el && el.getAttribute && el.getAttribute('data-cta')) || 'unknown';
+    wtGa('cta_click', { cta_location: loc, cta_text: ((el && el.textContent) || '').trim(), form_source: '위탁상담2' });
+    wtScrollTo('consulting-form-wt');
+  };
+  window.wtScrollToProof = function () {
+    wtGa('cta_click', { cta_location: 'hero_proof_link', cta_text: '실제 매출 개선 사례 보기', form_source: '위탁상담2' });
+    wtScrollTo('wt-proof-sec');
+  };
+  /* 사례 섹션 도달 — 한 번만 */
+  var proofEl = document.getElementById('wt-proof-sec');
+  if (proofEl && typeof IntersectionObserver === 'function') {
+    var proofIo = new IntersectionObserver(function (entries) {
+      if (entries[0] && entries[0].isIntersecting) { wtGa('view_proof_section', { form_source: '위탁상담2' }); proofIo.disconnect(); }
+    }, { threshold: 0.3 });
+    proofIo.observe(proofEl);
+  }
+  /* 후기 영상 포스터는 화면 근처에 왔을 때 불러온다 (첫 화면 로딩 부담 감소) */
+  var vidSecEl = document.getElementById('wt-vid-sec');
+  function loadPosters() {
+    if (!vidSecEl) return;
+    Array.prototype.forEach.call(vidSecEl.querySelectorAll('video[data-poster]'), function (v) {
+      if (!v.getAttribute('poster')) v.setAttribute('poster', v.getAttribute('data-poster'));
+    });
+  }
+  if (vidSecEl && typeof IntersectionObserver === 'function') {
+    var posterIo = new IntersectionObserver(function (entries) {
+      if (entries[0] && entries[0].isIntersecting) { loadPosters(); posterIo.disconnect(); }
+    }, { rootMargin: '600px 0px' });
+    posterIo.observe(vidSecEl);
+  } else { loadPosters(); }
 
   var sec = document.getElementById('wt-vid-sec');
   if (!sec) return;
@@ -270,22 +306,11 @@ const WT_VIDEO_HTML = `<style>
 
 // 중간 CTA — 뒤따르는 섹션 배경색에 맞춰 밝은 톤 / 회색 톤 두 벌
 const WT_MID_CTA_HTML = `<div class="wt-cta-mid">
-  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">정보 받아보기</button>
+  <button type="button" class="wt-vid-cta" data-cta="mid_proof" onclick="wtCta(this)">우리 매장도 개선할 수 있을까? 무료로 확인하기</button>
 </div>`;
 
 const WT_MID_CTA_GRAY_HTML = `<div class="wt-cta-mid wt-cta-mid--gray">
-  <button type="button" class="wt-vid-cta" onclick="wtScrollToForm()">정보 받아보기</button>
-</div>`;
-
-// 폼 직전 재노출 — 포스터 썸네일 + 인용 한 줄, 누르면 위 영상으로 스크롤
-const WT_TEASER_HTML = `<div class="wt-teaser-wrap">
-  <button type="button" class="wt-teaser" onclick="wtScrollToVideo()">
-    <img class="wt-teaser-thumb" src="/reviews/review-wt.jpg" alt="">
-    <span class="wt-teaser-text">
-      <span class="wt-teaser-quote">저도 처음엔 남에게 맡기는 게 제일 불안했습니다</span>
-      <span class="wt-teaser-hint">후기 영상 다시 보기</span>
-    </span>
-  </button>
+  <button type="button" class="wt-vid-cta" data-cta="mid_aftercare" onclick="wtCta(this)">무료 방문 진단 신청하기</button>
 </div>`;
 
 // ─── 상세정보 HTML ───────────────────────────────────────────────────────────
@@ -299,7 +324,7 @@ const WT_TEASER_HTML = `<div class="wt-teaser-wrap">
 //    충돌을 방지하므로 직접 고칠 필요 없습니다.
 const DETAIL_HTML = `<style>
   .hero-section {
-    padding: 100px 20px 70px;
+    padding: 30px 20px 52px;
     background: #ffffff;
     text-align: center;
     max-width: 800px;
@@ -435,48 +460,52 @@ const DETAIL_HTML = `<style>
   }
 
   @media (max-width: 600px) {
-    .hero-section { padding: 80px 20px 50px; }
+    .hero-section { padding: 22px 18px 38px; }
     .hero-title { font-size: 29px; }
     .hero-subtitle { font-size: 15px; margin-bottom: 40px; }
     .hero-stats { gap: 32px; }
     .stat-number { font-size: 28px; }
   }
+  /* ── 전환 개선: 첫 화면 압축 + 메인 CTA ── */
+  .hero-title { margin-bottom: 18px; }
+  .hero-sub { font-size: 16px; color: #555; line-height: 1.75; margin: 0 auto 16px; max-width: 560px; word-break: keep-all; }
+  .hero-sol { background: #f1faf5; border: 1px solid #cfeedd; border-radius: 12px; padding: 16px 18px; max-width: 560px; margin: 0 auto 22px; font-size: 16px; font-weight: 700; color: #1d3b2d; line-height: 1.65; word-break: keep-all; }
+  .hero-sol strong { color: #0f9d58; }
+  .wt-btn { display: inline-block; width: 100%; max-width: 420px; background: #22B573; color: #fff; padding: 18px 24px; border-radius: 10px; font-size: 18px; font-weight: 800; border: none; cursor: pointer; transition: background .25s; box-shadow: 0 8px 20px rgba(34,181,115,.28); word-break: keep-all; line-height: 1.35; }
+  .wt-btn:hover { background: #1a9c5e; }
+  .hero-note { font-size: 14px; color: #777; margin: 12px 0 0; word-break: keep-all; }
+  .hero-link { display: inline-block; margin-top: 14px; padding: 8px 6px; background: none; border: none; font-size: 15px; font-weight: 700; color: #1a9c5e; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+  @media (max-width: 600px) {
+    .hero-eyebrow { font-size: 13px; margin-bottom: 10px; }
+    .hero-title { font-size: 26px; line-height: 1.42; margin-bottom: 14px; }
+    .hero-sub { font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+    .hero-sol { font-size: 15px; padding: 14px 14px; margin-bottom: 18px; }
+    .wt-btn { font-size: 17px; padding: 17px 16px; }
+  }
 </style>
 
 <div class="hero-section" data-track-section="hero">
   <div class="hero-animate" id="heroTitle">
-    <p class="hero-eyebrow">헬스장 위탁 · 필라테스 위탁</p>
+    <p class="hero-eyebrow">헬스장 · 필라테스 1개월 현장 상주 위탁운영</p>
     <h1 class="hero-title">
-      매장에 <span class="highlight">직접 가서</span><br>
-      매출을 올려드립니다.
+      매출은 떨어지는데,<br>
+      결국 모든 걸<br>
+      <span class="highlight">대표님 혼자 해결하고 계신가요?</span>
     </h1>
   </div>
 
-  <div class="hero-divider" id="heroDivider"></div>
-
-  <div class="hero-animate" id="heroSubtitle" style="transition-delay: 0.2s;">
-    <p class="hero-subtitle">
-      더그로우 전문가가 헬스장·필라테스 센터에 직접 상주하며<br>
-      헬스장 위탁운영으로 매출이 오를 때까지 함께합니다.
+  <div class="hero-animate" id="heroSubtitle" style="transition-delay: 0.15s;">
+    <p class="hero-sub">
+      회원 모집도, 직원 관리도, 매출 걱정도.<br>
+      누군가에게 맡기자니 불안하고, 직접 하자니 어디서부터 바꿔야 할지 막막할 수 있습니다.
     </p>
-  </div>
-
-  <div class="hero-stats">
-    <div class="stat-item" id="stat1">
-      <div class="stat-number"><span class="count-up" data-target="750">750</span>+</div>
-      <div class="stat-label">매장 운영 경험</div>
-      <div class="stat-bar"></div>
-    </div>
-    <div class="stat-item" id="stat2">
-      <div class="stat-number"><span class="count-up" data-target="540">540</span>+</div>
-      <div class="stat-label">현장 상주 실적</div>
-      <div class="stat-bar"></div>
-    </div>
-    <div class="stat-item" id="stat3">
-      <div class="stat-number"><span class="count-up" data-target="130">130</span>%</div>
-      <div class="stat-label">평균 매출 상승률</div>
-      <div class="stat-bar"></div>
-    </div>
+    <p class="hero-sol">
+      더그로우는 1개월 동안 현장에 직접 상주하며<br>
+      <strong>회원 모집부터 상담·등록, 운영까지</strong> 함께 실행합니다.
+    </p>
+    <button type="button" class="wt-btn" data-cta="hero" onclick="wtCta(this)">우리 매장 무료 진단 신청하기</button>
+    <p class="hero-note">무료 방문 진단 후 위탁운영 진행 여부를 결정하세요.</p>
+    <button type="button" class="hero-link" onclick="wtScrollToProof()">실제 매출 개선 사례 보기 ↓</button>
   </div>
 </div>
 
@@ -550,7 +579,6 @@ const DETAIL_HTML = `<style>
   observer.observe(hero);
 })();
 </script>
-
 <style>
   .empathy-section {
     padding: 70px 20px;
@@ -616,41 +644,42 @@ const DETAIL_HTML = `<style>
     .empathy-title { font-size: 23px; }
     .empathy-item { font-size: 15px; padding: 16px 18px; }
   }
+  /* ── 전환 개선: 공감 섹션 압축 (2x2) ── */
+  .empathy-section { padding: 56px 20px 50px; max-width: 800px; }
+  .empathy-title { font-size: 26px; margin-bottom: 26px; }
+  .empathy-list { max-width: 720px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 auto 26px; }
+  .empathy-item { display: block; border-left: 4px solid #22B573; border-radius: 10px; padding: 18px 18px; font-size: 16px; font-weight: 600; color: #333; line-height: 1.55; word-break: keep-all; }
+  .empathy-item:hover { transform: none; box-shadow: none; }
+  .empathy-bridge2 { max-width: 560px; margin: 0 auto; font-size: 17px; color: #444; line-height: 1.75; word-break: keep-all; }
+  .empathy-bridge2 strong { display: block; margin-top: 10px; color: #0f9d58; font-size: 18px; }
+  @media (max-width: 600px) {
+    .empathy-section { padding: 42px 16px 40px; }
+    .empathy-title { font-size: 22px; }
+    .empathy-list { grid-template-columns: 1fr; gap: 10px; }
+    .empathy-item { padding: 14px 16px; font-size: 15px; }
+    .empathy-bridge2 { font-size: 15.5px; }
+  }
 </style>
 
 <div class="empathy-section" data-track-section="empathy">
   <h2 class="empathy-title">
-    혹시 지금<br>
-    <span class="highlight">이런 상황</span> 아니세요?
+    대표님도 이런 고민을<br>
+    <span class="highlight">하고 계신가요?</span>
   </h2>
 
   <div class="empathy-list">
-    <div class="empathy-item">
-      <span class="empathy-emoji">😰</span>
-      <span>주변에 <span class="emph">센터가 너무 많아져서</span> 회원이 점점 빠지고 있다</span>
-    </div>
-    <div class="empathy-item">
-      <span class="empathy-emoji">📉</span>
-      <span>예전엔 잘 됐는데, <span class="emph">요즘 매출이 계속 떨어진다</span></span>
-    </div>
-    <div class="empathy-item">
-      <span class="empathy-emoji">😮‍💨</span>
-      <span>마케팅, 상담, 운영 <span class="emph">혼자 다 하려니 지친다</span></span>
-    </div>
-    <div class="empathy-item">
-      <span class="empathy-emoji">❓</span>
-      <span>뭐가 문제인지, <span class="emph">뭘 바꿔야 할지 모르겠다</span></span>
-    </div>
+    <div class="empathy-item">광고비는 계속 쓰는데 신규 회원은 늘지 않는다.</div>
+    <div class="empathy-item">상담 문의는 오지만 실제 등록으로 이어지지 않는다.</div>
+    <div class="empathy-item">직원이 있어도 결국 매출과 운영은 내가 직접 챙긴다.</div>
+    <div class="empathy-item">매출을 올려도 할인과 운영비 때문에 남는 게 없다.</div>
   </div>
 
-  <div class="empathy-bridge">
-    하나라도 해당된다면,<br>
-    혼자 고민하지 마세요.<br>
-    더그로우가 <strong>직접 매장에 가서</strong> 해결해드립니다.
-  </div>
+  <p class="empathy-bridge2">
+    대표님이 더 오래, 더 많이 일한다고<br>
+    이 문제가 저절로 해결되지는 않습니다.
+    <strong>이제는 현장에서 실행하는 운영 방식이 필요합니다.</strong>
+  </p>
 </div>
-
-${WT_VIDEO_HTML}
 
 <style>
   .evidence-section {
@@ -793,20 +822,41 @@ ${WT_VIDEO_HTML}
     .ev-stat-num { font-size: 26px; }
     .evidence-stats { gap: 20px; }
   }
+  /* ── 전환 개선: 성과 수치 5개 ── */
+  .evidence-stats-5 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 12px; }
+  .evidence-stats-5 .ev-stat-num { font-size: 28px; }
+  .evidence-foot { font-size: 12.5px; color: #999; margin: 18px 0 0; line-height: 1.6; word-break: keep-all; }
+  @media (max-width: 600px) {
+    .evidence-stats-5 { grid-template-columns: repeat(2, 1fr); }
+    .evidence-stats-5 .ev-stat-num { font-size: 24px; }
+    .evidence-stats-5 .ev-stat:last-child { grid-column: 1 / -1; }
+  }
 </style>
 
-<div class="evidence-section" data-track-section="proof">
+<div class="evidence-section" id="wt-proof-sec" data-track-section="proof">
   <h2 class="evidence-title">
-    결과로 증명합니다.<br>
-    <span class="highlight">평균 매출 상승률 130%</span>
+    말보다, 실제 매장에서 만들어낸<br>
+    <span class="highlight">결과를 보여드립니다.</span>
   </h2>
   <p class="evidence-desc">
-    540개 매장에 직접 상주하며 만들어낸 결과입니다.
+    현장 상주로 만들어낸 결과입니다.
   </p>
 
   <div class="evidence-stats-box">
-    <p class="evidence-stats-label">현장 상주 매출 상승 실적</p>
-    <div class="evidence-stats">
+    <p class="evidence-stats-label">더그로우 현장 실적</p>
+    <div class="evidence-stats evidence-stats-5">
+      <div class="ev-stat">
+        <div class="ev-stat-num">750+</div>
+        <div class="ev-stat-label">매장 운영 경험</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num">540+</div>
+        <div class="ev-stat-label">현장 상주 실적</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-stat-num red">130%</div>
+        <div class="ev-stat-label">평균 매출 상승률</div>
+      </div>
       <div class="ev-stat">
         <div class="ev-stat-num">3,870만</div>
         <div class="ev-stat-label">평균 매출 상승</div>
@@ -815,15 +865,12 @@ ${WT_VIDEO_HTML}
         <div class="ev-stat-num">1억 800만</div>
         <div class="ev-stat-label">최대 매출 상승</div>
       </div>
-      <div class="ev-stat">
-        <div class="ev-stat-num red">130%</div>
-        <div class="ev-stat-label">평균 상승률</div>
-      </div>
     </div>
+    <p class="evidence-foot">※ 더그로우 내부 집계 기준이며, 매장별 결과는 상황에 따라 다를 수 있습니다.</p>
   </div>
 
   <div class="evidence-slide-area">
-    <p class="evidence-slide-title">💬 대표님들이 직접 보내주신 카톡 후기</p>
+    <p class="evidence-slide-title">대표님들이 직접 보내주신 카톡 후기</p>
     <div class="slide-container" id="evidenceSlider">
       <div class="slide-track" id="evidenceTrack">
         <div class="slide-item">
@@ -1089,6 +1136,300 @@ ${WT_MID_CTA_HTML}
 </script>
 
 <style>
+  .process-section {
+    padding: 70px 20px;
+    background: #f8f9fa;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .process-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #222;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    word-break: keep-all;
+  }
+  .process-title .highlight { color: #22B573; }
+  .process-desc {
+    font-size: 15px;
+    color: #888;
+    margin-bottom: 40px;
+    line-height: 1.7;
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 700px;
+    margin: 0 auto 36px;
+  }
+  .process-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px 18px;
+    text-align: left;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .process-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+  .process-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #22B573;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+  .process-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .process-card-desc {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+  }
+  .process-note {
+    background: #fff;
+    border: 2px solid #22B573;
+    border-radius: 12px;
+    padding: 20px 24px;
+    max-width: 700px;
+    margin: 0 auto 32px;
+    font-size: 16px;
+    color: #222;
+    line-height: 1.6;
+    font-weight: 600;
+  }
+  .process-note .green { color: #22B573; }
+  .process-cta {
+    display: inline-block;
+    background: #22B573;
+    color: #fff;
+    padding: 16px 44px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s;
+  }
+  .process-cta:hover { background: #1a9c5e; }
+  @media (max-width: 600px) {
+    .process-section { padding: 50px 16px; }
+    .process-title { font-size: 23px; }
+    .process-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .process-card { padding: 22px 16px; }
+  }
+  .process-grid-4 { grid-template-columns: repeat(2, 1fr); max-width: 640px; }
+  .process-grid-4 .process-card-title { font-size: 17px; }
+  .process-grid-4 .process-card-desc { font-size: 14px; color: #666; }
+</style>
+
+<div class="process-section" data-track-section="process">
+  <h2 class="process-title">
+    방법만 알려드리지 않습니다.<br>
+    <span class="highlight">저희가 직접 매장에 들어갑니다.</span>
+  </h2>
+  <p class="process-desc">
+    1개월을 기준으로 진행하며, 일정과 범위는 계약 내용에 따라 달라질 수 있습니다.
+  </p>
+
+  <div class="process-grid process-grid-4">
+    <div class="process-card">
+      <div class="process-num">1</div>
+      <div class="process-card-title">현장 파악 및<br>매출 전략 수립</div>
+      <div class="process-card-desc">매장을 직접 방문해 현재 상황을 파악하고, 매출 전략을 세웁니다.</div>
+    </div>
+    <div class="process-card">
+      <div class="process-num">2</div>
+      <div class="process-card-title">온·오프라인<br>회원 모집 실행</div>
+      <div class="process-card-desc">신규 회원이 들어오도록 모집 채널을 직접 세팅하고 실행합니다.</div>
+    </div>
+    <div class="process-card">
+      <div class="process-num">3</div>
+      <div class="process-card-title">상담·등록·재등록<br>집중 운영</div>
+      <div class="process-card-desc">상담이 등록으로 이어지도록 현장에서 함께 상담하고 관리합니다.</div>
+    </div>
+    <div class="process-card">
+      <div class="process-num">4</div>
+      <div class="process-card-title">운영 시스템 교육<br>및 인수인계</div>
+      <div class="process-card-desc">종료 후에도 활용할 운영 기준과 직원 교육을 인수인계합니다.</div>
+    </div>
+  </div>
+
+  <button type="button" class="process-cta" data-cta="process" onclick="wtCta(this)">무료 방문 진단 신청하기</button>
+</div>
+
+<script>
+  function scrollToForm() {
+    window.scrollTo({
+      top: document.body.scrollHeight - window.innerHeight * 2,
+      behavior: 'smooth'
+    });
+  }
+</script>
+
+${WT_VIDEO_HTML}
+
+<style>
+  .review-section {
+    padding: 70px 20px;
+    background: #ffffff;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .review-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #222;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    word-break: keep-all;
+  }
+  .review-title .highlight { color: #22B573; }
+  .review-desc {
+    font-size: 15px;
+    color: #888;
+    margin-bottom: 36px;
+    line-height: 1.7;
+  }
+  .review-slider {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    max-width: 550px;
+    margin: 0 auto;
+    background: #f8f9fa;
+  }
+  .review-track {
+    display: flex;
+    transition: transform 0.4s ease;
+  }
+  .review-slide {
+    min-width: 100%;
+    padding: 20px;
+  }
+  .review-slide img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+  }
+  .review-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .review-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #22B573;
+    color: #fff;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .review-btn:hover { background: #1a9c5e; }
+  .review-dots {
+    display: flex;
+    gap: 8px;
+  }
+  .review-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: background 0.3s;
+  }
+  .review-dot.active { background: #22B573; }
+  @media (max-width: 600px) {
+    .review-section { padding: 50px 16px; }
+    .review-title { font-size: 23px; }
+    .review-slide { padding: 14px; }
+  }
+</style>
+
+<div class="review-section" data-track-section="review">
+  <h2 class="review-title">
+    함께한 대표님들의<br>
+    <span class="highlight">생생한 후기</span>
+  </h2>
+  <p class="review-desc">
+    저희와 함께한 모든 대표님들의<br>
+    센터가 계속 성장하길 바라는 마음으로 운영하고 있습니다.
+  </p>
+
+  <div class="review-slider" id="reviewSlider">
+    <div class="review-track" id="reviewTrack">
+      <div class="review-slide">
+        <img src="/legacy/outsourcing/da76e27aabd5f.png" alt="운영 후기 1">
+      </div>
+      <div class="review-slide">
+        <img src="/legacy/outsourcing/98f696e86a7a4.png" alt="운영 후기 2">
+      </div>
+      <div class="review-slide">
+        <img src="/legacy/outsourcing/5529d2d36575b.png" alt="운영 후기 3">
+      </div>
+      <div class="review-slide">
+        <img src="/legacy/outsourcing/eb6f67a7b56f0.jpg" alt="운영 후기 4">
+      </div>
+    </div>
+  </div>
+
+  <div class="review-nav">
+    <button class="review-btn" onclick="moveRevSlide(-1)">‹</button>
+    <div class="review-dots" id="reviewDots"></div>
+    <button class="review-btn" onclick="moveRevSlide(1)">›</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  var revIdx = 0;
+  var track = document.getElementById('reviewTrack');
+  var items = track.querySelectorAll('.review-slide');
+  var dotsC = document.getElementById('reviewDots');
+  items.forEach(function(_, i) {
+    var d = document.createElement('div');
+    d.className = 'review-dot' + (i === 0 ? ' active' : '');
+    dotsC.appendChild(d);
+  });
+  function updateRev() {
+    track.style.transform = 'translateX(-' + (revIdx * 100) + '%)';
+    dotsC.querySelectorAll('.review-dot').forEach(function(d, i) {
+      d.className = 'review-dot' + (i === revIdx ? ' active' : '');
+    });
+  }
+  window.moveRevSlide = function(dir) {
+    revIdx = (revIdx + dir + items.length) % items.length;
+    updateRev();
+  }
+  setInterval(function() { window.moveRevSlide(1); }, 5000);
+})();
+</script>
+
+<style>
   .compare-section {
     padding: 70px 20px;
     background: #f8f9fa;
@@ -1191,72 +1532,32 @@ ${WT_MID_CTA_HTML}
     .compare-title { font-size: 23px; }
     .compare-col { min-width: 100%; padding: 24px 20px; }
   }
+  /* ── 전환 개선: 일반 업체 비교 제거, 더그로우 특징 중심 ── */
+  .diff-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+  .diff-item { display: flex; align-items: flex-start; gap: 12px; background: #fff; border-radius: 12px; padding: 16px 18px; font-size: 16px; line-height: 1.55; color: #333; word-break: keep-all; }
+  .diff-item b { color: #0f9d58; font-weight: 800; }
+  .diff-check { flex: 0 0 24px; width: 24px; height: 24px; border-radius: 50%; background: #22B573; color: #fff; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .diff-more { margin: 18px auto 0; max-width: 640px; font-size: 14px; color: #888; line-height: 1.6; word-break: keep-all; }
+  @media (max-width: 600px) { .diff-item { font-size: 15px; padding: 14px 14px; } }
 </style>
 
 <div class="compare-section" data-track-section="compare">
   <h2 class="compare-title">
-    더그로우가<br>
-    <span class="highlight">타 업체와 다른 결정적 이유</span>
+    더그로우가 직접<br>
+    <span class="highlight">운영하는 방식은 다릅니다.</span>
   </h2>
   <p class="compare-desc">
-    단기적으로 매출만 올리고 철수하는 곳이 아닙니다.<br>
-    매출이 지속되도록, 스스로 운영하실 수 있도록 교육합니다.
+    조언에서 끝나지 않고, 현장에서 함께 실행합니다.
   </p>
 
-  <div class="compare-table">
-    <div class="compare-col bad">
-      <div class="compare-col-label">✕ 일반 업체</div>
-      <div class="compare-item">
-        <div class="compare-icon">✕</div>
-        <span>단기 매출 상승에만 집중</span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✕</div>
-        <span>철수 후 매출 다시 하락</span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✕</div>
-        <span>운영 시스템 없이 감으로 진행</span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✕</div>
-        <span>사후관리 없음</span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✕</div>
-        <span>선불 수수료 요구</span>
-      </div>
-    </div>
-
-    <div class="compare-col good">
-      <div class="compare-col-label">✓ 더그로우</div>
-      <div class="compare-item">
-        <div class="compare-icon">✓</div>
-        <span><strong>지속 가능한 성장</strong>을 목표로</span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✓</div>
-        <span>종료 후에도 <strong>스스로 운영 가능</strong>하도록 교육</span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✓</div>
-        <span><strong>그로우업 시스템</strong> 제공 및 정착</span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✓</div>
-        <span>운영관리본부 통한 <strong>지속적 A/S</strong></span>
-      </div>
-      <div class="compare-item">
-        <div class="compare-icon">✓</div>
-        <span>매출 상승 후 <strong>후불 수수료</strong></span>
-      </div>
-    </div>
+  <div class="diff-list">
+    <div class="diff-item"><span class="diff-check">✓</span><span><b>전문 인력의 실제 현장 상주</b> - 전문가가 매장에 직접 출근해 함께 근무합니다.</span></div>
+    <div class="diff-item"><span class="diff-check">✓</span><span><b>신규 회원 모집부터 상담·등록까지</b> 직접 실행합니다.</span></div>
+    <div class="diff-item"><span class="diff-check">✓</span><span><b>그로우업 운영 시스템</b>을 매장에 적용하고 정착시킵니다.</span></div>
+    <div class="diff-item"><span class="diff-check">✓</span><span><b>위탁 종료 이후에도 활용할 운영 기준</b>과 직원 교육을 남깁니다.</span></div>
+    <div class="diff-item"><span class="diff-check">✓</span><span><b>종료 후 사후관리</b>는 계약 조건에 맞춰 제공합니다.</span></div>
   </div>
-
-  <div class="compare-bottom">
-    결과에 자신 없으면 후불제를 할 수 없습니다.<br>
-    540개 매장 실적이 그 증거입니다.
-  </div>
+  <p class="diff-more">수수료와 사후관리의 구체적인 조건은 무료 방문 진단 후 매장 상황에 맞춰 안내드립니다.</p>
 </div>
 
 <style>
@@ -1349,32 +1650,36 @@ ${WT_MID_CTA_HTML}
   <div class="system-badge">더그로우 운영시스템</div>
 
   <h2 class="system-title">
-    750개 매장에서 검증된<br>
-    <span class="highlight">"그로우업"</span> 시스템을 적용합니다.
+    매장에 <span class="highlight">"그로우업"</span><br>
+    운영 시스템을 적용합니다.
   </h2>
   <p class="system-desc">
-    센터 운영에 필요한 모든 것을<br>
-    기록하고 파악할 수 있도록<br>
+    센터 운영에 필요한 것을 기록하고 한눈에 파악할 수 있도록<br>
     체계적으로 설계된 운영 시스템입니다.
   </p>
 
   <div class="system-tags">
     <span class="system-tag">콜수 관리</span>
-    <span class="system-tag">홍보일지</span>
     <span class="system-tag">회원관리</span>
-    <span class="system-tag">방명록</span>
     <span class="system-tag">상담 기록</span>
-    <span class="system-tag">미등록회원</span>
-    <span class="system-tag">지출표</span>
     <span class="system-tag">매출표</span>
-    <span class="system-tag">체크리스트</span>
   </div>
 
-  <div class="system-images">
-    <img src="/legacy/outsourcing/ec22279ad0f18.png" alt="그로우업 시스템 1">
-    <img src="/legacy/outsourcing/ac7e57d4e6ed1.png" alt="그로우업 시스템 2">
-    <img src="/legacy/outsourcing/8b7863bb913a8.png" alt="그로우업 시스템 3">
-  </div>
+  <details class="system-more">
+    <summary>운영 시스템 자세히 보기</summary>
+    <div class="system-tags system-tags-rest">
+      <span class="system-tag">홍보일지</span>
+      <span class="system-tag">방명록</span>
+      <span class="system-tag">미등록회원</span>
+      <span class="system-tag">지출표</span>
+      <span class="system-tag">체크리스트</span>
+    </div>
+    <div class="system-images">
+      <img src="/legacy/outsourcing/ec22279ad0f18.png" loading="lazy" alt="그로우업 시스템 1">
+      <img src="/legacy/outsourcing/ac7e57d4e6ed1.png" loading="lazy" alt="그로우업 시스템 2">
+      <img src="/legacy/outsourcing/8b7863bb913a8.png" loading="lazy" alt="그로우업 시스템 3">
+    </div>
+  </details>
 
   <div class="system-bottom">
     단순히 시스템만 드리는 게 아닙니다.<br>
@@ -1384,166 +1689,12 @@ ${WT_MID_CTA_HTML}
 </div>
 
 <style>
-  .process-section {
-    padding: 70px 20px;
-    background: #f8f9fa;
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .process-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #222;
-    line-height: 1.45;
-    margin-bottom: 12px;
-    word-break: keep-all;
-  }
-  .process-title .highlight { color: #22B573; }
-  .process-desc {
-    font-size: 15px;
-    color: #888;
-    margin-bottom: 40px;
-    line-height: 1.7;
-  }
-  .process-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    max-width: 700px;
-    margin: 0 auto 36px;
-  }
-  .process-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 28px 18px;
-    text-align: left;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .process-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  }
-  .process-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #22B573;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 800;
-    margin-bottom: 14px;
-  }
-  .process-card-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 8px;
-    line-height: 1.4;
-  }
-  .process-card-desc {
-    font-size: 13px;
-    color: #888;
-    line-height: 1.6;
-  }
-  .process-note {
-    background: #fff;
-    border: 2px solid #22B573;
-    border-radius: 12px;
-    padding: 20px 24px;
-    max-width: 700px;
-    margin: 0 auto 32px;
-    font-size: 16px;
-    color: #222;
-    line-height: 1.6;
-    font-weight: 600;
-  }
-  .process-note .green { color: #22B573; }
-  .process-cta {
-    display: inline-block;
-    background: #22B573;
-    color: #fff;
-    padding: 16px 44px;
-    border-radius: 8px;
-    font-size: 17px;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: background 0.3s;
-  }
-  .process-cta:hover { background: #1a9c5e; }
-  @media (max-width: 600px) {
-    .process-section { padding: 50px 16px; }
-    .process-title { font-size: 23px; }
-    .process-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .process-card { padding: 22px 16px; }
-  }
+  .system-more { max-width: 640px; margin: 4px auto 28px; text-align: center; }
+  .system-more summary { display: inline-block; cursor: pointer; padding: 10px 20px; border: 2px solid #22B573; border-radius: 999px; color: #0f9d58; font-size: 15px; font-weight: 700; list-style: none; }
+  .system-more summary::-webkit-details-marker { display: none; }
+  .system-more[open] summary { background: #f1faf5; }
+  .system-tags-rest { margin-top: 18px; }
 </style>
-
-<div class="process-section" data-track-section="process">
-  <h2 class="process-title">
-    매장 상주 솔루션<br>
-    <span class="highlight">진행 과정</span>
-  </h2>
-  <p class="process-desc">
-    더그로우 간부급 전문가가 헬스장·필라테스 위탁 매장에 직접 상주하며<br>
-    매출이 오를 때까지 함께 운영합니다.
-  </p>
-
-  <div class="process-grid">
-    <div class="process-card">
-      <div class="process-num">1</div>
-      <div class="process-card-title">매장 방문 후<br>문제점 파악</div>
-      <div class="process-card-desc">더그로우 간부급 책임자가 직접 방문하여 현재 상황을 진단합니다.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-num">2</div>
-      <div class="process-card-title">문제점 분석 및<br>해결 방안 수립</div>
-      <div class="process-card-desc">홍보팀, 상담팀, 운영팀이 함께 맞춤 전략을 설계합니다.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-num">3</div>
-      <div class="process-card-title">더그로우 팀장<br>매장 상주</div>
-      <div class="process-card-desc">계약기간 동안 전문가가 직접 매장에서 함께 근무합니다.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-num">4</div>
-      <div class="process-card-title">1:1 집중<br>케어 진행</div>
-      <div class="process-card-desc">상담, 홍보, 운영을 집중 관리하여 매출 상승과 회원 유치를 이끕니다.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-num">5</div>
-      <div class="process-card-title">운영 시스템<br>제공 및 교육</div>
-      <div class="process-card-desc">계약 종료 후에도 스스로 운영하실 수 있도록 시스템과 교육을 제공합니다.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-num">6</div>
-      <div class="process-card-title">주간 피드백<br>지속 제공</div>
-      <div class="process-card-desc">운영관리본부에서 매주 데이터 기반 피드백을 드립니다.</div>
-    </div>
-  </div>
-
-  <div class="process-note">
-    단순히 시스템만 드리는 게 아닙니다.<br>
-    더그로우 전문가가 <span class="green">직접 매장에 상주</span>하며<br>
-    이 시스템을 기반으로 <span class="green">함께 운영</span>합니다.
-  </div>
-
-  <button class="process-cta" onclick="scrollToForm()">정보 받아보기</button>
-</div>
-
-<script>
-  function scrollToForm() {
-    window.scrollTo({
-      top: document.body.scrollHeight - window.innerHeight * 2,
-      behavior: 'smooth'
-    });
-  }
-</script>
 
 <style>
   .aftercare-section {
@@ -1750,13 +1901,14 @@ ${WT_MID_CTA_HTML}
 
 <div class="aftercare-section" data-track-section="aftercare">
   <h2 class="aftercare-title">
-    업계 유일,<br>
-    <span class="highlight">지속적인 사후관리</span>
+    종료 후에도 이어지는<br>
+    <span class="highlight">운영 점검과 피드백</span>
   </h2>
   <p class="aftercare-desc">
-    계약이 끝나면 연락 두절? 더그로우는 다릅니다.<br>
-    종료 후에도 두 개의 전담 본부에서 지속적으로 관리해드립니다.
+    운영관리본부와 마케팅본부가 종료 이후의 운영을 돕습니다.<br>
+    제공 범위와 기간은 계약 조건에 따라 달라집니다.
   </p>
+
 
   <div class="aftercare-blocks">
 
@@ -1957,150 +2109,6 @@ ${WT_MID_CTA_GRAY_HTML}
 </script>
 
 <style>
-  .review-section {
-    padding: 70px 20px;
-    background: #ffffff;
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .review-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #222;
-    line-height: 1.45;
-    margin-bottom: 12px;
-    word-break: keep-all;
-  }
-  .review-title .highlight { color: #22B573; }
-  .review-desc {
-    font-size: 15px;
-    color: #888;
-    margin-bottom: 36px;
-    line-height: 1.7;
-  }
-  .review-slider {
-    position: relative;
-    overflow: hidden;
-    border-radius: 16px;
-    max-width: 550px;
-    margin: 0 auto;
-    background: #f8f9fa;
-  }
-  .review-track {
-    display: flex;
-    transition: transform 0.4s ease;
-  }
-  .review-slide {
-    min-width: 100%;
-    padding: 20px;
-  }
-  .review-slide img {
-    width: 100%;
-    border-radius: 12px;
-    display: block;
-  }
-  .review-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-top: 24px;
-  }
-  .review-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #22B573;
-    color: #fff;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  .review-btn:hover { background: #1a9c5e; }
-  .review-dots {
-    display: flex;
-    gap: 8px;
-  }
-  .review-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #ddd;
-    transition: background 0.3s;
-  }
-  .review-dot.active { background: #22B573; }
-  @media (max-width: 600px) {
-    .review-section { padding: 50px 16px; }
-    .review-title { font-size: 23px; }
-    .review-slide { padding: 14px; }
-  }
-</style>
-
-<div class="review-section" data-track-section="review">
-  <h2 class="review-title">
-    함께한 대표님들의<br>
-    <span class="highlight">생생한 후기</span>
-  </h2>
-  <p class="review-desc">
-    저희와 함께한 모든 대표님들의<br>
-    센터가 계속 성장하길 바라는 마음으로 운영하고 있습니다.
-  </p>
-
-  <div class="review-slider" id="reviewSlider">
-    <div class="review-track" id="reviewTrack">
-      <div class="review-slide">
-        <img src="/legacy/outsourcing/da76e27aabd5f.png" alt="운영 후기 1">
-      </div>
-      <div class="review-slide">
-        <img src="/legacy/outsourcing/98f696e86a7a4.png" alt="운영 후기 2">
-      </div>
-      <div class="review-slide">
-        <img src="/legacy/outsourcing/5529d2d36575b.png" alt="운영 후기 3">
-      </div>
-      <div class="review-slide">
-        <img src="/legacy/outsourcing/eb6f67a7b56f0.jpg" alt="운영 후기 4">
-      </div>
-    </div>
-  </div>
-
-  <div class="review-nav">
-    <button class="review-btn" onclick="moveRevSlide(-1)">‹</button>
-    <div class="review-dots" id="reviewDots"></div>
-    <button class="review-btn" onclick="moveRevSlide(1)">›</button>
-  </div>
-</div>
-
-<script>
-(function() {
-  var revIdx = 0;
-  var track = document.getElementById('reviewTrack');
-  var items = track.querySelectorAll('.review-slide');
-  var dotsC = document.getElementById('reviewDots');
-  items.forEach(function(_, i) {
-    var d = document.createElement('div');
-    d.className = 'review-dot' + (i === 0 ? ' active' : '');
-    dotsC.appendChild(d);
-  });
-  function updateRev() {
-    track.style.transform = 'translateX(-' + (revIdx * 100) + '%)';
-    dotsC.querySelectorAll('.review-dot').forEach(function(d, i) {
-      d.className = 'review-dot' + (i === revIdx ? ' active' : '');
-    });
-  }
-  window.moveRevSlide = function(dir) {
-    revIdx = (revIdx + dir + items.length) % items.length;
-    updateRev();
-  }
-  setInterval(function() { window.moveRevSlide(1); }, 5000);
-})();
-</script>
-
-<style>
   .faq-section {
     padding: 70px 20px;
     background: #f8f9fa;
@@ -2196,61 +2204,71 @@ ${WT_MID_CTA_GRAY_HTML}
   <div class="faq-list">
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">
-        Q1. 현장 상주 운영이 정확히 뭔가요?
+        Q1. 무료 방문 진단을 받으면 위탁운영 계약을 해야 하나요?
         <div class="faq-toggle">+</div>
       </div>
       <div class="faq-answer">
-        <div class="faq-answer-text">더그로우의 팀장급 전문가가 대표님의 매장에 직접 출근하여 함께 근무합니다. 상담, 마케팅, 운영 시스템 세팅까지 매출이 오를 때까지 현장에서 직접 도와드립니다. 기간은 보통 1개월~45일 정도 진행됩니다.</div>
+        <div class="faq-answer-text">아니요. 무료 방문 진단은 매장의 현재 상황을 확인하는 단계이며, 진단을 받으셨다고 위탁운영 계약을 하셔야 하는 것은 아닙니다. 진단 내용을 확인하신 뒤 진행 여부를 결정하시면 됩니다. 무료 방문 진단의 제공 범위와 방문 가능 지역은 신청 후 담당자가 안내드립니다.</div>
       </div>
     </div>
 
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">
-        Q2. 수수료는 어떻게 되나요?
+        Q2. 실제로 전문가가 매장에 상주하나요?
         <div class="faq-toggle">+</div>
       </div>
       <div class="faq-answer">
-        <div class="faq-answer-text">수수료는 100% 후불제입니다. 매출이 실제로 상승한 후에만 수수료를 받습니다. 매출이 오르지 않으면 수수료를 받지 않습니다. 그만큼 저희 결과에 자신이 있습니다.</div>
+        <div class="faq-answer-text">네. 더그로우 전문가가 대표님의 매장에 직접 출근해 함께 근무하며, 회원 모집, 상담·등록, 운영 시스템 세팅을 현장에서 함께 실행합니다.</div>
       </div>
     </div>
 
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">
-        Q3. 타 솔루션 업체와 다른점이 뭔가요?
+        Q3. 위탁운영은 정확히 얼마나 진행되나요?
         <div class="faq-toggle">+</div>
       </div>
       <div class="faq-answer">
-        <div class="faq-answer-text">일반 업체는 단기 매출만 올리고 철수합니다. 더그로우는 종료 후에도 스스로 운영하실 수 있도록 시스템과 교육을 제공하고, 운영관리본부를 통해 지속적으로 사후관리합니다. 750개 매장에서 검증된 그로우업 시스템을 직접 정착시켜 드립니다.</div>
+        <div class="faq-answer-text">1개월을 기준으로 진행하며, 보통 1개월에서 45일 정도입니다. 매장 상황과 계약 범위에 따라 달라질 수 있고, 정확한 기간은 진단 후 계약 내용에 명시해 안내드립니다. 매출이 오를 때까지 기간 없이 상주하는 방식은 아닙니다.</div>
       </div>
     </div>
 
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">
-        Q4. 확실한 매출 상승이 보장되나요?
+        Q4. 어떤 매장도 진행할 수 있나요?
         <div class="faq-toggle">+</div>
       </div>
       <div class="faq-answer">
-        <div class="faq-answer-text">100% 보장은 어렵지만, 540개 이상의 현장 상주 실적과 평균 매출 상승률 130%가 저희의 결과를 말해줍니다. 그리고 매출이 안 오르면 수수료를 받지 않는 후불제를 운영하고 있어, 대표님께서 손해 보실 리스크가 없습니다.</div>
+        <div class="faq-answer-text">헬스장, 필라테스, PT샵을 중심으로 진행합니다. 매장의 상황과 지역, 운영 형태에 따라 진행이 어려운 경우도 있어서, 무료 방문 진단에서 먼저 확인한 뒤 말씀드립니다.</div>
       </div>
     </div>
 
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">
-        Q5. 종료 후 매출이 떨어지면 어쩌죠?
+        Q5. 위탁운영 비용과 수수료는 어떻게 결정되나요?
         <div class="faq-toggle">+</div>
       </div>
       <div class="faq-answer">
-        <div class="faq-answer-text">이 질문을 가장 많이 받습니다. 더그로우는 단순히 매출만 올리고 떠나지 않습니다. 운영 시스템을 정착시키고 대표님이 직접 운영하실 수 있도록 교육까지 해드립니다. 종료 후에도 운영관리본부에서 주간 피드백과 데이터 점검을 지속 제공합니다.</div>
+        <div class="faq-answer-text">수수료는 후불 방식으로 운영합니다. 구체적인 산정 기준과 금액은 진단 후 매장 상황에 맞춰 안내드리고, 계약서에 명시합니다. 무료 방문 진단을 먼저 받아보시고 판단하세요.</div>
       </div>
     </div>
 
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-question">
-        Q6. 진짜 매출이 안 나오면 수수료도 안 받으시나요?
+        Q6. 위탁 종료 후에는 어떻게 운영하나요?
         <div class="faq-toggle">+</div>
       </div>
       <div class="faq-answer">
-        <div class="faq-answer-text">네, 맞습니다. 매출 상승이 없으면 수수료를 받지 않습니다. 저희가 후불제를 할 수 있는 이유는 그만큼 결과에 대한 자신감이 있기 때문입니다. 무료 방문 진단을 먼저 받아보시고 판단하세요.</div>
+        <div class="faq-answer-text">종료 후에도 대표님이 직접 운영하실 수 있도록 운영 시스템과 직원 교육을 인수인계합니다. 종료 이후 운영관리본부의 점검과 피드백은 계약 조건에 따라 제공되며, 범위와 기간은 진단 시 안내드립니다.</div>
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">
+        Q7. 매출 상승을 보장하나요?
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-text">매출 상승을 보장해 드리지는 않습니다. 현장 상주 실적과 운영 시스템을 바탕으로 최선을 다해 진행하며, 결과는 매장의 상황에 따라 다를 수 있습니다.</div>
       </div>
     </div>
   </div>
@@ -2443,114 +2461,100 @@ function toggleFaq(el) {
       max-width: 80px;
     }
   }
+  /* ── 전환 개선: 간소화 폼 ── */
+  .tg-help { font-size: 13px; color: #888; margin: 6px 0 0; line-height: 1.5; }
+  .tg-opt { color: #999; font-weight: 500; font-size: 13px; }
+  .tg-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tg-chip { display: inline-flex; align-items: center; cursor: pointer; }
+  .tg-chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .tg-chip span { padding: 10px 16px; border: 2px solid #ddd; border-radius: 999px; font-size: 15px; font-weight: 600; color: #555; background: #fff; transition: all .15s; }
+  .tg-chip input:checked + span { border-color: #22B573; background: #f1faf5; color: #0f9d58; }
+  .tg-chip input:focus-visible + span { outline: 2px solid #22B573; outline-offset: 2px; }
+  .tg-select { width: 100%; padding: 14px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #fff; }
+  .tg-consent { margin-top: 18px; padding: 14px 14px; background: #f6f6f6; border-radius: 10px; text-align: left; }
+  .tg-consent label { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; color: #333; line-height: 1.5; cursor: pointer; }
+  .tg-consent input { margin-top: 3px; width: 18px; height: 18px; flex: 0 0 18px; accent-color: #22B573; }
+  .tg-consent details { margin: 8px 0 0 28px; font-size: 13px; color: #666; line-height: 1.6; }
+  .tg-consent summary { cursor: pointer; color: #888; }
+  .tg-consent a { color: #1a9c5e; text-decoration: underline; }
+  .tg-err { margin: 10px 0 0; font-size: 14px; color: #d93025; text-align: left; min-height: 0; }
+  .tg-submit-btn[disabled] { opacity: .6; cursor: default; }
+  .tg-done { padding: 34px 20px; text-align: center; }
+  .tg-done b { display: block; font-size: 22px; color: #0f9d58; margin-bottom: 10px; }
+  .tg-done span { font-size: 16px; color: #555; line-height: 1.7; word-break: keep-all; }
 </style>
-
-${WT_TEASER_HTML}
 
 <div class="cta-section" id="consulting-form-wt" data-track-section="form">
   <div class="cta-inner">
     <h2 class="cta-title">
-      지금 바로<br>
-      <span class="highlight">무료 진단</span> 받아보세요
+      우리 매장 <span class="highlight">무료 진단</span>,<br>
+      이름과 연락처만 남겨주세요
     </h2>
 
     <p class="cta-subtitle">
-      1회 무료 방문 진단 후 결정하시면 됩니다.<br>
+      무료 방문 진단 후 위탁운영 진행 여부를 결정하시면 됩니다.<br>
     </p>
 
-    <div class="tg-form-wrap">
+    <div class="tg-form-wrap" id="wtFormWrap">
       <div class="tg-form-header">
-        <span class="tg-form-title">매장 운영 정보 받아보기</span>
+        <span class="tg-form-title">무료 방문 진단 신청</span>
       </div>
 
-      <form id="consultingForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe2">
+      <form id="consultingForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe2" novalidate>
         <div class="tg-form-group">
-          <label class="tg-label">이름을 입력해주세요. <span class="tg-required">*</span></label>
-          <input type="text" name="name" class="tg-input" required />
+          <label class="tg-label" for="wtName">이름 <span class="tg-required">*</span></label>
+          <input type="text" id="wtName" name="name" class="tg-input" autocomplete="name" required />
         </div>
 
         <div class="tg-form-group">
-          <label class="tg-label">이메일을 입력해주세요. <span class="tg-required">*</span></label>
-          <input type="email" name="email" class="tg-input" placeholder="example@naver.com" required />
+          <label class="tg-label" for="wtPhone">연락처 <span class="tg-required">*</span></label>
+          <input type="tel" id="wtPhone" name="phone" class="tg-input" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" maxlength="13" required />
         </div>
 
         <div class="tg-form-group">
-          <label class="tg-label">연락처를 입력해주세요. <span class="tg-required">*</span></label>
-          <div class="tg-phone-row">
-            <input type="text" name="phone1" class="tg-input tg-phone" maxlength="3" required />
-            <span class="tg-phone-dash">-</span>
-            <input type="text" name="phone2" class="tg-input tg-phone" maxlength="4" required />
-            <span class="tg-phone-dash">-</span>
-            <input type="text" name="phone3" class="tg-input tg-phone" maxlength="4" required />
+          <label class="tg-label">운영 종목 <span class="tg-required">*</span></label>
+          <div class="tg-chip-row" role="radiogroup" aria-label="운영 종목">
+            <label class="tg-chip"><input type="radio" name="type" value="헬스장" /><span>헬스장</span></label>
+            <label class="tg-chip"><input type="radio" name="type" value="필라테스" /><span>필라테스</span></label>
+            <label class="tg-chip"><input type="radio" name="type" value="PT샵" /><span>PT샵</span></label>
+            <label class="tg-chip"><input type="radio" name="type" value="기타" /><span>기타</span></label>
+          </div>
+          <input type="text" name="typeEtc" id="wtTypeEtc" class="tg-input" placeholder="기타 종목을 직접 입력해주세요" style="display:none;margin-top:10px;" />
+        </div>
+
+        <div class="tg-form-group">
+          <label class="tg-label" for="wtArea">매장 지역 <span class="tg-opt">(선택)</span></label>
+          <input type="text" id="wtArea" name="area" class="tg-input" placeholder="예) 서울 마포구, 경기 수원" />
+        </div>
+
+        <div class="tg-form-group">
+          <label class="tg-label">현재 가장 큰 고민 <span class="tg-opt">(선택)</span></label>
+          <div class="tg-chip-row" role="radiogroup" aria-label="현재 가장 큰 고민">
+            <label class="tg-chip"><input type="radio" name="concern" value="신규 회원 부족" /><span>신규 회원 부족</span></label>
+            <label class="tg-chip"><input type="radio" name="concern" value="상담 후 등록 저조" /><span>상담 후 등록 저조</span></label>
+            <label class="tg-chip"><input type="radio" name="concern" value="직원·운영 관리" /><span>직원·운영 관리</span></label>
+            <label class="tg-chip"><input type="radio" name="concern" value="남는 매출 부족" /><span>남는 매출 부족</span></label>
+            <label class="tg-chip"><input type="radio" name="concern" value="기타" /><span>기타</span></label>
           </div>
         </div>
 
-        <div class="tg-form-group">
-          <label class="tg-label">연락처를 입력해주세요(중복확인). <span class="tg-required">*</span></label>
-          <div class="tg-phone-row">
-            <input type="text" name="phoneCheck1" class="tg-input tg-phone" maxlength="3" required />
-            <span class="tg-phone-dash">-</span>
-            <input type="text" name="phoneCheck2" class="tg-input tg-phone" maxlength="4" required />
-            <span class="tg-phone-dash">-</span>
-            <input type="text" name="phoneCheck3" class="tg-input tg-phone" maxlength="4" required />
-          </div>
+        <div class="tg-form-group" id="wtRouteWrap" style="display:none;">
+          <label class="tg-label" for="wtRouteSel">알게 된 경로 <span class="tg-opt">(선택)</span></label>
+          <select id="wtRouteSel" class="tg-select">
+            <option value="">선택해주세요</option>
+            <option value="네이버 검색">네이버 검색</option>
+            <option value="인스타·페이스북 광고">인스타·페이스북 광고</option>
+            <option value="네이버 블로그">네이버 블로그</option>
+            <option value="지인 소개·아카데미 수강생">지인 소개·아카데미 수강생</option>
+            <option value="기타">기타</option>
+          </select>
         </div>
 
-        <div class="tg-form-group">
-          <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
-
-          <label class="tg-radio">
-            <input type="radio" name="route" value="네이버 검색" required />
-            <span>네이버 검색</span>
-          </label>
-
-          <label class="tg-radio">
-            <input type="radio" name="route" value="인스타·페이스북 광고" />
-            <span>인스타·페이스북 광고</span>
-          </label>
-
-          <label class="tg-radio">
-            <input type="radio" name="route" value="네이버 블로그" />
-            <span>네이버 블로그</span>
-          </label>
-
-          <label class="tg-radio">
-            <input type="radio" name="route" value="지인 소개·아카데미 수강생" />
-            <span>지인 소개·아카데미 수강생</span>
-          </label>
-
-          <label class="tg-radio">
-            <input type="radio" name="route" value="기타" />
-            <span>기타</span>
-          </label>
-        </div>
-
-        <div class="tg-form-group">
-          <label class="tg-label">종목을 알려주세요. <span class="tg-required">*</span></label>
-
-          <label class="tg-radio">
-            <input type="radio" name="type" value="헬스장" required />
-            <span>헬스장</span>
-          </label>
-
-          <label class="tg-radio">
-            <input type="radio" name="type" value="필라테스" />
-            <span>필라테스</span>
-          </label>
-
-          <label class="tg-radio">
-            <input type="radio" name="type" value="PT샵" />
-            <span>PT샵</span>
-          </label>
-
-          <div class="tg-radio tg-radio-inline">
-            <label>
-              <input type="radio" name="type" value="기타" />
-              <span>기타</span>
-            </label>
-            <input type="text" name="typeEtc" class="tg-input tg-input-inline" placeholder="직접입력" />
-          </div>
-        </div>
+        <!-- 기존 시트 연동 호환용 숨김 필드 (이메일·연락처 확인란은 입력받지 않는다) -->
+        <input type="hidden" name="email" value="">
+        <input type="hidden" name="phone1" value=""><input type="hidden" name="phone2" value=""><input type="hidden" name="phone3" value="">
+        <input type="hidden" name="phoneCheck1" value=""><input type="hidden" name="phoneCheck2" value=""><input type="hidden" name="phoneCheck3" value="">
+        <input type="hidden" name="route" id="wtRoute" value="">
 
         <!-- 페이지 구분 -->
         <input type="hidden" name="source" value="위탁상담2">
@@ -2558,84 +2562,211 @@ ${WT_TEASER_HTML}
         <!-- 🔒 보안 토큰 -->
         <input type="hidden" name="token" value="grow2026secure">
 
+        <div class="tg-consent">
+          <label>
+            <input type="checkbox" id="wtConsent" name="privacyConsent" value="Y" />
+            <span>[필수] 개인정보 수집·이용에 동의합니다.</span>
+          </label>
+          <details>
+            <summary>자세히 보기</summary>
+            수집 항목: 이름, 연락처, 운영 종목, 매장 지역·고민(선택)<br>
+            이용 목적: 무료 방문 진단 신청 접수 및 상담 연락<br>
+            보관 기간: 상담 목적 달성 후 지체 없이 파기하며, 관계 법령상 보관이 필요한 경우 그 기간 동안 보관합니다.<br>
+            동의를 거부할 수 있으나, 거부 시 무료 진단 신청이 제한됩니다.<br>
+            <a href="/legal/privacy" target="_blank" rel="noopener">개인정보처리방침 보기</a>
+          </details>
+        </div>
+
+        <p class="tg-err" id="wtErr" role="alert"></p>
+
         <div class="tg-form-actions">
-          <button type="submit" class="tg-submit-btn">정보 받아보기</button>
+          <button type="submit" class="tg-submit-btn" id="wtSubmit">무료 진단 신청 완료하기</button>
         </div>
 
         <p class="form-notice">* 신청 후 1-2일 내 연락드립니다.</p>
       </form>
 
-      <iframe name="hidden_iframe2" style="display:none;"></iframe>
+      <iframe name="hidden_iframe2" id="wtHiddenFrame" title="신청 전송" style="display:none;"></iframe>
     </div>
   </div>
 </div>
 
 <script>
-/* 이 블록은 IIFE 로 감싼다. 주입 스크립트는 document.body 에 붙어 전역
-   스코프에서 실행되므로, 최상위 const 를 쓰면 재주입(언마운트 후 재마운트,
-   개발 모드 StrictMode 이중 실행) 때 "Identifier has already been declared"
-   SyntaxError 가 나고 블록 전체가 파싱 단계에서 죽는다. */
+/* IIFE 로 감싼다 — 주입 스크립트는 전역 스코프에서 실행되므로 최상위 const 금지(재주입 시 SyntaxError). */
 (function () {
   var form = document.getElementById('consultingForm');
   if (!form) return;
-
-  /* 재주입 시 리스너가 중복으로 붙어 Lead 이벤트와 알림이 두 번 나가는 것을 막는다 */
   if (form.dataset.wtBound === '1') return;
   form.dataset.wtBound = '1';
 
-  form.addEventListener('submit', function (e) {
-    const phone1 = this.querySelector('[name="phone1"]').value.trim();
-    const phone2 = this.querySelector('[name="phone2"]').value.trim();
-    const phone3 = this.querySelector('[name="phone3"]').value.trim();
-    const phoneCheck1 = this.querySelector('[name="phoneCheck1"]').value.trim();
-    const phoneCheck2 = this.querySelector('[name="phoneCheck2"]').value.trim();
-    const phoneCheck3 = this.querySelector('[name="phoneCheck3"]').value.trim();
+  var FORM_SOURCE = '위탁상담2';
+  var frame = document.getElementById('wtHiddenFrame');
+  var btn = document.getElementById('wtSubmit');
+  var errEl = document.getElementById('wtErr');
+  var routeEl = document.getElementById('wtRoute');
+  var routeWrap = document.getElementById('wtRouteWrap');
+  var routeSel = document.getElementById('wtRouteSel');
+  var typeEtc = document.getElementById('wtTypeEtc');
+  var phoneEl = document.getElementById('wtPhone');
+  var wrap = document.getElementById('wtFormWrap');
 
-    if (phone1 !== phoneCheck1 || phone2 !== phoneCheck2 || phone3 !== phoneCheck3) {
-      e.preventDefault();
-      alert('연락처가 일치하지 않습니다. 다시 확인해주세요.');
-      return false;
-    }
+  function ga(name, params) {
+    try { if (typeof window.gtag === 'function') window.gtag('event', name, params || {}); } catch (e) {}
+  }
 
-    const typeRadio = this.querySelector('input[name="type"]:checked');
-    const typeEtc = this.querySelector('[name="typeEtc"]').value.trim();
-    if (typeRadio && typeRadio.value === '기타' && typeEtc) {
-      const hidden = document.createElement('input');
-      hidden.type = 'hidden';
-      hidden.name = 'typeFinal';
-      hidden.value = '기타 - ' + typeEtc;
-      this.appendChild(hidden);
+  /* ── 유입 경로 자동 판별: 방문 추적(VisitTracker)이 저장한 세션 → URL 파라미터 → referrer 순 ── */
+  function detectRoute() {
+    var base = '';
+    var utm = '';
+    try {
+      var sp = new URLSearchParams(window.location.search);
+      var us = sp.get('utm_source') || '';
+      var uc = sp.get('utm_campaign') || '';
+      var um = sp.get('utm_medium') || '';
+      if (us || uc || um) utm = [us, um, uc].join('/');
+      var meta = /facebook|^fb$|instagram|^ig$|meta/i.test(us) || !!sp.get('fbclid');
+      if (meta) base = '인스타·페이스북 광고';
+    } catch (e) {}
+    var sess = null;
+    try { sess = JSON.parse(window.localStorage.getItem('tgc:vt:session') || 'null'); } catch (e) {}
+    if (!base && sess && sess.src) {
+      if (sess.src === 'paid_meta') base = '인스타·페이스북 광고';
+      else if (sess.src === 'organic_naver') base = '네이버 검색';
+      else if (sess.src === 'organic_google') base = '기타 (구글 검색)';
+      else if (sess.src === 'ai') base = '기타 (AI 검색)';
+      else if (sess.src === 'referral' && sess.ref && /blog[.]naver/i.test(sess.ref)) base = '네이버 블로그';
     }
+    if (!base) {
+      var ref = '';
+      try { ref = document.referrer || ''; } catch (e) {}
+      if (/blog[.]naver/i.test(ref)) base = '네이버 블로그';
+      else if (/search[.]naver|naver[.]com/i.test(ref)) base = '네이버 검색';
+      else if (/instagram|facebook|l[.]facebook/i.test(ref)) base = '인스타·페이스북 광고';
+    }
+    if (!utm && sess && sess.utm && (sess.utm.s || sess.utm.m || sess.utm.c)) {
+      utm = [sess.utm.s || '', sess.utm.m || '', sess.utm.c || ''].join('/');
+    }
+    return { base: base, utm: utm };
+  }
+  var detected = detectRoute();
+  if (!detected.base && routeWrap) routeWrap.style.display = '';
 
-    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'form_submit', { form_source: '위탁상담2' });
-    }
-    /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
-    if (typeof window.__tgcFbTrack === 'function') {
-      window.__tgcFbTrack('Lead', { content_name: '위탁상담2' });
-    }
+  /* ── 연락처: 숫자만, 010-0000-0000 형태로 자동 정리 ── */
+  function fmtPhone(v) {
+    var d = String(v || '').replace(/[^0-9]/g, '').slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.slice(0, 3) + '-' + d.slice(3);
+    if (d.length < 11) return d.slice(0, 3) + '-' + d.slice(3, 6) + '-' + d.slice(6);
+    return d.slice(0, 3) + '-' + d.slice(3, 7) + '-' + d.slice(7);
+  }
+  phoneEl.addEventListener('input', function () { this.value = fmtPhone(this.value); });
 
-    setTimeout(function () {
-      alert('정상적으로 접수되었습니다. 감사합니다 :)');
-      document.getElementById('consultingForm').reset();
-    }, 500);
+  /* ── 기타 종목 입력칸 ── */
+  Array.prototype.forEach.call(form.querySelectorAll('input[name="type"]'), function (r) {
+    r.addEventListener('change', function () {
+      var on = form.querySelector('input[name="type"]:checked');
+      var isEtc = !!on && on.value === '기타';
+      typeEtc.style.display = isEtc ? '' : 'none';
+      if (isEtc) typeEtc.focus();
+    });
   });
 
-  // 전화 3칸 자동이동 + 숫자만 입력 (이 폼 안에서만 조회)
-  var wtPhoneInputs = form.querySelectorAll('.tg-phone');
-  wtPhoneInputs.forEach(function (input, index) {
-    input.addEventListener('input', function () {
-      if (this.value.length >= this.maxLength && index < wtPhoneInputs.length - 1) {
-        wtPhoneInputs[index + 1].focus();
-      }
-    });
+  /* ── form_start: 처음 입력을 시작할 때 1회 ── */
+  var started = false;
+  form.addEventListener('focusin', function () {
+    if (started) return;
+    started = true;
+    ga('form_start', { form_source: FORM_SOURCE });
+  });
 
-    input.addEventListener('keypress', function (e) {
-      if (!/[0-9]/.test(e.key)) {
-        e.preventDefault();
-      }
-    });
+  function showErr(msg) { errEl.textContent = msg || ''; }
+
+  var sending = false;
+  var done = false;
+  var timer = null;
+
+  function finishSuccess(routeValue) {
+    if (done) return;
+    done = true;
+    if (timer) { clearTimeout(timer); timer = null; }
+    var p = { form_source: FORM_SOURCE, lead_source: routeValue };
+    /* 기존 대시보드 호환(form_submit) + 신규 성공 이벤트 + GA4 표준 리드 — 실제 전송 성공 시점에 한 번씩만 */
+    ga('form_submit', p);
+    ga('form_submit_success', p);
+    ga('generate_lead', p);
+    try {
+      if (typeof window.__tgcFbTrack === 'function') window.__tgcFbTrack('Lead', { content_name: FORM_SOURCE });
+    } catch (e) {}
+    wrap.innerHTML = '<div class="tg-done" role="status"><b>무료 진단 신청이 접수되었습니다.</b><span>신청 후 1-2일 내 담당자가 연락드립니다.<br>감사합니다.</span></div>';
+  }
+
+  function finishFail() {
+    if (done) return;
+    sending = false;
+    if (timer) { clearTimeout(timer); timer = null; }
+    btn.disabled = false;
+    btn.textContent = '무료 진단 신청 완료하기';
+    showErr('접수 응답을 확인하지 못했습니다. 잠시 후 다시 시도해주세요.');
+  }
+
+  /* 숨김 iframe 의 load = 서버(시트) 응답이 돌아온 것. 제출 전의 초기 load 는 무시한다. */
+  var routeAtSubmit = '';
+  frame.addEventListener('load', function () {
+    if (!sending || done) return;
+    var ok = true;
+    try {
+      var d = frame.contentDocument;
+      if (d && d.body && /error|오류|실패/i.test(d.body.innerText || '') && !/ok|success|성공/i.test(d.body.innerText || '')) ok = false;
+    } catch (e) { /* 교차 출처 — 응답이 돌아온 것으로 본다 */ }
+    if (ok) finishSuccess(routeAtSubmit); else finishFail();
+  });
+
+  form.addEventListener('submit', function (e) {
+    if (sending || done) { e.preventDefault(); return; }
+    showErr('');
+
+    var name = form.querySelector('[name="name"]').value.trim();
+    var digits = phoneEl.value.replace(/[^0-9]/g, '');
+    var typeRadio = form.querySelector('input[name="type"]:checked');
+    var etc = typeEtc.value.trim();
+
+    if (!name) { e.preventDefault(); showErr('이름을 입력해주세요.'); form.querySelector('[name="name"]').focus(); return; }
+    if (!/^01[016789][0-9]{7,8}$/.test(digits)) { e.preventDefault(); showErr('연락처를 올바르게 입력해주세요. (예: 010-0000-0000)'); phoneEl.focus(); return; }
+    if (!typeRadio) { e.preventDefault(); showErr('운영 종목을 선택해주세요.'); return; }
+    if (typeRadio.value === '기타' && !etc) { e.preventDefault(); showErr('기타 종목을 입력해주세요.'); typeEtc.focus(); return; }
+    if (!document.getElementById('wtConsent').checked) { e.preventDefault(); showErr('개인정보 수집·이용에 동의해주세요.'); return; }
+
+    /* 기존 시트 열 호환: 번호 3칸 + 확인 3칸(같은 값), 기타 종목 최종값 */
+    var p1 = digits.slice(0, 3);
+    var p2 = digits.length === 11 ? digits.slice(3, 7) : digits.slice(3, 6);
+    var p3 = digits.length === 11 ? digits.slice(7) : digits.slice(6);
+    var set = function (n, v) { form.querySelector('[name="' + n + '"]').value = v; };
+    set('phone1', p1); set('phone2', p2); set('phone3', p3);
+    set('phoneCheck1', p1); set('phoneCheck2', p2); set('phoneCheck3', p3);
+    var old = form.querySelector('[name="typeFinal"]');
+    if (old) old.remove();
+    if (typeRadio.value === '기타' && etc) {
+      var hidden = document.createElement('input');
+      hidden.type = 'hidden'; hidden.name = 'typeFinal'; hidden.value = '기타 - ' + etc;
+      form.appendChild(hidden);
+    }
+
+    /* 유입 경로(자동) + 선택 입력(지역·고민)을 시트의 기존 route 열에 이어 붙인다 */
+    var base = detected.base || (routeSel && routeSel.value) || '직접 방문·미확인';
+    var r = base;
+    if (detected.utm) r += ' / UTM: ' + detected.utm;
+    var area = form.querySelector('[name="area"]').value.trim();
+    var concern = form.querySelector('input[name="concern"]:checked');
+    if (area) r += ' / 지역: ' + area;
+    if (concern) r += ' / 고민: ' + concern.value;
+    routeEl.value = r;
+    routeAtSubmit = base;
+
+    sending = true;
+    btn.disabled = true;
+    btn.textContent = '전송 중...';
+    timer = setTimeout(finishFail, 15000);
+    /* 기본 제출(숨김 iframe 대상)을 그대로 진행한다 */
   });
 })();
 </script>`;
@@ -2728,6 +2859,8 @@ export default function OutsourcingConsultingPage() {
         "scrollToForm",
         "wtScrollToForm",
         "wtScrollToVideo",
+        "wtCta",
+        "wtScrollToProof",
       ];
       const w = window as unknown as Record<string, unknown>;
 
@@ -2811,10 +2944,23 @@ export default function OutsourcingConsultingPage() {
           못 찾아 옵저버가 아예 안 걸린다. */}
       {mounted ? (
         <div className="md:hidden">
-          <StickyCtaBar
-            label="정보 받아보기"
-            targetSelector="#consulting-form-wt"
-          />
+          <div
+            onClickCapture={() => {
+              const w = window as unknown as { gtag?: (...a: unknown[]) => void };
+              if (typeof w.gtag === "function") {
+                w.gtag("event", "cta_click", {
+                  cta_location: "sticky",
+                  cta_text: "우리 매장 무료 진단 신청하기",
+                  form_source: "위탁상담2",
+                });
+              }
+            }}
+          >
+            <StickyCtaBar
+              label="우리 매장 무료 진단 신청하기"
+              targetSelector="#consulting-form-wt"
+            />
+          </div>
         </div>
       ) : null}
 
