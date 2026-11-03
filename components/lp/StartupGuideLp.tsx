@@ -120,7 +120,8 @@ const STYLE = `
 .lpg-hero .lpg-c{width:100%}
 .lpg-badge{display:table;margin:0 auto 16px;padding:6px 14px;border-radius:50px;background:rgba(34,181,115,.16);border:1px solid rgba(34,181,115,.55);color:var(--gl);font-size:14px;font-weight:800;letter-spacing:-0.01em}
 .lpg-hero .lpg-mega{font-size:clamp(26px,8.2vw,34px);line-height:1.34;word-break:keep-all}
-.lpg-br4{display:none}
+.lpg-br4,.lpg-brm{display:none}
+@media(max-width:480px){.lpg-brm{display:inline}}
 @media(max-width:379px){.lpg-br4{display:inline}}
 @media(max-width:480px){.lpg-hero .lpg-mega{font-size:clamp(23px,7.2vw,30px);line-height:1.3}}
 @media(max-height:700px){.lpg-hero{padding-top:44px}.lpg-hero .lpg-mega{line-height:1.22}.lpg-hero .lpg-badge{margin-bottom:10px}.lpg-hero .lpg-hero-sub{margin-top:8px;font-size:14.5px;line-height:1.5}.lpg-hero .lpg-ask0{margin-top:14px}.lpg-hero .lpg-chips{margin-top:8px}}
@@ -802,7 +803,9 @@ export default function StartupGuideLp() {
             <Hl>확신이 서지 않습니다</Hl>
           </h1>
           <p className="lpg-hero-sub">
-            열심히 모은 돈, 오래 준비한 꿈이라 더 쉽게 결정할 수 없습니다.
+            열심히 모은 돈, 오래 준비한 꿈이라{" "}
+            <br className="lpg-brm" />
+            더 쉽게 결정할 수 없습니다.
             <br />
             용기가 부족한 게 아니라, <span className="lpg-gtx">확신할 근거</span>가 부족한 겁니다.
           </p>
