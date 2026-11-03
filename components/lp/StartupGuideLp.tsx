@@ -125,6 +125,24 @@ const STYLE = `
 @media(max-width:379px){.lpg-br4{display:inline}}
 @media(max-width:480px){.lpg-hero .lpg-mega{font-size:clamp(23px,7.2vw,30px);line-height:1.3}}
 @media(max-height:700px){.lpg-hero{padding-top:44px}.lpg-hero .lpg-mega{line-height:1.22}.lpg-hero .lpg-badge{margin-bottom:10px}.lpg-hero .lpg-hero-sub{margin-top:8px;font-size:14.5px;line-height:1.5}.lpg-hero .lpg-ask0{margin-top:14px}.lpg-hero .lpg-chips{margin-top:8px}}
+.lpg-cq{margin:0 0 14px;font-size:15px;font-weight:700;line-height:1.4;letter-spacing:-0.02em;text-align:center;color:#8d8d8d}
+.lpg-cq::before{content:'\\201C'}
+.lpg-cq::after{content:'\\201D'}
+.lpg-bk .lpg-cq{color:#9a9a9a}
+.lpg-gr .lpg-cq{color:rgba(255,255,255,.85)}
+.lpg-emp{margin-top:30px;text-align:center}
+.lpg-emp p{font-size:18px;font-weight:500;line-height:1.7}
+.lpg-emp p + p{margin-top:24px}
+.lpg-wh .lpg-emp p{color:#333}
+.lpg-bk .lpg-emp p{color:rgba(255,255,255,.82)}
+.lpg-emp p.lpg-emp-end{font-size:20px;font-weight:800;color:#111}
+.lpg-bk .lpg-emp p.lpg-emp-end{color:#fff}
+.lpg-toc{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:28px}
+.lpg-toc-chip{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 13px;border:1.5px solid rgba(255,255,255,.45);border-radius:50px;background:transparent;color:#fff;font-family:inherit;font-size:14px;font-weight:800;letter-spacing:-0.02em;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lpg-toc-chip.is-on{background:var(--gl);border-color:var(--gl);color:#0A0A0A}
+.lpg-gt{margin:48px 0 18px;font-size:22px;font-weight:900;letter-spacing:-0.03em;text-align:center}
+.lpg-q-big b{font-size:24px}
+.lpg-wh .lpg-ch li{border-color:#dcdcdc;color:#111}
 .lpg-gtx{color:var(--gl);font-weight:800}
 .lpg-lead{margin:0 0 18px;font-size:17px;font-weight:800;line-height:1.45;text-align:center;color:#111;letter-spacing:-0.02em}
 .lpg-hero-sub{margin-top:14px;font-size:15.5px;font-weight:600;line-height:1.55;text-align:center;color:rgba(255,255,255,.8)}
@@ -305,7 +323,7 @@ type Win = Window & {
 
 const Hl = ({ children }: { children: ReactNode }) => <mark className="lpg-hl">{children}</mark>;
 
-const Worry = ({ children }: { children: ReactNode }) => <p className="lpg-worry lpg-rv">{children}</p>;
+const ChipQ = ({ children }: { children: ReactNode }) => <p className="lpg-cq lpg-rv">{children}</p>;
 
 const Steps = ({ items }: { items: string[] }) => (
   <ol className="lpg-steps">
@@ -683,6 +701,14 @@ export default function StartupGuideLp() {
     document.getElementById(c.to)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // 3번 섹션 목차 칩 — 히어로 칩과 같은 연결. GA4 section_concern
+  const pickToc = (c: (typeof CONCERNS)[number]) => {
+    setConcern(c.label);
+    const w = window as Win;
+    if (typeof w.gtag === "function") w.gtag("event", "section_concern", { concern: c.label });
+    document.getElementById(c.to)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   // 단계 선택 — 맞춤 문구만 바뀐다(폼은 항상 보임), 재선택 가능. GA4 stage_select
   const pickStage = (i: number) => {
     setStage(i);
@@ -776,15 +802,6 @@ export default function StartupGuideLp() {
     }
   };
 
-  const reviewItems: ReactNode[] = REVIEWS.map((r) => (
-    <div className="lpg-rvc" key={r.name}>
-      <p>{r.text}</p>
-      <small>
-        {r.name} · {r.meta}
-      </small>
-    </div>
-  ));
-
   return (
     <div className="lpg" ref={rootRef}>
       <style dangerouslySetInnerHTML={{ __html: STYLE }} />
@@ -820,31 +837,59 @@ export default function StartupGuideLp() {
         </div>
       </section>
 
-      {/* 2 자본 [화이트] */}
-      <section data-track-section="capital" id="lpg-capital">
+      {/* 2 공감 [화이트] */}
+      <section data-track-section="empathy" id="lpg-empathy">
         <div className="lpg-blk lpg-wh">
           <div className="lpg-c">
-            <p className="lpg-lead">확신할 근거, 이 5가지로 하나씩 만들어 드립니다</p>
-            <p className="lpg-eyebrow">비용과 지역, 솔직하게 말씀드립니다</p>
+            <h2 className="lpg-mega lpg-rv">
+              수업은 몇 년을 해왔는데
+              <br />
+              <Hl>계약서 앞에서는</Hl> 손이 멈춥니다
+            </h2>
+            <div className="lpg-emp">
+              <p>회원 앞에서는 늘 자신 있었습니다.</p>
+              <p>그런데 보증금, 인테리어 견적, 대출 서류 앞에서는 아무것도 확신할 수 없습니다.</p>
+              <p>모아둔 돈을 잃을까 봐, 잘못 고를까 봐, 다시 돌아갈 수 없을까 봐.</p>
+              <p className="lpg-emp-end">그 망설임은 당연합니다. 처음 해보는 일이니까요.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3 재정의 [블랙] + 목차 칩 */}
+      <section data-track-section="redefine" id="lpg-redefine">
+        <div className="lpg-blk lpg-bk">
+          <div className="lpg-c">
+            <h2 className="lpg-mega lpg-rv">
+              부족한 건 용기가 아니라
+              <br />
+              <Hl>확신할 근거</Hl>입니다
+            </h2>
+            <div className="lpg-emp">
+              <p>잘되는 센터와 흔들리는 센터의 차이는 대부분 문을 열기 전에 정해집니다.</p>
+              <p>어떤 자리를 골랐는지, 견적을 어떻게 판단했는지, 오픈 전에 회원을 얼마나 만들었는지.</p>
+              <p className="lpg-emp-end">확신할 근거, 이 5가지로 하나씩 만들어 드립니다</p>
+            </div>
+            <div className="lpg-toc" role="group" aria-label="걱정별 근거 바로가기">
+              {CONCERNS.map((c) => (
+                <button key={c.label} type="button" className={`lpg-toc-chip${concern === c.label ? " is-on" : ""}`} onClick={() => pickToc(c)}>
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4-1 자본 [블랙] */}
+      <section data-track-section="capital" id="lpg-capital">
+        <div className="lpg-blk lpg-bk" style={{ borderTop: "1px solid rgba(255,255,255,.12)" }}>
+          <div className="lpg-c">
+            <ChipQ>{CONCERNS[0].label}</ChipQ>
             <h2 className="lpg-mega lpg-rv">
               자본에 맞춰 <Hl>업종과 평수부터</Hl> 다시 봅니다
             </h2>
-            <div className="lpg-bl">
-              <h3>컨설팅 비용</h3>
-              <p>
-                업종과 규모에 따라 범위가 크게 달라집니다.
-                <br />
-                첫 미팅에서 대표님 계획을 듣고, 그에 맞춰 제안드립니다.
-              </p>
-            </div>
-            <div className="lpg-bl">
-              <h3>원하시는 지역</h3>
-              <p>
-                원하시는 지역이 상권상 맞지 않으면 다른 자리를 제안드릴 수 있습니다.
-                <br />
-                쉬운 길보다 망하지 않는 길을 먼저 말씀드리기 때문입니다.
-              </p>
-            </div>
+            <p className="lpg-p lpg-mt">가진 돈으로 무리하지 않는 규모, 버틸 수 있는 고정비부터 계산합니다.</p>
             <div className="lpg-mt">
               <button type="button" className="lpg-btn" onClick={scrollToForm}>
                 내 자본으로 가능한지 검토받기
@@ -854,11 +899,11 @@ export default function StartupGuideLp() {
         </div>
       </section>
 
-      {/* 3 자리·상권 [블랙] */}
+      {/* 4-2 자리·상권 [화이트] */}
       <section data-track-section="site" id="lpg-site">
-        <div className="lpg-blk lpg-bk">
+        <div className="lpg-blk lpg-wh">
           <div className="lpg-c">
-            <Worry>중개사 말만 믿고 계약해도 될까</Worry>
+            <ChipQ>{CONCERNS[1].label}</ChipQ>
             <h2 className="lpg-mega lpg-rv">
               감이 아니라 <Hl>데이터로</Hl> 자리를 고릅니다
             </h2>
@@ -877,14 +922,15 @@ export default function StartupGuideLp() {
         </div>
       </section>
 
-      {/* 4 인테리어 비용 [화이트] */}
+      {/* 4-3 인테리어 [블랙] */}
       <section data-track-section="interior" id="lpg-interior">
-        <div className="lpg-blk lpg-wh">
+        <div className="lpg-blk lpg-bk">
           <div className="lpg-c">
-            <Worry>견적이 왜 업체마다 다를까, 추가금은 없을까</Worry>
+            <ChipQ>{CONCERNS[2].label}</ChipQ>
             <h2 className="lpg-mega lpg-rv">
-              예쁜 공간이 아니라 <Hl>매출이 나오는 동선</Hl>
+              항목별로 <Hl>왜 이 금액인지</Hl> 보여드립니다
             </h2>
+            <p className="lpg-p lpg-mt">전속 인테리어팀이 직접 시공하고, 기구는 B2B 조건으로 연결합니다.</p>
             <Steps items={STEPS_INTERIOR} />
             <div className="lpg-sw">
               {PHOTOS_SPACE.map((p) => (
@@ -901,11 +947,11 @@ export default function StartupGuideLp() {
         </div>
       </section>
 
-      {/* 5 오픈 회원 모집 [그린 띠] */}
+      {/* 4-4 회원 모집 [그린 띠] */}
       <section data-track-section="members" id="lpg-members">
         <div className="lpg-blk lpg-gr">
           <div className="lpg-c">
-            <Worry>문을 열었는데 회원이 안 오면 어떡하지</Worry>
+            <ChipQ>{CONCERNS[3].label}</ChipQ>
             <h2 className="lpg-mega lpg-rv">
               회원은 <Hl>문을 열기 전에</Hl> 모읍니다
             </h2>
@@ -929,13 +975,13 @@ export default function StartupGuideLp() {
         </div>
       </section>
 
-      {/* 6 오픈 후 운영 [화이트] */}
+      {/* 4-5 운영·마케팅 [화이트] */}
       <section data-track-section="ops" id="lpg-ops">
         <div className="lpg-blk lpg-wh">
           <div className="lpg-c">
-            <Worry>오픈하면 컨설팅도 끝나는 거 아닐까</Worry>
+            <ChipQ>{CONCERNS[4].label}</ChipQ>
             <h2 className="lpg-mega lpg-rv">
-              대표가 없어도 <Hl>돌아가는 구조</Hl>까지
+              대표가 처음이어도 <Hl>돌아가는 구조</Hl>까지
             </h2>
             <div className="lpg-bl">
               <h3>운영 교육 4회</h3>
@@ -948,6 +994,22 @@ export default function StartupGuideLp() {
                   <li key={f}>{f}</li>
                 ))}
               </ul>
+            </div>
+            <div className="lpg-bl">
+              <h3>오픈 채널 세팅</h3>
+              <p>오픈 전 홍보 일정까지 함께 짜드립니다.</p>
+            </div>
+            <ul className="lpg-ch">
+              {CHANNELS.map((c) => (
+                <li key={c.label}>
+                  {c.ic}
+                  <span>{c.label}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="lpg-bl">
+              <h3>오픈세일 2달 직원 현장 상주</h3>
+              <p>오픈 직후 운영이 자리 잡을 때까지 직원이 현장에 함께합니다.</p>
             </div>
             <figure className="lpg-ph">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -962,35 +1024,23 @@ export default function StartupGuideLp() {
         </div>
       </section>
 
-      {/* 7 마케팅 [블랙] */}
-      <section data-track-section="marketing" id="lpg-marketing">
+      {/* 5 같은 고민을 했던 대표님들 [블랙] */}
+      <section data-track-section="proof" id="lpg-proof">
         <div className="lpg-blk lpg-bk">
           <div className="lpg-c">
-            <Worry>광고는 어디서부터 해야 할지 모르겠다</Worry>
             <h2 className="lpg-mega lpg-rv">
-              채널 세팅을 <Hl>끝낸 상태로</Hl> 오픈합니다
-            </h2>
-            <ul className="lpg-ch">
-              {CHANNELS.map((c) => (
-                <li key={c.label}>
-                  {c.ic}
-                  <span>{c.label}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="lpg-p lpg-mt">오픈 전 홍보 일정까지 함께 짜드립니다.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 8 증거 [블랙] */}
-      <section data-track-section="proof" id="lpg-proof">
-        <div className="lpg-blk lpg-bk" style={{ paddingTop: 0 }}>
-          <div className="lpg-c">
-            <h2 className="lpg-mega lpg-rv">
-              같은 과정으로 문을 연 <Hl>센터들</Hl>
+              이분들도 처음엔
+              <br />
+              <Hl>확신이 없었습니다</Hl>
             </h2>
             <VideoCard {...VIDEO_MAIN} />
+            <blockquote className="lpg-q lpg-q-big">
+              <b>{REVIEWS[0].text}</b>
+              <small>
+                {REVIEWS[0].name} · {REVIEWS[0].meta}
+              </small>
+            </blockquote>
+            <h3 className="lpg-gt lpg-rv">같은 과정으로 문을 연 센터들</h3>
             <div className="lpg-gal">
               {GALLERY_ROWS.map((row, r) => (
                 <Marquee
@@ -1010,13 +1060,35 @@ export default function StartupGuideLp() {
                 />
               ))}
             </div>
-            <Marquee items={reviewItems} dur={50} />
           </div>
         </div>
       </section>
 
-      {/* 9 사람 [화이트 → 블랙] */}
-      <section data-track-section="person">
+      {/* 6 솔직 안내 + 사람 [화이트 → 블랙] */}
+      <section data-track-section="honest" id="lpg-honest">
+        <div className="lpg-blk lpg-wh">
+          <div className="lpg-c">
+            <h2 className="lpg-mega lpg-rv">
+              무조건 <Hl>창업하라고</Hl> 하지 않습니다
+            </h2>
+            <div className="lpg-bl">
+              <h3>컨설팅 비용</h3>
+              <p>
+                업종과 규모에 따라 범위가 크게 달라집니다.
+                <br />
+                첫 미팅에서 대표님 계획을 듣고, 그에 맞춰 제안드립니다.
+              </p>
+            </div>
+            <div className="lpg-bl">
+              <h3>원하시는 지역</h3>
+              <p>
+                원하시는 지역이 상권상 맞지 않으면 다른 자리를 제안드릴 수 있습니다.
+                <br />
+                쉬운 길보다 망하지 않는 길을 먼저 말씀드리기 때문입니다.
+              </p>
+            </div>
+          </div>
+        </div>
         <div className="lpg-person">
           <div className="lpg-c">
             <div className="lpg-person-ph">
@@ -1034,16 +1106,14 @@ export default function StartupGuideLp() {
         </div>
       </section>
 
-      {/* 10 단계 선택 + 폼 [그린 띠 → 화이트] */}
+      {/* 7 단계 선택 + 폼 [그린 띠 → 화이트] */}
       <section data-track-section="form" id="lpg-form" ref={formSecRef}>
         <div className="lpg-blk lpg-gr" style={{ paddingBottom: 56 }}>
           <div className="lpg-c">
             <h2 className="lpg-mega lpg-rv">
-              이제 <Hl>대표님 계획</Hl>을
-              <br />
-              같이 볼 차례입니다
+              확신할 근거, <Hl>같이 만들어</Hl> 보시죠
             </h2>
-            <p className="lpg-ask">지금 어느 단계까지 준비하셨는지 골라주세요</p>
+            <p className="lpg-ask">지금 준비 단계를 알려주시면, 그 단계에 맞는 것부터 정리해 드립니다.</p>
             <div className="lpg-stages" role="group" aria-label="준비 단계 선택">
               {STAGES.map((s, i) => (
                 <button key={s.label} type="button" className={`lpg-stage${stage === i ? " is-on" : ""}`} aria-pressed={stage === i} onClick={() => pickStage(i)}>
