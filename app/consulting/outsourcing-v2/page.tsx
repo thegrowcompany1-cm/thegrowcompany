@@ -184,7 +184,7 @@ const WT_VIDEO_HTML = `<style>
     </div>
   </div>
 
-  <button type="button" class="wt-vid-cta" data-cta="mid_video" onclick="wtCta(this)">우리 매장 무료 진단 신청하기</button>
+  <button type="button" class="wt-vid-cta" data-cta="mid_video" onclick="wtCta(this)">무료 방문 진단 신청하기</button>
 </div>
 
 <script>
@@ -346,7 +346,7 @@ const WT_VIDEO_HTML = `<style>
 
 // 중간 CTA — 뒤따르는 섹션 배경색에 맞춰 밝은 톤 / 회색 톤 두 벌
 const WT_MID_CTA_HTML = `<div class="wt-cta-mid">
-  <button type="button" class="wt-vid-cta" data-cta="mid_proof" onclick="wtCta(this)">우리 매장도 개선할 수 있을까? 무료로 확인하기</button>
+  <button type="button" class="wt-vid-cta" data-cta="mid_proof" onclick="wtCta(this)">무료 방문 진단 신청하기</button>
 </div>`;
 
 const WT_MID_CTA_GRAY_HTML = `<div class="wt-cta-mid wt-cta-mid--gray">
@@ -582,7 +582,7 @@ const DETAIL_HTML = `<style>
       더그로우는 1개월 동안 현장에 직접 상주하며<br>
       <strong>회원 모집부터 상담·등록, 운영까지</strong> 함께 실행합니다.
     </p>
-    <button type="button" class="wt-btn" data-cta="hero" onclick="wtCta(this)">우리 매장 무료 진단 신청하기</button>
+    <button type="button" class="wt-btn" data-cta="hero" onclick="wtCta(this)">무료 방문 진단 신청하기</button>
     <p class="hero-note">무료 방문 진단 후 위탁운영 진행 여부를 결정하세요.</p>
     <button type="button" class="hero-link" onclick="wtScrollToProof()">실제 매출 개선 사례 보기 ↓</button>
   </div>
@@ -2551,7 +2551,7 @@ function toggleFaq(el) {
 
     <div class="tg-form-wrap" id="wtFormWrap">
       <div class="tg-form-header">
-        <span class="tg-form-title">무료 방문 진단 신청</span>
+        <span class="tg-form-title">우리 매장 무료 방문 진단 신청</span>
       </div>
 
       <form id="consultingForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe2" novalidate>
@@ -2634,7 +2634,7 @@ function toggleFaq(el) {
         <p class="tg-err" id="wtErr" role="alert"></p>
 
         <div class="tg-form-actions">
-          <button type="submit" class="tg-submit-btn" id="wtSubmit">무료 진단 신청 완료하기</button>
+          <button type="submit" class="tg-submit-btn" id="wtSubmit">무료 방문 진단 신청하기</button>
         </div>
 
         <p class="form-notice">* 신청 후 1-2일 내 연락드립니다.</p>
@@ -2761,7 +2761,7 @@ function toggleFaq(el) {
     sending = false;
     if (timer) { clearTimeout(timer); timer = null; }
     btn.disabled = false;
-    btn.textContent = '무료 진단 신청 완료하기';
+    btn.textContent = '무료 방문 진단 신청하기';
     showErr('접수 응답을 확인하지 못했습니다. 잠시 후 다시 시도해주세요.');
   }
 
@@ -3004,14 +3004,14 @@ export default function OutsourcingConsultingPage() {
               if (typeof w.gtag === "function") {
                 w.gtag("event", "cta_click", {
                   cta_location: "sticky",
-                  cta_text: "우리 매장 무료 진단 신청하기",
+                  cta_text: "무료 방문 진단 신청하기",
                   form_source: "위탁상담2",
                 });
               }
             }}
           >
             <StickyCtaBar
-              label="우리 매장 무료 진단 신청하기"
+              label="무료 방문 진단 신청하기"
               targetSelector="#consulting-form-wt"
             />
           </div>
