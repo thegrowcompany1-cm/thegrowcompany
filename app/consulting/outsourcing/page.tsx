@@ -2671,13 +2671,8 @@ function toggleFaq(el) {
     });
   });
 
-  /* ── form_start: 처음 입력을 시작할 때 1회 ── */
-  var started = false;
-  form.addEventListener('focusin', function () {
-    if (started) return;
-    started = true;
-    ga('form_start', { form_source: FORM_SOURCE });
-  });
+  /* form_start·form_submit 은 GA4 향상된 측정(양식 상호작용)이 자동으로 보낸다.
+     같은 이름의 커스텀 이벤트를 또 보내면 1건이 2건으로 집계되므로 보내지 않는다. */
 
   function showErr(msg) { errEl.textContent = msg || ''; }
 
@@ -2690,8 +2685,7 @@ function toggleFaq(el) {
     done = true;
     if (timer) { clearTimeout(timer); timer = null; }
     var p = { form_source: FORM_SOURCE, lead_source: routeValue };
-    /* 기존 대시보드 호환(form_submit) + 신규 성공 이벤트 + GA4 표준 리드 — 실제 전송 성공 시점에 한 번씩만 */
-    ga('form_submit', p);
+    /* 실제 전송 성공 시점에 한 번씩만. (form_submit 은 향상된 측정이 제출 클릭 때 이미 자동 전송한다) */
     ga('form_submit_success', p);
     ga('generate_lead', p);
     try {
