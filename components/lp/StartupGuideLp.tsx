@@ -115,10 +115,13 @@ const STYLE = `
 .lpg-btn:active{transform:scale(.99)}
 
 /* 히어로 — 글자만, 사진·영상 없음. 높이는 첫 화면의 약 85%(헤더 80px 포함)라 다음 섹션 제목이 아래에 살짝 보인다 */
-.lpg-hero{display:flex;align-items:center;min-height:calc(85vh - 80px);min-height:calc(85svh - 80px);padding:28px 20px 30px;background:var(--bk);color:#fff;--hlc:#22B573;--pre:#fff}
+.lpg-hero{display:flex;align-items:center;min-height:calc(85vh - 80px);min-height:calc(85svh - 80px);padding:100px 20px 30px;background:var(--bk);color:#fff;--hlc:#22B573;--pre:#fff}
+@media(min-width:1024px){.lpg-hero{padding-top:116px}}
 .lpg-hero .lpg-c{width:100%}
 .lpg-badge{display:table;margin:0 auto 16px;padding:6px 14px;border-radius:50px;background:rgba(34,181,115,.16);border:1px solid rgba(34,181,115,.55);color:var(--gl);font-size:14px;font-weight:800;letter-spacing:-0.01em}
-.lpg-hero .lpg-mega{font-size:clamp(26px,8.2vw,34px);line-height:1.28}
+.lpg-hero .lpg-mega{font-size:clamp(26px,8.2vw,34px);line-height:1.34;word-break:keep-all}
+@media(max-width:480px){.lpg-hero .lpg-mega{font-size:clamp(23px,7.2vw,30px);line-height:1.3}}
+@media(max-height:760px){.lpg-hero .lpg-mega{line-height:1.22}.lpg-hero .lpg-badge{margin-bottom:10px}.lpg-hero .lpg-hero-sub{margin-top:8px}}
 .lpg-hero-sub{margin-top:14px;font-size:15.5px;font-weight:600;line-height:1.55;text-align:center;color:rgba(255,255,255,.8)}
 .lpg-ask0{margin-top:22px;font-size:17px;font-weight:800;text-align:center;letter-spacing:-0.02em}
 .lpg-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px}
@@ -777,7 +780,9 @@ export default function StartupGuideLp() {
           <h1 className="lpg-mega">
             헬스장 창업,
             <br />
-            <Hl>지금 가진 자본으로 시작해도 되는지</Hl>
+            <Hl>지금 가진 자본으로</Hl>
+            <br />
+            <Hl>시작해도 되는지</Hl>
             <br />
             계약 전에 먼저 확인하세요
           </h1>
