@@ -6,9 +6,9 @@ import StartupGuideLp from "@/components/lp/StartupGuideLp";
 //  · 헤더 네비(/lp/* 는 로고만), 세미나 팝업(/lp/ 제외), sitemap 어디에도 이 경로를 넣지 않았다.
 //  · canonical 을 두지 않는다 (색인 대상이 아니다).
 export const metadata: Metadata = {
-  title: "헬스장·필라테스 창업 계획 검토",
+  title: { absolute: "내 센터를 차리고 싶은데 확신이 서지 않는다면 | 헬스장·필라테스 창업 더그로우" },
   description:
-    "헬스장·필라테스 창업 250회. 자본, 자리, 인테리어, 회원 모집, 운영까지 계약하기 전에 창업 계획을 함께 검토해 드립니다.",
+    "열심히 모은 돈, 오래 준비한 꿈. 자본·상권·인테리어·회원 모집·운영까지 계약 전에 확신할 근거를 함께 만들어 드립니다.",
   robots: { index: false, follow: false },
   alternates: { canonical: null },
 };

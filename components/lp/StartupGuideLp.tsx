@@ -31,11 +31,11 @@ const VIDEO_MAIN = { src: "/reviews/review-3.mp4", poster: "/reviews/review-3.jp
 
 // 걱정 선택 칩 — id 는 스크롤 목적지 섹션
 const CONCERNS = [
-  { label: "자본·투자비", to: "lpg-capital" },
-  { label: "자리·상권", to: "lpg-site" },
-  { label: "인테리어 비용", to: "lpg-interior" },
-  { label: "오픈 회원 모집", to: "lpg-members" },
-  { label: "오픈 후 운영·마케팅", to: "lpg-ops" },
+  { label: "모은 돈을 잃을까 봐", to: "lpg-capital" },
+  { label: "자리를 잘못 고를까 봐", to: "lpg-site" },
+  { label: "견적에 속을까 봐", to: "lpg-interior" },
+  { label: "회원이 안 올까 봐", to: "lpg-members" },
+  { label: "운영을 못 할까 봐", to: "lpg-ops" },
 ];
 
 const PHOTOS_SPACE = [
@@ -120,7 +120,12 @@ const STYLE = `
 .lpg-hero .lpg-c{width:100%}
 .lpg-badge{display:table;margin:0 auto 16px;padding:6px 14px;border-radius:50px;background:rgba(34,181,115,.16);border:1px solid rgba(34,181,115,.55);color:var(--gl);font-size:14px;font-weight:800;letter-spacing:-0.01em}
 .lpg-hero .lpg-mega{font-size:clamp(26px,8.2vw,34px);line-height:1.34;word-break:keep-all}
+.lpg-br4{display:none}
+@media(max-width:379px){.lpg-br4{display:inline}}
 @media(max-width:480px){.lpg-hero .lpg-mega{font-size:clamp(23px,7.2vw,30px);line-height:1.3}}
+@media(max-height:700px){.lpg-hero{padding-top:44px}.lpg-hero .lpg-mega{line-height:1.22}.lpg-hero .lpg-badge{margin-bottom:10px}.lpg-hero .lpg-hero-sub{margin-top:8px;font-size:14.5px;line-height:1.5}.lpg-hero .lpg-ask0{margin-top:14px}.lpg-hero .lpg-chips{margin-top:8px}}
+.lpg-gtx{color:var(--gl);font-weight:800}
+.lpg-lead{margin:0 0 18px;font-size:17px;font-weight:800;line-height:1.45;text-align:center;color:#111;letter-spacing:-0.02em}
 .lpg-hero-sub{margin-top:14px;font-size:15.5px;font-weight:600;line-height:1.55;text-align:center;color:rgba(255,255,255,.8)}
 .lpg-ask0{margin-top:22px;font-size:17px;font-weight:800;text-align:center;letter-spacing:-0.02em}
 .lpg-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px}
@@ -788,20 +793,20 @@ export default function StartupGuideLp() {
         <div className="lpg-c">
           <p className="lpg-badge">헬스장·필라테스 창업 250회</p>
           <h1 className="lpg-mega">
-            헬스장 창업,
+            언젠가 내 센터를{" "}
+            <br className="lpg-br4" />
+            차리고 싶었는데
             <br />
-            <Hl>지금 가진 자본으로</Hl>
+            막상 시작하려니
             <br />
-            <Hl>시작해도 되는지</Hl>
-            <br />
-            계약 전에 먼저 확인하세요
+            <Hl>확신이 서지 않습니다</Hl>
           </h1>
           <p className="lpg-hero-sub">
-            상권부터 예상 투자비, 초기 회원 모집까지.
+            열심히 모은 돈, 오래 준비한 꿈이라 더 쉽게 결정할 수 없습니다.
             <br />
-            계약하기 전에 반드시 확인해야 할 창업 계획을 함께 검토해 드립니다.
+            용기가 부족한 게 아니라, <span className="lpg-gtx">확신할 근거</span>가 부족한 겁니다.
           </p>
-          <p className="lpg-ask0" id="lpg-ask0">지금 가장 걱정되는 건 무엇인가요?</p>
+          <p className="lpg-ask0" id="lpg-ask0">지금 가장 걸리는 마음을 눌러보세요</p>
           <div className="lpg-chips" id="lpg-chips" role="group" aria-labelledby="lpg-ask0">
             {CONCERNS.map((c) => (
               <button key={c.label} type="button" className={`lpg-chip${concern === c.label ? " is-on" : ""}`} aria-pressed={concern === c.label} onClick={() => pickConcern(c)}>
@@ -816,6 +821,7 @@ export default function StartupGuideLp() {
       <section data-track-section="capital" id="lpg-capital">
         <div className="lpg-blk lpg-wh">
           <div className="lpg-c">
+            <p className="lpg-lead">확신할 근거, 이 5가지로 하나씩 만들어 드립니다</p>
             <p className="lpg-eyebrow">비용과 지역, 솔직하게 말씀드립니다</p>
             <h2 className="lpg-mega lpg-rv">
               자본에 맞춰 <Hl>업종과 평수부터</Hl> 다시 봅니다
