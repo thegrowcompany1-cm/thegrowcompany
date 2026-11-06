@@ -14,9 +14,7 @@
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-
-/** 유예 기간(일) — docs/purge-cron.sql 의 기준과 반드시 같아야 한다 */
-export const GRACE_DAYS = 30;
+import { GRACE_DAYS } from "@/lib/withdrawConfig";
 
 export async function POST() {
   const supabase = await createServerClient();
