@@ -3,6 +3,16 @@ import type { NextConfig } from "next";
 // 아임웹 서비스 종료에 대비해 아임웹 CDN 이미지를 전부 public/legacy 로 옮겼다.
 // 원격 이미지가 더 이상 없어 images.remotePatterns 도 함께 제거했다.
 const nextConfig: NextConfig = {
+  // 그로우 인테리어는 자체 랜딩 없이 외부 사이트로 영구 이동한다 (2026-11-06)
+  async redirects() {
+    return [
+      {
+        source: "/consulting/startup/interior",
+        destination: "https://www.growinterior.co.kr/",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     // 이미지 최적화 전역 해제.
     //

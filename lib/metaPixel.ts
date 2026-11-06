@@ -17,10 +17,9 @@
  */
 export const PIXEL_MAP: Record<string, string> = {
   "/consulting/startup": "1556215626187598", // 창업 솔루션
-  // 창업 신규 랜딩 3종 — 정확 일치로 명시(위 "/consulting/startup" prefix 와 같은 픽셀이라 충돌 없음)
+  // 창업 신규 랜딩 2종 — 정확 일치로 명시(위 "/consulting/startup" prefix 와 같은 픽셀이라 충돌 없음)
   "/consulting/startup/takeover": "1556215626187598", // 인수창업 컨설팅
   "/consulting/startup/location": "1556215626187598", // 입지·상권 분석 컨설팅
-  "/consulting/startup/interior": "1556215626187598", // 그로우 인테리어
   "/lp/startup": "1556215626187598", // 메타 광고 전용 창업 랜딩 (정확 일치, /consulting/startup 과 같은 픽셀)
   "/lp/startup-guide": "1556215626187598", // 메타 광고 전용 창업 불안 해소형 랜딩 (정확 일치, 같은 픽셀)
   "/consulting/outsourcing": "747849161675945", // 매장 위탁

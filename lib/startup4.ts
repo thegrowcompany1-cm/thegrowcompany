@@ -1,11 +1,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// 창업 신규 랜딩 3종(인수창업·입지상권·인테리어)의 카피와 공통 데이터
+// 창업 신규 랜딩 2종(인수창업·입지상권, 인테리어는 외부 사이트로 연결)의 카피와 공통 데이터
 //  · 카피 출처: startup-4-plan.md (기획서 그대로, 확인 필요 항목 미반영)
 //  · 문구의 [대괄호] 구간은 화면에서 초록 강조로 그린다
 //  · 사용자 노출 문구에 물음표·영문 라벨·"무료 상담"·창업 수치(250회 외)를 넣지 않는다
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type Startup4Key = "stk" | "slc" | "sin";
+export type Startup4Key = "stk" | "slc";
 
 export type Startup4Step = { t: string; d: string };
 
@@ -31,7 +31,6 @@ export type Startup4Config = {
   notice?: string;
   /** 입지 페이지: 다른 서비스 섹션 위 연결 문구 */
   bridge?: string;
-  evidence?: boolean;
 };
 
 export const STARTUP4_FORM_ACTION =
@@ -109,94 +108,18 @@ export const STARTUP4_LOCATION: Startup4Config = {
   bridge: "자리가 정해지면, 오픈까지 한 팀으로 이어갈 수 있습니다",
 };
 
-export const STARTUP4_INTERIOR: Startup4Config = {
-  key: "sin",
-  path: "/consulting/startup/interior",
-  product: "인테리어",
-  badge: "피트니스 전문 인테리어",
-  headline: ["견적서 세 장이", "[전부 다른 이유]부터 알려드립니다"],
-  sub: "매출 동선 설계부터 직접 시공, 기구 연결까지. 헬스장·필라테스만 시공해 온 팀이 맡습니다.",
-  cta: "인테리어 견적 상담 신청하기",
-  empathyTitle: "견적을 받고 드는 생각",
-  empathy: [
-    "견적마다 금액 차이가 너무 크다",
-    "공사 중에 추가금이 계속 붙을까 봐 걱정된다",
-    "일반 인테리어 업체는 운동 공간을 잘 모른다",
-    "샤워실·바닥·방음처럼 운동 시설만의 공사가 걱정된다",
-  ],
-  redefineTitle: "견적서에서 [가장 자주 부풀려지는] 항목이 있습니다",
-  redefineBody: "항목별로 왜 이 금액인지 보여드리고, 필요 없는 공사는 빼드립니다.",
-  stepsTitle: "이렇게 진행합니다",
-  steps: [
-    { t: "실측과 동선 설계", d: "기구 배치, 상담 공간, 회원 동선을 잡습니다." },
-    { t: "항목별 견적", d: "금액 근거를 항목마다 공개합니다." },
-    { t: "전속 인테리어팀 직접 시공", d: "중간 업체 없이 진행합니다." },
-    { t: "기구 사업자 조건 연결", d: "소매가가 아닌 조건으로 연결합니다." },
-  ],
-  evidence: true,
+export type Startup4Service = {
+  key: Startup4Key | "total" | "interior";
+  title: string;
+  desc: string;
+  href: string;
+  /** 외부 사이트 - 새 탭으로 열고 외부 링크 아이콘을 보인다 */
+  external?: boolean;
 };
-
-export type Startup4Service = { key: Startup4Key | "total"; title: string; desc: string; href: string };
 
 export const STARTUP4_SERVICES: Startup4Service[] = [
   { key: "stk", title: "인수창업 컨설팅", desc: "매물로 나온 센터, 이 가격에 들어가도 되는지 숫자부터 확인합니다.", href: "/consulting/startup/takeover" },
   { key: "slc", title: "입지·상권 분석 컨설팅", desc: "자리부터 제대로 고르고 싶은 분께 후보지 비교를 드립니다.", href: "/consulting/startup/location" },
   { key: "total", title: "토탈 창업 컨설팅", desc: "입지부터 인테리어, 오픈 프리세일, 운영까지 한 팀이 끝까지", href: "/consulting/startup" },
-  { key: "sin", title: "그로우 인테리어", desc: "헬스장·필라테스 전문 인테리어만 따로 맡길 수 있습니다.", href: "/consulting/startup/interior" },
+  { key: "interior", title: "그로우 인테리어", desc: "헬스장·필라테스 전문 인테리어만 따로 맡길 수 있습니다.", href: "https://www.growinterior.co.kr/", external: true },
 ];
-
-/** /consulting/startup 시공사례 갤러리와 같은 46장 (파일은 public/legacy/startup) */
-export const STARTUP4_GALLERY: string[] = [
-  "/legacy/startup/7febfcc8985e2.png",
-  "/legacy/startup/147fe84156057.png",
-  "/legacy/startup/0c832ab248ce4.png",
-  "/legacy/startup/971ea42cfd8a8.png",
-  "/legacy/startup/16d3196b68f2e.png",
-  "/legacy/startup/e8eb94b6d52ff.png",
-  "/legacy/startup/050b276ee45d7.png",
-  "/legacy/startup/7fddde5b80282.png",
-  "/legacy/startup/bdffa96015f92.png",
-  "/legacy/startup/429d83e687190.png",
-  "/legacy/startup/994f3e4444876.png",
-  "/legacy/startup/4a9b8cbefcace.png",
-  "/legacy/startup/d62ab4ed1c51e.png",
-  "/legacy/startup/bcb8f87ab7f88.png",
-  "/legacy/startup/dded8e6197f60.png",
-  "/legacy/startup/24150a19c2437.png",
-  "/legacy/startup/05fdbed8a415e.png",
-  "/legacy/startup/5a7016f66c8e7.png",
-  "/legacy/startup/5b6b3c8c692a6.png",
-  "/legacy/startup/c0ad9289bb4b3.png",
-  "/legacy/startup/a5225411385cf.png",
-  "/legacy/startup/e7ec9b6e8f936.png",
-  "/legacy/startup/d918cd70d9c08.png",
-  "/legacy/startup/48a5270a28abe.png",
-  "/legacy/startup/7855e31a685e9.png",
-  "/legacy/startup/e75529ae4fab7.png",
-  "/legacy/startup/425d8005700dd.png",
-  "/legacy/startup/bf3bf2aea61a1.png",
-  "/legacy/startup/b02205ae2e7da.png",
-  "/legacy/startup/543e8bd02106a.png",
-  "/legacy/startup/35a5086c05f11.png",
-  "/legacy/startup/e49fbb8f83360.png",
-  "/legacy/startup/ee0af39a17497.png",
-  "/legacy/startup/31d7a26b1bcf3.png",
-  "/legacy/startup/4e18b37fda8fc.png",
-  "/legacy/startup/8ff784baa524b.png",
-  "/legacy/startup/ce858defec5b3.png",
-  "/legacy/startup/13ef060b46ff4.png",
-  "/legacy/startup/ed2606eb9f936.png",
-  "/legacy/startup/6542da8356ba3.png",
-  "/legacy/startup/88d10aeb9e1fd.png",
-  "/legacy/startup/500c88fe40f06.png",
-  "/legacy/startup/fe2ba70d48273.png",
-  "/legacy/startup/ba9e88035d811.png",
-  "/legacy/startup/5985b8b2d6a41.png",
-  "/legacy/startup/31adc48935f10.png",
-];
-
-export const STARTUP4_REVIEW = {
-  name: "최○○ 대표님",
-  meta: "헬스장 · 경기 수원",
-  text: "인테리어 비용이 합리적인데 퀄리티는 최고였어요. 동선까지 고려한 설계 덕분에 상담 전환율이 정말 높습니다.",
-};

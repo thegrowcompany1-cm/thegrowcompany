@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 창업 신규 랜딩 3종 공통 컴포넌트 (인수창업 stk- / 입지상권 slc- / 인테리어 sin-)
+// 창업 신규 랜딩 2종 공통 컴포넌트 (인수창업 stk- / 입지상권 slc-)
 //  · 카피는 lib/startup4.ts, CSS 접두사는 config.key
 //  · 폼은 /consulting/startup 의 창업 폼과 동일(action·token·source·name·필드). 새 필드 없음.
 //    제출 직전 route 값 뒤에 " / 상품: ○○" 만 붙인다.
@@ -9,14 +9,12 @@
 //  · 헤더·푸터는 app/layout.tsx 것을 그대로 쓴다
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import Link from "next/link";
 import {
   STARTUP4_FORM_ACTION,
   STARTUP4_FORM_SOURCE,
-  STARTUP4_GALLERY,
-  STARTUP4_REVIEW,
   STARTUP4_SERVICES,
 } from "@/lib/startup4";
 import type { Startup4Config } from "@/lib/startup4";
@@ -292,94 +290,6 @@ function ApplyForm({ cfg }: { cfg: Startup4Config }) {
   );
 }
 
-// ─── 시공사례 갤러리 (마퀴 + 라이트박스) ─────────────────────────────────────
-function Gallery({ p }: { p: string }) {
-  const [open, setOpen] = useState<number | null>(null);
-  const total = STARTUP4_GALLERY.length;
-
-  const rows = [0, 1, 2].map((r) => {
-    const per = Math.ceil(total / 3);
-    return STARTUP4_GALLERY.slice(r * per, (r + 1) * per).map((src, i) => ({ src, idx: r * per + i }));
-  });
-
-  const close = useCallback(() => setOpen(null), []);
-  const move = useCallback((d: number) => setOpen((o) => (o === null ? o : (o + d + total) % total)), [total]);
-
-  useEffect(() => {
-    if (open === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-      else if (e.key === "ArrowRight") move(1);
-      else if (e.key === "ArrowLeft") move(-1);
-    };
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, close, move]);
-
-  return (
-    <>
-      <div className={`${p}-gallery`}>
-        {rows.map((row, ri) => (
-          <div key={ri} className={`${p}-grow ${ri % 2 === 0 ? `${p}-gl` : `${p}-gr`}`}>
-            {[0, 1].map((dup) =>
-              row.map(({ src, idx }) => (
-                <button
-                  key={`${dup}-${idx}`}
-                  type="button"
-                  className={`${p}-gbtn`}
-                  aria-label={`시공사례 ${idx + 1} 크게 보기`}
-                  aria-hidden={dup === 1}
-                  tabIndex={dup === 1 ? -1 : 0}
-                  onClick={() => setOpen(idx)}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="시공사례" loading="lazy" decoding="async" draggable={false} />
-                </button>
-              )),
-            )}
-          </div>
-        ))}
-      </div>
-      {open !== null ? (
-        <div className={`${p}-lb`} role="dialog" aria-modal="true" aria-label="시공사례 크게 보기" onClick={close}>
-          <button type="button" className={`${p}-lb-x`} aria-label="닫기" onClick={close}>
-            ✕
-          </button>
-          <button
-            type="button"
-            className={`${p}-lb-nav ${p}-lb-prev`}
-            aria-label="이전 사진"
-            onClick={(e) => {
-              e.stopPropagation();
-              move(-1);
-            }}
-          >
-            ‹
-          </button>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={STARTUP4_GALLERY[open]} alt="시공사례" onClick={(e) => e.stopPropagation()} />
-          <button
-            type="button"
-            className={`${p}-lb-nav ${p}-lb-next`}
-            aria-label="다음 사진"
-            onClick={(e) => {
-              e.stopPropagation();
-              move(1);
-            }}
-          >
-            ›
-          </button>
-        </div>
-      ) : null}
-    </>
-  );
-}
-
 // ─── 스타일 (접두사로 페이지별 격리) ─────────────────────────────────────────
 const css = (p: string) => `
 .${p}-root{font-family:'Pretendard','Noto Sans KR',sans-serif;background:#0c0f0d;color:#eef2ef;word-break:keep-all;-webkit-font-smoothing:antialiased}
@@ -424,29 +334,6 @@ const css = (p: string) => `
 .${p}-list li::before{content:'';position:absolute;left:4px;top:23px;width:9px;height:9px;border-radius:50%;background:#4CAF50}
 .${p}-notice-s{margin:28px 0 0;font-size:13px;line-height:1.6;color:#7f8a84}
 
-/* 증거 - 시공사례 + 후기 */
-.${p}-gallery{position:relative;overflow:hidden;padding:4px 0;margin:0 -22px 34px;-webkit-user-select:none;user-select:none}
-.${p}-grow{display:flex;gap:8px;width:max-content;margin-bottom:8px}
-.${p}-grow:hover,.${p}-grow:active{animation-play-state:paused}
-.${p}-gl{animation:${p}SL 60s linear infinite}
-.${p}-gr{animation:${p}SR 66s linear infinite}
-@keyframes ${p}SL{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes ${p}SR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.${p}-gbtn{flex:none;width:132px;height:132px;padding:0;border:0;border-radius:10px;overflow:hidden;background:#1d221f;cursor:zoom-in}
-.${p}-gbtn img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-.${p}-review{background:#181d1a;border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:24px 22px}
-.${p}-rhead{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.${p}-av{width:42px;height:42px;border-radius:50%;background:#2e7d32;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
-.${p}-rname{font-size:16px;font-weight:800;color:#fff;margin:0}
-.${p}-rmeta{font-size:13px;color:#8f9a94}
-.${p}-stars{display:flex;gap:2px;margin-bottom:12px}
-.${p}-stars svg{width:18px;height:18px;fill:#f5b942}
-.${p}-rtext{font-size:17px;line-height:1.75;color:#e3e9e5;margin:0}
-.${p}-lb{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:56px 12px}
-.${p}-lb img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
-.${p}-lb-x{position:absolute;top:12px;right:14px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:20px;cursor:pointer}
-.${p}-lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:56px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:32px;cursor:pointer;border-radius:10px}
-.${p}-lb-prev{left:6px}.${p}-lb-next{right:6px}
 
 /* 폼 - 기존 창업 폼 톤(흰 카드) */
 .${p}-formsec{padding:56px 0 72px;background:linear-gradient(180deg,#0c0f0d,#12301a)}
@@ -486,6 +373,7 @@ const css = (p: string) => `
 .${p}-card:hover{border-color:#009519;transform:translateY(-2px)}
 .${p}-card b{display:block;font-size:18px;font-weight:800;margin-bottom:6px;letter-spacing:-.02em}
 .${p}-card span{display:block;font-size:14.5px;line-height:1.55;color:#66716b}
+.${p}-ext{width:14px;height:14px;fill:currentColor;vertical-align:-2px;margin-left:5px}
 .${p}-card i{display:block;margin-top:10px;font-style:normal;font-size:14px;font-weight:700;color:#009519}
 
 /* 하단 고정 바 */
@@ -498,15 +386,10 @@ const css = (p: string) => `
   .${p}-bar,.${p}-spacer{display:none}
   .${p}-wrap{padding:0 32px}
   .${p}-sec{padding:96px 0}
-  .${p}-gbtn{width:180px;height:180px}
-  .${p}-gallery{margin:0 0 40px}
   .${p}-cards{grid-template-columns:repeat(3,1fr)}
   .${p}-formcard{padding:34px 34px 28px}
 }
-@media(prefers-reduced-motion:reduce){.${p}-gl,.${p}-gr{animation:none}}
 `;
-
-const STAR = "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z";
 
 export default function Startup4Landing({ cfg }: { cfg: Startup4Config }) {
   const p = cfg.key;
@@ -597,32 +480,6 @@ export default function Startup4Landing({ cfg }: { cfg: Startup4Config }) {
         </div>
       </section>
 
-      {cfg.evidence ? (
-        <section className={`${p}-sec alt`} data-track-section="proof">
-          <div className={`${p}-wrap`}>
-            <h2 className={`${p}-h2`}>시공사례</h2>
-            <Gallery p={p} />
-            <div className={`${p}-review`}>
-              <div className={`${p}-rhead`}>
-                <div className={`${p}-av`}>{STARTUP4_REVIEW.name.charAt(0)}</div>
-                <div>
-                  <h3 className={`${p}-rname`}>{STARTUP4_REVIEW.name}</h3>
-                  <span className={`${p}-rmeta`}>{STARTUP4_REVIEW.meta}</span>
-                </div>
-              </div>
-              <div className={`${p}-stars`} aria-hidden="true">
-                {[0, 1, 2, 3, 4].map((n) => (
-                  <svg key={n} viewBox="0 0 24 24">
-                    <path d={STAR} />
-                  </svg>
-                ))}
-              </div>
-              <p className={`${p}-rtext`}>{STARTUP4_REVIEW.text}</p>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
       {cfg.takeaway ? (
         <section className={`${p}-sec alt`} data-track-section="deliver">
           <div className={`${p}-wrap`}>
@@ -661,13 +518,26 @@ export default function Startup4Landing({ cfg }: { cfg: Startup4Config }) {
           <h2 className={`${p}-h2`}>다른 창업 서비스</h2>
           {cfg.bridge ? <p className={`${p}-bridge`}>{cfg.bridge}</p> : null}
           <div className={`${p}-cards`}>
-            {others.map((s) => (
-              <Link key={s.href} href={s.href} className={`${p}-card`}>
-                <b>{s.title}</b>
-                <span>{s.desc}</span>
-                <i>자세히 보기 →</i>
-              </Link>
-            ))}
+            {others.map((s) =>
+              s.external ? (
+                <a key={s.href} href={s.href} target="_blank" rel="noopener" className={`${p}-card`}>
+                  <b>{s.title}</b>
+                  <span>{s.desc}</span>
+                  <i>
+                    새 창에서 열기
+                    <svg className={`${p}-ext`} viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H7v10h10v-4h2v6H5V5z" />
+                    </svg>
+                  </i>
+                </a>
+              ) : (
+                <Link key={s.href} href={s.href} className={`${p}-card`}>
+                  <b>{s.title}</b>
+                  <span>{s.desc}</span>
+                  <i>자세히 보기 →</i>
+                </Link>
+              ),
+            )}
           </div>
         </div>
       </section>
