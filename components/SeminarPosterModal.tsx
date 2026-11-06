@@ -45,6 +45,10 @@ const EXCLUDE_PREFIX = [
   "/edu/fc-class",
   "/edu/startup-class",
   "/lp/", // 메타 광고 전용 랜딩 전체
+  // 창업 신규 랜딩 3종 (메인 노출 전) — /consulting/startup 본 페이지는 그대로 노출
+  "/consulting/startup/takeover",
+  "/consulting/startup/location",
+  "/consulting/startup/interior",
 ];
 
 const isExcluded = (path: string) =>

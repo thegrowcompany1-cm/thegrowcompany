@@ -7,6 +7,9 @@ export const SECTION_TRACK_FIX_DATE = "2026-10-25";
 
 export const TRACK_SECTION_ORDER: Record<string, string[]> = {
   "/consulting/startup": ["hero", "review", "empathy", "solution", "process", "proof", "faq", "form"],
+  "/consulting/startup/takeover": ["hero", "empathy", "redefine", "process", "deliver", "why", "form", "related"],
+  "/consulting/startup/location": ["hero", "empathy", "redefine", "process", "deliver", "form", "related"],
+  "/consulting/startup/interior": ["hero", "empathy", "redefine", "process", "proof", "form", "related"],
   "/lp/startup": ["hero", "rewind", "presale", "space", "site", "team", "gallery", "stories", "reviews", "person", "form", "faq"],
   "/lp/startup-guide": ["hero", "empathy", "redefine", "capital", "site", "interior", "members", "ops", "proof", "honest", "form", "faq"],
   "/consulting/outsourcing": ["hero", "empathy", "video", "proof", "compare", "solution", "process", "aftercare", "review", "faq", "form"],
@@ -94,6 +97,9 @@ export const TRACK_SECTION_LABEL: Record<string, string> = {
   marketing: "마케팅",
   redefine: "재정의",
   honest: "솔직 안내",
+  deliver: "받는 것",
+  why: "왜 더그로우",
+  related: "다른 창업 서비스",
 };
 
 export const TRACK_SOURCE_LABEL: Record<string, string> = {
