@@ -117,6 +117,12 @@ const navItems: NavItem[] = [
     desc: "리모델링, 신규 입점 등 피트니스 전문 인테리어",
     external: true,
   },
+  {
+    label: "채용공고",
+    href: "/recruit",
+    desc: "더그로우 현장 FC · 지점 매니저 상시 모집",
+    external: false,
+  },
 ];
 
 export default function Header() {

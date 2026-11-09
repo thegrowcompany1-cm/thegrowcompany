@@ -45,6 +45,7 @@ const EXCLUDE_PREFIX = [
   "/edu/fc-class",
   "/edu/startup-class",
   "/lp/", // 메타 광고 전용 랜딩 전체
+  "/recruit", // 채용공고 — 지원자에게 세미나 팝업 불필요
   // 창업 신규 랜딩 2종 (메인 노출 전) — /consulting/startup 본 페이지는 그대로 노출
   "/consulting/startup/takeover",
   "/consulting/startup/location",
