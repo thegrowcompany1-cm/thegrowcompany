@@ -12,9 +12,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { SITE_URL } from "@/lib/site";
+import ApplyForm from "@/components/startup4/ApplyForm";
+import { formCss } from "@/components/startup4/styles";
+import { STARTUP4_SERVICE_ALLINONE } from "@/lib/startup4";
 
 // 창업 솔루션 Service 구조화 데이터
 const SERVICE_SCHEMA = {
@@ -3283,6 +3287,12 @@ function toggleFaq(element) {
   fill: #4CAF50;
 }
 
+/* 공통 신청 폼 자리 — 기존 폼 카드와 같은 폭 */
+#startupFormMount {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .tgc-form-wrapper {
   opacity: 0;
   transform: translateY(30px);
@@ -3522,109 +3532,8 @@ function toggleFaq(element) {
     </div>
     
     <div class="tgc-form-wrapper" id="formWrapper">
-      <div class="tg-form-wrap">
-        <div class="tg-form-header">
-          <span class="tg-form-icon">💬</span>
-          <span class="tg-form-title">창업 정보 받아보기</span>
-        </div>
-
-        <form id="startupForm" action="https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec" method="POST" target="hidden_iframe">
-          <div class="tg-form-group">
-            <label class="tg-label">희망 업종을 선택해주세요. <span class="tg-required">*</span></label>
-            <select name="industry" class="tg-input" required>
-              <option value="">(선택)</option>
-              <option value="헬스장">헬스장</option>
-              <option value="필라테스">필라테스</option>
-              <option value="PT 스튜디오">PT 스튜디오</option>
-              <option value="요가">요가</option>
-              <option value="기타">기타</option>
-            </select>
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">
-              선호 희망 지역을 알려주세요.<br>
-              <small class="tg-desc">(입지 상권을 함께 봐드립니다.)</small>
-            </label>
-            <input type="text" name="area" class="tg-input" placeholder="예) 서울 마포구, 경기 남부, 부산 서면 인근 등" />
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">이름을 입력해주세요. <span class="tg-required">*</span></label>
-            <input type="text" name="name" class="tg-input" required />
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">연락처를 입력해주세요. <span class="tg-required">*</span></label>
-            <div class="tg-phone-row">
-              <input type="text" name="phone1" class="tg-input tg-phone" maxlength="3" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phone2" class="tg-input tg-phone" maxlength="4" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phone3" class="tg-input tg-phone" maxlength="4" required />
-            </div>
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">연락처를 입력해주세요(중복확인). <span class="tg-required">*</span></label>
-            <div class="tg-phone-row">
-              <input type="text" name="phoneCheck1" class="tg-input tg-phone" maxlength="3" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phoneCheck2" class="tg-input tg-phone" maxlength="4" required />
-              <span class="tg-phone-dash">-</span>
-              <input type="text" name="phoneCheck3" class="tg-input tg-phone" maxlength="4" required />
-            </div>
-          </div>
-
-          <div class="tg-form-group">
-            <label class="tg-label">신청 경로를 알려주세요. <span class="tg-required">*</span></label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="네이버 검색(창업, 창업솔루션 등)" required />
-              <span>네이버 검색 (창업, 창업솔루션 등)</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="인스타/페이스북 광고" />
-              <span>인스타/페이스북 광고</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="네이버 블로그" />
-              <span>네이버 블로그</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="지인 소개/아카데미 수강생" />
-              <span>지인 소개 / 아카데미 수강생</span>
-            </label>
-
-            <label class="tg-radio">
-              <input type="radio" name="route" value="기타" />
-              <span>기타</span>
-            </label>
-          </div>
-
-          <!-- 페이지 구분 -->
-          <input type="hidden" name="source" value="창업지원상담_아임웹">
-          
-          <!-- 🔒 보안 토큰 -->
-          <input type="hidden" name="token" value="grow2026secure">
-
-          <div class="tg-form-actions">
-            <button type="submit" class="tg-submit-btn">정보 받아보기</button>
-          </div>
-        </form>
-
-        <iframe name="hidden_iframe" style="display:none;"></iframe>
-        
-        <div class="tgc-form-notice">
-          <p>
-            📞 상담 신청 후 <strong>24시간 이내</strong> 담당자가 연락드립니다.<br>
-            궁금한 점은 편하게 문의해 주세요.
-          </p>
-        </div>
-      </div>
+      <!-- 신청 폼은 공통 컴포넌트(components/startup4/ApplyForm.tsx)가 이 자리에 들어온다 -->
+      <div id="startupFormMount"></div>
     </div>
   </div>
 </section>
@@ -3656,58 +3565,21 @@ function toggleFaq(element) {
 
   // 언마운트 정리용 전역 훅 (React cleanup 에서 호출 후 no-op 으로 교체)
   window.__tgcCtaObserverStop = function () { observer.disconnect(); };
-  
-  document.getElementById('startupForm').addEventListener('submit', function (e) {
-    const phone1 = this.querySelector('[name="phone1"]').value;
-    const phone2 = this.querySelector('[name="phone2"]').value;
-    const phone3 = this.querySelector('[name="phone3"]').value;
-    const phoneCheck1 = this.querySelector('[name="phoneCheck1"]').value;
-    const phoneCheck2 = this.querySelector('[name="phoneCheck2"]').value;
-    const phoneCheck3 = this.querySelector('[name="phoneCheck3"]').value;
-    
-    if (phone1 !== phoneCheck1 || phone2 !== phoneCheck2 || phone3 !== phoneCheck3) {
-      e.preventDefault();
-      alert('연락처가 일치하지 않습니다. 다시 확인해주세요.');
-      return false;
-    }
-    
-    // GA4 전환 이벤트 (gtag 미로드 시 조용히 무시)
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'form_submit', { form_source: '창업지원상담_아임웹' });
-    }
-    /* 메타 픽셀 Lead — 이 페이지에 픽셀이 매핑된 경우에만 전송된다 */
-    if (typeof window.__tgcFbTrack === 'function') {
-      window.__tgcFbTrack('Lead', { content_name: '창업지원상담_아임웹' });
-    }
-
-    setTimeout(function() {
-      alert('정상적으로 접수되었습니다. 감사합니다 :)');
-      document.getElementById('startupForm').reset();
-    }, 500);
-  });
-  
-  // 상단에도 동일 구조 폼(-top)이 있을 수 있으므로 전역이 아닌 이 폼 안에서만 조회
-  const phoneInputs = document.getElementById('startupForm').querySelectorAll('.tg-phone');
-  phoneInputs.forEach((input, index) => {
-    input.addEventListener('input', function() {
-      if (this.value.length >= this.maxLength && index < phoneInputs.length - 1) {
-        phoneInputs[index + 1].focus();
-      }
-    });
-    
-    input.addEventListener('keypress', function(e) {
-      if (!/[0-9]/.test(e.key)) {
-        e.preventDefault();
-      }
-    });
-  });
 })();
 </script>`;
+
+// dangerouslySetInnerHTML 객체는 모듈 상수로 고정한다. 렌더마다 새 객체를 만들면 React 가 상태가 바뀔 때마다
+// innerHTML 을 다시 써서, 주입해 둔 스크립트·DOM(그리고 폼 마운트 지점)이 통째로 새 요소로 바뀐다.
+const HERO_HTML_PROP = { __html: HERO_SECTION_HTML };
+const VIDEO_HTML_PROP = { __html: VIDEO_SECTION_HTML };
+const DETAIL_HTML_PROP = { __html: DETAIL_HTML };
 
 export default function StartupConsultingPage() {
   // 하단 상세정보 영역은 클라이언트에서만 렌더링하여 서버/클라이언트 HTML 불일치를
   // 원천 차단한다. (DETAIL_HTML 은 아임웹 원본 + script 가 섞인 외부 HTML)
   const [mounted, setMounted] = useState(false);
+  // 공통 신청 폼을 꽂을 자리(DETAIL_HTML 안의 #startupFormMount)
+  const [formMount, setFormMount] = useState<HTMLElement | null>(null);
 
   // 히어로 / 영상 후기 슬라이더 / 하단 상세정보(+CTA 폼) 컨테이너 ref
   const heroRef = useRef<HTMLDivElement>(null);
@@ -3793,8 +3665,10 @@ export default function StartupConsultingPage() {
     const container = detailRef.current;
     if (!container) return;
     const injected = injectContainer(container);
+    setFormMount(container.querySelector<HTMLElement>("#startupFormMount"));
     return () => {
       injected.forEach((s) => s.remove());
+      setFormMount(null);
 
       const w = window as unknown as Record<string, unknown>;
 
@@ -3835,7 +3709,7 @@ export default function StartupConsultingPage() {
         <div
           ref={heroRef}
           suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: HERO_SECTION_HTML }}
+          dangerouslySetInnerHTML={HERO_HTML_PROP}
         />
       ) : (
         <div ref={heroRef} suppressHydrationWarning />
@@ -3846,7 +3720,7 @@ export default function StartupConsultingPage() {
         <div
           ref={vidRef}
           suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: VIDEO_SECTION_HTML }}
+          dangerouslySetInnerHTML={VIDEO_HTML_PROP}
         />
       ) : (
         <div ref={vidRef} suppressHydrationWarning />
@@ -3880,12 +3754,23 @@ export default function StartupConsultingPage() {
           <div
             ref={detailRef}
             suppressHydrationWarning
-            dangerouslySetInnerHTML={{ __html: DETAIL_HTML }}
+            dangerouslySetInnerHTML={DETAIL_HTML_PROP}
           />
         ) : (
           <div ref={detailRef} suppressHydrationWarning />
         )}
       </section>
+
+      {/* 공통 신청 폼 — 인수창업·입지상권 랜딩과 같은 컴포넌트. 기본 선택은 올인원 창업 패키지 */}
+      {formMount
+        ? createPortal(
+            <>
+              <style dangerouslySetInnerHTML={{ __html: formCss("stu") }} />
+              <ApplyForm p="stu" cta="정보 받아보기" defaultService={STARTUP4_SERVICE_ALLINONE} />
+            </>,
+            formMount,
+          )
+        : null}
 
       {/* ───────────────── 다른 서비스 둘러보기 (추천 상품) ───────────────── */}
       <section className="w-full bg-[#f8f9fa]">

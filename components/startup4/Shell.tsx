@@ -19,6 +19,8 @@ export type ShellProps = {
   p: Startup4Key;
   cta: string;
   product: string;
+  /** 폼의 service 라디오 기본 선택 */
+  defaultService: string;
   formTitle: string;
   formSub: string;
   prep: { title: string; items: string[] }[];
@@ -26,7 +28,7 @@ export type ShellProps = {
   children: ReactNode;
 };
 
-export default function Shell({ p, cta, product, formTitle, formSub, prep, bridge, children }: ShellProps) {
+export default function Shell({ p, cta, product, defaultService, formTitle, formSub, prep, bridge, children }: ShellProps) {
   const [heroVisible, setHeroVisible] = useState(true);
   const [formVisible, setFormVisible] = useState(false);
 
@@ -103,7 +105,7 @@ export default function Shell({ p, cta, product, formTitle, formSub, prep, bridg
             ))}
           </div>
           <div className={`${p}-formbox`}>
-            <ApplyForm p={p} cta={cta} product={product} />
+            <ApplyForm p={p} cta={cta} defaultService={defaultService} />
           </div>
         </div>
       </section>

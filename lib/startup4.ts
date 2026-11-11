@@ -11,6 +11,12 @@ export const STARTUP4_FORM_ACTION =
   "https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec";
 export const STARTUP4_FORM_SOURCE = "창업지원상담_아임웹";
 
+/** 신청 폼 맨 위 라디오(name="service") 값 — Apps Script 가 이 문자열을 그대로 읽는다. 바꾸면 시트 쪽도 같이 바꿔야 한다 */
+export const STARTUP4_SERVICE_OPTIONS = ["올인원 창업 패키지", "입지·상권·부동산 임장", "인수창업"] as const;
+export const STARTUP4_SERVICE_ALLINONE = STARTUP4_SERVICE_OPTIONS[0];
+export const STARTUP4_SERVICE_LOCATION = STARTUP4_SERVICE_OPTIONS[1];
+export const STARTUP4_SERVICE_TAKEOVER = STARTUP4_SERVICE_OPTIONS[2];
+
 export type Startup4Service = {
   key: Startup4Key | "total" | "interior";
   title: string;

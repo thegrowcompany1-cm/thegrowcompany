@@ -2,14 +2,15 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 창업 신규 랜딩 공통 신청 폼 — /consulting/startup 의 창업 폼과 동일(action·token·source·name·필드, 새 필드 없음)
-//  · 제출 직전 route 뒤에 " / 상품: ○○" 만 붙인다
+//  · /consulting/startup · location · takeover 세 페이지가 같은 폼을 쓴다. 맨 위 필수 라디오 name="service" 로 상담 서비스를 구분한다
+//    (route 뒤에 상품을 붙이던 방식은 폐지 — Apps Script 가 service 필드를 읽는다)
 //  · iframe 이름은 접두사별 고유(stk_hidden_iframe 등), load 성공 판정(done 가드·15초·try/catch)
 //  · 제출 중 중복 제출 차단(sendingRef/doneRef), 측정 이벤트는 제출당 1회
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { STARTUP4_FORM_ACTION, STARTUP4_FORM_SOURCE } from "@/lib/startup4";
+import { STARTUP4_FORM_ACTION, STARTUP4_FORM_SOURCE, STARTUP4_SERVICE_OPTIONS } from "@/lib/startup4";
 
 type Gtag = (...args: unknown[]) => void;
 
@@ -31,7 +32,7 @@ export function fireGa(name: string, params: Record<string, unknown>) {
 }
 
 // ─── 신청 폼 ─────────────────────────────────────────────────────────────────
-export default function ApplyForm({ p, cta, product }: { p: string; cta: string; product: string }) {
+export default function ApplyForm({ p, cta, defaultService }: { p: string; cta: string; defaultService: string }) {
   const iframeName = `${p}_hidden_iframe`;
   const formRef = useRef<HTMLFormElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
@@ -99,14 +100,9 @@ export default function ApplyForm({ p, cta, product }: { p: string; cta: string;
       return;
     }
 
-    // 제출 직전 route 뒤에 상품 구분을 붙인다 (시트 열 구조·source 는 그대로)
-    const checked = form.querySelector<HTMLInputElement>('input[name="route"]:checked');
-    if (checked) {
-      const base = checked.getAttribute("data-base") ?? checked.value;
-      checked.value = `${base} / 상품: ${product}`;
-    }
+    const service = form.querySelector<HTMLInputElement>('input[name="service"]:checked')?.value ?? "";
 
-    fireGa("form_submit", { form_source: STARTUP4_FORM_SOURCE, product: product });
+    fireGa("form_submit", { form_source: STARTUP4_FORM_SOURCE, service });
     try {
       const fb = (window as unknown as { __tgcFbTrack?: (ev: string, d: Record<string, unknown>) => void }).__tgcFbTrack;
       if (typeof fb === "function") fb("Lead", { content_name: STARTUP4_FORM_SOURCE });
@@ -124,19 +120,10 @@ export default function ApplyForm({ p, cta, product }: { p: string; cta: string;
     }, 0);
   };
 
-  // 실패 후 재시도 때 route 값이 중복으로 붙지 않도록 원래 값을 복원한다
-  useEffect(() => {
-    if (sending) return;
-    formRef.current?.querySelectorAll<HTMLInputElement>('input[name="route"]').forEach((r) => {
-      const base = r.getAttribute("data-base");
-      if (base) r.value = base;
-    });
-  }, [sending]);
-
   const onPhoneInput = (e: FormEvent<HTMLInputElement>) => {
     const t = e.currentTarget;
     if (t.value.length >= t.maxLength) {
-      const all = Array.from(t.form?.querySelectorAll<HTMLInputElement>(".tg-phone") ?? []);
+      const all = Array.from(t.form?.querySelectorAll<HTMLInputElement>(`.${p}-pn`) ?? []);
       const i = all.indexOf(t);
       if (i >= 0 && i < all.length - 1) all[i + 1].focus();
     }
@@ -154,7 +141,7 @@ export default function ApplyForm({ p, cta, product }: { p: string; cta: string;
             type="text"
             inputMode="numeric"
             name={`${prefix}${n}`}
-            className={`${p}-input tg-phone`}
+            className={`${p}-input ${p}-pn`}
             maxLength={n === 1 ? 3 : 4}
             required
             onInput={onPhoneInput}
@@ -188,6 +175,18 @@ export default function ApplyForm({ p, cta, product }: { p: string; cta: string;
         >
           <div className={`${p}-group`}>
             <label className={`${p}-label`}>
+              상담받고 싶은 서비스를 선택해주세요. <span className={`${p}-req`}>*</span>
+            </label>
+            {STARTUP4_SERVICE_OPTIONS.map((v, i) => (
+              <label key={v} className={`${p}-radio`}>
+                <input type="radio" name="service" value={v} defaultChecked={v === defaultService} required={i === 0} />
+                <span>{v}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className={`${p}-group`}>
+            <label className={`${p}-label`}>
               희망 업종을 선택해주세요. <span className={`${p}-req`}>*</span>
             </label>
             <select name="industry" className={`${p}-input`} required defaultValue="">
@@ -202,15 +201,13 @@ export default function ApplyForm({ p, cta, product }: { p: string; cta: string;
 
           <div className={`${p}-group`}>
             <label className={`${p}-label`}>
-              선호 희망 지역을 알려주세요.
-              <br />
-              <small>(입지 상권을 함께 봐드립니다.)</small>
+              희망 지역 또는 보고 계신 매물·후보지 주소
             </label>
             <input
               type="text"
               name="area"
               className={`${p}-input`}
-              placeholder="예) 서울 마포구, 경기 남부, 부산 서면 인근 등"
+              placeholder="예) 서울 마포구 / ○○동 ○○빌딩 / 양도 글 링크"
             />
           </div>
 
@@ -241,7 +238,7 @@ export default function ApplyForm({ p, cta, product }: { p: string; cta: string;
             </label>
             {ROUTES.map((r, i) => (
               <label key={r.value} className={`${p}-radio`}>
-                <input type="radio" name="route" value={r.value} data-base={r.value} required={i === 0} />
+                <input type="radio" name="route" value={r.value} required={i === 0} />
                 <span>{r.label}</span>
               </label>
             ))}

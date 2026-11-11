@@ -1,4 +1,37 @@
 // 창업 신규 랜딩 2종 공통 스타일 — 접두사(p)로 페이지별 격리 (stk- 인수창업 / slc- 입지상권)
+// 신청 폼(ApplyForm) 스타일 — /consulting/startup 은 이것만 따로 주입한다 (본문 스타일은 baseCss)
+export const formCss = (p: string) => `
+/* 폼 - 기존 창업 폼 톤(흰 카드) */
+.${p}-formsec{padding:56px 0 72px;background:linear-gradient(180deg,#0c0f0d,#12301a)}
+.${p}-formcard{background:#fff;border-radius:20px;padding:26px 20px 22px;color:#111;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.${p}-formhead{font-size:22px;font-weight:900;color:#1a1a1a;text-align:center;padding-bottom:18px;margin-bottom:18px;border-bottom:2px solid #e8f5e9;letter-spacing:-.02em}
+.${p}-group{margin-bottom:20px}
+.${p}-label{display:block;font-size:15px;font-weight:700;color:#111;margin-bottom:8px;line-height:1.5}
+.${p}-label small{font-size:13px;font-weight:400;color:#777}
+.${p}-req{color:#e53935}
+.${p}-input{width:100%;min-height:48px;padding:12px 14px;font-size:16px;color:#111;background:#fff;border:2px solid #e2e5e3;border-radius:10px;font-family:inherit}
+.${p}-input::placeholder{color:#999}
+.${p}-input:focus{outline:none;border-color:#4CAF50}
+.${p}-phone-row{display:flex;align-items:center;gap:6px}
+.${p}-phone-row .${p}-input{flex:1 1 0;min-width:0;text-align:center;padding:12px 4px}
+.${p}-dash{color:#aaa;font-size:16px}
+.${p}-radio{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:11px 14px;background:#f5f7f6;border:2px solid transparent;border-radius:10px;font-size:15px;color:#111;cursor:pointer}
+.${p}-radio:hover{background:#e8f5e9;border-color:#4CAF50}
+.${p}-radio input{width:18px;height:18px;accent-color:#4CAF50;flex:none}
+.${p}-actions{text-align:center;margin-top:26px}
+.${p}-submit{width:100%;min-height:56px;padding:0 20px;background:linear-gradient(135deg,#4CAF50,#2e7d32);color:#fff;border:0;border-radius:100px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 25px rgba(76,175,80,.3);font-family:inherit}
+.${p}-submit:disabled{opacity:.55;cursor:not-allowed}
+.${p}-err{margin:14px 0 0;font-size:14px;color:#d32f2f;text-align:center;line-height:1.5}
+.${p}-notice{margin-top:20px;padding:14px;background:#f5f7f6;border-radius:12px;text-align:center}
+.${p}-notice p{margin:0;font-size:14px;line-height:1.7;color:#777}
+.${p}-notice strong{color:#2e7d32}
+.${p}-done{padding:34px 8px;text-align:center}
+.${p}-done b{display:block;font-size:22px;color:#2e7d32;margin-bottom:10px}
+.${p}-done span{font-size:16px;line-height:1.7;color:#555}
+.${p}-done strong{color:#2e7d32}
+
+`;
+
 export const baseCss = (p: string) => `
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 .${p}-root{--bg:#0a0d0b;--bg2:#101512;--bg3:#161c18;--line:rgba(255,255,255,.1);--tx:#eef2ef;--mu:#9aa8a1;--gr:#4fcf5f;--gr2:#2e9d3c;--rd:#e8695f;--am:#e6b04b;
@@ -192,35 +225,7 @@ export const baseCss = (p: string) => `
 .${p}-formsub{font-size:16.5px;color:#b3bfb8;line-height:1.8;margin-bottom:34px;max-width:620px}
 .${p}-formbox{max-width:620px}
 
-/* 폼 - 기존 창업 폼 톤(흰 카드) */
-.${p}-formsec{padding:56px 0 72px;background:linear-gradient(180deg,#0c0f0d,#12301a)}
-.${p}-formcard{background:#fff;border-radius:20px;padding:26px 20px 22px;color:#111;box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.${p}-formhead{font-size:22px;font-weight:900;color:#1a1a1a;text-align:center;padding-bottom:18px;margin-bottom:18px;border-bottom:2px solid #e8f5e9;letter-spacing:-.02em}
-.${p}-group{margin-bottom:20px}
-.${p}-label{display:block;font-size:15px;font-weight:700;color:#111;margin-bottom:8px;line-height:1.5}
-.${p}-label small{font-size:13px;font-weight:400;color:#777}
-.${p}-req{color:#e53935}
-.${p}-input{width:100%;min-height:48px;padding:12px 14px;font-size:16px;color:#111;background:#fff;border:2px solid #e2e5e3;border-radius:10px;font-family:inherit}
-.${p}-input::placeholder{color:#999}
-.${p}-input:focus{outline:none;border-color:#4CAF50}
-.${p}-phone-row{display:flex;align-items:center;gap:6px}
-.${p}-phone-row .${p}-input{flex:1 1 0;min-width:0;text-align:center;padding:12px 4px}
-.${p}-dash{color:#aaa;font-size:16px}
-.${p}-radio{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:11px 14px;background:#f5f7f6;border:2px solid transparent;border-radius:10px;font-size:15px;color:#111;cursor:pointer}
-.${p}-radio:hover{background:#e8f5e9;border-color:#4CAF50}
-.${p}-radio input{width:18px;height:18px;accent-color:#4CAF50;flex:none}
-.${p}-actions{text-align:center;margin-top:26px}
-.${p}-submit{width:100%;min-height:56px;padding:0 20px;background:linear-gradient(135deg,#4CAF50,#2e7d32);color:#fff;border:0;border-radius:100px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 25px rgba(76,175,80,.3);font-family:inherit}
-.${p}-submit:disabled{opacity:.55;cursor:not-allowed}
-.${p}-err{margin:14px 0 0;font-size:14px;color:#d32f2f;text-align:center;line-height:1.5}
-.${p}-notice{margin-top:20px;padding:14px;background:#f5f7f6;border-radius:12px;text-align:center}
-.${p}-notice p{margin:0;font-size:14px;line-height:1.7;color:#777}
-.${p}-notice strong{color:#2e7d32}
-.${p}-done{padding:34px 8px;text-align:center}
-.${p}-done b{display:block;font-size:22px;color:#2e7d32;margin-bottom:10px}
-.${p}-done span{font-size:16px;line-height:1.7;color:#555}
-.${p}-done strong{color:#2e7d32}
-
+${formCss(p)}
 /* 다른 창업 서비스 */
 .${p}-other{padding:64px 0 72px;background:#f4f6f5;color:#1a1a1a}
 .${p}-other .${p}-h2{color:#1a1a1a;font-size:clamp(22px,5.6vw,30px);margin-bottom:10px}

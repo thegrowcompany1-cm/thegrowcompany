@@ -18,6 +18,8 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 
 const FORM_ACTION =
   "https://script.google.com/macros/s/AKfycbyTIVLMDS-DQjOZ1fIP9DbzJ2NONxyn6mdjEik1_ZG31XB9TVO0Y5_odvFwO1M0AcJ21Q/exec";
+// 상담 서비스 구분 — 시트 service 열. 두 광고 랜딩은 모두 올인원 창업 패키지로 들어온다
+const FORM_SERVICE = "올인원 창업 패키지";
 const FORM_SOURCE = "창업지원상담_아임웹";
 const FORM_TOKEN = "grow2026secure";
 const FORM_TARGET = "lpg_hidden_iframe";
@@ -762,7 +764,7 @@ export default function StartupGuideLp() {
         cleanup();
         try {
           const w = window as Win;
-          if (typeof w.gtag === "function") w.gtag("event", "form_submit", { form_source: FORM_SOURCE });
+          if (typeof w.gtag === "function") w.gtag("event", "form_submit", { form_source: FORM_SOURCE, service: FORM_SERVICE });
           if (typeof w.__tgcFbTrack === "function") w.__tgcFbTrack("Lead", { content_name: FORM_SOURCE });
           setSent(true);
         } finally {
@@ -1241,6 +1243,7 @@ export default function StartupGuideLp() {
                   </div>
 
                   {/* 페이지 구분 */}
+                  <input type="hidden" name="service" value={FORM_SERVICE} />
                   <input type="hidden" name="source" value={FORM_SOURCE} />
                   {/* 보안 토큰 */}
                   <input type="hidden" name="token" value={FORM_TOKEN} />
