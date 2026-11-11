@@ -31,12 +31,13 @@ type Card = {
   objectPosition?: string; // 사진 노출 위치 (기본: top). 천장이 많은 사진은 아래쪽으로 내림
   status?: { text: string; glow?: boolean }; // 제목 아래 상태 문구 (glow: 형광 반짝임)
   href?: string; // 설정 시 카드 클릭하면 해당 상세페이지로 이동
+  external?: boolean; // 외부 사이트 — next/link 대신 <a target="_blank"> 로 렌더링
 };
 
 // 가격 대신 무료 상담 안내를 노출할 상담형 상품.
 // 이 세 상품은 정가가 정해진 판매 상품이 아니라 무료 상담으로 시작하는 서비스라
 // "0원" 대신 상담 유도 문구를 보여준다. (Supabase products 데이터는 변경하지 않는다)
-const FREE_CONSULT_SLUGS = ["startup", "outsourcing", "community"] as const;
+const FREE_CONSULT_SLUGS = ["startup", "startup-location", "startup-takeover", "startup-interior", "outsourcing", "community"] as const;
 
 const FREE_CONSULT_LABEL = "무료 상담 받아보기 →";
 
@@ -55,12 +56,37 @@ const groups: Group[] = [
     cards: [
       {
         slug: "startup",
-        title: "창업 솔루션",
-        desc: "헬스장, 필라테스 등 창업을 준비 중인 대표님",
+        title: "올인원 창업 패키지",
+        desc: "입지부터 인테리어, 오픈 프리세일, 운영까지 한 팀이 끝까지",
         price: "0원",
-        img: "/startup/startup50.png", // 창업 솔루션 카드 이미지
+        img: "/startup/startup50.png", // 올인원 창업 패키지 카드 이미지
         photo: true,
-        href: "/consulting/startup", // 클릭 시 창업 솔루션 상세페이지로 이동
+        href: "/consulting/startup", // 클릭 시 올인원 창업 패키지 상세페이지로 이동
+      },
+      {
+        slug: "startup-location",
+        title: "입지·상권·부동산 임장",
+        desc: "자리 하나만큼은 제대로 고르고 싶은 대표님",
+        img: "/legacy/startup/badee82e80f1a.jpg",
+        photo: true,
+        href: "/consulting/startup/location",
+      },
+      {
+        slug: "startup-takeover",
+        title: "인수창업",
+        desc: "매물로 나온 센터, 이 가격에 들어가도 되는지 확인하고 싶은 대표님",
+        img: "/legacy/startup/842da7b3d40fb.jpg",
+        photo: true,
+        href: "/consulting/startup/takeover",
+      },
+      {
+        slug: "startup-interior",
+        title: "그로우 인테리어",
+        desc: "헬스장·필라테스만 시공해 온 피트니스 전문 인테리어",
+        img: "/legacy/startup/640d2ed2ca7b9.jpg",
+        photo: true,
+        href: "https://www.growinterior.co.kr/",
+        external: true, // 외부 사이트 — 새 탭
       },
     ],
   },
@@ -195,6 +221,14 @@ function ServiceCard({ card }: { card: Card }) {
   );
 
   // href가 있으면 카드를 상세페이지 링크로 렌더링
+  if (card.href && card.external) {
+    return (
+      <a href={card.href} target="_blank" rel="noopener" className={cardClass}>
+        {inner}
+      </a>
+    );
+  }
+
   if (card.href) {
     return (
       <Link href={card.href} className={cardClass}>

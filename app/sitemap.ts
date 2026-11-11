@@ -5,6 +5,8 @@ import { SITE_URL } from "@/lib/site";
 const ROUTES = [
   "/",
   "/consulting/startup",
+  "/consulting/startup/takeover",
+  "/consulting/startup/location",
   "/consulting/outsourcing",
   "/consulting/community",
   "/consulting/diagnosis/kim-jaegang",

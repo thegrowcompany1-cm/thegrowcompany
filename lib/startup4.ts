@@ -27,8 +27,8 @@ export type Startup4Service = {
 };
 
 export const STARTUP4_SERVICES: Startup4Service[] = [
-  { key: "stk", title: "인수창업 컨설팅", desc: "매물로 나온 센터, 이 가격에 들어가도 되는지 숫자부터 확인합니다.", href: "/consulting/startup/takeover" },
-  { key: "slc", title: "입지·상권 분석 컨설팅", desc: "자리부터 제대로 고르고 싶은 분께 후보지 비교를 드립니다.", href: "/consulting/startup/location" },
-  { key: "total", title: "토탈 창업 컨설팅", desc: "입지부터 인테리어, 오픈 프리세일, 운영까지 한 팀이 끝까지", href: "/consulting/startup" },
-  { key: "interior", title: "그로우 인테리어", desc: "헬스장·필라테스 전문 인테리어만 따로 맡길 수 있습니다.", href: "https://www.growinterior.co.kr/", external: true },
+  { key: "total", title: "올인원 창업 패키지", desc: "입지부터 인테리어, 오픈 프리세일, 운영까지 한 팀이 끝까지", href: "/consulting/startup" },
+  { key: "slc", title: "입지·상권·부동산 임장", desc: "자리 하나만큼은 제대로 고르고 싶은 대표님", href: "/consulting/startup/location" },
+  { key: "stk", title: "인수창업", desc: "매물로 나온 센터, 이 가격에 들어가도 되는지 확인하고 싶은 대표님", href: "/consulting/startup/takeover" },
+  { key: "interior", title: "그로우 인테리어", desc: "헬스장·필라테스만 시공해 온 피트니스 전문 인테리어", href: "https://www.growinterior.co.kr/", external: true },
 ];

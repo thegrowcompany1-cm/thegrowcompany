@@ -53,6 +53,8 @@ type NavChild = {
   label: string;
   href: string;
   sub?: string;
+  /** 외부 사이트 — 새 탭으로 연다 */
+  external?: boolean;
 };
 type NavItem = {
   label: string;
@@ -68,6 +70,12 @@ const navItems: NavItem[] = [
     href: "/consulting/startup",
     desc: "헬스장, 필라테스 등 창업을 준비 중이신 분들을 위한 맞춤 솔루션",
     external: false,
+    children: [
+      { label: "올인원 창업 패키지", href: "/consulting/startup" },
+      { label: "입지·상권·부동산 임장", href: "/consulting/startup/location" },
+      { label: "인수창업", href: "/consulting/startup/takeover" },
+      { label: "그로우 인테리어", href: "https://www.growinterior.co.kr/", external: true },
+    ],
   },
   {
     label: "매장 위탁운영",
@@ -252,7 +260,17 @@ export default function Header() {
                               )}
                             </>
                           );
-                          return (
+                          return child.external ? (
+                            <a
+                              key={child.href}
+                              href={child.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={childCls}
+                            >
+                              {childInner}
+                            </a>
+                          ) : (
                             <Link key={child.href} href={child.href} className={childCls}>
                               {childInner}
                             </Link>
@@ -422,7 +440,18 @@ export default function Header() {
                             )}
                           </>
                         );
-                        return (
+                        return child.external ? (
+                          <a
+                            key={child.href}
+                            href={child.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={mCls}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            {mInner}
+                          </a>
+                        ) : (
                           <Link
                             key={child.href}
                             href={child.href}
