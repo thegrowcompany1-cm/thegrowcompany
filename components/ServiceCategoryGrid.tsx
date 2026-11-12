@@ -134,7 +134,7 @@ const groups: Group[] = [
     desc: "피트니스 업계에 도움이 필요한 세미나를 진행합니다.",
     cards: [
       { title: "운영/세일즈 서울세미나", img: "/edu/sales-ops/poster.jpg", href: "/edu/sales-ops", photo: true, objectPosition: "50% 28%", status: { text: SO_DAY_LABEL, glow: true } }, // 운영/세일즈 서울세미나 카드 이미지
-      { title: "창업 세미나", img: "/edu/edustartup.jpg", href: "/edu/startup-class", photo: true, status: { text: "준비중" }, objectPosition: "center 78%" }, // 창업 세미나 카드 이미지
+      { title: "창업 세미나", img: "/edu/edustartup.jpg", href: "/edu/startup-class", photo: true, status: { text: "준비중" }, objectPosition: "center top" }, // 창업 세미나 카드 이미지
       { title: "정규 FC 세미나", img: "/edu/edufc.jpg", href: "/edu/fc-class", photo: true, status: { text: "준비중" }, objectPosition: "center 78%" }, // 정규 FC 세미나 카드 이미지
       { title: "그룹운동 비즈니스 클래스", img: "/edu/gx-class/gx-community-group.jpg", href: "/edu/gx-class", photo: true, status: { text: "준비중" } }, // 그룹운동 비즈니스 클래스 카드 이미지
       { title: "진단 컨설턴트 양성과정", img: "/edu/dcc/field.jpg", href: "/edu/diagnostic-consultant", photo: true, status: { text: "(모집중)", glow: true } }, // 진단 컨설턴트 양성과정 카드 이미지
