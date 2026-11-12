@@ -35,6 +35,11 @@ const VIDEO_REVIEWS = [
     poster: "/reviews/diag-westzin.jpg",
     caption: "웨스트진 대표님 진단 솔루션 후기",
   },
+  {
+    src: "/reviews/diag-custom.mp4",
+    poster: "/reviews/diag-custom.jpg",
+    caption: "커스텀 대표님 진단 솔루션 후기",
+  },
 ];
 
 const STEPS = [
