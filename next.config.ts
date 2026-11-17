@@ -7,6 +7,17 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        // 창업 광고 랜딩 주소 변경(2026-11-17): 이미 집행 중인 광고 링크가 끊기지 않도록 옛 주소는 새 주소로 보낸다(쿼리 유지)
+        source: "/lp/startup",
+        destination: "/consulting/startup2",
+        permanent: true,
+      },
+      {
+        source: "/lp/startup-guide",
+        destination: "/consulting/startup3",
+        permanent: true,
+      },
+      {
         // 위탁 B안 주소 변경(2026-11-17): 이미 나간 링크·광고가 끊기지 않도록 옛 주소는 새 주소로 보낸다(쿼리 유지)
         source: "/consulting/outsourcing-v2",
         destination: "/consulting/outsourcing2",

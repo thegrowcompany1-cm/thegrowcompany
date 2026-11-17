@@ -49,6 +49,9 @@ const EXCLUDE_PREFIX = [
   // 창업 신규 랜딩 2종 (메인 노출 전) — /consulting/startup 본 페이지는 그대로 노출
   "/consulting/startup/takeover",
   "/consulting/startup/location",
+  // 창업 광고 전용 랜딩 (구 /lp/startup, /lp/startup-guide)
+  "/consulting/startup2",
+  "/consulting/startup3",
 ];
 
 const isExcluded = (path: string) =>

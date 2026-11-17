@@ -1,12 +1,12 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// /lp/startup-guide — 메타 광고 전용 창업 불안 해소형 랜딩 (CSS 접두사 lpg-)
+// /consulting/startup3 (구 /lp/startup-guide) — 메타 광고 전용 창업 불안 해소형 랜딩 (CSS 접두사 lpg-)
 //  · 기획: startup-guide-copy.md. 창업을 고민하는 사람의 걱정 5가지에 하나씩 답하고 "내 창업 계획 검토받기"로 잇는다.
 //  · 최우선은 첫 화면이다 — 히어로에는 사진·영상 없이 글자만 즉시 그리고(약 85vh), 걱정 선택 칩 5개를 첫 화면 안에 둔다.
 //    칩을 누르면 해당 섹션으로 스크롤하고, 고른 값은 폼 제출 때 route 값 뒤에 " / 걱정: [값]" 으로 붙는다.
-//  · 디자인 시스템·가로 마퀴·라이트박스·단계 선택·FAQ 는 /lp/startup(StartupLpV3)과 같은 방식이다.
-//    /lp/startup 은 건드리지 않으려고 같은 코드를 이 파일에 따로 둔다.
+//  · 디자인 시스템·가로 마퀴·라이트박스·단계 선택·FAQ 는 /consulting/startup2(StartupLpV3)과 같은 방식이다.
+//    /consulting/startup2 는 건드리지 않으려고 같은 코드를 이 파일에 따로 둔다.
 //  · 신청 폼은 /consulting/startup 의 창업 폼과 action·token·source·name·필드 구성이 같다 (새 필드 없음).
 //    iframe 이름은 lpg_hidden_iframe, 성공 판정은 iframe load (done 가드 + 15초 타임아웃 + try/catch).
 //    route 뒤에 붙는 순서: route / 준비단계: [단계] / 걱정: [걱정]. 전송 뒤 원래 값으로 되돌린다.
