@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        // 위탁 B안 주소 변경(2026-11-17): 이미 나간 링크·광고가 끊기지 않도록 옛 주소는 새 주소로 보낸다(쿼리 유지)
+        source: "/consulting/outsourcing-v2",
+        destination: "/consulting/outsourcing2",
+        permanent: true,
+      },
+      {
         source: "/consulting/startup/interior",
         destination: "https://www.growinterior.co.kr/",
         permanent: true,
