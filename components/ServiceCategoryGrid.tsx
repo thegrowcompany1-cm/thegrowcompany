@@ -135,7 +135,7 @@ const groups: Group[] = [
     cards: [
       { title: "운영/세일즈 서울세미나", img: "/edu/sales-ops/poster.jpg", href: "/edu/sales-ops", photo: true, objectPosition: "50% 28%", status: { text: SO_DAY_LABEL, glow: true } }, // 운영/세일즈 서울세미나 카드 이미지
       { title: "창업 세미나", img: "/edu/edustartup.jpg", href: "/edu/startup-class", photo: true, status: { text: "준비중" }, objectPosition: "center top" }, // 창업 세미나 카드 이미지
-      { title: "정규 FC 세미나", img: "/edu/edufc.jpg", href: "/edu/fc-class", photo: true, status: { text: "준비중" }, objectPosition: "center 78%" }, // 정규 FC 세미나 카드 이미지
+      { title: "정규 FC 세미나", img: "/edu/edufc-poster.jpg", href: "/edu/fc-class", photo: true, status: { text: "준비중" } }, // 정규 FC 세미나 카드 이미지
       { title: "그룹운동 비즈니스 클래스", img: "/edu/edugx.jpg", href: "/edu/gx-class", photo: true, status: { text: "준비중" } }, // 그룹운동 비즈니스 클래스 카드 이미지
       { title: "진단 컨설턴트 양성과정", img: "/edu/edudcc.jpg", href: "/edu/diagnostic-consultant", photo: true, status: { text: "(모집중)", glow: true }, objectPosition: "center top" }, // 진단 컨설턴트 양성과정 카드 이미지
     ],
@@ -206,12 +206,12 @@ function ServiceCard({ card }: { card: Card }) {
           </p>
         )}
         {isFreeConsult(card.slug) ? (
-          <p className="mt-3 text-[13px] font-black leading-snug text-[#009519] sm:text-[15px]">
+          <p className="mt-auto pt-3 text-[13px] font-black leading-snug text-[#009519] sm:text-[15px]">
             {FREE_CONSULT_LABEL}
           </p>
         ) : (
           card.price && (
-            <p className="mt-3 text-base font-black text-[#009519] sm:text-lg">
+            <p className="mt-auto pt-3 text-base font-black text-[#009519] sm:text-lg">
               {card.price}
             </p>
           )
