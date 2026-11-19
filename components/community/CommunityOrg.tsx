@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import Shell from "./Shell";
 import FacilityApplyForm from "./FacilityApplyForm";
-import { Block, Btn, Cards, Faq, FormBlock, Hero, Hl, Ph, Photo, ReportMock, Steps } from "./parts";
+import { BigIn, Block, Btn, Cards, Faq, FormBlock, Hero, Hl, Ph, Photo, ReportMock, Steps } from "./parts";
 import type { CardItem } from "./parts";
 import { COMMUNITY_IMG, SVC_CORP, SVC_HOTEL, SVC_PUBLIC } from "@/lib/community";
 
@@ -109,10 +109,21 @@ function EvidenceBlock({ tab }: { tab: Tab }) {
     return (
       <>
         <h2 style={{ fontSize: 26 }}>여행 중에도 운동 루틴을 지키려는 투숙객이 늘고 있습니다.</h2>
-        <div className="cm-key cm-gap" style={{ textAlign: "center" }}>
-          글로벌 웰니스 관광 시장
-          <br />
-          6,550억 달러(2019) → 8,940억 달러(2024)
+        <p className="cm-sub cm-gap">글로벌 웰니스 관광 시장</p>
+        <div className="cm-pair cm-gap2">
+          <div>
+            <span className="cm-n">
+              6,550<small>억 달러</small>
+            </span>
+            <span className="cm-cap">(2019)</span>
+          </div>
+          <i aria-hidden="true">→</i>
+          <div>
+            <span className="cm-n">
+              8,940<small>억 달러</small>
+            </span>
+            <span className="cm-cap">(2024)</span>
+          </div>
         </div>
         <p className="cm-cap cm-gap2">Global Wellness Institute 인용(Hospitality Net)</p>
         <p className="cm-tx cm-gap">
@@ -122,7 +133,9 @@ function EvidenceBlock({ tab }: { tab: Tab }) {
     );
   return (
     <>
-      <h2 style={{ fontSize: 26 }}>위탁 운영 공공시설 19%가 운영수익을 냈고, 직영은 3%에 못 미쳤습니다.</h2>
+      <h2 style={{ fontSize: 30 }}>
+        위탁 운영 공공시설 <BigIn>19%</BigIn>가 운영수익을 냈고, 직영은 <BigIn>3%</BigIn>에 못 미쳤습니다.
+      </h2>
       <p className="cm-cap cm-gap2">한국지방행정연구원 브리프(2017년 기준 공공시설 737개)</p>
       <p className="cm-tx cm-gap">성과 평가와 주민만족도 정기 조사가 운영자 평가의 기준이 되고 있습니다.</p>
     </>
@@ -181,26 +194,26 @@ export default function CommunityOrg() {
       </Hero>
 
       {/* 2 결정자의 고민 */}
-      <Block n={2} tone="wt">
+      <Block n={2} tone="wt" wide>
         <p className="cm-ey">{w.who}</p>
         <h2>이런 고민이 있으시죠.</h2>
-        <Cards num items={w.items.map((t) => ({ title: t }))} />
+        <Cards num cols={3} items={w.items.map((t) => ({ title: t }))} />
       </Block>
 
       {/* 3 근거 */}
-      <Block n={3} tone="dk">
+      <Block n={3} tone="dk" wide>
         <EvidenceBlock tab={tab} />
       </Block>
 
       {/* 4 이용자를 만드는 회사 */}
-      <Block n={4} tone="wt">
+      <Block n={4} tone="wt" wide>
         <h2>
           시설을 관리하는 회사가 아니라,
           <br />
           <Hl>이용자를 만드는 회사</Hl>입니다.
         </h2>
         <Cards
-          cols={2}
+          cols={4}
           items={[
             { eyebrow: "진단", title: "이용자 분석·현장 실사" },
             { eyebrow: "기획", title: "시간대·계층별 라인업" },
@@ -211,16 +224,19 @@ export default function CommunityOrg() {
       </Block>
 
       {/* 5 프로그램 + 사진 */}
-      <Block n={5} tone="dk">
+      <Block n={5} tone="dk" wide>
         <h2>이용 대상에 맞춘 프로그램</h2>
-        <Cards items={prog.items} />
-        <Photo src={prog.img} alt={prog.alt} />
+        <div className="cm-split cm-gap">
+          <Cards items={prog.items} />
+          <Photo src={prog.img} alt={prog.alt} />
+        </div>
       </Block>
 
       {/* 6 운영 모델 */}
-      <Block n={6} tone="wt">
+      <Block n={6} tone="wt" wide>
         <h2>운영 모델은 시설에 맞춰 고릅니다.</h2>
         <Cards
+          cols={3}
           items={MODELS.map((m) => ({
             title: m.title,
             rec: m.rec.includes(tab),
@@ -231,7 +247,7 @@ export default function CommunityOrg() {
       </Block>
 
       {/* 7 리포트 */}
-      <Block n={7} tone="dk">
+      <Block n={7} tone="dk" wide>
         <h2>
           보고서 한 장이
           <br />
@@ -249,9 +265,10 @@ export default function CommunityOrg() {
       </Block>
 
       {/* 8 시스템 */}
-      <Block n={8} tone="wt">
+      <Block n={8} tone="wt" wide>
         <h2>사람이 아니라 시스템으로 운영합니다.</h2>
         <Cards
+          cols={2}
           items={[
             { title: "안전", lines: ["일·주·월 점검표", "응급 대응 교육", "배상책임보험"] },
             { title: "민원", lines: ["접수→처리→회신", "24시간 내 1차 회신"] },
@@ -286,7 +303,9 @@ export default function CommunityOrg() {
         <Steps
           items={[{ t: "문의 접수" }, { t: "현장 실사" }, { t: "운영 제안서" }, { t: "계약" }, { t: "운영 개시" }, { t: "정기 보고" }]}
         />
-        <p className="cm-tx cm-gap">평균 30~60일 안에 운영 개시</p>
+        <p className="cm-tx cm-gap">
+          평균 <BigIn>30~60일</BigIn> 안에 운영 개시
+        </p>
       </Block>
 
       {/* 13 폼 */}

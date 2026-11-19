@@ -1,7 +1,7 @@
 // ① 아파트 커뮤니티 위탁 — /consulting/community (명세: docs/community-landing-spec.md, 13블록)
 import Shell from "./Shell";
 import FacilityApplyForm from "./FacilityApplyForm";
-import { Block, Bubble, Btn, Cards, Checks, Faq, FormBlock, Hero, Hl, Ph, Photo, ReportMock, Steps } from "./parts";
+import { Block, Bubble, Btn, Cards, Checks, Em, Faq, FormBlock, Hero, Hl, Ph, Photo, ReportMock, Steps } from "./parts";
 import { COMMUNITY_IMG, SVC_APT } from "@/lib/community";
 
 const CTA = "단지 운영 진단 받아보기";
@@ -19,7 +19,7 @@ export default function CommunityApt() {
       {/* 1 히어로 */}
       <Hero img={COMMUNITY_IMG.hero} eyebrow="아파트 커뮤니티 시설 위탁운영">
         <h1>
-          커뮤니티는 비용이 아니라,
+          커뮤니티는 <span className="cm-nw">비용이 아니라,</span>
           <br />
           <Hl>운영으로 유지되는 시설</Hl>입니다.
         </h1>
@@ -44,27 +44,34 @@ export default function CommunityApt() {
       </Hero>
 
       {/* 2 관리비 */}
-      <Block n={2} tone="wt">
+      <Block n={2} tone="wt" wide>
         <h2>
           시설은 그대로인데,
           <br />
           <Hl>관리비만 오릅니다.</Hl>
         </h2>
-        <div className="cm-bars" role="img" aria-label="공동주택 평균 관리비 2021년 제곱미터당 2,442원, 2025년 3,033원">
-          <div className="cm-bc">
-            <b>2,442원</b>
-            <i style={{ height: 130 }} />
-            <span>2021년</span>
+        <div className="cm-split cm-gap">
+          <div>
+            <div className="cm-bars" role="img" aria-label="공동주택 평균 관리비 2021년 제곱미터당 2,442원, 2025년 3,033원">
+              <div className="cm-bc" style={{ ["--h" as string]: 0.805 }}>
+                <b>2,442원</b>
+                <i />
+                <span>2021년</span>
+              </div>
+              <div className="cm-bc hi" style={{ ["--h" as string]: 1 }}>
+                <b>3,033원</b>
+                <i />
+                <span>2025년</span>
+              </div>
+            </div>
+            <p className="cm-cap cm-gap2">㎡당 월 관리비</p>
           </div>
-          <div className="cm-bc hi">
-            <b>3,033원</b>
-            <i style={{ height: 162 }} />
-            <span>2025년</span>
+          <div className="cm-delta">
+            <span className="cm-n">+24%</span>
+            <p className="cm-sub cm-gap2">84㎡ 기준 월 약 20.5만 → 25.5만원</p>
+            <p className="cm-cap cm-gap2">공동주택 평균 관리비 (한국경제, 2026.6 보도 인용)</p>
           </div>
         </div>
-        <p className="cm-cap cm-gap2">㎡당 월 관리비</p>
-        <div className="cm-chip">84㎡ 기준 월 약 20.5만 → 25.5만원, +24%</div>
-        <p className="cm-cap cm-gap2">공동주택 평균 관리비 (한국경제, 2026.6 보도 인용)</p>
       </Block>
 
       {/* 3 회의실 말풍선 */}
@@ -94,7 +101,7 @@ export default function CommunityApt() {
       {/* 5 사례 인용 */}
       <Block n={5} tone="dk">
         <div className="cm-quote">
-          서울의 한 900세대 신축 단지는 한 달 수입 약 6,651만원, 지출 8,000만원 이상으로 1,715만원 적자가 났고, 운영사 교체가 겹치며 헬스장과 골프연습장이 약 3주간 멈췄습니다.
+          서울의 한 900세대 신축 단지는 한 달 수입 약 <Em>6,651만원</Em>, 지출 <Em>8,000만원</Em> 이상으로 <Em>1,715만원 적자</Em>가 났고, 운영사 교체가 겹치며 헬스장과 골프연습장이 약 <Em>3주간</Em> 멈췄습니다.
           <small>아시아경제, 2026.8</small>
         </div>
         <h2 className="cm-gap">
@@ -105,12 +112,13 @@ export default function CommunityApt() {
       </Block>
 
       {/* 6 운영사 비교 */}
-      <Block n={6} tone="wt">
+      <Block n={6} tone="wt" wide>
         <h2>
           필요한 건 관리인이 아니라,
           <br />
           <Hl>수지를 설계하는 운영사</Hl>입니다.
         </h2>
+        <div className="cm-tbw">
         <table className="cm-tb">
           <thead>
             <tr>
@@ -142,13 +150,15 @@ export default function CommunityApt() {
             </tr>
           </tbody>
         </table>
+        </div>
         <p className="cm-tx cm-gap">더그로우는 헬스장·필라테스 매장의 등록과 재등록을 직접 만들어 온 회사입니다.</p>
       </Block>
 
       {/* 7 단지 상황 */}
-      <Block n={7} tone="dk">
+      <Block n={7} tone="dk" wide>
         <h2>단지 상황부터 고르세요.</h2>
         <Cards
+          cols={2}
           items={[
             {
               title: "신축·입주 예정 단지",
@@ -163,7 +173,7 @@ export default function CommunityApt() {
       </Block>
 
       {/* 8 요금 구조 */}
-      <Block n={8} tone="wt">
+      <Block n={8} tone="wt" wide>
         <h2>
           요금 구조도
           <br />
@@ -171,6 +181,7 @@ export default function CommunityApt() {
         </h2>
         <Cards
           num
+          cols={3}
           items={[{ title: "전 세대 공동 부담형" }, { title: "무료 횟수 + 초과 이용료형" }, { title: "기본 무료 + 유료 강좌형" }]}
         />
         <p className="cm-cap cm-gap">
@@ -180,12 +191,13 @@ export default function CommunityApt() {
       </Block>
 
       {/* 9 단지 가치 */}
-      <Block n={9} tone="dk">
+      <Block n={9} tone="dk" wide>
         <h2>
           우리 단지에 이런 시설이 있어서 좋다,
           <br />
           <Hl>그 말이 단지 가치가 됩니다.</Hl>
         </h2>
+        <div className="cm-split cm-gap">
         <ul className="cm-ages">
           <li>
             <b>시니어</b>
@@ -208,11 +220,12 @@ export default function CommunityApt() {
             <span>골프 클래스·단지 이벤트</span>
           </li>
         </ul>
-        <Photo src={COMMUNITY_IMG.apt} alt="아파트 커뮤니티 시설" />
+          <Photo src={COMMUNITY_IMG.apt} alt="아파트 커뮤니티 시설" />
+        </div>
       </Block>
 
       {/* 10 리포트 */}
-      <Block n={10} tone="wt">
+      <Block n={10} tone="wt" wide>
         <h2>
           입대의 회의에
           <br />

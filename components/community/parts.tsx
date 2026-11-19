@@ -3,12 +3,21 @@ import type { ReactNode } from "react";
 
 export const FORM_ID = "cm-form";
 
-export function Block({ n, tone, children, cls = "", id }: { n: number; tone: "dk" | "wt"; children: ReactNode; cls?: string; id?: string }) {
+/** 배경은 화면 전체 폭, 내용은 가운데 기둥. wide 는 데스크톱(1024px 이상)에서 880px(숫자·표·리포트·비교), 아니면 560px */
+export function Block({ n, tone, children, cls = "", id, wide }: { n: number; tone: "dk" | "wt"; children: ReactNode; cls?: string; id?: string; wide?: boolean }) {
   return (
     <section className={`cm-b cm-${tone} ${cls}`.trim()} data-b={n} id={id}>
-      {children}
+      <div className={`cm-in${wide ? " w" : ""}`}>{children}</div>
     </section>
   );
+}
+
+/** 문장 안의 핵심 수치 강조 */
+export function Em({ children }: { children: ReactNode }) {
+  return <b className="cm-em">{children}</b>;
+}
+export function BigIn({ children }: { children: ReactNode }) {
+  return <span className="cm-bigin">{children}</span>;
 }
 
 /** 형광 박스 — 헤드라인 핵심 구절 1곳 */
@@ -32,11 +41,11 @@ export function Bubble({ side, children }: { side: "l" | "r"; children: ReactNod
   );
 }
 
-export type CardItem = { title: string; eyebrow?: string; lines?: string[]; body?: string; badge?: string; rec?: boolean };
+export type CardItem = { title: string; eyebrow?: string; lines?: string[]; body?: string; price?: string; badge?: string; rec?: boolean };
 
-export function Cards({ items, cols = 1, num }: { items: CardItem[]; cols?: 1 | 2; num?: boolean }) {
+export function Cards({ items, cols = 1, num }: { items: CardItem[]; cols?: 1 | 2 | 3 | 4; num?: boolean }) {
   return (
-    <div className={`cm-cards${cols === 2 ? " c2" : ""}`}>
+    <div className={`cm-cards${cols > 1 ? ` c${cols}` : ""}`}>
       {items.map((c, i) => (
         <div key={c.title} className={`cm-card${c.rec ? " rec" : ""}`}>
           {c.badge ? <span className="cm-badge">{c.badge}</span> : null}
@@ -46,6 +55,7 @@ export function Cards({ items, cols = 1, num }: { items: CardItem[]; cols?: 1 | 
             {c.title}
           </h3>
           {c.body ? <p>{c.body}</p> : null}
+          {c.price ? <div className="cm-price">{c.price}</div> : null}
           {c.lines ? (
             <ul>
               {c.lines.map((l) => (
@@ -64,7 +74,7 @@ export function ReportMock({ title, rows }: { title: string; rows: [string, stri
     <div className="cm-rep">
       <span className="cm-rep-badge">예시 화면</span>
       <div className="cm-rep-t">{title}</div>
-      <div style={{ marginTop: 10 }}>
+      <div className="cm-rep-g">
         {rows.map(([k, v]) => (
           <div key={k} className="cm-rep-r">
             <span>{k}</span>
@@ -126,10 +136,12 @@ export function Hero({ img, eyebrow, children, top }: { img: string; eyebrow: st
     <section className="cm-b cm-hero cm-dk" data-b={1}>
       <div className="cm-hero-bg" style={{ backgroundImage: `url(${img})` }} aria-hidden="true" />
       <div className="cm-hero-ov" aria-hidden="true" />
-      <div className="cm-hero-in">
-        {top}
-        <p className="cm-ey">{eyebrow}</p>
-        {children}
+      <div className="cm-in w">
+        <div className="cm-hero-in">
+          {top}
+          <p className="cm-ey">{eyebrow}</p>
+          {children}
+        </div>
       </div>
     </section>
   );

@@ -34,7 +34,7 @@ export default function CommunityUniv() {
       </Hero>
 
       {/* 2 캘린더 */}
-      <Block n={2} tone="wt">
+      <Block n={2} tone="wt" wide>
         <h2>
           1년 중 넉 달은
           <br />
@@ -51,14 +51,14 @@ export default function CommunityUniv() {
       </Block>
 
       {/* 3 운영 부담 */}
-      <Block n={3} tone="dk">
+      <Block n={3} tone="dk" wide>
         <h2>
           시설은 학교 것인데,
           <br />
           <Hl>운영 부담도 전부 학교 몫입니다.</Hl>
         </h2>
         <Cards
-          cols={2}
+          cols={4}
           items={[
             { title: "방학 공실" },
             { title: "노후 시설·장비 교체 예산" },
@@ -69,9 +69,10 @@ export default function CommunityUniv() {
       </Block>
 
       {/* 4 이용자 3분류 */}
-      <Block n={4} tone="wt">
+      <Block n={4} tone="wt" wide>
         <h2>이용자는 세 갈래입니다.</h2>
         <Cards
+          cols={3}
           items={[
             { title: "학생", lines: ["학기권·시험기간 단기권", "그룹 클래스", "동아리·운동부 지원"] },
             { title: "교직원", lines: ["점심 스트레칭·근골격계 케어", "퇴근 후 PT·필라테스"] },
@@ -81,10 +82,10 @@ export default function CommunityUniv() {
       </Block>
 
       {/* 5 학기·방학 운영표 */}
-      <Block n={5} tone="dk">
+      <Block n={5} tone="dk" wide>
         <h2>학기와 방학에 맞춘 운영표</h2>
         <Cards
-          cols={2}
+          cols={4}
           items={[
             { eyebrow: "3~6월", title: "1학기" },
             { eyebrow: "7~8월", title: "여름방학", lines: ["주민 개방", "단기 집중 강좌"] },
@@ -95,15 +96,15 @@ export default function CommunityUniv() {
       </Block>
 
       {/* 6 임대형 구조 */}
-      <Block n={6} tone="wt">
+      <Block n={6} tone="wt" wide>
         <h2>
           운영사가
           <br />
-          <Hl>시설 투자까지 책임지는 구조</Hl>
+          <Hl>시설 투자까지 <span className="cm-nw">책임지는 구조</span></Hl>
         </h2>
-        <p className="cm-tx cm-gap">
+        <div className="cm-quote cm-gap">
           대학 시설 위탁은 운영사가 임대료를 내고 인테리어·장비를 직접 갖추는 임대형이 많습니다. 그래서 운영 능력과 시설 투자 능력을 함께 봅니다.
-        </p>
+        </div>
         <Btn label={CTA} />
       </Block>
 
@@ -128,12 +129,13 @@ export default function CommunityUniv() {
       </Block>
 
       {/* 8 평가 항목 */}
-      <Block n={8} tone="wt">
+      <Block n={8} tone="wt" wide>
         <h2>
           공고의 평가 항목마다
           <br />
           <Hl>준비된 답</Hl>이 있습니다.
         </h2>
+        <div className="cm-tbw">
         <table className="cm-tb">
           <thead>
             <tr>
@@ -160,23 +162,25 @@ export default function CommunityUniv() {
             </tr>
           </tbody>
         </table>
+        </div>
         <p className="cm-cap cm-gap2">대학 시설 위탁운영자 모집 공고에서 흔히 쓰는 평가 항목 기준</p>
       </Block>
 
       {/* 9 요금 체계 예시 */}
-      <Block n={9} tone="dk">
+      <Block n={9} tone="dk" wide>
         <h2>요금 체계 예시</h2>
         <Cards
+          cols={3}
           items={[
-            { title: "학기권", body: "[학교와 협의]" },
-            { title: "시험기간 단기권", body: "[학교와 협의]" },
-            { title: "주민 시간대 이용권", body: "[학교와 협의]" },
+            { title: "학기권", price: "[학교와 협의]" },
+            { title: "시험기간 단기권", price: "[학교와 협의]" },
+            { title: "주민 시간대 이용권", price: "[학교와 협의]" },
           ]}
         />
       </Block>
 
       {/* 10 리포트 */}
-      <Block n={10} tone="wt">
+      <Block n={10} tone="wt" wide>
         <h2>
           학교에 보고하는
           <br />
