@@ -1,7 +1,7 @@
 // ① 아파트 커뮤니티 위탁 — /consulting/community (명세: docs/community-landing-spec.md, 13블록)
 import Shell from "./Shell";
 import FacilityApplyForm from "./FacilityApplyForm";
-import { Block, Bubble, Btn, Cards, Checks, Em, Faq, FormBlock, Hero, Hl, Ph, Photo, ReportMock, Steps } from "./parts";
+import { Block, Bubble, Btn, Cards, Checks, Em, Faq, FormBlock, Hero, Hl, Photo, ReportMock, Scenarios, Steps } from "./parts";
 import { COMMUNITY_IMG, SVC_APT } from "@/lib/community";
 
 const CTA = "단지 운영 진단 받아보기";
@@ -21,7 +21,7 @@ export default function CommunityApt() {
         <h1>
           커뮤니티는 <span className="cm-nw">비용이 아니라,</span>
           <br />
-          <Hl>운영으로 유지되는 시설</Hl>입니다.
+          <Hl>운영으로 유지되는</Hl> <span className="cm-nw">시설입니다.</span>
         </h1>
         <p className="cm-tx cm-gap">
           관리비를 더 걷자고 말해야 하는 순간이 오기 전에. 헬스장·필라테스를 직접 운영해 온 팀이 프로그램, 인력, 수지까지 함께 맡습니다.
@@ -234,10 +234,14 @@ export default function CommunityApt() {
         <ReportMock
           title="○○단지 커뮤니티 월간 리포트"
           rows={[
-            ["월 이용자", "[ ]명"],
-            ["프로그램 수입", "[ ]원"],
-            ["운영 지출", "[ ]원"],
-            ["민원 처리", "[ ]건"],
+            ["월 이용자", "1,840명"],
+            ["프로그램 수입", "1,260만원"],
+            ["운영 지출", "1,180만원"],
+            ["민원 처리", "12건 중 12건"],
+          ]}
+          bars={[
+            { label: "수입", value: 1260, text: "1,260만원" },
+            { label: "지출", value: 1180, text: "1,180만원", dark: true },
           ]}
         />
         <Checks items={["월간 수지·이용 리포트 발송", "민원 접수→처리→회신 기록", "분기별 운영 성과 미팅"]} />
@@ -254,9 +258,24 @@ export default function CommunityApt() {
       </Block>
 
       {/* 12 사례 + FAQ */}
-      <Block n={12} tone="wt">
-        <Ph label="[운영 단지 사례]" />
-        <Ph label="[입대의·관리소장 후기]" />
+      <Block n={12} tone="wt" wide>
+        <Scenarios
+          cols={2}
+          items={[
+            {
+              title: "신축 1,200세대 단지",
+              situation: "입주를 앞둔 신축 단지로, 커뮤니티 시설의 운영 방식이 아직 정해지지 않았습니다.",
+              steps: ["입주 전 이용량·운영비 시뮬레이션", "요금 체계 설계와 이용 규정 마련", "강사 세팅과 프로그램 편성"],
+              outcome: "입주 첫 달부터 이용률과 수지를 함께 관리하는 것을 목표로 합니다.",
+            },
+            {
+              title: "운영사 교체 단지",
+              situation: "운영 수지와 민원 문제로 운영사 교체를 검토하는 단지입니다.",
+              steps: ["현 운영 수지·이용률·민원 진단", "강사 승계 면담과 회원 데이터 이관", "무중단 전환 일정 수립"],
+              outcome: "시설이 멈추는 기간 없이 운영사를 바꾸는 것을 목표로 합니다.",
+            },
+          ]}
+        />
         <Faq items={FAQ} />
       </Block>
 

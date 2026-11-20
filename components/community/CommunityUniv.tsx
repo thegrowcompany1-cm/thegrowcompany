@@ -1,7 +1,7 @@
 // ③ 대학교 체육시설 위탁 — /consulting/community3 (명세: docs/community-landing-spec.md, 13블록)
 import Shell from "./Shell";
 import FacilityApplyForm from "./FacilityApplyForm";
-import { Block, Btn, Cards, Faq, FormBlock, Hero, Hl, Ph, ReportMock, Steps } from "./parts";
+import { Block, Btn, Cards, Faq, FormBlock, Hero, Hl, ReportMock, Scenarios, Steps } from "./parts";
 import { COMMUNITY_IMG, SVC_UNIV } from "@/lib/community";
 
 const CTA = "캠퍼스 시설 진단 받아보기";
@@ -158,7 +158,7 @@ export default function CommunityUniv() {
             </tr>
             <tr>
               <th scope="row">업체 실적</th>
-              <td colSpan={2}>[운영 실적 자료 기재 예정]</td>
+              <td colSpan={2}>그로우 계열 창업·운영 경험: 창업 250회 · 52개 센터 총괄 운영</td>
             </tr>
           </tbody>
         </table>
@@ -172,9 +172,9 @@ export default function CommunityUniv() {
         <Cards
           cols={3}
           items={[
-            { title: "학기권", price: "[학교와 협의]" },
-            { title: "시험기간 단기권", price: "[학교와 협의]" },
-            { title: "주민 시간대 이용권", price: "[학교와 협의]" },
+            { title: "학기권", note: "예시 · 학교와 협의", price: "9만원" },
+            { title: "시험기간 단기권", note: "예시 · 학교와 협의", price: "2만원" },
+            { title: "주민 시간대 이용권", note: "예시 · 학교와 협의", price: "월 5만원" },
           ]}
         />
       </Block>
@@ -189,19 +189,32 @@ export default function CommunityUniv() {
         <ReportMock
           title="캠퍼스 체육시설 월간 리포트"
           rows={[
-            ["이용자(학생)", "[ ]명"],
-            ["이용자(교직원)", "[ ]명"],
-            ["이용자(주민)", "[ ]명"],
-            ["수입", "[ ]원"],
-            ["민원", "[ ]건"],
+            ["이용자(학생)", "1,120명"],
+            ["이용자(교직원)", "140명"],
+            ["이용자(주민)", "260명"],
+            ["수입", "2,050만원"],
+            ["민원", "7건"],
+          ]}
+          bars={[
+            { label: "학생", value: 1120, text: "1,120명" },
+            { label: "교직원", value: 140, text: "140명", dark: true },
+            { label: "주민", value: 260, text: "260명", dark: true },
           ]}
         />
       </Block>
 
       {/* 11 사례 */}
       <Block n={11} tone="dk">
-        <Ph label="[대학 운영 사례]" />
-        <Ph label="[담당자 후기]" />
+        <Scenarios
+          items={[
+            {
+              title: "사립대 · 재학생 1만 명",
+              situation: "재학생 1만 명 규모 사립대의 체육시설이 방학마다 비어 있습니다.",
+              steps: ["현장 실사와 리뉴얼·장비 구성안(그로우인테리어)", "학기권·시험기간권 요금 설계", "방학 주민 개방 프로그램 편성"],
+              outcome: "방학 공실을 줄이고 학교의 예산 부담을 낮추는 것을 목표로 합니다.",
+            },
+          ]}
+        />
       </Block>
 
       {/* 12 FAQ */}

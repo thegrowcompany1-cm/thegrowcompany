@@ -179,13 +179,39 @@ export const CM_CSS = `
 .cm-rep{position:relative;margin-top:40px;padding:28px 22px;border-radius:20px;background:#fff;color:#111;text-align:left}
 .cm-dk .cm-rep{background:#F5F5F5}
 .cm-wt .cm-rep{background:#F5F5F5}
-.cm-rep-t{padding-right:92px;font-size:20px;font-weight:900;line-height:1.4;letter-spacing:-.02em}
-.cm-rep-badge{position:absolute;right:20px;top:24px;padding:5px 12px;border-radius:999px;background:#111;color:#fff;font-size:14px;font-weight:800}
+.cm-rep-t{font-size:20px;font-weight:900;line-height:1.4;letter-spacing:-.02em}
+.cm-rep-badge{display:inline-block;margin-bottom:14px;padding:6px 14px;border-radius:999px;background:#111;color:#fff;font-size:14px;font-weight:800}
 .cm-rep-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
 .cm-rep-r{padding:18px 16px;border-radius:14px;background:#fff}
 .cm-rep-r span{display:block;font-size:15px;font-weight:600;color:#444}
-.cm-rep-r b{display:block;margin-top:8px;font-size:34px;line-height:1.1;font-weight:900;letter-spacing:-.04em;color:var(--gd);white-space:nowrap}
-@media (min-width:1024px){.cm-rep{padding:44px 44px}.cm-rep-t{font-size:26px}.cm-rep-g{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:32px}.cm-rep-r{padding:26px 22px}.cm-rep-r b{font-size:52px}.cm-rep-r span{font-size:17px}}
+.cm-rep-r b{display:block;margin-top:8px;font-size:27px;line-height:1.1;font-weight:900;letter-spacing:-.04em;color:var(--gd);white-space:nowrap}
+.cm-rep-r b.s{font-size:24px;line-height:1.25;white-space:normal}
+.cm-rep-bars{display:grid;gap:14px;margin-top:24px}
+.cm-rep-bar{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:12px;align-items:center;font-size:15px;font-weight:700;color:#222}
+.cm-rep-bar .trk{height:16px;border-radius:8px;background:#E1E1E1;overflow:hidden}
+.cm-rep-bar .trk i{display:block;height:100%;border-radius:8px;background:var(--g)}
+.cm-rep-bar .trk i.k{background:#444}
+.cm-rep-bar b{min-width:84px;text-align:right;font-size:16px;font-weight:900;color:#111;font-variant-numeric:tabular-nums}
+@media (min-width:1024px){.cm-rep-bar{grid-template-columns:96px minmax(0,1fr) auto;font-size:17px}.cm-rep-bar b{font-size:18px}.cm-rep-r b.s{font-size:32px}.cm-rep{padding:44px 44px}.cm-rep-t{font-size:26px}.cm-rep-g{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:32px}.cm-rep-r{padding:26px 22px}.cm-rep-r b{font-size:52px}.cm-rep-r span{font-size:17px}}
+
+/* 운영 시나리오 카드 */
+.cm-scn{padding:28px 24px;border-radius:18px;text-align:left}
+.cm-wt .cm-scn{background:#F5F5F5;color:#111}
+.cm-dk .cm-scn{background:#1C1C1C;color:#fff}
+.cm-scn-tag{display:inline-block;margin-bottom:14px;padding:6px 12px;border-radius:999px;font-size:14px;font-weight:800}
+.cm-wt .cm-scn-tag{background:#E3F2E6;color:var(--gd)}
+.cm-dk .cm-scn-tag{background:rgba(47,191,95,.16);color:#2FBF5F}
+.cm-scn h3{font-size:22px;line-height:1.35;font-weight:900;letter-spacing:-.03em}
+.cm-scn-k{margin:20px 0 6px;font-size:14px;font-weight:800;color:var(--gd)}
+.cm-dk .cm-scn-k{color:#2FBF5F}
+.cm-scn p{font-size:16px;line-height:1.6;font-weight:500}
+.cm-scn li{position:relative;padding:3px 0 3px 18px;font-size:16px;line-height:1.55;font-weight:600}
+.cm-scn li::before{content:"";position:absolute;left:0;top:.8em;width:6px;height:6px;border-radius:50%;background:var(--g)}
+.cm-scn .cm-scn-o{font-weight:800}
+.cm-card .cm-note{margin-top:14px;font-size:14px;font-weight:700;color:#5B6660}
+.cm-dk .cm-card .cm-note{color:#B9C2BD}
+.cm-card .cm-note+.cm-price{margin-top:4px}
+@media (min-width:1024px){.cm-scn{padding:36px 32px}.cm-scn h3{font-size:26px}.cm-scn p,.cm-scn li{font-size:17px}}
 
 /* 플레이스홀더 */
 .cm-ph{display:flex;align-items:center;justify-content:center;min-height:140px;margin-top:16px;padding:18px;border:2px dashed #9BA7A1;border-radius:18px;font-size:18px;font-weight:700;color:#4F5A54}

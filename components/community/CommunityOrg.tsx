@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import Shell from "./Shell";
 import FacilityApplyForm from "./FacilityApplyForm";
-import { BigIn, Block, Btn, Cards, Faq, FormBlock, Hero, Hl, Ph, Photo, ReportMock, Steps } from "./parts";
+import { BigIn, Block, Btn, Cards, Faq, FormBlock, Hero, Hl, Photo, ReportMock, Scenarios, Steps } from "./parts";
 import type { CardItem } from "./parts";
 import { COMMUNITY_IMG, SVC_CORP, SVC_HOTEL, SVC_PUBLIC } from "@/lib/community";
 
@@ -256,11 +256,13 @@ export default function CommunityOrg() {
         <ReportMock
           title="분기 운영 성과 리포트"
           rows={[
-            ["월평균 이용자", "[ ]명"],
-            ["프로그램 참여", "[ ]회"],
-            ["만족도", "[ ]/5"],
-            ["민원 처리", "[ ]건"],
+            ["월평균 이용자", "310명"],
+            ["프로그램 참여", "1,420회"],
+            ["만족도", "4.6 / 5"],
+            ["민원 처리", "5건"],
           ]}
+          bars={[{ label: "만족도", value: 4.6, text: "4.6 / 5" }]}
+          barMax={5}
         />
       </Block>
 
@@ -285,10 +287,30 @@ export default function CommunityOrg() {
       </Block>
 
       {/* 10 사례 */}
-      <Block n={10} tone="wt">
-        <Ph label="[기업 운영 사례]" />
-        <Ph label="[호텔 운영 사례]" />
-        <Ph label="[공공기관 운영 사례]" />
+      <Block n={10} tone="wt" wide>
+        <Scenarios
+          cols={3}
+          items={[
+            {
+              title: "기업 · 제조사 현장직 800명",
+              situation: "800명 규모 제조 사업장에서 현장직의 근골격계 부담 관리가 과제입니다.",
+              steps: ["직무별 부담 부위 파악과 현장 실사", "교대 시간에 맞춘 스트레칭·근력 프로그램 편성", "분기별 이용 성과 보고"],
+              outcome: "현장직 이용률을 분기마다 숫자로 보고하는 것을 목표로 합니다.",
+            },
+            {
+              title: "호텔 · 5성 호텔 피트니스",
+              situation: "회원권 회원과 투숙객이 같은 피트니스를 함께 이용합니다.",
+              steps: ["피크 시간대 이용 동선과 예약 운영 설계", "영문 응대가 가능한 코치 배치", "회원권 재등록 관리"],
+              outcome: "투숙객 응대 수준을 지키면서 회원권 회원 유지를 목표로 합니다.",
+            },
+            {
+              title: "공공 · 구립 체육센터",
+              situation: "이용률과 만족도에 대한 성과 보고를 요구받는 구립 체육센터입니다.",
+              steps: ["시니어·청소년·여성 등 계층별 강좌 편성", "항목별 수입·지출 기록", "월간 성과 보고서 제출"],
+              outcome: "감사와 성과 평가에 쓸 기록을 매달 남기는 것을 목표로 합니다.",
+            },
+          ]}
+        />
       </Block>
 
       {/* 11 FAQ */}

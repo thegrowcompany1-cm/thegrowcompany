@@ -41,7 +41,7 @@ export function Bubble({ side, children }: { side: "l" | "r"; children: ReactNod
   );
 }
 
-export type CardItem = { title: string; eyebrow?: string; lines?: string[]; body?: string; price?: string; badge?: string; rec?: boolean };
+export type CardItem = { title: string; eyebrow?: string; lines?: string[]; body?: string; price?: string; badge?: string; rec?: boolean; note?: string };
 
 export function Cards({ items, cols = 1, num }: { items: CardItem[]; cols?: 1 | 2 | 3 | 4; num?: boolean }) {
   return (
@@ -55,6 +55,7 @@ export function Cards({ items, cols = 1, num }: { items: CardItem[]; cols?: 1 | 
             {c.title}
           </h3>
           {c.body ? <p>{c.body}</p> : null}
+          {c.note ? <div className="cm-note">{c.note}</div> : null}
           {c.price ? <div className="cm-price">{c.price}</div> : null}
           {c.lines ? (
             <ul>
@@ -69,19 +70,62 @@ export function Cards({ items, cols = 1, num }: { items: CardItem[]; cols?: 1 | 
   );
 }
 
-export function ReportMock({ title, rows }: { title: string; rows: [string, string][] }) {
+export type RepBar = { label: string; value: number; text: string; dark?: boolean };
+
+/** 리포트 예시 카드 - 배지는 항상 제목 위에 보인다. bars 는 위 숫자에 맞춘 막대(최대값 대비 길이) */
+export function ReportMock({ title, rows, bars, barMax }: { title: string; rows: [string, string][]; bars?: RepBar[]; barMax?: number }) {
+  const max = barMax ?? Math.max(...(bars ?? []).map((b) => b.value), 1);
   return (
     <div className="cm-rep">
-      <span className="cm-rep-badge">예시 화면</span>
+      <span className="cm-rep-badge">예시 · 실제 단지 데이터 아님</span>
       <div className="cm-rep-t">{title}</div>
       <div className="cm-rep-g">
         {rows.map(([k, v]) => (
           <div key={k} className="cm-rep-r">
             <span>{k}</span>
-            <b>{v}</b>
+            <b className={v.length > 7 ? "s" : undefined}>{v}</b>
           </div>
         ))}
       </div>
+      {bars ? (
+        <div className="cm-rep-bars">
+          {bars.map((b) => (
+            <div key={b.label} className="cm-rep-bar">
+              <span>{b.label}</span>
+              <div className="trk">
+                <i className={b.dark ? "k" : undefined} style={{ width: `${(b.value / max) * 100}%` }} />
+              </div>
+              <b>{b.text}</b>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export type ScenarioItem = { title: string; situation: string; steps: string[]; outcome: string };
+
+/** 운영 시나리오 카드 - 가상 예시. 실적·후기처럼 읽히지 않게 라벨을 고정하고 기대 변화는 "목표로 합니다" 어미만 쓴다 */
+export function Scenarios({ items, cols }: { items: ScenarioItem[]; cols?: 1 | 2 | 3 }) {
+  return (
+    <div className={`cm-cards cm-scns${cols && cols > 1 ? ` c${cols}` : ""}`}>
+      {items.map((c) => (
+        <article key={c.title} className="cm-scn">
+          <span className="cm-scn-tag">운영 시나리오 · 가상 예시</span>
+          <h3>{c.title}</h3>
+          <div className="cm-scn-k">상황</div>
+          <p>{c.situation}</p>
+          <div className="cm-scn-k">더그로우가 하는 일</div>
+          <ul>
+            {c.steps.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+          <div className="cm-scn-k">기대 변화</div>
+          <p className="cm-scn-o">{c.outcome}</p>
+        </article>
+      ))}
     </div>
   );
 }
