@@ -40,6 +40,11 @@ const VIDEO_REVIEWS = [
     poster: "/reviews/diag-custom.jpg",
     caption: "커스텀 대표님 진단 솔루션 후기",
   },
+  {
+    src: "/reviews/diag-wontier.mp4",
+    poster: "/reviews/diag-wontier.jpg",
+    caption: "원티어 대표님 진단 솔루션 후기",
+  },
 ];
 
 const STEPS = [
