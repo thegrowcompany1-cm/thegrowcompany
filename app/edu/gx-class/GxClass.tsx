@@ -18,30 +18,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import {
-  CAPACITY,
-  CLASS_DATE,
-  CLASS_PLACE,
-  CLASS_TIME,
-  EARLYBIRD_UNTIL,
-  PRICE_EARLYBIRD,
-  PRICE_NORMAL,
-  discountRate,
-  formatCapacity,
-  formatDeadline,
-  formatPrice,
-  formatSchedule,
-  isPending,
-} from "@/lib/gxClass";
+import { NotifySection } from "@/components/edu/OpenNotifyForm";
+
 
 const CLASS_NAME = "그룹운동 비즈니스 클래스";
 
-// 결제 상품 슬러그 — Supabase products 테이블의 slug(is_active=true)와 일치해야 결제창이 뜬다
-const PRODUCT_NORMAL = "gx-class";
-const PRODUCT_EARLY = "gx-class-early";
-
-const SCHEDULE = formatSchedule(CLASS_DATE, CLASS_TIME);
+// 다음 기수 일정이 확정되기 전까지 일시·장소는 "준비중"으로 보이고, 결제 대신 오픈 알림(#notify)을 받는다.
+// 일정이 확정되면 lib/gxClass.ts 상수를 채우고 이 파일의 결제 카드(체크아웃 연결)를 되살린다.
+const SCHEDULE = "준비중";
+const PLACE = "준비중";
 
 const IMG_DIR = "/edu/gx-class";
 const IMAGES = {
@@ -206,37 +191,6 @@ const fmtNum = (n: number, decimals: number) =>
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
-
-/** 가격이 확정된 경우에만 (VAT포함) 표기 */
-function Vat({ price }: { price: unknown }) {
-  return isPending(price) ? null : <span className="gx1-vat">(VAT포함)</span>;
-}
-
-/**
- * 얼리버드 가격 표기 — 정가 취소선 + 얼리버드가 강조 + 할인율 (페이지 전체 공통).
- * 가격이 미정이면 취소선·할인율 없이 얼리버드가("미정")만, 마감일은 확정된 경우에만 붙인다.
- */
-function EarlybirdPrice() {
-  const rate = discountRate(PRICE_NORMAL, PRICE_EARLYBIRD);
-  const until = isPending(EARLYBIRD_UNTIL)
-    ? null
-    : formatDeadline(EARLYBIRD_UNTIL);
-  return (
-    <span className="gx1-price">
-      {rate !== null ? (
-        <s className="gx1-price-was" aria-label={`정가 ${formatPrice(PRICE_NORMAL)}`}>
-          {formatPrice(PRICE_NORMAL)}
-        </s>
-      ) : null}
-      <b className="gx1-price-now">{formatPrice(PRICE_EARLYBIRD)}</b>
-      {rate !== null ? (
-        <span className="gx1-price-rate">{rate}% 할인</span>
-      ) : null}
-      <Vat price={PRICE_EARLYBIRD} />
-      {until ? <span className="gx1-price-until">{until}까지</span> : null}
-    </span>
-  );
-}
 
 /**
  * 하이드레이션 전에 이미 로드·실패가 끝난 이미지도 상태를 반영한다.
@@ -598,7 +552,6 @@ const GX_STYLE = `
 `;
 
 export default function GxClass() {
-  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   // 숫자 증명 — null 이면 최종값 표시(기본). 섹션 진입 시 0 부터 카운트업
   const [proofCounts, setProofCounts] = useState<number[] | null>(null);
@@ -743,11 +696,6 @@ export default function GxClass() {
     };
   }, []);
 
-  // 결제 → 체크아웃 (fc-class 와 동일)
-  const goCheckout = (product: string) => {
-    router.push(`/checkout?product=${product}`);
-  };
-
   return (
     <div ref={rootRef} className="gx1">
       <style dangerouslySetInnerHTML={{ __html: GX_STYLE }} />
@@ -797,7 +745,7 @@ export default function GxClass() {
             </span>
             <span className="gx1-chip">
               <em>장소</em>
-              {CLASS_PLACE}
+              {PLACE}
             </span>
           </div>
         </div>
@@ -1250,103 +1198,25 @@ export default function GxClass() {
           기존 CTA·외부 링크의 #contact 앵커가 이 섹션을 가리킨다. ── */}
       <section data-track-section="price" className="gx1-sec gx1-dark" id="contact">
         <div className="gx1-wrap gx1-narrow">
-          <h2 className="gx1-h2 gx1-reveal">강의 정보 및 신청</h2>
-          <h3 className="gx1-sub-t gx1-reveal">강의 정보</h3>
-          <table className="gx1-info gx1-reveal">
-            <tbody>
-              <tr>
-                <th scope="row">일시</th>
-                <td>{SCHEDULE}</td>
-              </tr>
-              <tr>
-                <th scope="row">장소</th>
-                <td>{CLASS_PLACE}</td>
-              </tr>
-              <tr>
-                <th scope="row">정원</th>
-                <td>{formatCapacity(CAPACITY)}</td>
-              </tr>
-              <tr>
-                <th scope="row">가격</th>
-                <td>
-                  <EarlybirdPrice />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          {/* 희소성 블록 — 정원 · 얼리버드 마감(EARLYBIRD_UNTIL 에서 자동 계산) · 가격 인상 예고 */}
-          <div className="gx1-scarcity gx1-reveal">
-            <div className="gx1-scarce">
-              <div className="gx1-scarce-tile">
-                <p className="gx1-scarce-label">정원</p>
-                <p className="gx1-scarce-value">{formatCapacity(CAPACITY)}</p>
-              </div>
-              <div className="gx1-scarce-tile gx1-scarce-tile--hot">
-                <p className="gx1-scarce-label">얼리버드 마감</p>
-                <p className="gx1-scarce-value">
-                  {formatDeadline(EARLYBIRD_UNTIL)}
-                </p>
-              </div>
-            </div>
-            <p className="gx1-price-notice">
-              다음 차수부터 수강료가 인상될 예정입니다.
-            </p>
-          </div>
-
-          <div className="gx1-enroll-cards gx1-stagger">
-            <div className="gx1-enroll-card gx1-reveal">
-              <p className="gx1-enroll-tag">정상가</p>
-              <p className="gx1-enroll-price">
-                {formatPrice(PRICE_NORMAL)}
-                <Vat price={PRICE_NORMAL} />
-              </p>
-              <button
-                type="button"
-                className="gx1-pay-btn"
-                onClick={() => goCheckout(PRODUCT_NORMAL)}
-              >
-                정상가로 신청하기
-              </button>
-            </div>
-            <div className="gx1-enroll-card gx1-enroll-card--sale gx1-reveal">
-              <span className="gx1-enroll-badge">선착순 마감</span>
-              <p className="gx1-enroll-tag">얼리버드</p>
-              <p className="gx1-enroll-price">
-                <EarlybirdPrice />
-              </p>
-              <button
-                type="button"
-                className="gx1-pay-btn gx1-pay-btn--sale gx1-pulse"
-                onClick={() => goCheckout(PRODUCT_EARLY)}
-              >
-                얼리버드 할인가로 신청하기
-              </button>
-            </div>
-          </div>
-          <p className="gx1-enroll-note gx1-reveal">[환불 규정 안내]</p>
-          <ul className="gx1-refund gx1-reveal">
-            <li>
-              현재 신청문의가 많아 정원이 마감될 경우 100%환불조치 해드리고
-              있습니다.
-            </li>
-            <li>
-              강의 신청후 개인적 사유 환불의 경우 강의날 기준 5일전까지 100%
-              환불을 진행해드리고 있습니다.
-            </li>
-          </ul>
+          <NotifySection
+            course="gx-class"
+            page="/edu/gx-class"
+            tone="bare"
+            title="오픈 일정이 정해지면 가장 먼저 알려드립니다"
+            sub="다음 기수가 확정되면 남겨 주신 연락처로 먼저 안내드립니다."
+          />
         </div>
       </section>
 
       {/* ── 우하단 플로팅 결제 버튼 ── */}
-      <button
-        type="button"
+      <a
+        href="#notify"
         className={`gx1-fab${fabShown ? "" : " is-hidden"}`}
-        inert={!fabShown}
-        onClick={() => goCheckout(PRODUCT_EARLY)}
+        tabIndex={fabShown ? 0 : -1}
+        aria-hidden={!fabShown}
       >
-        얼리버드 할인가로 신청하기
-      </button>
+        오픈 알림 받기
+      </a>
     </div>
   );
 }

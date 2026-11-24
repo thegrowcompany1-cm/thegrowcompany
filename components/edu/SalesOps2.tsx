@@ -3,12 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { whenFbReady } from "@/lib/metaPixel";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
+import SalesOpsClosed from "@/components/edu/SalesOpsClosed";
 import {
   SO_LANDING_V2,
   SO_PRICE_NORMAL,
   SO_PRICE_STORY,
   SO_PRODUCT_NORMAL,
   SO_PRODUCT_STORY,
+  SO_ENDED,
 } from "@/lib/salesOps";
 import { clearCheckoutPrefill, readCheckoutPrefill, saveCheckoutPrefill } from "@/lib/products";
 
@@ -502,7 +504,7 @@ export default function SalesOps2() {
       <div className="so2-page">
       <header className="so2-top">
         <span className="so2-hosts"><b>더그로우컴퍼니</b><span className="so2-x">×</span><b>리얼세일즈</b> 공동 강의</span>
-        <a href="#apply"><span>신청하기</span></a>
+        <a href="#apply"><span>{SO_ENDED ? "오픈 알림 받기" : "신청하기"}</span></a>
       </header>
       <main id="top">
         <section className="so2-hero" id="hero" aria-labelledby="h-title">
@@ -528,7 +530,7 @@ export default function SalesOps2() {
               <div className="so2-r"><dt>구성</dt><dd>1부 운영키 2시간 + 2부 매출키 2시간</dd></div>
               <div className="so2-r"><dt>수강료</dt><dd>스토리 인증가 {fmt(SO_PRICE_STORY)} / 정상가 {fmt(SO_PRICE_NORMAL)}</dd></div>
             </dl>
-            <a className="so2-btn so2-btn-light so2-btn-block" href="#apply">강의 신청하기<svg className="so2-ar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
+            <a className="so2-btn so2-btn-light so2-btn-block" href="#apply">{SO_ENDED ? "오픈 알림 받기" : "강의 신청하기"}<svg className="so2-ar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
             <p className="so2-note">세부 일정은 신청하신 연락처로 안내드립니다.</p>
           </div>
         </section>
@@ -747,7 +749,7 @@ export default function SalesOps2() {
         <section className="so2-sec" id="apply" aria-labelledby="h-apply">
           <div className="so2-in">
             <p className="so2-eyebrow so2-rv">APPLY</p>
-            <h2 id="h-apply" className="so2-rv">11월 21일,<br /><span className="so2-hl">강의 신청</span></h2>
+            <h2 id="h-apply" className="so2-rv">11월 21일,<br /><span className="so2-hl">{SO_ENDED ? "1기 세미나" : "강의 신청"}</span></h2>
             <aside className="so2-ev so2-rv" aria-label="강의 정보">
               <div className="so2-ev-top">
                 <div className="so2-d">11.21<small>SAT</small></div>
@@ -768,11 +770,15 @@ export default function SalesOps2() {
             <div className="so2-form-card so2-pay-card" id="formCard">
               <input type="hidden" name="src" id="src" value={src} readOnly />
               <input type="hidden" name="campaign" id="campaign" value={campaign} readOnly />
-              <div onClickCapture={onPayCapture} onClick={onPayBubble}>
-                <SalesOpsPay stack accent="#3563F0" accentDark="#2A53D6" accentSoft="#EEF2FE" />
-              </div>
+              {SO_ENDED ? (
+                <SalesOpsClosed page="/edu/sales-ops2" />
+              ) : (
+                <div onClickCapture={onPayCapture} onClick={onPayBubble}>
+                  <SalesOpsPay stack accent="#3563F0" accentDark="#2A53D6" accentSoft="#EEF2FE" />
+                </div>
+              )}
             </div>
-            <p className="so2-soft">강의 후 2~3일 안에 12월 체험단 신청을 따로 안내드립니다.</p>
+            {!SO_ENDED && <p className="so2-soft">강의 후 2~3일 안에 12월 체험단 신청을 따로 안내드립니다.</p>}
           </div>
         </section>
         <section className="so2-sec so2-soft-bg" id="faq" aria-labelledby="h-faq">
@@ -793,7 +799,7 @@ export default function SalesOps2() {
             <p className="so2-eyebrow so2-rv">LAST CALL</p>
             <h2 id="h-final" className="so2-rv">구조는 운영키로,<br />결심은 매출키로.</h2>
             <p className="so2-date so2-rv">11월 21일 (토) · 성장 마스터키</p>
-            <a className="so2-btn so2-btn-light so2-rv" href="#apply">지금 강의 신청하기<svg className="so2-ar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
+            <a className="so2-btn so2-btn-light so2-rv" href="#apply">{SO_ENDED ? "오픈 알림 받기" : "지금 강의 신청하기"}<svg className="so2-ar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
           </div>
         </section>
       </main>
@@ -804,12 +810,14 @@ export default function SalesOps2() {
         </div>
       </footer>
       </div>
+      {!SO_ENDED && (
       <div className={"so2-sticky" + (stickyHidden ? " so2-hide" : "")} id="sticky">
         <div className="so2-inner">
           <div className="so2-meta"><b>11.21 (토)</b>운영키 × 매출키</div>
           <a className="so2-btn so2-btn-acc" href="#apply">강의 신청하기</a>
         </div>
       </div>
+      )}
     </div>
   );
 }

@@ -14,9 +14,11 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
+import SalesOpsClosed from "@/components/edu/SalesOpsClosed";
 import {
   SO_DATE,
   SO_DEADLINE_MS,
+  SO_ENDED,
   SO_LANDING_V3,
   SO_PLACE,
   SO_PRICE_NORMAL,
@@ -38,7 +40,7 @@ const DATE_NUM = SO_DATE.replace(/\(.\)/, ""); // "2026.11.21"
 const DOW_EN = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][new Date(SO_DEADLINE_MS + 9 * 3_600_000).getUTCDay()];
 const TOP_LINE = `${SO_DATE} ${START_LABEL} · 당산`;
 const LAST_LINE = `${SO_DATE} · 당산`;
-const CTA_TEXT = "내 자리 확보하기";
+const CTA_TEXT = SO_ENDED ? "오픈 알림 받기" : "내 자리 확보하기";
 
 // ── 이미지·영상 (기존 /edu/sales-ops 와 같은 경로) ───────────────────────────
 const IMG = {
@@ -276,7 +278,7 @@ export default function SalesOps3() {
   const [playing, setPlaying] = useState<number | null>(null);
   const [zoom, setZoom] = useState<number | null>(null);
   const [barOn, setBarOn] = useState(true);
-  const [closed, setClosed] = useState(false);
+  const [closed, setClosed] = useState(SO_ENDED);
   const [normalOpen, setNormalOpen] = useState(false);
   const [slide, setSlide] = useState(0);
   const slRef = useRef<HTMLDivElement>(null);
@@ -348,6 +350,7 @@ export default function SalesOps3() {
 
   // ── 마감 카운트다운 "DD일 HH:MM:SS.cs" — 화면에서 유일하게 움직이는 요소 ──
   useEffect(() => {
+    if (SO_ENDED) return; // 종료된 세미나 — 카운트다운을 돌리지 않는다
     const root = rootRef.current;
     if (!root) return;
     const pad = (v: number) => String(v).padStart(2, "0");
@@ -670,6 +673,10 @@ export default function SalesOps3() {
 
         {/* 11. 가격 + 결제 */}
         <section data-track-section="form" id="apply" className="so3-b so3-dk so3-ap" ref={applyRef}>
+          {SO_ENDED ? (
+            <SalesOpsClosed page="/edu/sales-ops3" />
+          ) : (
+            <>
           <div ref={applyHeadRef}>
             <h2>
               {soFormatPrice(SO_PRICE_STORY)},
@@ -707,10 +714,13 @@ export default function SalesOps3() {
               {CTA_TEXT}
             </a>
           )}
+            </>
+          )}
         </section>
       </div>
 
       {/* 하단 고정 CTA — 결제 블록이 보이면 숨김 */}
+      {!SO_ENDED && (
       <div className={"so3-bar" + (barOn ? " is-on" : "")} aria-hidden={!barOn}>
         <div className="so3-bar-in">
           <div>
@@ -726,6 +736,7 @@ export default function SalesOps3() {
           )}
         </div>
       </div>
+      )}
 
       {/* 운영 시스템 화면 확대 */}
       {zoom !== null && (

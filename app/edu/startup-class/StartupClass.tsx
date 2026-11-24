@@ -10,8 +10,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { SITE_URL } from "@/lib/site";
+import { NotifySection } from "@/components/edu/OpenNotifyForm";
 
 /* ▼▼ 다음 세미나 때 이 상수만 수정 ▼▼ */
 const SEMINAR_DATE = "6월 14일 (일요일)";
@@ -91,6 +91,9 @@ const DETAIL_HTML = `<div class="sm1">
 .sm1-pay-btn{width:100%;height:52px;border:none;border-radius:12px;background:#161616;color:#fff;font-size:16px;font-weight:800;cursor:pointer;transition:opacity .2s}
 .sm1-pay-btn--sale{background:var(--g)}
 .sm1-pay-btn:hover{opacity:.9}
+.sm1-notify-msg{font-size:22px;font-weight:900;color:#161616;line-height:1.5;margin:0 0 18px;word-break:keep-all}
+a.sm1-pay-btn{display:flex;align-items:center;justify-content:center;text-decoration:none}
+.sm1-pay-btn--sale{background:var(--g)}
 .sm1-pay-note{font-size:12px;color:#888;line-height:1.7;margin:4px 2px 0}
 .sm1-apply-cards{max-width:720px;margin:32px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .sm1-apply-note{max-width:640px;margin:16px auto 0;text-align:center;font-size:12px;color:#9a9a9a;line-height:1.7}
@@ -150,16 +153,10 @@ const DETAIL_HTML = `<div class="sm1">
       </div>
       <div class="sm1-pays">
         <div class="sm1-pay-card">
-          <div class="sm1-pay-tag">창업 원데이 클래스 정가</div>
-          <div class="sm1-pay-price">${PRICE_ORIGINAL} <span class="sm1-pay-vat">(VAT포함)</span></div>
-          <button type="button" class="sm1-pay-btn">결제하기</button>
+          <div class="sm1-pay-tag">창업 세미나 · 다음 일정 준비중</div>
+          <p class="sm1-notify-msg">오픈 일정이 정해지면 가장 먼저 알려드립니다</p>
+          <a href="#notify" class="sm1-pay-btn sm1-pay-btn--sale">오픈 알림 받기</a>
         </div>
-        <div class="sm1-pay-card sm1-pay-card--sale">
-          <div class="sm1-pay-tag">인스타 스토리 공유 시 할인가</div>
-          <div class="sm1-pay-price"><span class="sm1-pay-was">${PRICE_ORIGINAL}</span><span class="sm1-pay-now">${PRICE_SALE}</span> <span class="sm1-pay-vat">(VAT포함)</span></div>
-          <button type="button" class="sm1-pay-btn sm1-pay-btn--sale">할인가로 결제하기</button>
-        </div>
-        <p class="sm1-pay-note">현재 신청 문의가 많아 정원 초과 시 결제 금액은 전액 환불해 드리며, 응답이 없을 경우 자동 취소됩니다. 세미나 시작 7일 전까지 취소 시 결제 금액 전액 환불되고, 이후 취소 및 환불 기준은 관련 법령과 소비자분쟁해결기준에 따릅니다. 취소 문의: 1551-4476</p>
       </div>
     </div>
   </div>
@@ -268,35 +265,13 @@ const DETAIL_HTML = `<div class="sm1">
   </div>
 </section>
 
-<!-- 8. 하단 신청/결제 -->
-<section class="sm1-sec sm1-dark" id="sm1-apply">
-  <div class="sm1-wrap">
-    <h2 class="sm1-h2">지금 바로<br><em>신청하세요.</em></h2>
-    <div class="sm1-apply-cards">
-      <div class="sm1-pay-card">
-        <div class="sm1-pay-tag">창업 원데이 클래스 정가</div>
-        <div class="sm1-pay-price">${PRICE_ORIGINAL} <span class="sm1-pay-vat">(VAT포함)</span></div>
-        <button type="button" class="sm1-pay-btn">결제하기</button>
-      </div>
-      <div class="sm1-pay-card sm1-pay-card--sale">
-        <div class="sm1-pay-tag">인스타 스토리 공유 시 할인가</div>
-        <div class="sm1-pay-price"><span class="sm1-pay-was">${PRICE_ORIGINAL}</span><span class="sm1-pay-now">${PRICE_SALE}</span> <span class="sm1-pay-vat">(VAT포함)</span></div>
-        <button type="button" class="sm1-pay-btn sm1-pay-btn--sale">할인가로 결제하기</button>
-      </div>
-    </div>
-    <p class="sm1-apply-note">현재 신청 문의가 많아 정원 초과 시 결제 금액은 전액 환불해 드리며, 응답이 없을 경우 자동 취소됩니다. 세미나 시작 7일 전까지 취소 시 결제 금액 전액 환불되고, 이후 취소 및 환불 기준은 관련 법령과 소비자분쟁해결기준에 따릅니다. 취소 문의: 1551-4476</p>
-  </div>
-</section>
-
-<div class="sm1-barspacer"></div>
-
 <!-- 10. 하단 고정 바 -->
 <div class="sm1-bar" id="sm1-bar">
   <div class="sm1-bar-in">
     <div class="sm1-bar-info">
       <div class="sm1-bar-when">${BAR_SCHEDULE}</div>
     </div>
-    <a href="#sm1-top" class="sm1-bar-cta" id="sm1-bar-cta">신청하기</a>
+    <a href="#notify" class="sm1-bar-cta" id="sm1-bar-cta">오픈 알림 받기</a>
   </div>
 </div>
 
@@ -329,12 +304,12 @@ const DETAIL_HTML = `<div class="sm1">
   }
   marquee('sm1LectureMarquee', 34, false);
 
-  /* 결제 버튼·하단 고정 바 CTA 는 React(useEffect)에서 router.push 로 체크아웃 연결 */
+  /* 결제 대신 오픈 알림(#notify) 폼으로 연결한다 */
 
   /* 하단 고정 바 — 최상단(결제 카드)이 보이면 숨김, 스크롤 내리면 표시 */
   var bar = document.getElementById('sm1-bar');
   var target = document.getElementById('sm1-top');
-  var applyEl = document.getElementById('sm1-apply');
+  var applyEl = document.getElementById('notify');
   if (bar && typeof IntersectionObserver !== 'undefined'){
     var visibleSet = {};
     var io = new IntersectionObserver(function(entries){
@@ -357,7 +332,6 @@ const DETAIL_HTML = `<div class="sm1">
 </div>`;
 
 export default function StartupClass() {
-  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const detailRef = useRef<HTMLDivElement>(null);
 
@@ -397,35 +371,14 @@ export default function StartupClass() {
     if (!container) return;
     const injected = injectContainer(container);
 
-    // 결제 버튼 + 하단 고정 바 CTA → 체크아웃 연결
-    const cleanups: Array<() => void> = [];
-    const goCheckout = (product: string) => (e: Event) => {
-      e.preventDefault();
-      router.push(`/checkout?product=${product}`);
-    };
-    container.querySelectorAll<HTMLButtonElement>(".sm1-pay-btn").forEach((btn) => {
-      const onPay = goCheckout(
-        btn.classList.contains("sm1-pay-btn--sale") ? "startup-class-insta" : "startup-class"
-      );
-      btn.addEventListener("click", onPay);
-      cleanups.push(() => btn.removeEventListener("click", onPay));
-    });
-    const barCta = container.querySelector<HTMLAnchorElement>(".sm1-bar-cta");
-    if (barCta) {
-      const onBar = goCheckout("startup-class");
-      barCta.addEventListener("click", onBar);
-      cleanups.push(() => barCta.removeEventListener("click", onBar));
-    }
-
     return () => {
-      cleanups.forEach((fn) => fn());
       injected.forEach((s) => s.remove());
       const w = window as unknown as Record<string, unknown>;
       const stop = w["__sm1Stop"];
       if (typeof stop === "function") (stop as () => void)();
       w["__sm1Stop"] = () => {};
     };
-  }, [mounted, router]);
+  }, [mounted]);
 
   return (
     <div className="overflow-x-hidden bg-white">
@@ -443,6 +396,14 @@ export default function StartupClass() {
       ) : (
         <div ref={detailRef} className="w-full" suppressHydrationWarning />
       )}
+      <NotifySection
+        course="startup-class"
+        page="/edu/startup-class"
+        tone="dark"
+        title="오픈 일정이 정해지면 가장 먼저 알려드립니다"
+        sub="다음 일정이 확정되면 남겨 주신 연락처로 먼저 안내드립니다."
+      />
+      <div className="sm1-barspacer" />
     </div>
   );
 }

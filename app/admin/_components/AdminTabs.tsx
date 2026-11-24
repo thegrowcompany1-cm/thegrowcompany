@@ -1,4 +1,4 @@
-// /admin 상단 탭 — 회원 현황 / GA 분석
+// /admin 상단 탭 — 회원 현황 / GA 분석 / 오픈 알림
 // 서버 컴포넌트(링크만). 각 탭 페이지가 렌더 첫 줄에서 requireAdmin() 을 호출하므로
 // 이 링크가 보인다고 접근 권한이 생기는 것은 아니다.
 
@@ -7,6 +7,7 @@ import Link from "next/link";
 const TABS = [
   { key: "members", label: "회원 현황", href: "/admin" },
   { key: "ga", label: "GA 분석", href: "/admin/ga" },
+  { key: "notify", label: "오픈 알림", href: "/admin/notify" },
 ] as const;
 
 export default function AdminTabs({ active }: { active: (typeof TABS)[number]["key"] }) {

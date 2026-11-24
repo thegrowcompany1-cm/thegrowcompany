@@ -10,8 +10,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { SITE_URL } from "@/lib/site";
+import { NotifySection } from "@/components/edu/OpenNotifyForm";
 
 /* ▼▼ 다음 기수 때 이 상수만 수정 ▼▼ */
 const SEMINAR_DATE = "준비중";
@@ -767,32 +767,10 @@ const DETAIL_HTML = `<div class="fc1">
   </div>
 </section>
 
-<!-- 13. 마지막 수강신청 -->
-<section data-track-section="price" class="fc1-sec fc1-enroll" id="fc1-enroll">
-  <div class="fc1-wrap">
-    <h2 class="fc1-h2 fc1-reveal">지금, 정규 FC 클래스에<br><em>합류하세요.</em></h2>
-    <p class="fc1-sub fc1-reveal">다음 기수 준비중 · 총 4시간</p>
-    <div class="fc1-enroll-cards">
-      <div class="fc1-enroll-card fc1-reveal">
-        <div class="fc1-enroll-tag">정상가</div>
-        <div class="fc1-enroll-price">${PRICE_ORIGINAL} <span>(VAT포함)</span></div>
-        <button type="button" class="fc1-enroll-btn">정상가로 신청하기</button>
-      </div>
-      <div class="fc1-enroll-card fc1-enroll-card--sale fc1-reveal">
-        <span class="fc1-enroll-badge">EARLY BIRD</span>
-        <div class="fc1-enroll-tag">얼리버드 할인가</div>
-        <div class="fc1-enroll-price"><s>${PRICE_ORIGINAL}</s> <b>${PRICE_SALE}</b> <span>(VAT포함)</span></div>
-        <button type="button" class="fc1-enroll-btn fc1-enroll-btn--sale">얼리버드 할인가로 신청하기</button>
-      </div>
-    </div>
-    <p class="fc1-enroll-note fc1-reveal">세미나 시작 7일 전까지 취소 시 결제 금액 전액 환불됩니다. 이후 취소 및 환불 기준은 관련 법령과 소비자분쟁해결기준에 따릅니다. 취소 문의: 1551-4476</p>
-  </div>
-</section>
-
 <div class="fc1-bar" id="fc1Bar">
   <div class="fc1-bar-in">
     <div class="fc1-bar-when">다음 기수 준비중 · 총 4시간</div>
-    <a href="#fc1-top" class="fc1-bar-cta" id="fc1BarCta">신청하기</a>
+    <a href="#notify" class="fc1-bar-cta" id="fc1BarCta">오픈 알림 받기</a>
   </div>
 </div>
 
@@ -938,7 +916,7 @@ const DETAIL_HTML = `<div class="fc1">
   // 하단 고정 바 (최상단 결제영역/하단 신청영역이 보이면 숨김)
   var bar = document.getElementById('fc1Bar');
   var topEl = document.getElementById('fc1-top');
-  var enrollEl = document.getElementById('fc1-enroll');
+  var enrollEl = document.getElementById('notify');
   if (bar && typeof IntersectionObserver !== 'undefined'){
     var barVisible = {};
     var ioBar = new IntersectionObserver(function(entries){
@@ -961,7 +939,6 @@ const DETAIL_HTML = `<div class="fc1">
 </div>`;
 
 export default function FcClass() {
-  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const detailRef = useRef<HTMLDivElement>(null);
@@ -1013,35 +990,14 @@ export default function FcClass() {
     if (!container) return;
     const injected = injectContainer(container);
 
-    // 마지막 수강신청 버튼 + 하단 고정 바 CTA → 체크아웃 연결
-    const cleanups: Array<() => void> = [];
-    const goCheckout = (product: string) => (e: Event) => {
-      e.preventDefault();
-      router.push(`/checkout?product=${product}`);
-    };
-    container.querySelectorAll<HTMLButtonElement>(".fc1-enroll-btn").forEach((btn) => {
-      const onEnroll = goCheckout(
-        btn.classList.contains("fc1-enroll-btn--sale") ? "fc-class-early" : "fc-class"
-      );
-      btn.addEventListener("click", onEnroll);
-      cleanups.push(() => btn.removeEventListener("click", onEnroll));
-    });
-    const barCta = container.querySelector<HTMLAnchorElement>(".fc1-bar-cta");
-    if (barCta) {
-      const onBar = goCheckout("fc-class-early");
-      barCta.addEventListener("click", onBar);
-      cleanups.push(() => barCta.removeEventListener("click", onBar));
-    }
-
     return () => {
-      cleanups.forEach((fn) => fn());
       injected.forEach((s) => s.remove());
       const w = window as unknown as Record<string, unknown>;
       const stop = w["__fc1Stop"];
       if (typeof stop === "function") (stop as () => void)();
       w["__fc1Stop"] = () => {};
     };
-  }, [mounted, router]);
+  }, [mounted]);
 
   return (
     <div
@@ -1074,41 +1030,19 @@ export default function FcClass() {
               />
             </div>
 
-            {/* 우: 결제 카드 2개 */}
+            {/* 우: 오픈 알림 안내 카드 (결제 카드 대신) */}
             <div className="flex flex-col gap-4">
-              {/* 카드 1 — 정상가 */}
               <div className="rounded-2xl border border-[#e6e6e6] bg-white p-6 shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
-                <div className="text-sm font-bold text-gray-500">그로우 아카데미 FC 클래스</div>
-                <div className="mt-2 text-2xl font-black text-[#161616]">
-                  {PRICE_ORIGINAL} <span className="text-sm font-semibold text-gray-500">(VAT포함)</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => router.push("/checkout?product=fc-class")}
-                  className="mt-5 w-full rounded-xl bg-[#161616] py-4 text-base font-extrabold text-white transition-opacity hover:opacity-90"
+                <div className="text-sm font-bold text-gray-500">그로우 아카데미 FC 클래스 · 다음 기수 준비중</div>
+                <p className="mt-3 text-[22px] font-black leading-snug text-[#161616] break-keep">
+                  오픈 일정이 정해지면 가장 먼저 알려드립니다
+                </p>
+                <a
+                  href="#notify"
+                  className="mt-5 flex w-full items-center justify-center rounded-xl bg-[#009519] py-4 text-base font-extrabold text-white transition-opacity hover:opacity-90"
                 >
-                  정상가로 신청하기
-                </button>
-              </div>
-
-              {/* 카드 2 — 얼리버드 할인가 */}
-              <div className="relative rounded-2xl border-2 border-[#22B573] bg-gradient-to-b from-[#22B573]/10 to-white p-6 shadow-[0_10px_30px_rgba(34,181,115,0.15)]">
-                <span className="absolute -top-3 left-6 rounded-full bg-[#e23b3b] px-3 py-1 text-[11px] font-extrabold tracking-wide text-white">
-                  EARLY BIRD
-                </span>
-                <div className="text-sm font-bold text-[#22B573]">얼리버드 할인가</div>
-                <div className="mt-2 text-2xl font-black text-[#161616]">
-                  <span className="mr-2 text-lg font-bold text-gray-400 line-through">{PRICE_ORIGINAL}</span>
-                  <span className="text-[#22B573]">{PRICE_SALE}</span>{" "}
-                  <span className="text-sm font-semibold text-gray-500">(VAT포함)</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => router.push("/checkout?product=fc-class-early")}
-                  className="fc1-pulse mt-5 w-full rounded-xl bg-[#22B573] py-4 text-base font-extrabold text-white transition-opacity hover:opacity-90"
-                >
-                  얼리버드 할인가로 신청하기
-                </button>
+                  오픈 알림 받기
+                </a>
               </div>
             </div>
           </div>
@@ -1142,6 +1076,15 @@ export default function FcClass() {
       ) : (
         <div ref={detailRef} className="w-full" suppressHydrationWarning />
       )}
+
+      {/* ── 13. 오픈 알림 (#notify) — 수강신청 대신 ── */}
+      <NotifySection
+        course="fc-class"
+        page="/edu/fc-class"
+        tone="dark"
+        title="오픈 일정이 정해지면 가장 먼저 알려드립니다"
+        sub="다음 기수가 확정되면 남겨 주신 연락처로 먼저 안내드립니다."
+      />
 
       {/* ── 14. 수강생 텍스트 후기 — 주입 스크립트 비의존, 순수 React 렌더 ── */}
       <section className="fc1-rev-sec" id="fc1-reviews">

@@ -7,13 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import { DCC_OPEN_KO } from "@/lib/dccSchedule";
 import { TYPE_CURSOR_CSS, useTypewriter, type TypeStep } from "@/lib/useTypewriter";
 import Link from "next/link";
-import {
-  SO_DATE,
-  SO_PRICE_NORMAL,
-  SO_PRICE_STORY,
-  SO_TIME,
-  soFormatPrice,
-} from "@/lib/salesOps";
 
 const LINE1 = "그로우 에듀.";
 const LINE2 = "체육시설업 종사자를 위한 성장 교육입니다.";
@@ -43,22 +36,22 @@ const COURSES: {
   imgPos?: string;
 }[] = [
   {
-    // 일자·시간·가격은 lib/salesOps.ts 상수로 출력한다 (하드코딩 금지). 포스터가 세로형(4:5)이라 16:9 카드에서는 제목·강사 영역이 보이게 위치를 조정한다.
-    href: "/edu/sales-ops",
+    // 1기 세미나는 종료(lib/salesOps.ts SO_ENDED) — 일정 대신 "준비중"으로 두고 카드는 해당 페이지의 오픈 알림(#notify)으로 연결한다. 포스터가 세로형(4:5)이라 16:9 카드에서는 제목·강사 영역이 보이게 위치를 조정한다.
+    href: "/edu/sales-ops#notify",
     img: "/edu/sales-ops/poster.jpg",
     alt: "피트니스 성장 마스터키 세미나 포스터",
     imgPos: "50% 28%",
     title: "피트니스 성장 마스터키 세미나",
-    target: `강사·실장·원장·점장 · ${SO_DATE} ${SO_TIME}`,
+    target: "강사·실장·원장·점장 · 준비중",
     points: [
       "1부 김재강 대표 운영치트키 — 숫자·위임의 기술",
       "2부 황현진 대표 매출치트키 — 권유·호감의 기술",
-      `스토리 인증 시 ${soFormatPrice(SO_PRICE_STORY)} (정가 ${soFormatPrice(SO_PRICE_NORMAL)})`,
+      "다음 일정 오픈 알림을 받아보세요",
     ],
     badge: "총 4시간",
   },
   {
-    href: "/edu/startup-class",
+    href: "/edu/startup-class#notify",
     img: "/startup/startupjk.png",
     alt: "그로우 에듀 창업 세미나 강의",
     title: "창업 세미나",
@@ -71,7 +64,7 @@ const COURSES: {
     badge: "원데이 클래스",
   },
   {
-    href: "/edu/fc-class",
+    href: "/edu/fc-class#notify",
     img: "/legacy/shared/2c27053d77aa7.jpg",
     alt: "그로우 에듀 정규 FC 클래스 교육 현장",
     title: "정규 FC 클래스",
@@ -85,7 +78,7 @@ const COURSES: {
   },
   {
     // 카드 문구는 /edu/gx-class 페이지의 확정 카피에서 가져왔다
-    href: "/edu/gx-class",
+    href: "/edu/gx-class#notify",
     img: "/edu/gx-class/gx-community-group.jpg",
     alt: "그로우 에듀 그룹운동 비즈니스 클래스 수강생 단체사진",
     title: "그룹운동 비즈니스 클래스",

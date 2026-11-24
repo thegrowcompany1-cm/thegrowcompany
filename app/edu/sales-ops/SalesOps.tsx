@@ -22,9 +22,11 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { whenFbReady } from "@/lib/metaPixel";
 import SalesOpsPay from "@/components/edu/SalesOpsPay";
+import SalesOpsClosed from "@/components/edu/SalesOpsClosed";
 import { clearCheckoutPrefill, readCheckoutPrefill, saveCheckoutPrefill } from "@/lib/products";
 import {
   SO_DEADLINE_MS,
+  SO_ENDED,
   SO_LANDING_POPUP,
   SO_LANDING_V1,
   SO_PRODUCT_NORMAL,
@@ -855,7 +857,7 @@ export default function SalesOps() {
   // 마감 카운트다운 — 숫자는 requestAnimationFrame 으로 DOM 에 직접 쓴다(재렌더 없이). 마감이 지나면 closed
   const cdRef = useRef<HTMLSpanElement>(null);
   const msRef = useRef<HTMLSpanElement>(null);
-  const [closed, setClosed] = useState(false);
+  const [closed, setClosed] = useState(SO_ENDED);
   // 잔여석 — 서버(/api/seminar-seats)가 토스 결제 완료 건수로 센 값. 못 가져오면 null 이고 줄을 숨긴다
   const [seats, setSeats] = useState<number | null>(null);
 
@@ -1059,6 +1061,7 @@ export default function SalesOps() {
 
   // "마감까지 DD일 HH:MM:SS.ms" — 밀리초는 2자리(1/100초)
   useEffect(() => {
+    if (SO_ENDED) return; // 종료된 세미나 — 카운트다운을 돌리지 않는다
     const pad = (v: number) => String(v).padStart(2, "0");
     let raf = 0;
     const tick = () => {
@@ -1526,7 +1529,7 @@ export default function SalesOps() {
       {/* ── 10. 신청 ── */}
       <section data-track-section="form" className="so-sec so-tint so-apply" id="so-apply">
         <div className="so-wrap">
-          <h2 className="so-h2 so-reveal">세미나 신청 안내</h2>
+          <h2 className="so-h2 so-reveal">{SO_ENDED ? "1기 세미나 안내" : "세미나 신청 안내"}</h2>
           <table className="so-table so-reveal">
             <tbody>
               <tr>
@@ -1559,16 +1562,21 @@ export default function SalesOps() {
             </div>
           )}
           {/* 결제 카드 2종 — 스토리 인증가 / 정상가 */}
-          <div onClickCapture={onPayCapture} onClick={onPayBubble}>
-            <SalesOpsPay
-              disabled={formOff}
-              disabledMessage={closed ? "신청이 마감되었습니다" : "정원이 마감되었습니다"}
-            />
-          </div>
+          {SO_ENDED ? (
+            <SalesOpsClosed page="/edu/sales-ops" />
+          ) : (
+            <div onClickCapture={onPayCapture} onClick={onPayBubble}>
+              <SalesOpsPay
+                disabled={formOff}
+                disabledMessage={closed ? "신청이 마감되었습니다" : "정원이 마감되었습니다"}
+              />
+            </div>
+          )}
         </div>
       </section>
 
       {/* 하단 고정 바 — 마감 카운트다운 + "현재 신청 가능!"(마감·매진 전) + 내 자리 확보하기 */}
+      {!SO_ENDED && (
       <div className={`so-bar${barOn ? " is-on" : ""}`} aria-hidden={!barOn}>
         <div className="so-bar-in">
           <div className="so-bar-txt">
@@ -1595,6 +1603,7 @@ export default function SalesOps() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

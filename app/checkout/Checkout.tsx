@@ -32,7 +32,7 @@ import {
   type Product,
 } from "@/lib/products";
 import { EMAIL_RE, formatPhone } from "@/lib/authStyles";
-import { soResolveLanding } from "@/lib/salesOps";
+import { SO_ENDED, SO_PRODUCT_NORMAL, SO_PRODUCT_STORY, soResolveLanding } from "@/lib/salesOps";
 
 export const CHK_STYLE = `
 .chk{min-height:100vh;background:#f6f5f2;color:#161616;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;overflow-x:hidden}
@@ -84,6 +84,8 @@ export default function Checkout() {
 
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<Product | null>(null);
+  // 종료된 세미나(sales-ops 상품)는 결제하지 않는다 — lib/salesOps.ts 의 SO_ENDED
+  const [seminarEnded, setSeminarEnded] = useState(false);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -98,6 +100,11 @@ export default function Checkout() {
   useEffect(() => {
     let cancelled = false;
     if (!slug) {
+      setLoading(false);
+      return;
+    }
+    if (SO_ENDED && (slug === SO_PRODUCT_NORMAL || slug === SO_PRODUCT_STORY)) {
+      setSeminarEnded(true);
       setLoading(false);
       return;
     }
@@ -288,6 +295,23 @@ export default function Checkout() {
       }
     }
   };
+
+  if (seminarEnded) {
+    return (
+      <div className="chk">
+        <style dangerouslySetInnerHTML={{ __html: CHK_STYLE }} />
+        <div className="chk-center">
+          <h1 className="chk-center-t">1기 세미나가 마감되어 결제할 수 없습니다</h1>
+          <p className="chk-center-p">
+            다음 일정이 정해지면 오픈 알림으로 가장 먼저 안내드립니다.
+          </p>
+          <Link href="/edu/sales-ops#notify" className="chk-home">
+            오픈 알림 받기
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

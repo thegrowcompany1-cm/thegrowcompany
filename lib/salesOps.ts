@@ -28,6 +28,14 @@ export const SO_DEADLINE_MS = Date.parse(SO_DEADLINE_ISO);
 export const SO_SALES_FROM = "2026-10-15T00:00:00";
 /* ▲▲ 여기까지 ▲▲ */
 
+/**
+ * 1기 세미나 종료 (2026-11-21 개최 후).
+ *  true 면 /edu/sales-ops·sales-ops2·sales-ops3 는 결제 카드·카운트다운·하단 결제 바 대신
+ *  "다음 일정 오픈 알림"(components/edu/SalesOpsClosed.tsx → /api/edu-notify)을 받고,
+ *  /checkout 은 sales-ops 상품 결제를 막는다. 다음 기수를 열 때 false 로 되돌리고 날짜 상수를 새로 채운다.
+ */
+export const SO_ENDED = true;
+
 /** 신청 폼의 역할 선택값 중 대표·원장 — components/edu/SalesOpsPay.tsx 의 ROLES 와 같은 문자열이어야 한다 */
 export const SO_ROLE_OWNER = "대표 · 원장";
 

@@ -7,7 +7,7 @@
 //  · 못 가져오면 null — 부르는 쪽이 '막지 않고 통과'(가짜 매진 방지) 또는 '줄 숨김'으로 처리한다.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { SO_CAPACITY, SO_DEADLINE_MS, SO_PRODUCT_NORMAL, SO_PRODUCT_STORY, SO_SALES_FROM, soIsPending } from "@/lib/salesOps";
+import { SO_CAPACITY, SO_DEADLINE_MS, SO_ENDED, SO_PRODUCT_NORMAL, SO_PRODUCT_STORY, SO_SALES_FROM, soIsPending } from "@/lib/salesOps";
 
 const TOSS_TRANSACTIONS_URL = "https://api.tosspayments.com/v1/transactions";
 const PAGE = 1000;
@@ -77,7 +77,7 @@ export async function getSeminarSeatsCached(): Promise<SeatInfo | null> {
  */
 export async function seminarClosedReason(slug: string, paymentKey: string): Promise<"closed" | "soldout" | null> {
   if (slug !== SO_PRODUCT_NORMAL && slug !== SO_PRODUCT_STORY) return null;
-  const deadlinePassed = Date.now() >= SO_DEADLINE_MS;
+  const deadlinePassed = SO_ENDED || Date.now() >= SO_DEADLINE_MS;
   const seats = await fetchSeminarSeats();
   if (seats?.paidKeys.has(paymentKey)) return null;
   if (deadlinePassed) return "closed";
